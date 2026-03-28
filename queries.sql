@@ -32,7 +32,19 @@ INSERT INTO Koncept (id, namn, ordklass) VALUES
     (24, 'but',       'Konjunktion'),
     (25, 'or',        'Konjunktion'),
     (26, 'often',     'Adverb'),
-    (27, 'school',    'Substantiv');
+    (27, 'school',    'Substantiv'),
+    (28, 'to',        'Preposition'),
+--  Negationsadverb
+    (36, 'never',        'Negationsadverb'),
+    (37, 'no longer',    'Negationsadverb'),
+--  Frågeord
+    (29, 'who',       'Frågepronomen'),
+    (30, 'what',      'Frågepronomen'),
+    (31, 'where',     'Frågadverb'),
+    (32, 'when',      'Frågadverb'),
+    (33, 'how',       'Frågadverb'),
+    (34, 'why',       'Frågadverb'),
+    (35, 'which',     'Interrogativdeterminant');
 
 
 /* ════════════════════════════════════════════════════════════
@@ -674,5 +686,135 @@ INSERT INTO Former (lexem_id, form, numerus, species) VALUES
 INSERT INTO Former (lexem_id, form, numerus) VALUES
     (54, 'école',   1),
     (54, 'écoles',  2);
+
+
+/* ════════════════════════════════════════════════════════════
+   LEXEM – FRÅGEORD
+════════════════════════════════════════════════════════════ */
+INSERT INTO Lexem (id, koncept_id, språk, lemma, genus, valens, personlighet, gradbarhet, prenominal, person, numerus) VALUES
+--  to (preposition)
+    (55, 28, 'sv', 'till',     NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (56, 28, 'fr', 'à',        NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  who — frågepronomen (animat)
+    (57, 29, 'sv', 'vem',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (58, 29, 'fr', 'qui',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  what — frågepronomen (inanimat)
+    (59, 30, 'sv', 'vad',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (60, 30, 'fr', 'que',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  where — frågadverb (plats)
+    (61, 31, 'sv', 'var',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (62, 31, 'fr', 'où',       NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  when — frågadverb (tid)
+    (63, 32, 'sv', 'när',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (64, 32, 'fr', 'quand',    NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  how — frågadverb (sätt)
+    (65, 33, 'sv', 'hur',      NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (66, 33, 'fr', 'comment',  NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  why — frågadverb (orsak)
+    (67, 34, 'sv', 'varför',   NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (68, 34, 'fr', 'pourquoi', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  which — interrogativ determinant (böjs i genus+numerus)
+    (69, 35, 'sv', 'vilken',   NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (70, 35, 'fr', 'quel',     NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+/* ════════════════════════════════════════════════════════════
+   FORMER – FRÅGEORD – SVENSKA
+════════════════════════════════════════════════════════════ */
+
+-- till (lexem_id=55) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (55, 'till');
+
+-- vem (lexem_id=57) — kasus: nom+ack+dat=7, genitiv=8
+INSERT INTO Former (lexem_id, form, kasus) VALUES
+    (57, 'vem',  7),
+    (57, 'vems', 8);
+
+-- vad (lexem_id=59) — oböjt i kasus
+INSERT INTO Former (lexem_id, form) VALUES
+    (59, 'vad');
+
+-- var (lexem_id=61) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (61, 'var');
+
+-- när (lexem_id=63) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (63, 'när');
+
+-- hur (lexem_id=65) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (65, 'hur');
+
+-- varför (lexem_id=67) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (67, 'varför');
+
+-- vilken (lexem_id=69) — böjs i genus+numerus
+INSERT INTO Former (lexem_id, form, numerus, genus) VALUES
+    (69, 'vilken',  1, 1),
+    (69, 'vilket',  1, 2),
+    (69, 'vilka',   2, NULL);
+
+
+/* ════════════════════════════════════════════════════════════
+   FORMER – FRÅGEORD – FRANSKA
+════════════════════════════════════════════════════════════ */
+
+-- à (lexem_id=56) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (56, 'à');
+
+-- qui (lexem_id=58) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (58, 'qui');
+
+-- que (lexem_id=60) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (60, 'que');
+
+-- où (lexem_id=62) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (62, 'où');
+
+-- quand (lexem_id=64) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (64, 'quand');
+
+-- comment (lexem_id=66) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (66, 'comment');
+
+-- pourquoi (lexem_id=68) — oböjt
+INSERT INTO Former (lexem_id, form) VALUES
+    (68, 'pourquoi');
+
+-- quel (lexem_id=70) — böjs i genus+numerus
+INSERT INTO Former (lexem_id, form, numerus, genus) VALUES
+    (70, 'quel',    1, 1),
+    (70, 'quelle',  1, 2),
+    (70, 'quels',   2, 1),
+    (70, 'quelles', 2, 2);
+
+
+/* ════════════════════════════════════════════════════════════
+   NEGATIONSADVERB
+   Oböjda. Svenska: standalone negation.
+   Franska: ersätter "pas" i ne...X-konstruktionen.
+════════════════════════════════════════════════════════════ */
+INSERT INTO Lexem (id, koncept_id, språk, lemma, genus, valens, personlighet, gradbarhet, prenominal, person, numerus) VALUES
+--  never (aldrig / jamais)
+    (71, 36, 'sv', 'aldrig',       NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (72, 36, 'fr', 'jamais',       NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+--  no longer (inte längre / ne plus)
+    (73, 37, 'sv', 'inte längre',  NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    (74, 37, 'fr', 'plus',         NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO Former (lexem_id, form) VALUES
+    (71, 'aldrig'),
+    (72, 'jamais'),
+    (73, 'inte längre'),
+    (74, 'plus');
 
 COMMIT;
