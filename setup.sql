@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS Lexem (
     prenominal    INTEGER,   /* 1=adjektivet placeras före substantivet, 0=efter (NULL tolkas som 1) */
     person        INTEGER,   /* pronomen: grammatisk person 1=Första 2=Andra 3=Tredje (NULL för övriga ordklasser) */
     numerus       INTEGER,   /* pronomen: grammatiskt numerus 1=Singular 2=Plural   (NULL för övriga ordklasser) */
+    räknebar      INTEGER,   /* 1=räknebar (default/NULL), 0=oräknebar/masssubstantiv (ingen obestämd artikel, ingen plural) */
     FOREIGN KEY (koncept_id) REFERENCES Koncept(id) ON DELETE CASCADE
 );
 
@@ -86,6 +87,49 @@ CREATE INDEX IF NOT EXISTS idx_former_substantiv ON Former(lexem_id, numerus, sp
 CREATE INDEX IF NOT EXISTS idx_former_verb       ON Former(lexem_id, tempus, person, numerus);
 CREATE INDEX IF NOT EXISTS idx_former_adjektiv   ON Former(lexem_id, grad, genus, numerus, species);
 
-PRAGMA user_version=13;
+/* ── Semantik på Koncept ──────────────────────────────────────────────
+   Bitmask: 1=Animat 2=Konkret 4=Abstrakt 8=Ätbar 16=Plats 32=Mänsklig
+   Flera taggar kombineras med | (t.ex. hund = Animat|Konkret = 3).
+──────────────────────────────────────────────────────────────────────── */
+ALTER TABLE Koncept ADD COLUMN semantik INTEGER;
+
+
+/* ── Mönster ─────────────────────────────────────────────────────────
+   Ett semantiskt användningsmönster kopplat till ett styrande ord
+   (verb, adjektiv, preposition).
+   språk = NULL betyder att mönstret gäller alla språk.
+──────────────────────────────────────────────────────────────────────── */
+CREATE TABLE IF NOT EXISTS Mönster (
+    id          INTEGER PRIMARY KEY,
+    koncept_id  INTEGER NOT NULL,
+    språk       TEXT,
+    FOREIGN KEY (koncept_id) REFERENCES Koncept(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_mönster_koncept ON Mönster(koncept_id);
+
+
+/* ── MönsterKrav ─────────────────────────────────────────────────────
+   Varje rad = ett krav inom ett mönster.
+   slot   = vilken grammatisk position kravet gäller
+            ('subjekt', 'objekt', 'io', 'preposition', 'komplement')
+   tagg   = bitmask-krav mot Koncept.semantik  (NULL om lexikalt krav)
+   koncept_id = krav på ett specifikt koncept   (NULL om semantiskt krav)
+   Exakt en av tagg/koncept_id ska vara satt per rad.
+──────────────────────────────────────────────────────────────────────── */
+CREATE TABLE IF NOT EXISTS MönsterKrav (
+    id          INTEGER PRIMARY KEY,
+    mönster_id  INTEGER NOT NULL,
+    slot        TEXT    NOT NULL,
+    tagg        INTEGER,
+    koncept_id  INTEGER,
+    FOREIGN KEY (mönster_id) REFERENCES Mönster(id) ON DELETE CASCADE,
+    FOREIGN KEY (koncept_id) REFERENCES Koncept(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_mönsterkrav_mönster ON MönsterKrav(mönster_id);
+
+
+PRAGMA user_version=14;
 
 COMMIT;

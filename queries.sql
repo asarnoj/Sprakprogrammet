@@ -817,4 +817,395 @@ INSERT INTO Former (lexem_id, form) VALUES
     (73, 'inte längre'),
     (74, 'plus');
 
+
+/* ════════════════════════════════════════════════════════════
+   NYA ORD — KONCEPT
+════════════════════════════════════════════════════════════ */
+INSERT INTO Koncept (id, namn, ordklass) VALUES
+    (38, 'come',    'Verb'),
+    (39, 'become',  'Verb'),
+    (40, 'get',     'Verb'),
+    (41, 'we',      'Pronomen'),
+    (42, 'they',    'Pronomen'),
+    (43, 'dog',     'Substantiv'),
+    (44, 'food',    'Substantiv'),
+    (45, 'house',   'Substantiv'),
+    (46, 'car',     'Substantiv'),
+    (47, 'water',   'Substantiv'),
+    (48, 'city',    'Substantiv');
+
+
+/* ════════════════════════════════════════════════════════════
+   NYA ORD — LEXEM
+════════════════════════════════════════════════════════════ */
+INSERT INTO Lexem (id, koncept_id, språk, lemma, genus, valens, personlighet, gradbarhet, prenominal, person, numerus) VALUES
+--  come — intransitiv, rörelseverb
+    (75, 38, 'sv', 'komma',       NULL, 1, 1, NULL, NULL, NULL, NULL),
+    (76, 38, 'fr', 'venir',       NULL, 1, 1, NULL, NULL, NULL, NULL),
+--  become — intransitiv
+    (77, 39, 'sv', 'bli',         NULL, 1, 1, NULL, NULL, NULL, NULL),
+    (78, 39, 'fr', 'devenir',     NULL, 1, 1, NULL, NULL, NULL, NULL),
+--  get — transitiv
+    (79, 40, 'sv', 'få',          NULL, 2, 1, NULL, NULL, NULL, NULL),
+    (80, 40, 'fr', 'recevoir',    NULL, 2, 1, NULL, NULL, NULL, NULL),
+--  we — 1:a person plural
+    (81, 41, 'sv', 'vi',          NULL, NULL, NULL, NULL, NULL, 1, 2),
+    (82, 41, 'fr', 'nous',        NULL, NULL, NULL, NULL, NULL, 1, 2),
+--  they — 3:e person plural
+    (83, 42, 'sv', 'de',          NULL, NULL, NULL, NULL, NULL, 3, 2),
+    (84, 42, 'fr', 'ils',         NULL, NULL, NULL, NULL, NULL, 3, 2),
+--  dog — sv: utrum(1)  fr: maskulin(1)
+    (85, 43, 'sv', 'hund',        1,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (86, 43, 'fr', 'chien',       1,    NULL, NULL, NULL, NULL, NULL, NULL),
+--  food — sv: utrum(1)  fr: feminin(2)
+    (87, 44, 'sv', 'mat',         1,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (88, 44, 'fr', 'nourriture',  2,    NULL, NULL, NULL, NULL, NULL, NULL),
+--  house — sv: neutrum(2)  fr: feminin(2)
+    (89, 45, 'sv', 'hus',         2,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (90, 45, 'fr', 'maison',      2,    NULL, NULL, NULL, NULL, NULL, NULL),
+--  car — sv: utrum(1)  fr: feminin(2)
+    (91, 46, 'sv', 'bil',         1,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (92, 46, 'fr', 'voiture',     2,    NULL, NULL, NULL, NULL, NULL, NULL),
+--  water — sv: neutrum(2)  fr: feminin(2)
+    (93, 47, 'sv', 'vatten',      2,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (94, 47, 'fr', 'eau',         2,    NULL, NULL, NULL, NULL, NULL, NULL),
+--  city — sv: utrum(1)  fr: feminin(2)
+    (95, 48, 'sv', 'stad',        1,    NULL, NULL, NULL, NULL, NULL, NULL),
+    (96, 48, 'fr', 'ville',       2,    NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+/* ════════════════════════════════════════════════════════════
+   NYA ORD — FORMER — SVENSKA
+════════════════════════════════════════════════════════════ */
+
+-- komma (lexem_id=75)
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (75, 'komma',        1),
+    (75, 'kommer',       2),
+    (75, 'kom',          4),
+    (75, 'har kommit',   32),
+    (75, 'kommit',       8),
+    (75, 'kom',          16);
+
+-- bli (lexem_id=77)
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (77, 'bli',          1),
+    (77, 'blir',         2),
+    (77, 'blev',         4),
+    (77, 'har blivit',   32),
+    (77, 'blivit',       8),
+    (77, 'bli',          16);
+
+-- få (lexem_id=79)
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (79, 'få',           1),
+    (79, 'får',          2),
+    (79, 'fick',         4),
+    (79, 'har fått',     32),
+    (79, 'fått',         8);
+
+-- vi (lexem_id=81)
+INSERT INTO Former (lexem_id, form, kasus) VALUES
+    (81, 'vi',    1),
+    (81, 'oss',   6),
+    (81, 'vår',   8);
+
+-- de (lexem_id=83)
+INSERT INTO Former (lexem_id, form, kasus) VALUES
+    (83, 'de',     1),
+    (83, 'dem',    6),
+    (83, 'deras',  8);
+
+-- hund (lexem_id=85)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (85, 'hund',      1, 1),
+    (85, 'hunden',    1, 2),
+    (85, 'hundar',    2, 1),
+    (85, 'hundarna',  2, 2);
+
+-- mat (lexem_id=87)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (87, 'mat',       1, 1),
+    (87, 'maten',     1, 2),
+    (87, 'maträtter', 2, 1),
+    (87, 'maträtterna', 2, 2);
+
+-- hus (lexem_id=89)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (89, 'hus',    1, 1),
+    (89, 'huset',  1, 2),
+    (89, 'hus',    2, 1),
+    (89, 'husen',  2, 2);
+
+-- bil (lexem_id=91)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (91, 'bil',      1, 1),
+    (91, 'bilen',    1, 2),
+    (91, 'bilar',    2, 1),
+    (91, 'bilarna',  2, 2);
+
+-- vatten (lexem_id=93)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (93, 'vatten',    1, 1),
+    (93, 'vattnet',   1, 2),
+    (93, 'vatten',    2, 1),
+    (93, 'vattnen',   2, 2);
+
+-- stad (lexem_id=95)
+INSERT INTO Former (lexem_id, form, numerus, species) VALUES
+    (95, 'stad',      1, 1),
+    (95, 'staden',    1, 2),
+    (95, 'städer',    2, 1),
+    (95, 'städerna',  2, 2);
+
+
+/* ════════════════════════════════════════════════════════════
+   NYA ORD — FORMER — FRANSKA
+════════════════════════════════════════════════════════════ */
+
+-- venir (lexem_id=76) — être-verb, maskulina former
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (76, 'venir', 1),
+    (76, 'venu',  8);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (76, 'viens',    2, 1, 1),
+    (76, 'viens',    2, 2, 1),
+    (76, 'vient',    2, 3, 1),
+    (76, 'venons',   2, 1, 2),
+    (76, 'venez',    2, 2, 2),
+    (76, 'viennent', 2, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (76, 'venais',    4, 1, 1),
+    (76, 'venais',    4, 2, 1),
+    (76, 'venait',    4, 3, 1),
+    (76, 'venions',   4, 1, 2),
+    (76, 'veniez',    4, 2, 2),
+    (76, 'venaient',  4, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (76, 'suis venu',    32, 1, 1),
+    (76, 'es venu',      32, 2, 1),
+    (76, 'est venu',     32, 3, 1),
+    (76, 'sommes venus', 32, 1, 2),
+    (76, 'êtes venus',   32, 2, 2),
+    (76, 'sont venus',   32, 3, 2);
+
+-- devenir (lexem_id=78) — être-verb
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (78, 'devenir', 1),
+    (78, 'devenu',  8);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (78, 'deviens',    2, 1, 1),
+    (78, 'deviens',    2, 2, 1),
+    (78, 'devient',    2, 3, 1),
+    (78, 'devenons',   2, 1, 2),
+    (78, 'devenez',    2, 2, 2),
+    (78, 'deviennent', 2, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (78, 'devenais',    4, 1, 1),
+    (78, 'devenais',    4, 2, 1),
+    (78, 'devenait',    4, 3, 1),
+    (78, 'devenions',   4, 1, 2),
+    (78, 'deveniez',    4, 2, 2),
+    (78, 'devenaient',  4, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (78, 'suis devenu',    32, 1, 1),
+    (78, 'es devenu',      32, 2, 1),
+    (78, 'est devenu',     32, 3, 1),
+    (78, 'sommes devenus', 32, 1, 2),
+    (78, 'êtes devenus',   32, 2, 2),
+    (78, 'sont devenus',   32, 3, 2);
+
+-- recevoir (lexem_id=80)
+INSERT INTO Former (lexem_id, form, tempus) VALUES
+    (80, 'recevoir', 1),
+    (80, 'reçu',     8);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (80, 'reçois',    2, 1, 1),
+    (80, 'reçois',    2, 2, 1),
+    (80, 'reçoit',    2, 3, 1),
+    (80, 'recevons',  2, 1, 2),
+    (80, 'recevez',   2, 2, 2),
+    (80, 'reçoivent', 2, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (80, 'recevais',    4, 1, 1),
+    (80, 'recevais',    4, 2, 1),
+    (80, 'recevait',    4, 3, 1),
+    (80, 'recevions',   4, 1, 2),
+    (80, 'receviez',    4, 2, 2),
+    (80, 'recevaient',  4, 3, 2);
+
+INSERT INTO Former (lexem_id, form, tempus, person, numerus) VALUES
+    (80, 'ai reçu',    32, 1, 1),
+    (80, 'as reçu',    32, 2, 1),
+    (80, 'a reçu',     32, 3, 1),
+    (80, 'avons reçu', 32, 1, 2),
+    (80, 'avez reçu',  32, 2, 2),
+    (80, 'ont reçu',   32, 3, 2);
+
+-- nous (lexem_id=82)
+INSERT INTO Former (lexem_id, form, kasus) VALUES
+    (82, 'nous',   1),
+    (82, 'nous',   6),
+    (82, 'notre',  8);
+
+-- ils (lexem_id=84)
+INSERT INTO Former (lexem_id, form, kasus) VALUES
+    (84, 'ils',   1),
+    (84, 'les',   2),
+    (84, 'leur',  4),
+    (84, 'leur',  8);
+
+-- chien (lexem_id=86) — maskulin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (86, 'chien',   1),
+    (86, 'chiens',  2);
+
+-- nourriture (lexem_id=88) — feminin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (88, 'nourriture',   1),
+    (88, 'nourritures',  2);
+
+-- maison (lexem_id=90) — feminin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (90, 'maison',   1),
+    (90, 'maisons',  2);
+
+-- voiture (lexem_id=92) — feminin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (92, 'voiture',   1),
+    (92, 'voitures',  2);
+
+-- eau (lexem_id=94) — feminin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (94, 'eau',   1),
+    (94, 'eaux',  2);
+
+-- ville (lexem_id=96) — feminin
+INSERT INTO Former (lexem_id, form, numerus) VALUES
+    (96, 'ville',   1),
+    (96, 'villes',  2);
+
+
+/* ════════════════════════════════════════════════════════════
+   SEMANTIK  (bitmask på Koncept)
+   1=Animat 2=Konkret 4=Abstrakt 8=Ätbar 16=Plats 32=Mänsklig
+════════════════════════════════════════════════════════════ */
+
+-- Substantiv
+UPDATE Koncept SET semantik = 2          WHERE id = 2;   -- ball:    konkret
+UPDATE Koncept SET semantik = 2 | 32 | 1 WHERE id = 9;   -- teacher: konkret + mänsklig + animat
+UPDATE Koncept SET semantik = 2 | 32 | 1 WHERE id = 12;  -- child:   konkret + mänsklig + animat
+UPDATE Koncept SET semantik = 2          WHERE id = 13;  -- book:    konkret
+UPDATE Koncept SET semantik = 2 | 16     WHERE id = 22;  -- park:    konkret + plats
+UPDATE Koncept SET semantik = 2 | 16     WHERE id = 27;  -- school:  konkret + plats
+
+-- Pronomen (han, jag = animat + mänsklig)
+UPDATE Koncept SET semantik = 1 | 32     WHERE id = 4;   -- he
+UPDATE Koncept SET semantik = 1 | 32     WHERE id = 15;  -- I
+
+-- Verb (rörelse)
+UPDATE Koncept SET semantik = 64         WHERE id = 17;  -- run: rörelse
+UPDATE Koncept SET semantik = 64         WHERE id = 38;  -- come: rörelse
+
+-- Prepositioner (riktning)
+UPDATE Koncept SET semantik = 128        WHERE id = 28;  -- to: riktning
+
+-- Nya pronomen
+UPDATE Koncept SET semantik = 1 | 32     WHERE id = 41;  -- we: animat + mänsklig
+UPDATE Koncept SET semantik = 1 | 32     WHERE id = 42;  -- they: animat + mänsklig
+
+-- Oräkneliga substantiv
+UPDATE Lexem SET räknebar = 0 WHERE koncept_id = 44;  -- food: mat/nourriture
+UPDATE Lexem SET räknebar = 0 WHERE koncept_id = 47;  -- water: vatten/eau
+
+-- Nya substantiv
+UPDATE Koncept SET semantik = 1 | 2      WHERE id = 43;  -- dog: animat + konkret
+UPDATE Koncept SET semantik = 2 | 8      WHERE id = 44;  -- food: konkret + ätbar
+UPDATE Koncept SET semantik = 2 | 16     WHERE id = 45;  -- house: konkret + plats
+UPDATE Koncept SET semantik = 2          WHERE id = 46;  -- car: konkret
+UPDATE Koncept SET semantik = 2          WHERE id = 47;  -- water: konkret
+UPDATE Koncept SET semantik = 2 | 16     WHERE id = 48;  -- city: konkret + plats
+
+
+/* ════════════════════════════════════════════════════════════
+   MÖNSTER + MÖNSTERKRAV
+   Semantiska användningsmönster per styrande ord.
+════════════════════════════════════════════════════════════ */
+
+-- eat (id=1): animat äter ätbart (eller konkret som fallback)
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (1, 1, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (1, 'subjekt', 1, NULL),   -- animat
+    (1, 'objekt',  8, NULL);   -- ätbar
+
+-- like (id=5): animat gillar vad som helst
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (2, 5, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (2, 'subjekt', 1, NULL);   -- animat
+
+-- rain (id=6): inga krav (opersonligt, hanteras redan via personlighet)
+
+-- give (id=10), mönster 1: animat ger konkret till animat
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (3, 10, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (3, 'subjekt', 1, NULL),   -- animat
+    (3, 'objekt',  2, NULL),   -- konkret
+    (3, 'io',      1, NULL);   -- animat
+
+-- give (id=10), mönster 2: konkret ger abstrakt till animat
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (4, 10, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (4, 'subjekt', 2, NULL),   -- konkret
+    (4, 'objekt',  4, NULL),   -- abstrakt
+    (4, 'io',      1, NULL);   -- animat
+
+-- love (id=16): animat älskar vad som helst
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (5, 16, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (5, 'subjekt', 1, NULL);   -- animat
+
+-- run (id=17): animat springer
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (6, 17, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (6, 'subjekt', 1, NULL);   -- animat
+
+-- believe (id=19): animat tror
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (7, 19, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (7, 'subjekt', 1, NULL);   -- animat
+
+-- in (id=21): komplement = plats
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (8, 21, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (8, 'komplement', 16, NULL);   -- plats
+
+-- to (id=28): komplement = plats
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (9, 28, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (9, 'komplement', 16, NULL);   -- plats
+
+-- come (id=38): animat kommer
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (10, 38, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (10, 'subjekt', 1, NULL);   -- animat
+
+-- become (id=39): animat blir
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (11, 39, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (11, 'subjekt', 1, NULL);   -- animat
+
+-- get (id=40): animat får konkret
+INSERT INTO Mönster (id, koncept_id, språk) VALUES (12, 40, NULL);
+INSERT INTO MönsterKrav (mönster_id, slot, tagg, koncept_id) VALUES
+    (12, 'subjekt', 1, NULL),   -- animat
+    (12, 'objekt',  2, NULL);   -- konkret
+
 COMMIT;
