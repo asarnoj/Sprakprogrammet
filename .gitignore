@@ -1,0 +1,10 @@
+*.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Stora datafiler som inte hör hemma i git
+gammal/datafiler/kaikki/
+gammal/datafiler/conceptnet/

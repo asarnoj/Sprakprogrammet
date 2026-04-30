@@ -1,0 +1,7 @@
+Jag vill nu generera egna översättningar som ska kompensera conceptnet. Vi ska jobba igenom alla icke nouns från ordbok/lexem_ingen_match_nybörjare.csv och översätta de till de 6 andra språken. Det är viktigt att ifall det inte finns en självklar översättning så hoppar vi över ordet. Hellre ingen en fel!!!
+
+
+
+Då kommer vi få en egen lång lista med översättningar och vilken ordklass det gäller. Denna ska vi använda på samma sätt som conceptnet. Att vi ser till att det finns översättningsordet(vilket är garanterat) och träffordet (det vi genererat som vi kollar ifall det finns bland våra grundlexem) och att det är rätt ordklass enligt samma regler som innan.
+
+Sättet vi gör detta på är att 100 ord i taget göra en prompt som ger oss översättningarna i ett specifikt angivet format så att vi sedan kan använda den datan med pythonprogram.

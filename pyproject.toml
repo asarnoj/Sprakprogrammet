@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sprakprog"
+version = "0.1.0"
+description = "Universellt språkinlärningssystem — ordbokskärna och CLI"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+ordbok = "sprakprog.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sprakprog"]
