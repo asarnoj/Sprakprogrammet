@@ -1,0 +1,68 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska adjektiv. Varierar efter
+    genus, numerus, species och grad.
+
+    Positiv: utrum/neutrum-distinktion bara i singular obest;
+    bestämda och plurala former är genus-neutrala (genus=Alla).
+
+    Komparativ: invariant i sv (genus/numerus/species varierar inte) —
+    en enda cell med bara grad satt.
+
+    Superlativ: bara species varierar (obest "snabbast" vs best "snabbaste").
+
+    Icke gradbara adjektiv saknar komparativ och superlativ — markeras
+    via lexem-modifierare ("icke_gradbar"), ej här.
+
+    Aktiva axlar: genus, numerus, species, grad.
+
+celler:
+  # ── Positiv ──
+  - id: obest_m_sg_pos
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    grad: Pos
+
+  - id: obest_f_sg_pos
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    grad: Pos
+
+  - id: best_a_sg_pos
+    species: Best
+    genus: Alla
+    numerus: Sg
+    grad: Pos
+
+  - id: obest_a_pl_pos
+    species: Obest
+    genus: Alla
+    numerus: Pl
+    grad: Pos
+
+  - id: best_a_pl_pos
+    species: Best
+    genus: Alla
+    numerus: Pl
+    grad: Pos
+
+  # ── Komparativ ──
+  - id: komp
+    grad: Komp
+    not: "Invariant i sv — ingen genus-/numerus-/species-variation."
+
+  # ── Superlativ ──
+  - id: obest_superl
+    grad: Superl
+    not: "Predikativ form: 'snabbast'."
+
+  - id: best_superl
+    species: Best
+    grad: Superl
+    not: "Attributiv bestämd form: 'snabbaste'."

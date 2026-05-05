@@ -1,0 +1,50 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Frågepronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska frågepronomen.
+    Heterogent — olika lexem fyller olika delmängder av cellrummet:
+      • vem — fyller nom, ack_dat, gen ("vem", "vem", "vems";
+        nom och ack_dat homografa).
+      • vad — invariant; fyller bara nom (vilket pipelinen
+        kan tolka som lemma-ekvivalent).
+      • vilken/vilket/vilka — kongruerande frågepronomen, fyller
+        m_sg, f_sg, a_pl ("vilken", "vilket", "vilka").
+      • vilkas — separat lexem för plural-genitiv ("vilkas böcker").
+
+    Slot-filen är unionen av alla möjliga celler. Vilka som fylls
+    per lexem styrs reaktivt av kaikki/LLM.
+
+    Aktiva axlar: kasus, genus, numerus.
+
+celler:
+  # ── Kasusvariation (vem-typ) ──
+  - id: nom
+    kasus: [Nom]
+    not: "Subjektsform: vem, vad."
+
+  - id: ack_dat
+    kasus: [Ack, Dat]
+    not: "Objektsform: vem (homograf med nom), vad."
+
+  - id: gen
+    kasus: [Gen]
+    not: "Genitiv: vems."
+
+  # ── Genus-/numeruskongruens (vilken-typ) ──
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    not: "Utrum singular: vilken."
+
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+    not: "Neutrum singular: vilket."
+
+  - id: a_pl
+    genus: Alla
+    numerus: Pl
+    not: "Plural alla genus: vilka."

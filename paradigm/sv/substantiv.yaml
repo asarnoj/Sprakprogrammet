@@ -1,0 +1,61 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska substantiv. Varierar efter
+    numerus, species, kasus.
+
+    Endast genitiv är morfologisk på substantiv (sv kasus = Nom+Ack+Dat
+    kollapsade till bitmask 7, plus Gen=8). Genus är inneboende på
+    Lexem-raden, inte böjningsdimension för det enskilda lexemet —
+    listas inte som cellaxel.
+
+    Defektiva substantiv (pengar — bara plural; mat — bara singular;
+    musik — oräknebar utan flertal etc.) hanteras med lexem-
+    modifierare, inte här. Slot-filen listar alla 8 cellerna; vilka
+    som faktiskt fylls per lexem avgörs reaktivt.
+
+    Aktiva axlar: numerus, species, kasus.
+
+celler:
+  - id: obest_sg_ack_dat_nom
+    numerus: Sg
+    species: Obest
+    kasus: [Ack, Dat, Nom]
+
+  - id: obest_sg_gen
+    numerus: Sg
+    species: Obest
+    kasus: [Gen]
+
+  - id: best_sg_ack_dat_nom
+    numerus: Sg
+    species: Best
+    kasus: [Ack, Dat, Nom]
+
+  - id: best_sg_gen
+    numerus: Sg
+    species: Best
+    kasus: [Gen]
+
+  - id: obest_pl_ack_dat_nom
+    numerus: Pl
+    species: Obest
+    kasus: [Ack, Dat, Nom]
+
+  - id: obest_pl_gen
+    numerus: Pl
+    species: Obest
+    kasus: [Gen]
+
+  - id: best_pl_ack_dat_nom
+    numerus: Pl
+    species: Best
+    kasus: [Ack, Dat, Nom]
+
+  - id: best_pl_gen
+    numerus: Pl
+    species: Best
+    kasus: [Gen]
