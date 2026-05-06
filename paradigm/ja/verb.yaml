@@ -1,0 +1,92 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för japanska verb. Japanska böjer verb
+    efter "form" (form-paradigm), INTE efter person eller numerus.
+
+    Tre verbtyper:
+      - Godan (五段 / grupp 1): stammen slutar på konsonant (話す, 書く, 飲む)
+      - Ichidan (一段 / grupp 2): stammen slutar på vokal (食べる, 見る)
+      - Oregelbundna: する (göra), くる (komma)
+
+    Polita former (ます-systemet) är regelrätt härledda från masu-stammen
+    och lagras INTE separat — renderaren bildar dem analytiskt.
+    Undantag: ます-form (辞書形の丁寧体) lagras som cell Pres för att
+    ge inlärare den praktiska polita grundformen direkt.
+
+    Passiv (受身形) är en morfologiskt härledd form som i sin tur
+    konjugeras. Här lagras bara grundformen (辞書形 av den passiva verbformen).
+
+    Kausativ, kausativ-passiv etc. lagras ej — för avancerade inlärare
+    är dessa transparenta från passiv-stammen.
+
+    Aktiva axlar: tempus, diates.
+    Person och numerus används ej (NULL i Former för alla japanska verbceller).
+
+celler:
+  - id: jisho
+    tempus: [Inf]
+    diates: Aktiv
+    # 辞書形 / grundform: 話す, 食べる, する.
+    # Används i plain style icke-förfluten tid och som uppslagsform.
+
+  - id: masu
+    tempus: [Pres]
+    diates: Aktiv
+    # ます形 / polite non-past: 話します, 食べます, します.
+    # Lagras för praktisk tillgänglighet — regelrätt men central för inlärare.
+
+  - id: te
+    tempus: [Te]
+    diates: Aktiv
+    # て形 / te-form: 話して, 食べて, して.
+    # Används för sekventiella handlingar, pågående aspect (〜ている),
+    # tillåtelse (〜てもいい), förbud (〜てはいけない) etc.
+
+  - id: ta
+    tempus: [Pret]
+    diates: Aktiv
+    # た形 / past plain: 話した, 食べた, した.
+    # Används för plain style förfluten tid och i relativsatser.
+
+  - id: nai
+    tempus: [Neg]
+    diates: Aktiv
+    # ない形 / negative plain: 話さない, 食べない, しない.
+    # Negationsstam — ger även て-form av negation (〜なくて),
+    # past negation (〜なかった), etc.
+
+  - id: vol
+    tempus: [Vol]
+    diates: Aktiv
+    # 意志形 / volitional: 話そう, 食べよう, しよう.
+    # Använd för förslag ("låt oss...") och intention.
+
+  - id: imp
+    tempus: [Imp]
+    diates: Aktiv
+    # 命令形 / imperative: 話せ, 食べろ (el. 食べよ), しろ (el. せよ).
+    # Befallande; sällan i vardagstal — mer skriftlig/formell befallning.
+
+  - id: pot
+    tempus: [Pot]
+    diates: Aktiv
+    # 可能形 / potential: 話せる, 食べられる, できる.
+    # "Kan göra X". Godan: ny verbform; Ichidan: -られる.
+
+  - id: kond
+    tempus: [Kond]
+    diates: Aktiv
+    # 条件形 / conditional (ば-form): 話せば, 食べれば, すれば.
+    # "Om/när man gör X". Skiljer sig från たら-konditionalis (analytisk).
+
+  - id: ukemi
+    tempus: [Inf]
+    diates: Passiv
+    # 受身形 / passive base (辞書形 av passivverbet):
+    # 話される, 食べられる, される.
+    # Denna form konjugeras vidare som ichidan-verb.
+    # Lagrar bara grundformen; pipelinen konjugerar vid behov.

@@ -1,0 +1,349 @@
+---
+meta:
+  version: 2
+  språk: it
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för italienska verb. Strukturen liknar
+    spanska med congiuntivo presente och congiuntivo imperfetto båda aktiva
+    i modernt italienska.
+
+    Analytiska tider (passato prossimo, trapassato prossimo, futuro anteriore,
+    condizionale passato etc.) lagras INTE — bildas analytiskt av renderaren.
+
+    Imperativo: Italienska har P2sg, P3sg (Lei, artighetspronomenet),
+    P1pl, P2pl, P3pl (Loro, formellt). P3sg Lei imperativo = congiuntivo
+    presente P3sg (bitmask-OR-kollaps om formerna är identiska).
+
+    Passivo: morfologisk passiv saknas i modernt italienska (analytisk:
+    essere + participio). Passivo-celler utelämnas.
+
+    Aktiva axlar: tempus, person, numerus, diates, genus (för participio).
+
+celler:
+  # ── Presente indicativo ────────────────────────────────────────────
+  - id: pres_1sg
+    tempus: [Pres]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_2sg
+    tempus: [Pres]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_3sg
+    tempus: [Pres]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_1pl
+    tempus: [Pres]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_2pl
+    tempus: [Pres]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_3pl
+    tempus: [Pres]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Imperfetto indicativo ──────────────────────────────────────────
+  - id: imperf_1sg
+    tempus: [Imperf]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_2sg
+    tempus: [Imperf]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_3sg
+    tempus: [Imperf]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_1pl
+    tempus: [Imperf]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imperf_2pl
+    tempus: [Imperf]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imperf_3pl
+    tempus: [Imperf]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Passato remoto ─────────────────────────────────────────────────
+  - id: pret_1sg
+    tempus: [Pret]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_2sg
+    tempus: [Pret]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_3sg
+    tempus: [Pret]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_1pl
+    tempus: [Pret]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_2pl
+    tempus: [Pret]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_3pl
+    tempus: [Pret]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Futuro semplice ────────────────────────────────────────────────
+  - id: fut_1sg
+    tempus: [Fut]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_2sg
+    tempus: [Fut]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_3sg
+    tempus: [Fut]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_1pl
+    tempus: [Fut]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: fut_2pl
+    tempus: [Fut]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: fut_3pl
+    tempus: [Fut]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Condizionale presente ──────────────────────────────────────────
+  - id: kond_1sg
+    tempus: [Kond]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_2sg
+    tempus: [Kond]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_3sg
+    tempus: [Kond]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_1pl
+    tempus: [Kond]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: kond_2pl
+    tempus: [Kond]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: kond_3pl
+    tempus: [Kond]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Congiuntivo presente ───────────────────────────────────────────
+  - id: subj_1sg
+    tempus: [Vol]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_2sg
+    tempus: [Vol]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_3sg
+    tempus: [Vol]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_1pl
+    tempus: [Vol]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_2pl
+    tempus: [Vol]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_3pl
+    tempus: [Vol]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Congiuntivo imperfetto ─────────────────────────────────────────
+  # tempus = Imperf|Vol = 5120.
+  - id: subj_imperf_1sg
+    tempus: [Imperf, Vol]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_imperf_2sg
+    tempus: [Imperf, Vol]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_imperf_3sg
+    tempus: [Imperf, Vol]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_imperf_1pl
+    tempus: [Imperf, Vol]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_imperf_2pl
+    tempus: [Imperf, Vol]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_imperf_3pl
+    tempus: [Imperf, Vol]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Imperativo ─────────────────────────────────────────────────────
+  - id: imp_2sg
+    tempus: [Imp]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imp_3sg
+    tempus: [Imp]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+    # Lei-imperativo = congiuntivo presente P3sg för de flesta verb.
+    # Bitmask-OR-kollaps sker automatiskt vid identisk form.
+
+  - id: imp_1pl
+    tempus: [Imp]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imp_2pl
+    tempus: [Imp]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Infinito ───────────────────────────────────────────────────────
+  - id: inf
+    tempus: [Inf]
+    diates: Aktiv
+
+  # ── Gerundio ───────────────────────────────────────────────────────
+  - id: gerundio
+    tempus: [Te]
+    diates: Aktiv
+    # "parlando", "finendo", "partendo". Invariant.
+
+  # ── Participio passato ─────────────────────────────────────────────
+  - id: pp_msc_sg
+    tempus: [Sup]
+    genus: UtrMask
+    numerus: Sg
+    diates: Aktiv
+    # "parlato", "finito", "fatto".
+
+  - id: pp_fem_sg
+    tempus: [Sup]
+    genus: NeuFem
+    numerus: Sg
+    diates: Aktiv
+    # "parlata", "finita", "fatta".
+
+  - id: pp_msc_pl
+    tempus: [Sup]
+    genus: UtrMask
+    numerus: Pl
+    diates: Aktiv
+    # "parlati", "finiti", "fatti".
+
+  - id: pp_fem_pl
+    tempus: [Sup]
+    genus: NeuFem
+    numerus: Pl
+    diates: Aktiv
+    # "parlate", "finite", "fatte".

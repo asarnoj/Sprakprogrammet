@@ -1,0 +1,26 @@
+---
+meta:
+  version: 2
+  språk: it
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för italienska substantiv. Bara numerus
+    varierar — ingen kasusböjning.
+
+    Genus (maschile/femminile) är lexikalt på Lexem-nivå (UtrMask/NeuFem).
+
+    Invarianta substantiv: ord på -i (crisi), -ie (serie), lånord (film,
+    bar, sport) — pl identisk med sg → bitmask-OR-kollaps.
+
+    Aktiv axel: numerus.
+
+celler:
+  - id: sg
+    numerus: Sg
+    # "gatto", "casa", "città".
+
+  - id: pl
+    numerus: Pl
+    # Maschile: -o → -i ("gatti"), -e → -i ("fiori").
+    # Femminile: -a → -e ("case"), -e → -i ("chiavi").
+    # Oregelbundet: "uomo → uomini", "mano → mani" (fem pl trots mask sg).

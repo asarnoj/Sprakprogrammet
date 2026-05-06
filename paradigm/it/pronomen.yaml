@@ -1,0 +1,41 @@
+---
+meta:
+  version: 2
+  språk: it
+  ordklass: Pronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för italienska personliga pronomen.
+
+    Former per position:
+      - Soggetto (subjekt): io, tu, lui/lei/Lei, noi, voi, loro/Loro
+      - Oggetto diretto COD: mi, ti, lo/la, ci, vi, li/le
+      - Oggetto indiretto COI: mi, ti, gli/le, ci, vi, gli (talspråk) / loro (formellt)
+      - Tonico (efter preposition/betonat): me, te, lui/lei, noi, voi, loro
+
+    COD och COI identiska för P1/P2 (mi, ti, ci, vi) → bitmask-OR-kollaps.
+    Tonico kodas med kasus=Gen som konvention.
+
+    "Lei" (artighetspronomenet, P3sg formellt) lagras som separat lexem
+    under Pronomen-ordklassen med källa='manuell'.
+
+    Aktiva axlar: kasus, genus (för P3 COD/tonico).
+
+celler:
+  - id: soggetto
+    kasus: [Nom]
+    # io, tu, lui, lei, noi, voi, loro.
+
+  - id: cod
+    kasus: [Ack]
+    # mi, ti, lo, la, ci, vi, li, le.
+    # P3 sg: lo (UtrMask) / la (NeuFem).
+
+  - id: coi
+    kasus: [Dat]
+    # mi, ti, gli, le, ci, vi, gli/loro.
+    # P3 sg: gli (UtrMask) / le (NeuFem).
+
+  - id: tonico
+    kasus: [Gen]
+    # me, te, lui, lei, noi, voi, loro.
+    # Används efter preposition ("con me", "da te") och vid betoning.

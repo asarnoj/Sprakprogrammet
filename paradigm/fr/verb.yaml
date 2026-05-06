@@ -1,0 +1,308 @@
+---
+meta:
+  version: 2
+  språk: fr
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för franska verb. Franska böjer verb efter
+    person (P1–P3), numerus (Sg/Pl), tempus och diates.
+
+    Analytiska tider (passé composé, plus-que-parfait, futur antérieur,
+    conditionnel passé etc.) lagras INTE i Former — de bildas av renderaren
+    via auxiliaire (avoir/être) + participe passé.
+
+    Participe passé varierar i genus och numerus vid användning med être
+    och vid framförställt direkt objekt. Alla 4 former lagras (m.sg, f.sg,
+    m.pl, f.pl) för oregelbundna verb; för regelbundna är f.sg = m.sg + "e",
+    etc.
+
+    Gérondif ("en parlant") = "en" + participe présent — ej separat form.
+
+    Aktiva axlar: tempus, person, numerus, diates, genus (för participe passé).
+
+celler:
+  # ── Présent de l'indicatif ─────────────────────────────────────────
+  - id: pres_1sg
+    tempus: [Pres]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_2sg
+    tempus: [Pres]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_3sg
+    tempus: [Pres]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_1pl
+    tempus: [Pres]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_2pl
+    tempus: [Pres]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_3pl
+    tempus: [Pres]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Imparfait ──────────────────────────────────────────────────────
+  - id: imperf_1sg
+    tempus: [Imperf]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_2sg
+    tempus: [Imperf]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_3sg
+    tempus: [Imperf]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imperf_1pl
+    tempus: [Imperf]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imperf_2pl
+    tempus: [Imperf]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imperf_3pl
+    tempus: [Imperf]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Passé simple ───────────────────────────────────────────────────
+  - id: pret_1sg
+    tempus: [Pret]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_2sg
+    tempus: [Pret]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_3sg
+    tempus: [Pret]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_1pl
+    tempus: [Pret]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_2pl
+    tempus: [Pret]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_3pl
+    tempus: [Pret]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Futur simple ───────────────────────────────────────────────────
+  - id: fut_1sg
+    tempus: [Fut]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_2sg
+    tempus: [Fut]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_3sg
+    tempus: [Fut]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: fut_1pl
+    tempus: [Fut]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: fut_2pl
+    tempus: [Fut]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: fut_3pl
+    tempus: [Fut]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Conditionnel présent ───────────────────────────────────────────
+  - id: kond_1sg
+    tempus: [Kond]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_2sg
+    tempus: [Kond]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_3sg
+    tempus: [Kond]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: kond_1pl
+    tempus: [Kond]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: kond_2pl
+    tempus: [Kond]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: kond_3pl
+    tempus: [Kond]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Subjonctif présent ─────────────────────────────────────────────
+  # Vol (Volitif/Konjunktiv) används för subjonctif.
+  - id: subj_1sg
+    tempus: [Vol]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_2sg
+    tempus: [Vol]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_3sg
+    tempus: [Vol]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: subj_1pl
+    tempus: [Vol]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_2pl
+    tempus: [Vol]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: subj_3pl
+    tempus: [Vol]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Impératif ──────────────────────────────────────────────────────
+  # Bara P2sg, P1pl, P2pl — inga andra imperativformer finns.
+  - id: imp_2sg
+    tempus: [Imp]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: imp_1pl
+    tempus: [Imp]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: imp_2pl
+    tempus: [Imp]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Infinitif ──────────────────────────────────────────────────────
+  - id: inf
+    tempus: [Inf]
+    diates: Aktiv
+    # "parler", "finir", "vendre".
+
+  # ── Participe présent ──────────────────────────────────────────────
+  - id: pres_part
+    tempus: [Te]
+    diates: Aktiv
+    # "parlant", "finissant". Invariant (kongruerar ej som adjektiv i
+    # participialgrupp; gérondif bildas analytiskt: "en parlant").
+
+  # ── Participe passé ────────────────────────────────────────────────
+  # 4 former för kongruens med être-auxiliaire och framförställt direkt objekt.
+  - id: pp_msc_sg
+    tempus: [Sup]
+    genus: UtrMask
+    numerus: Sg
+    diates: Aktiv
+    # "parlé", "fini", "fait".
+
+  - id: pp_fem_sg
+    tempus: [Sup]
+    genus: NeuFem
+    numerus: Sg
+    diates: Aktiv
+    # "parlée", "finie", "faite".
+
+  - id: pp_msc_pl
+    tempus: [Sup]
+    genus: UtrMask
+    numerus: Pl
+    diates: Aktiv
+    # "parlés", "finis", "faits".
+
+  - id: pp_fem_pl
+    tempus: [Sup]
+    genus: NeuFem
+    numerus: Pl
+    diates: Aktiv
+    # "parlées", "finies", "faites".

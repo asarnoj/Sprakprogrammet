@@ -1,0 +1,61 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för tyska substantiv. Tyska böjer substantiv
+    efter kasus (Nom/Akk/Dat/Gen) och numerus (Sg/Pl).
+
+    Genus (Maskulinum/Femininum/Neutrum) är lexikalt på Lexem-nivå:
+      UtrMask = Maskulinum, NeuFem = Femininum, Alla = Neutrum.
+
+    Nom/Akk/Gen är ofta identiska i plural → bitmask-OR-kollaps vid lagring.
+    Dat plural tar nästan alltid ändelsen -(e)n.
+
+    n-Deklination (mask. animata: der Mensch, der Student): Akk/Dat/Gen sg
+    alla = lemma + -(e)n. Dessa substantiv fyller akk_sg ≠ nom_sg.
+
+    Femininum: inga ändelser i singularis (nom=akk=dat=gen=lemma).
+    Mask/Neut: genitiv singular tar -(e)s; dativ kan ta -(e) (arkaiskt).
+
+    Aktiva axlar: kasus, numerus.
+
+celler:
+  - id: nom_sg
+    kasus: [Nom]
+    numerus: Sg
+    # "Mann", "Frau", "Kind".
+
+  - id: akk_sg
+    kasus: [Ack]
+    numerus: Sg
+    # = nom_sg för de flesta (Fem alltid, Mask/Neut stark).
+    # ≠ nom_sg för n-Deklination: "den Menschen".
+
+  - id: dat_sg
+    kasus: [Dat]
+    numerus: Sg
+    # Fem/mask stark/neut: = nom_sg (Modern tyska; -e är arkaiskt).
+    # n-Deklination: "dem Menschen".
+
+  - id: gen_sg
+    kasus: [Gen]
+    numerus: Sg
+    # Mask/Neut: +(e)s ("des Mannes", "des Kindes").
+    # Fem: = nom_sg ("der Frau").
+    # n-Deklination: "des Menschen".
+
+  - id: nom_akk_gen_pl
+    kasus: [Nom, Ack, Gen]
+    numerus: Pl
+    # Nästan alltid identiska tre former → lagras som en rad (kasus=11).
+    # "die Männer / die Männer / der Männer".
+    # Undantag: Gen pl av n-Deklination = "der Menschen" (= nom_pl) ✓.
+
+  - id: dat_pl
+    kasus: [Dat]
+    numerus: Pl
+    # = nom_pl + -n om inte redan -n-final.
+    # "den Männern", "den Frauen", "den Kindern".
+    # Undantag: ord som slutar på -s tar ej extra -n (plural "Autos" → "Autos").

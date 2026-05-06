@@ -1,0 +1,28 @@
+---
+meta:
+  version: 2
+  språk: fr
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för franska substantiv. Franska har ingen
+    kasusböjning (förlorades ur medeltidsfranskan) — bara numerus varierar.
+
+    Genus (masculin/féminin) är ett lexikalt drag på Lexem-nivå (genus=UtrMask
+    för masculin, genus=NeuFem för féminin). Det varierar inte som böjningsform.
+
+    Oräknebara substantiv saknar pluralform — markeras via Koncept.räknebar=0.
+    Pluralia tantum (les gens, les funérailles) saknar singularform — markeras
+    via lexem-modifierare.
+
+    Aktiv axel: numerus.
+
+celler:
+  - id: sg
+    numerus: Sg
+    # "chat", "maison", "eau". Täcker alla syntaktiska positioner.
+
+  - id: pl
+    numerus: Pl
+    # Regelbundet: +s ("chats", "maisons").
+    # Oregelbundet: "yeux" (pl av "œil"), "travaux" (pl av "travail").
+    # Oförändrad i skrift men ej uttal: "bras", "voix", "nez".

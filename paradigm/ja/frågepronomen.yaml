@@ -1,0 +1,20 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Frågepronomen
+  beskrivning: >
+    Inflektionsrum för japanska interrogativa pronomen. Invarianta —
+    kasus markeras av partiklar precis som för substantiv.
+
+    Aktiva axlar: inga.
+
+celler:
+  - id: jisho
+    # 誰 (dare) / どなた (donata) — vem
+    # 何 (nani/nan) — vad
+    # どれ (dore) — vilken (av flera)
+    # どの (dono) — vilken (attributivt, + substantiv)
+    # いくつ (ikutsu) — hur många
+    # いくら (ikura) — hur mycket
+    # Alla invarianta.

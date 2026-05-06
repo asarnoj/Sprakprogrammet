@@ -1,0 +1,27 @@
+---
+meta:
+  version: 2
+  språk: es
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för spanska substantiv. Som franska: bara
+    numerus varierar morfologiskt, ingen kasusböjning.
+
+    Genus (masculino/femenino) är lexikalt på Lexem-nivå (UtrMask/NeuFem).
+    Oräknebara substantiv (agua, información) markeras via Koncept.räknebar=0.
+    Pluralia tantum (las gafas, los pantalones) via lexem-modifierare.
+
+    OBS: en liten klass substantiv har genusdistinktion via ändelse:
+    "el gato / la gata" — dessa lagras som separata lexem under samma koncept.
+
+    Aktiv axel: numerus.
+
+celler:
+  - id: sg
+    numerus: Sg
+    # "gato", "casa", "ciudad".
+
+  - id: pl
+    numerus: Pl
+    # Regelbundet: +s ("gatos") / +es ("ciudades").
+    # Oregelbundet: "régimen → regímenes", invariant: "lunes", "crisis".

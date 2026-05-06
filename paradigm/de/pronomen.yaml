@@ -1,0 +1,35 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Pronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för tyska personliga pronomen. Tyska
+    har fullständig kasusböjning i 4 fall: Nom/Akk/Dat/Gen.
+
+    Person och numerus är lexikala egenskaper (Lexem-nivå).
+    P3 sg har genus-distinktion: er (Mask) / sie (Fem) / es (Neutr).
+    P3 pl är genusneutralt.
+
+    Genitiv av personliga pronomen (meiner, deiner, seiner etc.) är
+    arkaiskt/formellt men förekommer i stilistiska register.
+
+    Aktiva axlar: kasus, genus (för P3 sg).
+
+celler:
+  - id: nom
+    kasus: [Nom]
+    # ich, du, er, sie, es, wir, ihr, sie, Sie.
+
+  - id: akk
+    kasus: [Ack]
+    # mich, dich, ihn, sie, es, uns, euch, sie, Sie.
+
+  - id: dat
+    kasus: [Dat]
+    # mir, dir, ihm, ihr, ihm, uns, euch, ihnen, Ihnen.
+
+  - id: gen
+    kasus: [Gen]
+    # meiner, deiner, seiner, ihrer, seiner, unser, euer, ihrer, Ihrer.
+    # Arkaiskt/formellt — förekommer i fasta fraser och litterär stil.

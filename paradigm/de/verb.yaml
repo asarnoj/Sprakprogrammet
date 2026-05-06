@@ -1,0 +1,223 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för tyska verb.
+
+    Analytiska tider (Perfekt, Plusquamperfekt, Futur I/II, Passiv etc.)
+    lagras INTE — bildas av renderaren med haben/sein + Partizip II.
+
+    Konjunktiv I: används för indirekt tal ("Er sagt, er sei krank").
+    Konjunktiv II: används för hypotetiska meningar och artigt tilltal
+    ("Könnten Sie..."). Många verb bildar Konjunktiv II analytiskt via
+    "würde" + Infinitiv — den syntetiska formen lagras om den finns.
+
+    Imperativ: P2sg (du), P1pl (wir, "Gehen wir!"), P2pl (ihr), P3sg (Sie,
+    = Konjunktiv I P3pl — bitmask-OR-kollaps om identisk form).
+
+    Partizip II: invariant i predikatisk användning. Attributiv användning
+    följer adjektivdeklination (hanteras av adjektiv-paradigmet).
+
+    Aktiva axlar: tempus, person, numerus, diates.
+
+celler:
+  # ── Präsens Indikativ ──────────────────────────────────────────────
+  - id: pres_1sg
+    tempus: [Pres]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_2sg
+    tempus: [Pres]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_3sg
+    tempus: [Pres]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pres_1pl
+    tempus: [Pres]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_2pl
+    tempus: [Pres]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pres_3pl
+    tempus: [Pres]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Präteritum (Imperfekt) Indikativ ──────────────────────────────
+  - id: pret_1sg
+    tempus: [Pret]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_2sg
+    tempus: [Pret]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_3sg
+    tempus: [Pret]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: pret_1pl
+    tempus: [Pret]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_2pl
+    tempus: [Pret]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: pret_3pl
+    tempus: [Pret]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Konjunktiv I ───────────────────────────────────────────────────
+  - id: konj1_1sg
+    tempus: [Vol]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj1_2sg
+    tempus: [Vol]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj1_3sg
+    tempus: [Vol]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj1_1pl
+    tempus: [Vol]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: konj1_2pl
+    tempus: [Vol]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: konj1_3pl
+    tempus: [Vol]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Konjunktiv II ──────────────────────────────────────────────────
+  - id: konj2_1sg
+    tempus: [Kond]
+    person: P1
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj2_2sg
+    tempus: [Kond]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj2_3sg
+    tempus: [Kond]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+
+  - id: konj2_1pl
+    tempus: [Kond]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+
+  - id: konj2_2pl
+    tempus: [Kond]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+
+  - id: konj2_3pl
+    tempus: [Kond]
+    person: P3
+    numerus: Pl
+    diates: Aktiv
+
+  # ── Imperativ ──────────────────────────────────────────────────────
+  - id: imp_2sg
+    tempus: [Imp]
+    person: P2
+    numerus: Sg
+    diates: Aktiv
+    # "komm!", "lies!", "sei!" (oregelbundet).
+
+  - id: imp_1pl
+    tempus: [Imp]
+    person: P1
+    numerus: Pl
+    diates: Aktiv
+    # "Gehen wir!", "Kommen wir!" — = Präsens P1pl.
+    # Bitmask-OR-kollaps vid identisk form.
+
+  - id: imp_2pl
+    tempus: [Imp]
+    person: P2
+    numerus: Pl
+    diates: Aktiv
+    # "kommt!", "lest!" — = Präsens P2pl. Bitmask-OR-kollaps.
+
+  - id: imp_3sg
+    tempus: [Imp]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+    # Sie-imperativ: "Kommen Sie!" = Konjunktiv I P3pl + Sie.
+    # Formen är identisk med konj1_3pl → bitmask-OR-kollaps.
+
+  # ── Infinitiv ──────────────────────────────────────────────────────
+  - id: inf
+    tempus: [Inf]
+    diates: Aktiv
+    # "kommen", "lesen", "sein".
+
+  # ── Partizip I (Präsenspartizip) ───────────────────────────────────
+  - id: part1
+    tempus: [Te]
+    diates: Aktiv
+    # "kommend", "lesend". Invariant grundform.
+    # Attributiv används det som adjektiv med deklination — hanteras ej här.
+
+  # ── Partizip II ────────────────────────────────────────────────────
+  - id: part2
+    tempus: [Sup]
+    diates: Aktiv
+    # "gekommen", "gelesen", "gewesen". Invariant i predikatisk användning.
+    # Predikatisk form: "Er ist gekommen" / "Das Buch wurde gelesen".

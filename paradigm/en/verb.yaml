@@ -1,0 +1,55 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för engelska verb. Engelska har minimal
+    verbmorfologi — bara 5 distinkta former, varav imperativ är identisk
+    med infinitiv (bitmask-OR-kollaps) och presens delar form med infinitiv
+    för alla personer utom tredje person singular.
+
+    Engelska saknar morfologisk passiv — "is spoken" är analytisk och lagras
+    inte i Former. Sup-formen (past participle) används av renderaren för att
+    bilda perfekt och passiv analytiskt.
+
+    Modala hjälpverb (can, will, shall, may, might, must, should, would,
+    could, ought) är defektiva — saknar inf, sup och pres_part. Markeras
+    via lexem-modifierare.
+
+    Aktiva axlar: tempus, person (bara för pres_3sg), numerus (bara för
+    pres_3sg), diates.
+
+celler:
+  - id: inf_imp
+    tempus: [Inf, Imp]
+    diates: Aktiv
+    # Bitmask-OR-kollaps: imperativ = infinitiv för alla engelska verb.
+
+  - id: pres_3sg
+    tempus: [Pres]
+    person: P3
+    numerus: Sg
+    diates: Aktiv
+    # "speaks", "runs", "does" — den enda person-/numerus-markerade formen.
+
+  - id: pret
+    tempus: [Pret]
+    diates: Aktiv
+    # Regelbundet: +ed ("walked"). Oregelbundet: "spoke", "went", "was/were".
+    # OBS: vara har två preteritumformer (was/were). Lagras som två Lexem-rader
+    # om båda ska finnas, eller som ett med den vanligaste formen.
+
+  - id: sup
+    tempus: [Sup]
+    diates: Aktiv
+    # Past participle: "spoken", "walked", "gone".
+    # Renderaren bildar perfekt analytiskt: "has spoken".
+    # Samma form används för passiv: "is spoken".
+
+  - id: gerund
+    tempus: [Te]
+    diates: Aktiv
+    # Present participle / gerund: "speaking", "running".
+    # Te-axeln används (legend: Te=128, "Gerundium").
+    # Renderaren bildar progressiv analytiskt: "is speaking".

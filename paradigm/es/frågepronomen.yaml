@@ -1,0 +1,52 @@
+---
+meta:
+  version: 2
+  språk: es
+  ordklass: Frågepronomen
+  beskrivning: >
+    Inflektionsrum för spanska interrogativa pronomen.
+
+    "Quién/quiénes" böjs efter numerus.
+    "Qué" är invariant.
+    "Cuál/cuáles" böjs efter numerus.
+    "Cuánto/a/os/as" böjs efter genus och numerus.
+
+    Alla interrogativa har skriftlig accent (tilde) för att skilja dem från
+    relativa pronomen (quien, que, cual utan accent).
+
+    Aktiva axlar: kasus, genus, numerus.
+
+celler:
+  - id: quien_sg
+    kasus: [Nom, Ack, Dat]
+    numerus: Sg
+    # "quién" — animate, singular. Ej genus-distinktion i spanska.
+
+  - id: quien_pl
+    kasus: [Nom, Ack, Dat]
+    numerus: Pl
+    # "quiénes".
+
+  - id: que
+    kasus: [Nom, Ack, Dat]
+    # "qué" — inanimate, invariant. Ingen numerus-/genus-variation.
+
+  - id: cuanto_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    # "cuánto".
+
+  - id: cuanto_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    # "cuánta".
+
+  - id: cuanto_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    # "cuántos".
+
+  - id: cuanto_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    # "cuántas".
