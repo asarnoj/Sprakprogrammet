@@ -27,8 +27,15 @@ Axlar: tempus (inf/pres/pret/sup/imp) × diates (aktiv/passiv).
 - **Passiv (-s):** läggs på respektive aktiv form: talas/talades/talats;
   pres-passiv av grupp 2/4 stryker -er: stängs (inte "stängers"), sprungits
   som supinum. Ingen passiv imperativ.
+- **Perfekt particip** (perfpart_*): böjs som ett adjektiv, skilt från
+  supinum. obest_utr_sg = -d/-t/-dd (stängd, målad, byggd, sprungen),
+  obest_neu_sg = -t/-tt (stängt, målat, byggt, sprunget), a = -da/-dda/-na
+  (stängda, målade, byggda, sprungna). Grupp 1: -ad/-at/-ade (målad).
+  Starka verb ofta -en/-et/-na (skriven/skrivet/skrivna, sprungen). Verb
+  utan passiv betydelse (intransitiva som springa, gå) har ändå particip
+  för perfekttempus — fyll i det. Rent intransitiva utan particip = "".
 - **Deponensverb** (hoppas, finnas, minnas, andas, trivas): fyll ENDAST
-  passivcellerna (lemmat är redan s-form); aktivceller = "".
+  passivcellerna (lemmat är redan s-form); aktivceller inkl. particip = "".
 - **Modalverb** (kunna, vilja, måste, böra): imperativ = "". "måste" är
   oböjligt: pres=måste, pret=måste, sup="" (eller "måst" — använd "").
 - Fallgropar: gå→gick→gått, stå→stod→stått, se→såg→sett, ge→gav→gett,

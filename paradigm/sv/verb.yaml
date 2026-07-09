@@ -24,7 +24,13 @@ meta:
         "deponens"; pipelinen fyller bara passiv-cellerna och lagrar
         dem med diates=Passiv.
 
-    Aktiva axlar: tempus, diates.
+    Perfekt particip (stängd/stängt/stängda) böjs som adjektiv och behövs för
+    analytisk passiv ("dörren är stängd") och attributiv/predikativ användning
+    ("en stängd dörr"). Det skiljs från supinum (ätit, invariant) genom att
+    bära genus/numerus/species — supinum har dessa NULL, participet satta.
+
+    Aktiva axlar: tempus, diates; för perfekt particip även genus, numerus,
+    species.
 
 celler:
   # ── Aktiv ──
@@ -64,3 +70,25 @@ celler:
   - id: sup
     tempus: [Sup]
     diates: Passiv
+
+  # ── Perfekt particip (böjs som adjektiv) ──
+  # Skiljs från supinum via satt genus. -a-formen (Alla) täcker bestämd
+  # singular + all plural: "den stängda dörren", "de stängda dörrarna".
+  - id: perfpart_obest_utr_sg
+    tempus: [Sup]
+    genus: UtrMask
+    numerus: Sg
+    species: Obest
+    diates: Aktiv
+
+  - id: perfpart_obest_neu_sg
+    tempus: [Sup]
+    genus: NeuFem
+    numerus: Sg
+    species: Obest
+    diates: Aktiv
+
+  - id: perfpart_a
+    tempus: [Sup]
+    genus: Alla
+    diates: Aktiv
