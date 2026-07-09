@@ -8,3 +8,8 @@ __pycache__/
 # Stora datafiler som inte hör hemma i git
 gammal/datafiler/kaikki/
 gammal/datafiler/conceptnet/
+
+# macOS
+.DS_Store
+sprak.db-shm
+sprak.db-wal

@@ -7,7 +7,7 @@ name = "sprakprog"
 version = "0.1.0"
 description = "Universellt språkinlärningssystem — ordbokskärna och CLI"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = ["anthropic>=0.40"]
 
 [project.scripts]
 ordbok = "sprakprog.cli:main"
