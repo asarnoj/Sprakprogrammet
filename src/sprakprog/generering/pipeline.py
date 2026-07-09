@@ -27,6 +27,69 @@ STANDARD_MODELL = "claude-haiku-4-5"
 STANDARD_BATCH = 10
 
 
+# ── LLM-transport ────────────────────────────────────────────────────
+#
+# Båda vägarna använder claude-CLI:ts prenumerations-inloggning (kör
+# `claude` en gång och logga in; sätt INTE ANTHROPIC_API_KEY — då
+# faktureras API-credits i stället).
+
+def _anropa_llm(prompt: str, modell: str) -> str:
+    """Skicka prompten till Claude, returnera svarstexten.
+
+    Provar claude-agent-sdk först (`pip install claude-agent-sdk`);
+    faller tillbaka på `claude -p` via subprocess om SDK:t saknas.
+    """
+    try:
+        import claude_agent_sdk  # noqa: F401
+    except ImportError:
+        return _anropa_cli(prompt, modell)
+    return _anropa_sdk(prompt, modell)
+
+
+def _anropa_sdk(prompt: str, modell: str) -> str:
+    """claude-agent-sdk-vägen. Nedlåst: inga verktyg, ingen projektkontext."""
+    import anyio
+    from claude_agent_sdk import (
+        AssistantMessage,
+        ClaudeAgentOptions,
+        TextBlock,
+        query,
+    )
+
+    options = ClaudeAgentOptions(
+        model=modell,
+        allowed_tools=[],     # ren textgenerering — ingen verktygsanvändning
+        setting_sources=[],   # ladda inte CLAUDE.md/MCP från projektet
+        max_turns=1,
+    )
+
+    async def _kör() -> str:
+        delar: list[str] = []
+        async for msg in query(prompt=prompt, options=options):
+            if isinstance(msg, AssistantMessage):
+                for block in msg.content:
+                    if isinstance(block, TextBlock):
+                        delar.append(block.text)
+        return "".join(delar)
+
+    return anyio.run(_kör)
+
+
+def _anropa_cli(prompt: str, modell: str) -> str:
+    """Fallback: shella ut till claude-CLI:t."""
+    env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
+    result = subprocess.run(
+        ["claude", "--model", modell, "-p", prompt],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        env=env,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or f"exit {result.returncode}")
+    return result.stdout
+
+
 def _ladda_instruktioner(språk: str, ordklass: str) -> str:
     """Läs paradigm/{språk}/INSTRUKTIONER.md: sektionen 'Allmänt' + ordklassens.
 
@@ -271,6 +334,7 @@ def generera_former(
     modell: str = STANDARD_MODELL,
     torkörning: bool = False,
     verbose: bool = False,
+    fortsätt: bool = False,
 ) -> Statistik:
     """Generera böjda former via Claude och skriv till Former-tabellen.
 
@@ -284,6 +348,8 @@ def generera_former(
         modell:       Claude-modell att använda.
         torkörning:   Om True — anropa LLM men skriv inte till DB.
         verbose:      Skriv ut per-batch-progress.
+        fortsätt:     Hoppa över lexem som redan har Former-rader —
+                      gör avbrutna körningar återupptagbara.
     """
     stat = Statistik()
     legend = ladda_legend()
@@ -335,6 +401,19 @@ def generera_former(
 
     lemman_att_bearbeta = [l for l in lemman if l in lexem_id_map]
 
+    if fortsätt:
+        före = len(lemman_att_bearbeta)
+        lemman_att_bearbeta = [
+            l for l in lemman_att_bearbeta
+            if conn.execute(
+                "SELECT 1 FROM Former WHERE lexem_id = ? LIMIT 1",
+                (lexem_id_map[l],),
+            ).fetchone() is None
+        ]
+        hoppade = före - len(lemman_att_bearbeta)
+        if hoppade and verbose:
+            print(f"  --fortsätt: hoppar över {hoppade} redan genererade lexem")
+
     if not shutil.which("claude"):
         stat.fel.append("'claude' CLI hittades inte — installera Claude Code och logga in.")
         return stat
@@ -355,19 +434,9 @@ def generera_former(
         prompt = _bygg_prompt(batch, slot, inv_legend, instruktioner)
 
         try:
-            env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
-            result = subprocess.run(
-                ["claude", "--model", modell, "-p", prompt],
-                capture_output=True,
-                text=True,
-                timeout=120,
-                env=env,
-            )
-            if result.returncode != 0:
-                raise RuntimeError(result.stderr.strip() or f"exit {result.returncode}")
-            svar_text = result.stdout
+            svar_text = _anropa_llm(prompt, modell)
         except Exception as e:
-            stat.fel.append(f"CLI-fel för batch {batch}: {e}")
+            stat.fel.append(f"LLM-fel för batch {batch}: {e}")
             continue
 
         try:
