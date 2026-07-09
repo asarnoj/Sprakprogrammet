@@ -19,10 +19,39 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..kaikki_mappning.paradigm import ALLA_AXLAR, Cell, Slot, ladda_legend, ladda_slot
+from ..kaikki_mappning.paradigm import (
+    ALLA_AXLAR, PARADIGM_DIR, Cell, Slot, ladda_legend, ladda_slot,
+)
 
 STANDARD_MODELL = "claude-haiku-4-5"
 STANDARD_BATCH = 10
+
+
+def _ladda_instruktioner(språk: str, ordklass: str) -> str:
+    """Läs paradigm/{språk}/INSTRUKTIONER.md: sektionen 'Allmänt' + ordklassens.
+
+    Returnerar tom sträng om filen eller sektionerna saknas — prompten
+    fungerar utan, men blir bättre med.
+    """
+    fil = PARADIGM_DIR / språk / "INSTRUKTIONER.md"
+    if not fil.exists():
+        return ""
+
+    sektioner: dict[str, list[str]] = {}
+    aktuell: list[str] | None = None
+    for rad in fil.read_text(encoding="utf-8").splitlines():
+        if rad.startswith("## "):
+            aktuell = sektioner.setdefault(rad[3:].strip(), [])
+        elif aktuell is not None and not rad.startswith("> "):
+            aktuell.append(rad)
+
+    delar = []
+    for namn in ("Allmänt", ordklass):
+        if namn in sektioner:
+            text = "\n".join(sektioner[namn]).strip()
+            if text:
+                delar.append(f"[{namn}]\n{text}")
+    return "\n\n".join(delar)
 
 
 # ── Statistik ────────────────────────────────────────────────────────
@@ -81,6 +110,7 @@ def _bygg_prompt(
     lemman: list[str],
     slot: Slot,
     inv_legend: dict[str, dict[int, str]],
+    instruktioner: str = "",
 ) -> str:
     """Bygg LLM-prompt för en batch av lemman."""
     cell_rader = "\n".join(
@@ -93,8 +123,13 @@ def _bygg_prompt(
     exempel_cell = slot.celler[0].id if slot.celler else "form"
     tomt_ex = ", ".join(f'"{c.id}": ""' for c in slot.celler[:3])
 
+    instruktions_block = (
+        f"\nSpråkspecifika instruktioner:\n{instruktioner}\n" if instruktioner else ""
+    )
+
     return f"""Du är morfologiexpert. Böj följande {slot.ordklass.lower()}-ord på {_språknamn(slot.språk)}.
 Svara ENBART med giltig JSON — ingen annan text.
+{instruktions_block}
 
 Celler att fylla i (cell-id: beskrivning):
 {cell_rader}
@@ -261,6 +296,8 @@ def generera_former(
         stat.fel.append(str(e))
         return stat
 
+    instruktioner = _ladda_instruktioner(språk, ordklass)
+
     # Hämta lexem från DB om ingen lista angavs.
     # ja-adjektiv av typ 'no' (substantiviska) och 'verbfras' böjs inte i
     # adjektivparadigmet — de hoppas över (se setup.sql / KONVENTIONER.md).
@@ -315,7 +352,7 @@ def generera_former(
         if verbose:
             print(f"  Batch {start // batch_storlek + 1}: {', '.join(batch)}")
 
-        prompt = _bygg_prompt(batch, slot, inv_legend)
+        prompt = _bygg_prompt(batch, slot, inv_legend, instruktioner)
 
         try:
             env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
