@@ -31,8 +31,11 @@ vägrar köra där, avsiktligt).
 
 ```bash
 ordbok import ordbok/nivålistor/bas_kärna.csv ordbok/nivålistor/grundord.csv --återinitiera
-sqlite3 sprak.db < ordbok/migrationer/ja_adjektiv_typ.sql   # efter VARJE import
+for m in ordbok/migrationer/*.sql; do sqlite3 sprak.db < "$m"; done   # efter VARJE import
 ```
+
+(Migrationerna taggar ja-adjektivtyp, verbvalens och substantivsemantik —
+importen bygger om databasen från CSV och tappar taggningen, därav omkörningen.)
 
 (Om `sprak.db` redan följde med och `SELECT COUNT(*) FROM Koncept` ger 724 —
 hoppa över det här steget.)
