@@ -105,6 +105,9 @@ Regler:
 - Lämna tom sträng "" för former som inte existerar (t.ex. imperativ för modalverb).
 - Varje ord ska ha ALLA cell-ID:n som nycklar, även om värdet är "".
 - Skriv formerna precis som de används i text (med alla diakritiska tecken).
+- Flerordslemman (t.ex. "laga mat", "se marier", "sich erinnern"): böj det
+  första ordet som inte är reflexivmarkör (se/s'/sich); övriga ord följer
+  med oförändrade i varje form ("lagar mat", inte bara "lagar").
 
 Returnera JSON med exakt detta format:
 {{
@@ -258,13 +261,19 @@ def generera_former(
         stat.fel.append(str(e))
         return stat
 
-    # Hämta lexem från DB om ingen lista angavs
+    # Hämta lexem från DB om ingen lista angavs.
+    # ja-adjektiv av typ 'no' (substantiviska) och 'verbfras' böjs inte i
+    # adjektivparadigmet — de hoppas över (se setup.sql / KONVENTIONER.md).
     if not lemman:
+        villkor = ""
+        if språk == "ja" and ordklass == "Adjektiv":
+            villkor = ("  AND (l.ja_adjektiv_typ IS NULL"
+                       "       OR l.ja_adjektiv_typ IN ('i', 'na'))\n")
         rader = conn.execute(
-            """SELECT l.lemma FROM Lexem l
+            f"""SELECT l.lemma FROM Lexem l
                JOIN Koncept k ON k.id = l.koncept_id
                WHERE l.språk = ? AND k.ordklass = ?
-               ORDER BY l.lemma""",
+               {villkor}ORDER BY l.lemma""",
             (språk, ordklass),
         ).fetchall()
         lemman = [r["lemma"] for r in rader]
