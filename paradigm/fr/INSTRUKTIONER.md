@@ -77,6 +77,24 @@ nous/nous, vous/vous, ils/les+leur, elles/les+leur. Följ cellbeskrivningarna;
 vid en enda objektcell: ange direkt objekt-formen (me, te, le, la, nous,
 vous, les).
 
+## Possessiv
+
+7 celler. Kongruensen gäller det ÄGDA substantivet, aldrig ägaren:
+"son livre" är hans ELLER hennes bok — cellens genus syftar på "livre".
+
+- **Attributiv** (obest_m_sg / obest_f_sg / obest_a_pl):
+  mon/ma/mes, ton/ta/tes, son/sa/ses, notre/notre/nos, votre/votre/vos,
+  leur/leur/leurs. Plural saknar genusdistinktion — obest_a_pl är en cell.
+  notre/votre/leur fyller m- och f-cellen med samma sträng.
+- **Självständig** (best_m_sg / best_f_sg / best_m_pl / best_f_pl):
+  mien/mienne/miens/miennes, tien/…, sien/…, nôtre/nôtre/nôtres/nôtres,
+  vôtre/…, leur/leur/leurs/leurs. Här FINNS genusdistinktion i plural.
+  Skriv formen **utan artikel** — renderaren sätter le/la/les ("le mien").
+  Observera cirkumflexen: nôtre/vôtre (självständig) mot notre/votre
+  (attributiv).
+- Elisionen ma → mon framför vokal ("mon amie") är renderarens ansvar —
+  ange "ma" i f-cellen.
+
 ## Frågepronomen
 
 qui (person) är oböjligt; que (sak) — objektsform que, efter preposition

@@ -48,6 +48,7 @@ CREATE TABLE Koncept (
                      'Adjektiv',
                      'Adverb',
                      'Pronomen',
+                     'Possessiv',
                      'Preposition',
                      'Konjunktion',
                      'Subjunktion',

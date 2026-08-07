@@ -1,0 +1,135 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för tyska possessiver.
+
+    Ägarens person/numerus/genus är lexikalt (ett Koncept per ägare:
+    poss_1sg, poss_3sg_fem, …). Axlarna här uttrycker kongruens med det
+    ÄGDA substantivet: "sein Vater" / "seine Mutter" har samma ägare men
+    olika form.
+
+    Possessiverna böjs som ein-ord (mein, dein, sein, ihr, unser, euer,
+    Ihr) — samma ändelseuppsättning som "ein"/"kein":
+      m: mein / meinen / meinem / meines
+      f: meine / meine  / meiner / meiner
+      n: mein / mein    / meinem / meines
+      pl: meine / meine / meinen / meiner
+
+    Genuskodning enligt legenden: UtrMask = Maskulinum, NeuFem =
+    Femininum, Alla = Neutrum. Plural saknar genusdistinktion — genus
+    lämnas NULL, samma lösning som i de/adjektiv.yaml.
+
+    "unser" och "euer" tappar ofta e:t i stammen framför vokalisk
+    ändelse: unsere/unsre, euer → eure (aldrig "euere"). Ange de former
+    som faktiskt skrivs.
+
+    Ingen species-axel: possessivet har bara EN ändelseuppsättning när
+    det står attributivt (till skillnad från adjektiv, som växlar mellan
+    stark/schwach/gemischt). Att possessivet i sig utlöser gemischte
+    Deklination hos ett efterföljande adjektiv är renderarens ansvar.
+
+    Självständig form ("Das ist meins", "der meine") är utelämnad —
+    medveten avgränsning enligt KONVENTIONER.md §5. Kan läggas till som
+    nya celler senare utan att de befintliga behöver köras om.
+
+    Aktiva axlar: genus, numerus, kasus.
+
+celler:
+  # ── Maskulinum singular ───────────────────────────────────────────
+  - id: m_nom
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+    not: "mein Vater."
+
+  - id: m_akk
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+    not: "meinen Vater."
+
+  - id: m_dat
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+    not: "meinem Vater."
+
+  - id: m_gen
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+    not: "meines Vaters."
+
+  # ── Femininum singular ────────────────────────────────────────────
+  - id: f_nom
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+    not: "meine Mutter."
+
+  - id: f_akk
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+    not: "meine Mutter — identisk med f_nom."
+
+  - id: f_dat
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+    not: "meiner Mutter."
+
+  - id: f_gen
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+    not: "meiner Mutter — identisk med f_dat."
+
+  # ── Neutrum singular ──────────────────────────────────────────────
+  - id: n_nom
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+    not: "mein Kind."
+
+  - id: n_akk
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+    not: "mein Kind — identisk med n_nom."
+
+  - id: n_dat
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+    not: "meinem Kind."
+
+  - id: n_gen
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+    not: "meines Kindes."
+
+  # ── Plural (alla genus) ───────────────────────────────────────────
+  - id: pl_nom
+    numerus: Pl
+    kasus: [Nom]
+    not: "meine Kinder."
+
+  - id: pl_akk
+    numerus: Pl
+    kasus: [Ack]
+    not: "meine Kinder — identisk med pl_nom."
+
+  - id: pl_dat
+    numerus: Pl
+    kasus: [Dat]
+    not: "meinen Kindern."
+
+  - id: pl_gen
+    numerus: Pl
+    kasus: [Gen]
+    not: "meiner Kinder."

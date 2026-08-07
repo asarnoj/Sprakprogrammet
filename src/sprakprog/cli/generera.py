@@ -19,8 +19,13 @@ from ..generering.pipeline import STANDARD_BATCH  # noqa: E402
 
 STANDARD_MODELL = "claude-haiku-4-5"
 ALLA_ORDKLASSER_MED_MORFOLOGI = [
-    "Verb", "Substantiv", "Adjektiv", "Pronomen", "Frågepronomen",
+    "Verb", "Substantiv", "Adjektiv", "Pronomen", "Possessiv", "Frågepronomen",
 ]
+# OBS: listan styr vad --alla-språk kör. En ordklass som har slot-filer men
+# saknas här genereras aldrig. "Räkneord" har en slot-fil (sv) men står
+# medvetet inte med — de övriga sex språken saknar räkneord.yaml, och en
+# körning skulle ge sex FileNotFoundError per språkvarv. Lägg till den när
+# alla sju filer finns.
 
 
 def kör(args: argparse.Namespace) -> int:

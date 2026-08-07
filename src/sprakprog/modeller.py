@@ -13,9 +13,10 @@ from typing import Literal
 # ── Typalias ────────────────────────────────────────────────────────────────
 Språk = Literal["sv", "en", "fr", "de", "es", "it", "ja"]
 
+# Måste hållas i synk med CHECK-listan för Koncept.ordklass i setup.sql.
 ORDKLASSER: frozenset[str] = frozenset({
     "Substantiv", "Verb", "Adjektiv", "Adverb",
-    "Pronomen", "Preposition", "Konjunktion", "Subjunktion",
+    "Pronomen", "Possessiv", "Preposition", "Konjunktion", "Subjunktion",
     "Interjektion", "Räkneord", "Frågepronomen", "Frågadverb",
     "Interrogativdeterminant", "Negationsadverb",
     "Demonstrativ", "Relativpronomen", "Artikel", "Kvantifikator",

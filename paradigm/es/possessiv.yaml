@@ -1,0 +1,76 @@
+---
+meta:
+  version: 2
+  språk: es
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för spanska possessiver.
+
+    Ägarens person/numerus är lexikalt (ett Koncept per ägare: poss_1sg,
+    poss_3sg_fem, …). Axlarna här uttrycker kongruens med det ÄGDA
+    substantivet. "su" betyder hans/hennes/dess/deras/Ers — genus i
+    cellen syftar på det ägda, inte på ägaren.
+
+    Kort form (species=Obest, attributiv framför substantiv):
+      mi/mis, tu/tus, su/sus — böjs bara i numerus, fyller m- och
+      f-cellerna med samma sträng.
+      nuestro/a/os/as, vuestro/a/os/as — böjs i både genus och numerus.
+
+    Lång form (species=Best, självständig eller efterställd):
+      mío/mía/míos/mías, tuyo/…, suyo/…, nuestro/…, vuestro/…
+      Används både självständigt ("el mío") och efterställt
+      ("un amigo mío"). Lagras utan artikel — renderaren sätter el/la/
+      los/las vid självständig användning.
+
+    Aktiva axlar: genus, numerus, species.
+
+celler:
+  # ── Kort form (attributiv) ──
+  - id: obest_m_sg
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    not: "mi, tu, su, nuestro, vuestro — 'mi libro'."
+
+  - id: obest_f_sg
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    not: "mi, tu, su, nuestra, vuestra — 'mi casa'."
+
+  - id: obest_m_pl
+    species: Obest
+    genus: UtrMask
+    numerus: Pl
+    not: "mis, tus, sus, nuestros, vuestros — 'mis libros'."
+
+  - id: obest_f_pl
+    species: Obest
+    genus: NeuFem
+    numerus: Pl
+    not: "mis, tus, sus, nuestras, vuestras — 'mis casas'."
+
+  # ── Lång form (självständig / efterställd) ──
+  - id: best_m_sg
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    not: "mío, tuyo, suyo, nuestro, vuestro — 'el mío', 'un amigo mío'."
+
+  - id: best_f_sg
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    not: "mía, tuya, suya, nuestra, vuestra — 'la mía'."
+
+  - id: best_m_pl
+    species: Best
+    genus: UtrMask
+    numerus: Pl
+    not: "míos, tuyos, suyos, nuestros, vuestros — 'los míos'."
+
+  - id: best_f_pl
+    species: Best
+    genus: NeuFem
+    numerus: Pl
+    not: "mías, tuyas, suyas, nuestras, vuestras — 'las mías'."

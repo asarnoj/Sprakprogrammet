@@ -11,6 +11,12 @@ Rummen är **nästan kompletta**. Ett verkligt hål (sv perfekt particip), tre
 medvetna scope-val som bör bekräftas, och två strukturfrågor som kan vänta
 tills renderaren byggs.
 
+*Tillägg 2026-08-01: ytterligare ett verkligt hål hittat i efterhand —
+possessiverna (§1b). Revisionen granskade slot-filerna mot varje språks
+morfologi men kontrollerade inte att lagringskonventionerna i CSV-filerna
+faktiskt hade en ledig plats i cellrummet. Värt att upprepa som kontrollfråga
+vid nästa revision.*
+
 ---
 
 ## 1. ~~Verkligt hål: svenska saknar perfekt particip~~  ✅ ÅTGÄRDAT 2026-07-09
@@ -37,6 +43,37 @@ annars måste sv Verb köras om.
 
 Presens particip (springande) saknas också, men det är derivation snarare än
 böjning och kan vänta.
+
+## 1b. Verkligt hål: possessiverna saknade plats i 5 av 7 språk  ✅ ÅTGÄRDAT 2026-08-01
+
+*Missat i den ursprungliga revisionen — funnet vid genomgång 2026-08-01.*
+
+Konventionen sa att possessiver skulle lagras som genitivformer av det
+personliga pronomenet (`bas_kärna.csv`, kasus=Gen). Den bar inte:
+
+- **Platsen var upptagen** — fr/es/it använder `kasus=Gen` för tonique/
+  tónico/tonico (moi, mí, me). Possessiven hade krockat med dem.
+- **Rummet var för litet** — de `mein` böjs som ein-ord i 16 former över
+  kasus × genus × numerus. Pronomenfilens fyra kasusceller rymde dem inte.
+- **Kongruensen kom från fel håll** — fr `son/sa` rättar sig efter det ÄGDA
+  substantivet, en `his/her` efter ägaren. Mappningen
+  `pronomen_3sg_fem → sa` var därför fel: `sa` betyder inte "hennes".
+
+**Löst:** ny ordklass `Possessiv` med nio koncept (ett per ägare) och sju
+slot-filer, 41 celler totalt (sv 3, en 2, fr 7, de 16, es 8, it 4, ja 1).
+Ägarens drag ligger på Koncept-nivå, kongruens med det ägda på Former-axlarna.
+Reflexiva sv `sin/sitt/sina` är ett andra lemma under 3:e-personskoncepten —
+reflexivitet är en egenskap hos satsen, inte hos ordet. Cellerna m_sg/f_sg/a_pl
+är borttagna ur sv/pronomen.yaml och poss_attr/poss_pred ur en/pronomen.yaml.
+
+Konventionerna (`species` = attributiv/självständig, `kasus=Gen` = tonisk form
+i fr/es/it) är dokumenterade i `_legend.yaml`.
+
+**Kvarstår att lösa någon annanstans:** fr `son` ligger under tre koncept och
+es `su` under fem, vilket ger identiska Former-rader och därmed flera
+FSRS-item för samma sträng — frågan om vad som utgör *ett* övningsobjekt bör
+avgöras för hela systemet. Multi-lemma saknar dessutom en diskriminator som
+säger vilken variant som är vilken (gäller redan ja 私/僕 och es ser/estar).
 
 ## 2. Medvetna scope-val — bekräfta att de är OK
 

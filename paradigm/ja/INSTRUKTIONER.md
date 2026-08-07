@@ -65,6 +65,14 @@ och kasus uttrycks med partiklar av renderaren).
 
 1 cell: jisho = lemmat oförändrat (私, 君, 彼 …; kasus via partiklar).
 
+## Possessiv
+
+1 cell: jisho = lemmat oförändrat (私の, 彼女の, 私たちの …).
+
+Possessiv bildas med partikeln の, som redan ingår i lemmat. Konstruktionen
+böjs inte — varken efter ägaren eller efter det ägda substantivet. Lägg
+aldrig till eller ta bort の.
+
 ## Frågepronomen
 
 1 cell: jisho = lemmat oförändrat (誰, 何, どこ …).

@@ -1,0 +1,45 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska possessiver.
+
+    Ägarens person/numerus/genus är lexikalt (ett Koncept per ägare:
+    poss_1sg, poss_3sg_fem, …). Axlarna i den här filen uttrycker
+    kongruens med det ÄGDA substantivet, inte med ägaren.
+
+    Böjda possessiver: min/mitt/mina, din/ditt/dina, vår/vårt/våra,
+    er/ert/era, sin/sitt/sina.
+
+    Oböjliga possessiver (hans, hennes, dess, deras) fyller alla tre
+    cellerna med samma sträng — genus och numerus är IntEnum-axlar och
+    kollapsas därför inte (SCHEMA.md §5). Renderaren slipper då veta
+    vilka lexem som är invarianta.
+
+    Reflexiva "sin/sitt/sina" är ett andra lemma under samma koncept som
+    hans/hennes/dess/deras (multi-lemma per koncept, setup.sql).
+    Renderaren väljer sin-varianten när possessivet är koreferent med
+    subjektet — det är en egenskap hos satsen, inte hos ordet.
+
+    Predikativ användning ("boken är min") tar samma former som
+    attributiv i svenska — ingen species-axel behövs.
+
+    Aktiva axlar: genus, numerus.
+
+celler:
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    not: "Utrum singular: min, din, vår, er, sin — 'min bil'."
+
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+    not: "Neutrum singular: mitt, ditt, vårt, ert, sitt — 'mitt hus'."
+
+  - id: a_pl
+    genus: Alla
+    numerus: Pl
+    not: "Plural alla genus: mina, dina, våra, era, sina — 'mina böcker'."

@@ -57,9 +57,20 @@
 
 ## Pronomen
 
-Per slot-fil. Personliga: I/me, you/you, he/him, she/her, it/it, we/us,
-they/them. Possessiva: my/mine, your/yours, his/his, her/hers, its/its,
-our/ours, their/theirs.
+2 celler: nom, obl. Personliga: I/me, you/you, he/him, she/her, it/it,
+we/us, they/them.
+
+## Possessiv
+
+2 celler: obest (attributiv) och best (självständig).
+
+- obest = determineraren framför substantivet: my, your, his, her, its,
+  our, their — "my book".
+- best = den självständiga formen: mine, yours, his, hers, its, ours,
+  theirs — "it's mine".
+- "his" och "its" har samma sträng i båda cellerna — fyll i båda ändå.
+- Engelska possessiver kongruerar inte med det ägda substantivet; det finns
+  ingen genus- eller numerusvariation att fylla i.
 
 ## Frågepronomen
 

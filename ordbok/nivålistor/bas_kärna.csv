@@ -1,7 +1,9 @@
 koncept,ordklass,nivå,språk,lemma
 # ── Personliga pronomen ───────────────────────────────────────────────────────
 # Reflexiva former (mig/dig/sig osv.) läggs i Former, inte som separata Koncept
-# Possessiva former (min/din/hans osv.) läggs i Former med kasus=GENITIV
+# Possessiver är en EGEN ordklass (se avsnittet Possessiver nedan) — inte
+# genitivformer av pronomenet. Skälet: de kongruerar med det ägda substantivet,
+# inte med ägaren (fr "sa voiture" = hans/hennes BIL, inte "hennes")
 pronomen_1sg,Pronomen,A1,sv,jag
 pronomen_1sg,Pronomen,A1,en,I
 pronomen_1sg,Pronomen,A1,fr,je
@@ -76,6 +78,85 @@ pronomen_reflexiv,Pronomen,A1,de,sich
 pronomen_reflexiv,Pronomen,A1,es,se
 pronomen_reflexiv,Pronomen,A1,it,si
 pronomen_reflexiv,Pronomen,A1,ja,自分
+# ── Possessiver ───────────────────────────────────────────────────────────────
+# Egen ordklass, inte genitiv av pronomenet. Konceptet identifierar ÄGAREN;
+# böjningen (min/mitt/mina, mein/meine/meinen) kongruerar med det ÄGDA
+# substantivet och ligger i Former — se paradigm/{språk}/possessiv.yaml.
+#
+# sv "sin/sitt/sina" är ett ANDRA lemma under 3:e-personskoncepten. Renderaren
+# väljer sin-varianten när ägaren är koreferent med satsens subjekt ("han tar
+# sin bok" vs "han tar hans bok"). Reflexivitet är en egenskap hos satsen, inte
+# hos ordet — därför inget eget koncept (det skulle inte gå att rendera till
+# en/de, som kräver ägarens genus: his/her, sein/ihr).
+#
+# poss_3sg_neutr saknar fr/es/it precis som pronomen_3sg_neutr — de språken har
+# inget neutrum; renderaren faller tillbaka på poss_3sg_mask (son/su/suo).
+poss_1sg,Possessiv,A1,sv,min
+poss_1sg,Possessiv,A1,en,my
+poss_1sg,Possessiv,A1,fr,mon
+poss_1sg,Possessiv,A1,de,mein
+poss_1sg,Possessiv,A1,es,mi
+poss_1sg,Possessiv,A1,it,mio
+poss_1sg,Possessiv,A1,ja,私の
+poss_1sg,Possessiv,A1,ja,僕の
+poss_2sg,Possessiv,A1,sv,din
+poss_2sg,Possessiv,A1,en,your
+poss_2sg,Possessiv,A1,fr,ton
+poss_2sg,Possessiv,A1,de,dein
+poss_2sg,Possessiv,A1,es,tu
+poss_2sg,Possessiv,A1,it,tuo
+poss_2sg,Possessiv,A1,ja,あなたの
+poss_2sg,Possessiv,A1,ja,君の
+# Artighetsform — speglar pronomen_2sg_formal
+poss_2sg_formal,Possessiv,A2,sv,er
+poss_2sg_formal,Possessiv,A2,en,your
+poss_2sg_formal,Possessiv,A2,fr,votre
+poss_2sg_formal,Possessiv,A2,de,Ihr
+poss_2sg_formal,Possessiv,A2,es,su
+poss_2sg_formal,Possessiv,A2,it,Suo
+poss_3sg_mask,Possessiv,A1,sv,hans
+poss_3sg_mask,Possessiv,A1,sv,sin
+poss_3sg_mask,Possessiv,A1,en,his
+poss_3sg_mask,Possessiv,A1,fr,son
+poss_3sg_mask,Possessiv,A1,de,sein
+poss_3sg_mask,Possessiv,A1,es,su
+poss_3sg_mask,Possessiv,A1,it,suo
+poss_3sg_mask,Possessiv,A1,ja,彼の
+poss_3sg_fem,Possessiv,A1,sv,hennes
+poss_3sg_fem,Possessiv,A1,sv,sin
+poss_3sg_fem,Possessiv,A1,en,her
+poss_3sg_fem,Possessiv,A1,fr,son
+poss_3sg_fem,Possessiv,A1,de,ihr
+poss_3sg_fem,Possessiv,A1,es,su
+poss_3sg_fem,Possessiv,A1,it,suo
+poss_3sg_fem,Possessiv,A1,ja,彼女の
+poss_3sg_neutr,Possessiv,A2,sv,dess
+poss_3sg_neutr,Possessiv,A2,sv,sin
+poss_3sg_neutr,Possessiv,A2,en,its
+poss_3sg_neutr,Possessiv,A2,de,sein
+poss_1pl,Possessiv,A1,sv,vår
+poss_1pl,Possessiv,A1,en,our
+poss_1pl,Possessiv,A1,fr,notre
+poss_1pl,Possessiv,A1,de,unser
+poss_1pl,Possessiv,A1,es,nuestro
+poss_1pl,Possessiv,A1,it,nostro
+poss_1pl,Possessiv,A1,ja,私たちの
+poss_2pl,Possessiv,A1,sv,er
+poss_2pl,Possessiv,A1,en,your
+poss_2pl,Possessiv,A1,fr,votre
+poss_2pl,Possessiv,A1,de,euer
+poss_2pl,Possessiv,A1,es,vuestro
+poss_2pl,Possessiv,A1,es,su
+poss_2pl,Possessiv,A1,it,vostro
+poss_2pl,Possessiv,A1,ja,あなたたちの
+poss_3pl,Possessiv,A1,sv,deras
+poss_3pl,Possessiv,A1,sv,sin
+poss_3pl,Possessiv,A1,en,their
+poss_3pl,Possessiv,A1,fr,leur
+poss_3pl,Possessiv,A1,de,ihr
+poss_3pl,Possessiv,A1,es,su
+poss_3pl,Possessiv,A1,it,loro
+poss_3pl,Possessiv,A1,ja,彼らの
 # ── Demonstrativa ─────────────────────────────────────────────────────────────
 # AVSTÅNDSSYSTEM:
 # Västerländska: tvåpunkts (nära talaren | långt bort från talaren)

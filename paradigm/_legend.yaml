@@ -37,6 +37,10 @@ kasus:
   Ack: 2
   Dat: 4
   Gen: 8
+  # Konvention (Pronomen, fr/es/it): Gen används som diskriminator för
+  # den toniska/disjunktiva formen (moi, mí, me) — dessa språk saknar
+  # morfologisk genitiv. Ingen genitivsemantik ska läsas in i den.
+  # Possessiverna ligger INTE här utan i ordklassen Possessiv.
 
 
 # ── IntEnum — exklusiva, ett värde i taget ────────────────────────────
@@ -49,6 +53,11 @@ species:
   Obest: 1   # Indefinit
   Best:  2   # Definit
   Bland: 3   # Tyskt exklusivt: blandad adjektivböjning
+             #
+             # Konvention (Possessiv, en/fr/es): Obest = attributiv form
+             # (my book, mon livre, mi libro), Best = självständig form
+             # (mine, le mien, el mío). Motivering: den självständiga
+             # formen tar bestämd artikel i de romanska språken.
 
 genus:
   UtrMask: 1   # sv: utrum  /  fr/de/es/it: maskulin

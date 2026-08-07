@@ -92,6 +92,28 @@ wir/uns/uns/unser, ihr/euch/euch/euer, sie/sie/ihnen/ihrer, Sie/Sie/Ihnen/
 Ihrer. Genitivformerna är arkaiska men hör till paradigmet — fyll i dem.
 man: akk=einen, dat=einem, gen="".
 
+## Possessiv
+
+16 celler: 3 genus × 4 kasus i singular, plus 4 kasus i plural.
+Cell-id:n följer adjektivfilens mönster (m/f/n/pl + kasus). Kongruensen
+gäller det ÄGDA substantivet: "sein Vater" och "seine Mutter" har samma
+ägare.
+
+Possessiverna böjs som ein-ord — samma ändelser som ein/kein:
+
+| | Nom | Akk | Dat | Gen |
+|---|---|---|---|---|
+| m | mein | meinen | meinem | meines |
+| f | meine | meine | meiner | meiner |
+| n | mein | mein | meinem | meines |
+| pl | meine | meine | meinen | meiner |
+
+- Stammar: mein-, dein-, sein-, ihr-, unser-, euer-, Ihr-.
+- **unser/euer** tappar e:t framför vokalisk ändelse: eure, euren, eurem
+  (aldrig "euere"); unsere/unsre båda korrekta — ange "unsere".
+- Ingen cell är någonsin tom — alla 16 finns för alla possessiver.
+- Ange bara possessivet, inte substantivet: "meinen", inte "meinen Vater".
+
 ## Frågepronomen
 
 wer → wen/wem/wessen. was → was/was/wessen (dat = "" — "was" saknar dativ;

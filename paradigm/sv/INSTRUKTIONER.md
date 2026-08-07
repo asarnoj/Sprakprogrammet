@@ -90,11 +90,25 @@ best_pl=flickorna, best_pl_gen=flickornas.
 
 ## Pronomen
 
-Celler per slot-fil (nom, ack_dat samt possessiva m_sg/f_sg/a_pl där sådana
-finns). Personliga: jag/mig, du/dig, han/honom, hon/henne, den/den, det/det,
-vi/oss, ni/er, de/dem. Possessiv: min/mitt/mina, din/ditt/dina, sin/sitt/sina,
-vår/vårt/våra, er/ert/era; hans/hennes/dess/deras är oböjliga (samma form i
-alla tre possessivceller).
+2 celler: nom, ack_dat. Personliga: jag/mig, du/dig, han/honom, hon/henne,
+den/den, det/det, vi/oss, ni/er, de/dem. Reflexivt "sig" är invariant —
+fyll båda cellerna med "sig".
+
+## Possessiv
+
+3 celler: m_sg (utrum sg), f_sg (neutrum sg), a_pl (plural).
+OBS terminologi i cell-id: **"m" = utrum, "f" = neutrum** (genusaxelns
+kodning), "a" = alla genus. Cellerna beskriver det ÄGDA substantivet:
+"min bil" (utrum) → m_sg, "mitt hus" (neutrum) → f_sg.
+
+- Böjda: min/mitt/mina, din/ditt/dina, sin/sitt/sina, vår/vårt/våra,
+  er/ert/era.
+- **Oböjliga** (hans, hennes, dess, deras): fyll ALLA TRE cellerna med
+  samma sträng. Lämna aldrig "" — renderaren frågar efter en koordinat och
+  måste få ett svar.
+- "sin/sitt/sina" är ett eget lemma (reflexiv variant av hans/hennes/dess/
+  deras) och böjs som min/mitt/mina.
+- Predikativ användning tar samma former ("boken är min", "huset är mitt").
 
 ## Frågepronomen
 

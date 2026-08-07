@@ -1,0 +1,45 @@
+---
+meta:
+  version: 2
+  språk: it
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för italienska possessiver.
+
+    Ägarens person/numerus är lexikalt (ett Koncept per ägare: poss_1sg,
+    poss_3sg_fem, …). Axlarna här uttrycker kongruens med det ÄGDA
+    substantivet. "suo" betyder både hans och hennes — genus i cellen
+    syftar på det ägda, inte på ägaren.
+
+    Ingen species-axel: attributiv och självständig form är identiska i
+    italienskan ("il mio libro" / "il libro è il mio"). Skillnaden ligger
+    i artikeln, som renderaren sätter — possessivet lagras utan artikel.
+
+    "loro" är helt oböjligt och fyller alla fyra cellerna med samma
+    sträng.
+
+    Artikelutelämnande vid singulara släktskapsord ("mio padre", inte
+    "il mio padre") är renderarens ansvar, inte en egen cell.
+
+    Aktiva axlar: genus, numerus.
+
+celler:
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    not: "mio, tuo, suo, nostro, vostro, loro — 'il mio libro'."
+
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+    not: "mia, tua, sua, nostra, vostra, loro — 'la mia casa'."
+
+  - id: m_pl
+    genus: UtrMask
+    numerus: Pl
+    not: "miei, tuoi, suoi, nostri, vostri, loro — 'i miei libri'."
+
+  - id: f_pl
+    genus: NeuFem
+    numerus: Pl
+    not: "mie, tue, sue, nostre, vostre, loro — 'le mie case'."

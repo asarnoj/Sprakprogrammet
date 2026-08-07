@@ -75,6 +75,21 @@ Per slot-fil. Subjekt: yo, tú, él, ella, usted, nosotros/nosotras, vosotros/
 vosotras, ellos, ellas, ustedes. Objekt (direkt): me, te, lo, la, nos, os,
 los, las; indirekt: le/les. Följ cellbeskrivningarna i slot-filen.
 
+## Possessiv
+
+8 celler: kort form (obest_*) och lång form (best_*), vardera i
+genus × numerus. Kongruensen gäller det ÄGDA substantivet — "su" är
+hans/hennes/dess/deras/Ers, och cellens genus syftar på det ägda.
+
+- **Kort form** (framför substantivet): mi/mis, tu/tus, su/sus — böjs bara
+  i numerus, så m- och f-cellen får samma sträng. nuestro/nuestra/nuestros/
+  nuestras och vuestro/… böjs i båda axlarna.
+- **Lång form** (självständig "el mío" eller efterställd "un amigo mío"):
+  mío/mía/míos/mías, tuyo/…, suyo/…, nuestro/… (identisk med korta formen),
+  vuestro/…. Skriv **utan artikel** — renderaren sätter el/la/los/las.
+- Accenten på mío/mía/míos/mías är obligatorisk.
+- Ingen cell är tom — alla åtta finns för alla possessiver.
+
 ## Frågepronomen
 
 quién → pl quiénes. qué är oböjligt. Alltid med accent.
