@@ -74,14 +74,67 @@ Testa gärna även ett morfologiskt tungt språk:
 ordbok generera --språk ja --ordklass Verb --lemma 話す,食べる,行く --torkörning --verbose
 ```
 
+### 4b. Smoke-test av alla kombinationer — hoppa inte över det här
+
+Kör ett lemma per (språk, ordklass) innan den skarpa körningen. Det är ~42
+anrop och några minuter, och det är billigare än att upptäcka ett fel efter
+65 000 rader.
+
+```bash
+for s in sv en fr de es it ja; do
+  for o in Verb Substantiv Adjektiv Pronomen Possessiv Frågepronomen; do
+    echo "── $s / $o"
+    ordbok generera --språk "$s" --ordklass "$o" --batch-storlek 1 --torkörning --verbose 2>&1 | head -25
+  done
+done
+```
+
+Vad du letar efter i utskriften:
+
+- **`Saknade (LLM-miss)` > 0** — modellen svarade inte på alla celler. Sänk
+  `--batch-storlek` eller byt modell för just den kombinationen.
+- **Färre `[torr]`-rader än celler i slot-filen** utan att `Tomma` eller
+  `Saknade` förklarar mellanskillnaden. Då tappas celler tyst — det var så
+  ID-kollisionen i `sv/verb.yaml` upptäcktes (2026-08-01).
+- **Axelvärden som ser fel ut** — t.ex. aktiva former med `diates=2`.
+
+Historik: två fel har hittats exakt så här, och båda hade sett ut som
+lyckade körningar i statistiken.
+
+### 4c. Batch-storlek för de tunga jobben
+
+Standardbatchen är 10 lemman. För de morfologiskt tyngsta kombinationerna
+blir svaret då orimligt stort — modellen ska returnera ett JSON-objekt med
+`lemman × celler` formsträngar:
+
+| Jobb | Celler | Formsträngar vid batch 10 | Kör med |
+|---|---|---|---|
+| de/Adjektiv | 144 | 1 440 | `--batch-storlek 2` |
+| es/Verb | 53 | 530 | `--batch-storlek 5` |
+| it/Verb | 52 | 520 | `--batch-storlek 5` |
+| fr/Verb | 45 | 450 | `--batch-storlek 5` |
+| de/Verb | 31 | 310 | `--batch-storlek 5` |
+
+Kör dem separat före den stora körningen, så plockar `--fortsätt` upp
+resten:
+
+```bash
+ordbok generera --språk de --ordklass Adjektiv --batch-storlek 2 --verbose
+```
+
+```bash
+for s in fr es it de; do ordbok generera --språk "$s" --ordklass Verb --batch-storlek 5 --verbose; done
+```
+
 ## 5. Skarp körning
 
 ```bash
 ordbok generera --alla-språk --fortsätt --verbose
 ```
 
-- Kör alla 7 språk × alla ordklasser med slot-filer (Verb, Substantiv,
-  Adjektiv, Pronomen, Frågepronomen).
+- Kör alla 7 språk × ordklasserna i `ALLA_ORDKLASSER_MED_MORFOLOGI`
+  (Verb, Substantiv, Adjektiv, Pronomen, Possessiv, Frågepronomen).
+  En ordklass som har slot-filer men saknas i den listan genereras aldrig.
 - **`--fortsätt`** gör körningen återupptagbar: avbryts den (nätfel,
   rate-limit, stängt lock) är det bara att köra exakt samma kommando igen —
   redan genererade lexem hoppas över.
@@ -116,11 +169,33 @@ ordbok generera --språk sv --ordklass Verb --lemma springa --modell claude-sonn
 
 ## 7. Leverera tillbaka
 
-Skicka hela `sprak.db`-filen (den är inte git-spårad), eller en dump:
+Exportera `Former` till TSV och committa filen — skicka **inte** `sprak.db`.
 
 ```bash
-sqlite3 sprak.db ".dump Former" > former_dump.sql
+ordbok exportera-former ordbok/former.tsv
 ```
+
+```bash
+git add ordbok/former.tsv && git commit -m "Genererade former" && git push
+```
+
+TSV:n nycklas på `(koncept, språk, lemma)`, inte på `lexem_id`. Radnummer i
+Lexem-tabellen ändras varje gång databasen byggs om från CSV; den naturliga
+nyckeln gör det inte. Därför spelar det ingen roll om mottagarens databas är
+ombyggd sedan dess.
+
+Filen är dessutom granskningsbar och diffbar, vilket en binär `.db` inte är.
+`sprak.db` är `.gitignore`:ad och åker aldrig med.
+
+### Mottagarsidan
+
+```bash
+ordbok importera-former ordbok/former.tsv --ersätt
+```
+
+Importen är transaktionell och vägrar skriva om en enda rad inte matchar ett
+lexem i den lokala ordboken — det betyder att TSV:n och CSV-filerna är
+osynkade, och en halvskriven tabell vore värre än ingen.
 
 ## Hur det funkar under huven
 

@@ -6,6 +6,9 @@ Användning:
     ordbok visa <koncept>
     ordbok lägg-till
     ordbok mappa-kaikki --språk sv --ordklass Verb --lemma tala
+    ordbok generera --alla-språk --fortsätt
+    ordbok exportera-former ordbok/former.tsv
+    ordbok importera-former ordbok/former.tsv --ersätt
 """
 
 from __future__ import annotations
@@ -53,6 +56,24 @@ def main(argv: list[str] | None = None) -> int:
     p_mappa.add_argument("--lemma",    required=True, help="lemmaformen, t.ex. 'tala'")
     p_mappa.add_argument("--json",     action="store_true", help="JSON-output istället för text")
 
+    # ── exportera-former / importera-former ──────────────────────────────
+    p_exp = sub.add_parser(
+        "exportera-former",
+        help="Skriv Former-tabellen till en TSV-fil (för överföring/granskning)",
+    )
+    p_exp.add_argument("fil", help="Målfil, t.ex. ordbok/former.tsv")
+
+    p_imp = sub.add_parser(
+        "importera-former",
+        help="Läs in en Former-TSV i sprak.db",
+    )
+    p_imp.add_argument("fil", help="TSV-fil från 'ordbok exportera-former'")
+    p_imp.add_argument(
+        "--ersätt",
+        action="store_true",
+        help="Radera befintliga Former-rader innan import",
+    )
+
     # ── generera ─────────────────────────────────────────────────────────
     p_generera = sub.add_parser(
         "generera",
@@ -79,6 +100,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "mappa-kaikki":
         from .mappa_kaikki import kör as kör_mappa_kaikki
         return kör_mappa_kaikki(args)
+    if args.kommando == "exportera-former":
+        from .former import kör_export
+        return kör_export(args)
+    if args.kommando == "importera-former":
+        from .former import kör_import
+        return kör_import(args)
     if args.kommando == "generera":
         from .generera import kör as kör_generera
         return kör_generera(args)
