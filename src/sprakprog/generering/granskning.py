@@ -1,0 +1,302 @@
+"""Granskning av genererade former — en starkare modell läser igenom Former.
+
+Bakgrund: genereringen körs med en liten snabb modell (claude-haiku-4-5) för
+att 65 000 former ska vara möjliga att producera. Smoke-testet 2026-08-01
+visade ~1 % avvikelser, koncentrerade till oregelbunden morfologi (tyskt
+Abend → "Äbende", spanskt abrir 2pl → "abríais").
+
+Att i stället generera allt med en stark modell är dyrt: utdata är 65 000
+formsträngar. Granskning vänder på ekonomin — formerna går IN i prompten och
+bara avvikelserna kommer ut, ungefär 30 gånger mindre utdata. Därför är det
+billigare att generera billigt och granska dyrt än att generera dyrt.
+
+Granskningen ÄNDRAR ingenting. Den skriver en TSV-rapport med förslag.
+Att tillämpa dem är ett separat, mänskligt beslut (KONVENTIONER.md §9).
+"""
+
+from __future__ import annotations
+
+import csv
+import json
+import math
+import sqlite3
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from ..kaikki_mappning.paradigm import (
+    ALLA_AXLAR, INTFLAG_AXLAR, Cell, Slot, ladda_legend, ladda_slot,
+)
+from .pipeline import (
+    _anropa_llm, _beskriv_cell, _bygg_invers_legend, _ladda_instruktioner,
+    _språknamn,
+)
+
+# Poängen med granskningen är att fånga det generatorn missade — därför en
+# klart starkare modell än genereringens standard. --modell för att sänka.
+STANDARD_GRANSKNINGSMODELL = "claude-opus-5"
+STANDARD_BATCH = 5
+
+RAPPORT_KOLUMNER = (
+    "språk", "ordklass", "koncept", "lemma", "cell",
+    "nuvarande", "förslag", "allvar", "motivering",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class Avvikelse:
+    språk: str
+    ordklass: str
+    koncept: str
+    lemma: str
+    cell: str
+    nuvarande: str
+    förslag: str
+    allvar: str        # "fel" | "osäker"
+    motivering: str
+
+
+@dataclass
+class Granskningsstatistik:
+    granskade_lexem: int = 0
+    granskade_former: int = 0
+    avvikelser_fel: int = 0
+    avvikelser_osäkra: int = 0
+    fel: list[str] = field(default_factory=list)
+
+    def skriv_ut(self) -> None:
+        print(f"Lexem granskade  : {self.granskade_lexem}")
+        print(f"Former granskade : {self.granskade_former}")
+        print(f"Avvikelser (fel) : {self.avvikelser_fel}")
+        print(f"Avvikelser (osäk): {self.avvikelser_osäkra}")
+        if self.fel:
+            print(f"Körningsfel ({len(self.fel)}):")
+            for f in self.fel[:10]:
+                print(f"  {f}")
+            if len(self.fel) > 10:
+                print(f"  ... och {len(self.fel) - 10} till")
+
+
+def _matchar(rad_värde: int | None, cell_värde: int | None, axel: str) -> bool:
+    """Täcker en Former-rad den här cellen på den här axeln?
+
+    IntEnum-axlar måste vara exakt lika. IntFlag-axlar kan ha kollapsats
+    (SCHEMA.md §5) — raden täcker cellen om alla cellens bitar är satta.
+    """
+    if cell_värde is None:
+        return rad_värde is None
+    if rad_värde is None:
+        return False
+    if axel in INTFLAG_AXLAR:
+        return rad_värde & cell_värde == cell_värde
+    return rad_värde == cell_värde
+
+
+def _former_per_cell(rader: list[sqlite3.Row], slot: Slot) -> dict[str, str]:
+    """Mappa Former-rader tillbaka till cell-ID:n.
+
+    Former lagrar axelvärden, inte cell-ID. En kollapsad rad täcker flera
+    celler. Celler utan träff får "" — de saknas i databasen.
+    """
+    ut: dict[str, str] = {}
+    for cell in slot.celler:
+        träff = next(
+            (r["form"] for r in rader
+             if all(_matchar(r[a], cell.axlar.get(a), a) for a in ALLA_AXLAR)),
+            "",
+        )
+        ut[cell.id] = träff
+    return ut
+
+
+def _bygg_granskningsprompt(
+    poster: list[tuple[str, dict[str, str]]],
+    slot: Slot,
+    inv_legend: dict[str, dict[int, str]],
+    instruktioner: str,
+) -> str:
+    cell_rader = "\n".join(
+        f"  - {cell.id}: {_beskriv_cell(cell, inv_legend)}"
+        + (f"  — {cell.not_kommentar}" if cell.not_kommentar else "")
+        for cell in slot.celler
+    )
+    former_block = "\n\n".join(
+        f"{lemma}:\n" + "\n".join(f'    {cid} = "{form}"' for cid, form in former.items())
+        for lemma, former in poster
+    )
+    instruktions_block = (
+        f"\nSpråkspecifika konventioner:\n{instruktioner}\n" if instruktioner else ""
+    )
+
+    return f"""Du är morfologiexpert på {_språknamn(slot.språk)}. Nedan står böjda \
+{slot.ordklass.lower()}-former som en mindre modell har genererat. Din uppgift är att \
+hitta FEL — inte att förbättra stil.
+Svara ENBART med giltig JSON — ingen annan text.
+{instruktions_block}
+
+Cellerna och vad de ska innehålla:
+{cell_rader}
+
+Former att granska:
+{former_block}
+
+Vad som ska flaggas:
+- Faktiska fel: fel böjningsform, fel stam, felstavning, fel diakritiska
+  tecken, eller en form som hör hemma i en annan cell än den står i.
+- En tom sträng "" som borde ha en form (ordet böjs faktiskt i den cellen).
+- Att två celler har fått samma sträng trots att språket skiljer dem åt.
+
+Vad som ALDRIG ska flaggas:
+- Att en form är formell, ovanlig, stel, litterär eller "inte vad en
+  modersmålstalare skulle säga". Systemet täcker grammatik, inte register.
+- En tom sträng där formen genuint inte existerar (defektiva paradigm,
+  analytisk komparation, verb utan passiv).
+- Att två celler har samma sträng när språket faktiskt sammanfaller där.
+
+Är du osäker på om något är fel: sätt "allvar": "osäker" i stället för att gissa.
+
+Returnera exakt detta format, med tom lista om allt är korrekt:
+{{"avvikelser": [
+  {{"lemma": "...", "cell": "cell_id", "förslag": "rätt form", "allvar": "fel", "motivering": "kort skäl"}}
+]}}"""
+
+
+def _parsa_granskningssvar(
+    text: str,
+    poster: dict[str, dict[str, str]],
+    koncept_per_lemma: dict[str, str],
+    slot: Slot,
+) -> list[Avvikelse]:
+    start, slut = text.find("{"), text.rfind("}") + 1
+    if start == -1 or slut == 0:
+        raise ValueError("Inget JSON-block hittat i svaret")
+    rå = json.loads(text[start:slut])
+
+    giltiga_celler = {c.id for c in slot.celler}
+    ut: list[Avvikelse] = []
+    for a in rå.get("avvikelser", []):
+        lemma, cell = a.get("lemma"), a.get("cell")
+        if lemma not in poster or cell not in giltiga_celler:
+            continue        # modellen hittade på ett lemma eller ett cell-ID
+        allvar = a.get("allvar", "osäker")
+        ut.append(Avvikelse(
+            språk=slot.språk,
+            ordklass=slot.ordklass,
+            koncept=koncept_per_lemma.get(lemma, ""),
+            lemma=lemma,
+            cell=cell,
+            nuvarande=poster[lemma].get(cell, ""),
+            förslag=str(a.get("förslag", "")),
+            allvar=allvar if allvar in ("fel", "osäker") else "osäker",
+            motivering=str(a.get("motivering", "")).replace("\t", " "),
+        ))
+    return ut
+
+
+def granska_former(
+    språk: str,
+    ordklass: str,
+    conn: sqlite3.Connection,
+    rapport: Path,
+    *,
+    lemman: list[str] | None = None,
+    batch_storlek: int = STANDARD_BATCH,
+    modell: str = STANDARD_GRANSKNINGSMODELL,
+    fortsätt: bool = False,
+    verbose: bool = False,
+) -> Granskningsstatistik:
+    """Granska Former för (språk, ordklass) och skriv avvikelser till rapport."""
+    stat = Granskningsstatistik()
+    legend = ladda_legend()
+    inv_legend = _bygg_invers_legend(legend)
+
+    try:
+        slot = ladda_slot(språk, ordklass, legend=legend)
+    except FileNotFoundError as e:
+        stat.fel.append(str(e))
+        return stat
+
+    instruktioner = _ladda_instruktioner(språk, ordklass)
+
+    villkor = "AND l.lemma IN ({})".format(",".join("?" * len(lemman))) if lemman else ""
+    rader = conn.execute(
+        f"""SELECT l.id AS lexem_id, l.lemma, k.nyckel AS koncept, f.form,
+                   {', '.join('f.' + a for a in ALLA_AXLAR)}
+            FROM Former f
+            JOIN Lexem l   ON l.id = f.lexem_id
+            JOIN Koncept k ON k.id = l.koncept_id
+            WHERE l.språk = ? AND k.ordklass = ? {villkor}
+            ORDER BY l.lemma, l.id""",
+        (språk, ordklass, *(lemman or [])),
+    ).fetchall()
+
+    if not rader:
+        print(f"  Inga Former att granska för {språk}/{ordklass}.")
+        return stat
+
+    per_lexem: dict[int, list[sqlite3.Row]] = {}
+    for r in rader:
+        per_lexem.setdefault(r["lexem_id"], []).append(r)
+
+    # Redan granskade lexem hoppas över — rapporten är återupptagbar.
+    redan: set[tuple[str, str]] = set()
+    if fortsätt and rapport.exists():
+        with rapport.open(encoding="utf-8", newline="") as fh:
+            for rad in csv.DictReader(fh, delimiter="\t"):
+                redan.add((rad["språk"], rad["lemma"]))
+
+    poster: list[tuple[str, dict[str, str]]] = []
+    koncept_per_lemma: dict[str, str] = {}
+    for rader_för_lexem in per_lexem.values():
+        lemma = rader_för_lexem[0]["lemma"]
+        if fortsätt and (språk, lemma) in redan:
+            continue
+        poster.append((lemma, _former_per_cell(rader_för_lexem, slot)))
+        koncept_per_lemma[lemma] = rader_för_lexem[0]["koncept"]
+
+    if not poster:
+        if verbose:
+            print(f"  --fortsätt: allt redan granskat för {språk}/{ordklass}")
+        return stat
+
+    ny_fil = not rapport.exists()
+    with rapport.open("a", encoding="utf-8", newline="") as fh:
+        skrivare = csv.writer(fh, delimiter="\t", lineterminator="\n")
+        if ny_fil:
+            skrivare.writerow(RAPPORT_KOLUMNER)
+
+        antal_batchar = math.ceil(len(poster) / batch_storlek)
+        for i in range(antal_batchar):
+            batch = poster[i * batch_storlek:(i + 1) * batch_storlek]
+            if verbose:
+                print(f"  Batch {i + 1}/{antal_batchar}: "
+                      f"{', '.join(l for l, _ in batch)}")
+
+            prompt = _bygg_granskningsprompt(batch, slot, inv_legend, instruktioner)
+            try:
+                svar = _anropa_llm(prompt, modell)
+            except Exception as e:
+                stat.fel.append(f"LLM-fel för batch {[l for l, _ in batch]}: {e}")
+                continue
+
+            batch_dict = dict(batch)
+            try:
+                avvikelser = _parsa_granskningssvar(
+                    svar, batch_dict, koncept_per_lemma, slot
+                )
+            except (ValueError, json.JSONDecodeError) as e:
+                stat.fel.append(f"Parse-fel för batch {[l for l, _ in batch]}: {e}")
+                continue
+
+            stat.granskade_lexem += len(batch)
+            stat.granskade_former += sum(
+                1 for _, f in batch for v in f.values() if v
+            )
+            for a in avvikelser:
+                if a.allvar == "fel":
+                    stat.avvikelser_fel += 1
+                else:
+                    stat.avvikelser_osäkra += 1
+                skrivare.writerow([getattr(a, k) for k in RAPPORT_KOLUMNER])
+            fh.flush()      # rapporten ska vara läsbar även om körningen avbryts
+
+    return stat

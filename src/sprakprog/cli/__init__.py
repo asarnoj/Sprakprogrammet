@@ -82,6 +82,14 @@ def main(argv: list[str] | None = None) -> int:
     from .generera import lägg_till_argument as _generera_args
     _generera_args(p_generera)
 
+    # ── granska-former ───────────────────────────────────────────────────
+    p_granska = sub.add_parser(
+        "granska-former",
+        help="Låt en starkare modell läsa igenom Former och rapportera avvikelser",
+    )
+    from .granska import lägg_till_argument as _granska_args
+    _granska_args(p_granska)
+
     args = parser.parse_args(argv)
 
     # Lazy import för snabb startup på enskilda kommandon
@@ -109,6 +117,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "generera":
         from .generera import kör as kör_generera
         return kör_generera(args)
+    if args.kommando == "granska-former":
+        from .granska import kör as kör_granska
+        return kör_granska(args)
 
     parser.error(f"okänt kommando: {args.kommando}")
     return 2
