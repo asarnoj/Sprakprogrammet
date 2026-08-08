@@ -27,6 +27,24 @@ from ..kaikki_mappning.paradigm import (
 STANDARD_MODELL = "claude-haiku-4-5"
 STANDARD_BATCH = 10
 
+# Riktvärde för hur många formsträngar ett svar bör innehålla. Modellen
+# tappar precision och kapar svar när det blir för mycket: de/Adjektiv har
+# 144 celler, så tio ord i en batch ger 1 440 former i ett svep — det var så
+# es/Verb "abrir" tyst gav noll rader vid batch 10 men alla 53 vid batch 1.
+FORMER_PER_SVAR = 300
+
+
+def _lämplig_batch(antal_celler: int) -> int:
+    """Batch-storlek som håller svaret runt FORMER_PER_SVAR former.
+
+    de/Adjektiv (144 celler) → 2, romanska verb (45–53) → 5–6,
+    substantiv (2–8) → 10. Motsvarar de storlekar som togs fram för hand
+    i smoke-testet 2026-08-01.
+    """
+    if antal_celler <= 0:
+        return STANDARD_BATCH
+    return max(1, min(STANDARD_BATCH, FORMER_PER_SVAR // antal_celler))
+
 
 # ── LLM-transport ────────────────────────────────────────────────────
 #
@@ -311,7 +329,7 @@ def generera_former(
     ordklass: str,
     conn: sqlite3.Connection,
     *,
-    batch_storlek: int = STANDARD_BATCH,
+    batch_storlek: int | None = None,
     modell: str = STANDARD_MODELL,
     torkörning: bool = False,
     verbose: bool = False,
@@ -325,7 +343,8 @@ def generera_former(
         språk:        Språkkod (sv, en, fr, de, es, it, ja).
         ordklass:     Ordklass-sträng (Verb, Substantiv, ...).
         conn:         Öppen databasanslutning.
-        batch_storlek: Antal lemman per LLM-anrop (10 rekommenderas).
+        batch_storlek: Antal lemman per LLM-anrop. None = räkna ut från
+                      antalet celler i slot-filen (_lämplig_batch).
         modell:       Claude-modell att använda.
         torkörning:   Om True — anropa LLM men skriv inte till DB.
         verbose:      Skriv ut per-batch-progress.
@@ -342,6 +361,11 @@ def generera_former(
     except FileNotFoundError as e:
         stat.fel.append(str(e))
         return stat
+
+    if batch_storlek is None:
+        batch_storlek = _lämplig_batch(len(slot.celler))
+        if verbose:
+            print(f"  {len(slot.celler)} celler → batch-storlek {batch_storlek}")
 
     instruktioner = _ladda_instruktioner(språk, ordklass)
 

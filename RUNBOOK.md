@@ -111,30 +111,28 @@ Vad du letar efter i utskriften:
 Historik: två fel har hittats exakt så här, och båda hade sett ut som
 lyckade körningar i statistiken.
 
-### 4c. Batch-storlek för de tunga jobben
+### 4c. Batch-storlek räknas ut automatiskt
 
-Standardbatchen är 10 lemman. För de morfologiskt tyngsta kombinationerna
-blir svaret då orimligt stort — modellen ska returnera ett JSON-objekt med
-`lemman × celler` formsträngar:
+Standardbatchen bestäms av slot-filen, inte av en fast siffra. Pipelinen
+siktar på ~300 formsträngar per svar och räknar `300 // antal_celler`,
+klippt till intervallet 1–10:
 
-| Jobb | Celler | Formsträngar vid batch 10 | Kör med |
+| Jobb | Celler | Batch | Former per svar |
 |---|---|---|---|
-| de/Adjektiv | 144 | 1 440 | `--batch-storlek 2` |
-| es/Verb | 53 | 530 | `--batch-storlek 5` |
-| it/Verb | 52 | 520 | `--batch-storlek 5` |
-| fr/Verb | 45 | 450 | `--batch-storlek 5` |
-| de/Verb | 31 | 310 | `--batch-storlek 5` |
+| de/Adjektiv | 144 | 2 | 288 |
+| es/Verb | 53 | 5 | 265 |
+| it/Verb | 52 | 5 | 260 |
+| fr/Verb | 45 | 6 | 270 |
+| de/Verb | 31 | 9 | 279 |
+| sv/Substantiv | 8 | 10 | 80 |
 
-Kör dem separat före den stora körningen, så plockar `--fortsätt` upp
-resten:
+Skälet: vid batch 10 skulle de/Adjektiv be om 1 440 formsträngar i ett svar,
+och det var så es/Verb `abrir` tyst gav noll rader i smoke-testet men alla 53
+vid batch 1.
 
-```bash
-ordbok generera --språk de --ordklass Adjektiv --batch-storlek 2 --verbose
-```
+De tunga jobben behöver alltså inte längre köras separat — `--alla-språk`
+räcker. `--batch-storlek N` vinner fortfarande om du vill styra manuellt.
 
-```bash
-for s in fr es it de; do ordbok generera --språk "$s" --ordklass Verb --batch-storlek 5 --verbose; done
-```
 
 ## 5. Skarp körning
 
