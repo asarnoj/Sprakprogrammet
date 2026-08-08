@@ -80,7 +80,12 @@ superl_sg, superl_pl.
 
 Per slot-fil. Subjekt: io, tu, lui, lei, Lei, noi, voi, loro. Objekt
 (direkt): mi, ti, lo, la, ci, vi, li, le; indirekt: mi, ti, gli, le, ci, vi,
-gli. Följ cellbeskrivningarna i slot-filen.
+gli.
+
+**Tonico-cellen har `kasus=Gen`** — en ren etikett, inte en genitiv
+(italienskan saknar kasus). Cellen ska innehålla den betonade formen efter
+preposition: me, te, lui, lei, noi, voi, loro. Skriv pronomenet ensamt —
+aldrig "di lui".
 
 ## Possessiv
 

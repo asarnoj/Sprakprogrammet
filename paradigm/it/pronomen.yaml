@@ -23,19 +23,16 @@ meta:
 celler:
   - id: soggetto
     kasus: [Nom]
-    # io, tu, lui, lei, noi, voi, loro.
+    not: "io, tu, lui, lei, noi, voi, loro."
 
   - id: cod
     kasus: [Ack]
-    # mi, ti, lo, la, ci, vi, li, le.
-    # P3 sg: lo (UtrMask) / la (NeuFem).
+    not: "mi, ti, lo, la, ci, vi, li, le. P3 sg: lo (UtrMask) / la (NeuFem)."
 
   - id: coi
     kasus: [Dat]
-    # mi, ti, gli, le, ci, vi, gli/loro.
-    # P3 sg: gli (UtrMask) / le (NeuFem).
+    not: "mi, ti, gli, le, ci, vi, gli/loro. P3 sg: gli (UtrMask) / le (NeuFem)."
 
   - id: tonico
     kasus: [Gen]
-    # me, te, lui, lei, noi, voi, loro.
-    # Används efter preposition ("con me", "da te") och vid betoning.
+    not: "OBS: Gen-biten är bara en etikett — italienskan har ingen genitiv. Cellen är den TONISKA formen: me, te, lui, lei, noi, voi, loro. Används efter preposition ('con me', 'da te') och vid betoning. Ange pronomenet ENSAMT — inte 'di lui'."

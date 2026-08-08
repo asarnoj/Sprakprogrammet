@@ -151,8 +151,13 @@ def _bygg_prompt(
     instruktioner: str = "",
 ) -> str:
     """Bygg LLM-prompt för en batch av lemman."""
+    # Axelnamnen ensamma räcker inte när en axel bär en konvention snarare än
+    # sin bokstavliga betydelse — "kasus=Gen" på fr/es/it tonisk form fick
+    # modellen att svara "de ella" och "di Lei". not-kommentaren förklarar
+    # cellen och skickas därför med.
     cell_rader = "\n".join(
         f"  - {cell.id}: {_beskriv_cell(cell, inv_legend)}"
+        + (f"  — {cell.not_kommentar}" if cell.not_kommentar else "")
         for cell in slot.celler
     )
     lemma_lista = ", ".join(lemman)

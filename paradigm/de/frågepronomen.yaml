@@ -17,86 +17,86 @@ celler:
   # Wer / Was
   - id: wer_nom
     kasus: [Nom]
-    # "wer" (animate), "was" (inanimate).
+    not: "'wer' (animate), 'was' (inanimate)."
 
   - id: wer_akk
     kasus: [Ack]
-    # "wen" (animate), "was" (inanimate — identisk med nom → bitmask-OR-kollaps).
+    not: "'wen' (animate), 'was' (inanimate — identisk med nom → bitmask-OR-kollaps)."
 
   - id: wer_dat
     kasus: [Dat]
-    # "wem" (animate). "was" har sällan dativ (analytisk: "womit?" etc.).
+    not: "'wem' (animate). 'was' har sällan dativ (analytisk: 'womit?' etc.)."
 
   - id: wer_gen
     kasus: [Gen]
-    # "wessen" (animate och inanimate).
+    not: "'wessen' (animate och inanimate)."
 
   # Welcher — deklineras som svag adjektiv, genus+kasus+numerus varierar
   - id: welch_m_nom
     genus: UtrMask
     numerus: Sg
     kasus: [Nom]
-    # "welcher".
+    not: "'welcher'."
 
   - id: welch_m_akk
     genus: UtrMask
     numerus: Sg
     kasus: [Ack]
-    # "welchen".
+    not: "'welchen'."
 
   - id: welch_m_dat
     genus: UtrMask
     numerus: Sg
     kasus: [Dat]
-    # "welchem".
+    not: "'welchem'."
 
   - id: welch_m_gen
     genus: UtrMask
     numerus: Sg
     kasus: [Gen]
-    # "welches".
+    not: "'welches'."
 
   - id: welch_f_nom_akk
     genus: NeuFem
     numerus: Sg
     kasus: [Nom, Ack]
-    # "welche".
+    not: "'welche'."
 
   - id: welch_f_dat_gen
     genus: NeuFem
     numerus: Sg
     kasus: [Dat, Gen]
-    # "welcher".
+    not: "'welcher'."
 
   - id: welch_n_nom_akk
     genus: Alla
     numerus: Sg
     kasus: [Nom, Ack]
-    # "welches".
+    not: "'welches'."
 
   - id: welch_n_dat
     genus: Alla
     numerus: Sg
     kasus: [Dat]
-    # "welchem".
+    not: "'welchem'."
 
   - id: welch_n_gen
     genus: Alla
     numerus: Sg
     kasus: [Gen]
-    # "welches" — identisk med nom/akk → bitmask-OR-kollaps.
+    not: "'welches' — identisk med nom/akk → bitmask-OR-kollaps."
 
   - id: welch_pl_nom_akk
     numerus: Pl
     kasus: [Nom, Ack]
-    # "welche".
+    not: "'welche'."
 
   - id: welch_pl_dat
     numerus: Pl
     kasus: [Dat]
-    # "welchen".
+    not: "'welchen'."
 
   - id: welch_pl_gen
     numerus: Pl
     kasus: [Gen]
-    # "welcher".
+    not: "'welcher'."

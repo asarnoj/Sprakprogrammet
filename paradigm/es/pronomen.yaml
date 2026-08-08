@@ -27,20 +27,16 @@ meta:
 celler:
   - id: sujeto
     kasus: [Nom]
-    # yo, tú, él, ella, usted, nosotros, vosotros, ellos, ellas, ustedes.
+    not: "yo, tú, él, ella, usted, nosotros, vosotros, ellos, ellas, ustedes."
 
   - id: cod
     kasus: [Ack]
-    # me, te, lo, la, nos, os, los, las.
-    # P3 sg: lo (UtrMask) / la (NeuFem).
+    not: "me, te, lo, la, nos, os, los, las. P3 sg: lo (UtrMask) / la (NeuFem)."
 
   - id: coi
     kasus: [Dat]
-    # me, te, le, nos, os, les.
-    # P3: genusneutralt — "le" oavsett genus.
+    not: "me, te, le, nos, os, les. P3: genusneutralt — 'le' oavsett genus."
 
   - id: tonico
     kasus: [Gen]
-    # mí, ti, él, ella, nosotros/as, vosotros/as, ellos, ellas.
-    # Används efter preposition ("para mí", "sin ti") och vid betoning.
-    # OBS: "mí" har accent för att skilja från "mi" (possessivt).
+    not: "OBS: Gen-biten är bara en etikett — spanskan har ingen genitiv. Cellen är den TONISKA formen: mí, ti, él, ella, nosotros/as, vosotros/as, ellos, ellas. Används efter preposition ('para mí', 'sin ti') och vid betoning. Ange pronomenet ENSAMT — inte 'de él', inte possessivt 'suyo'. 'mí' har accent för att skilja från possessiva 'mi'."
