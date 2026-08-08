@@ -156,6 +156,31 @@ ordbok generera --alla-språk --fortsätt --verbose
 Grov storleksordning: ~500 LLM-anrop totalt, någon–några timmar beroende på
 rate-limits.
 
+### Avbryta och återuppta
+
+Ctrl-C är ofarligt. Varje batch skrivs i en egen transaktion, så allt som
+hunnit bli klart ligger kvar i databasen — bara den pågående batchen tappas,
+och den görs om vid nästa körning. Kör samma kommando igen med `--fortsätt`.
+
+### Följa hur långt det gått
+
+`--verbose` skriver `Batch 3/18` per (språk, ordklass). För helhetsbilden,
+kör i **ett annat terminalfönster**:
+
+```bash
+sqlite3 sprak.db "SELECT COUNT(DISTINCT lexem_id) || ' av 3964 lexem klara (' || ROUND(COUNT(DISTINCT lexem_id)*100.0/3964,1) || '%), ' || COUNT(*) || ' former' FROM Former;"
+```
+
+Fördelningen per språk och ordklass:
+
+```bash
+sqlite3 sprak.db "SELECT l.språk, k.ordklass, COUNT(DISTINCT l.id) FROM Former f JOIN Lexem l ON l.id=f.lexem_id JOIN Koncept k ON k.id=l.koncept_id GROUP BY 1,2 ORDER BY 1,2;"
+```
+
+Ett lexem som legitimt får noll former (alla celler tomma) räknas aldrig som
+klart och kommer att köras om vid varje `--fortsätt`. Det rör en handfull ord
+och kostar bara några extra anrop.
+
 ## 6. Verifiera resultatet
 
 ```bash

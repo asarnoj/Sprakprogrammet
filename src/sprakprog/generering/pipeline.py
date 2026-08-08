@@ -11,6 +11,7 @@ Flöde per anrop:
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 import sqlite3
@@ -419,11 +420,14 @@ def generera_former(
         )
         return stat
 
-    # Dela upp i batchar
-    for start in range(0, len(lemman_att_bearbeta), batch_storlek):
-        batch = lemman_att_bearbeta[start:start + batch_storlek]
+    # Dela upp i batchar. Varje batch är en egen transaktion (with conn:
+    # nedan), så Ctrl-C mellan batchar är ofarligt — bara den pågående
+    # batchen tappas, och --fortsätt tar upp den vid nästa körning.
+    antal_batchar = math.ceil(len(lemman_att_bearbeta) / batch_storlek)
+    for i in range(antal_batchar):
+        batch = lemman_att_bearbeta[i * batch_storlek:(i + 1) * batch_storlek]
         if verbose:
-            print(f"  Batch {start // batch_storlek + 1}: {', '.join(batch)}")
+            print(f"  Batch {i + 1}/{antal_batchar}: {', '.join(batch)}")
 
         prompt = _bygg_prompt(batch, slot, inv_legend, instruktioner)
 
