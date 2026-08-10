@@ -28,6 +28,9 @@ def lägg_till_argument(p: argparse.ArgumentParser, standard_batch: int) -> None
     p.add_argument("--antal", type=int, default=None,
                    help="Tagga bara de N första koncepten — för att provköra "
                         "och granska utdata innan hela satsen körs.")
+    p.add_argument("--koncept", default=None,
+                   help="Kommaseparerade konceptnycklar — tagga bara dessa. "
+                        "Endast tagga-monster.")
     p.add_argument("--batch-storlek", type=int, default=standard_batch,
                    dest="batch_storlek",
                    help=f"Antal koncept per LLM-anrop (default: {standard_batch})")
@@ -49,9 +52,12 @@ def _kör(args: argparse.Namespace, jobb: str) -> int:
     print(f"\n{'─' * 50}")
     print(f"Taggar: {jobb}   (modell: {args.modell})")
     funktion = tagga_koncept if jobb == "koncepttaggning" else tagga_monster
+    extra = {}
+    if jobb == "monstertaggning" and args.koncept:
+        extra["koncept"] = [k.strip() for k in args.koncept.split(",") if k.strip()]
     stat = funktion(conn, migration, antal=args.antal,
                     batch_storlek=args.batch_storlek,
-                    modell=args.modell, verbose=args.verbose)
+                    modell=args.modell, verbose=args.verbose, **extra)
     conn.close()
 
     stat.skriv_ut()
