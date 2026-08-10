@@ -74,6 +74,15 @@ def main(argv: list[str] | None = None) -> int:
         help="Radera befintliga Former-rader innan import",
     )
 
+    # ── tagga-koncept / tagga-monster ────────────────────────────────────
+    from .tagga import lägg_till_argument as _tagga_args
+    _tagga_args(sub.add_parser(
+        "tagga-koncept",
+        help="Fyll gradbarhet, räknebar, valens och semantik på Koncept"), 25)
+    _tagga_args(sub.add_parser(
+        "tagga-monster",
+        help="Bygg valensmönster (Mönster + MönsterKrav) för verben"), 10)
+
     # ── generera ─────────────────────────────────────────────────────────
     p_generera = sub.add_parser(
         "generera",
@@ -117,6 +126,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "generera":
         from .generera import kör as kör_generera
         return kör_generera(args)
+    if args.kommando == "tagga-koncept":
+        from .tagga import kör_koncept
+        return kör_koncept(args)
+    if args.kommando == "tagga-monster":
+        from .tagga import kör_monster
+        return kör_monster(args)
     if args.kommando == "granska-former":
         from .granska import kör as kör_granska
         return kör_granska(args)

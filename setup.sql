@@ -184,7 +184,23 @@ CREATE INDEX idx_monster_koncept ON Mönster(koncept_id);
                 1=Nominalfras  2=Adjektivfras  4=Prepositionsfras
                 8=Adverbfras  16=Infinitivfras  32=Bisatsfras
 
+   kasus      : kasus som det styrande ordet kräver av slotten — bitmask
+                enligt BITMASK.md §4 (1=Nom 2=Ack 4=Dat 8=Gen).
+                Endast meningsfullt på språkspecifika mönster (Mönster.språk
+                satt): de "helfen" + Dativ, "in" + Ack vid rörelse / Dat vid
+                befintlighet. NULL på universella mönster och i språk utan
+                kasus.
+   preposition_koncept_id
+              : preposition som realiserar slotten i det här språket.
+                fr/es indirekt objekt kräver à/a → prep_till. NULL när
+                slotten realiseras utan preposition.
+                Också endast meningsfullt på språkspecifika mönster.
+
    Regel: exakt en av (tagg, koncept_id) ska vara satt per rad.
+
+   Kasus- och prepositionskolumnerna tillkom 2026-08-10 efter den vertikala
+   skivan (paradigm/RENDERARE_KRAV.md §3.5, §3.8) — de lades till medan
+   tabellen ännu var tom, så att mönstertaggningen inte behöver göras om.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE MönsterKrav (
     id         INTEGER PRIMARY KEY,
@@ -196,6 +212,8 @@ CREATE TABLE MönsterKrav (
                )),
     tagg       INTEGER,
     frastyp    INTEGER,
+    kasus      INTEGER,
+    preposition_koncept_id INTEGER REFERENCES Koncept(id) ON DELETE SET NULL,
     CHECK ((tagg IS NOT NULL) != (koncept_id IS NOT NULL))   -- exakt en av de två
 );
 
