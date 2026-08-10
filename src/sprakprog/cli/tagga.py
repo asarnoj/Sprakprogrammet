@@ -25,6 +25,9 @@ MIGRATIONSKATALOG = Path("ordbok/migrationer")
 def lägg_till_argument(p: argparse.ArgumentParser, standard_batch: int) -> None:
     p.add_argument("--migration", default=None,
                    help="SQL-fil att skriva (default: ordbok/migrationer/<jobb>.sql)")
+    p.add_argument("--antal", type=int, default=None,
+                   help="Tagga bara de N första koncepten — för att provköra "
+                        "och granska utdata innan hela satsen körs.")
     p.add_argument("--batch-storlek", type=int, default=standard_batch,
                    dest="batch_storlek",
                    help=f"Antal koncept per LLM-anrop (default: {standard_batch})")
@@ -46,7 +49,8 @@ def _kör(args: argparse.Namespace, jobb: str) -> int:
     print(f"\n{'─' * 50}")
     print(f"Taggar: {jobb}   (modell: {args.modell})")
     funktion = tagga_koncept if jobb == "koncepttaggning" else tagga_monster
-    stat = funktion(conn, migration, batch_storlek=args.batch_storlek,
+    stat = funktion(conn, migration, antal=args.antal,
+                    batch_storlek=args.batch_storlek,
                     modell=args.modell, verbose=args.verbose)
     conn.close()
 

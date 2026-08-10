@@ -196,7 +196,12 @@ CREATE INDEX idx_monster_koncept ON Mönster(koncept_id);
                 slotten realiseras utan preposition.
                 Också endast meningsfullt på språkspecifika mönster.
 
-   Regel: exakt en av (tagg, koncept_id) ska vara satt per rad.
+   Regel: HÖGST en av (tagg, koncept_id) per rad. Båda NULL är tillåtet och
+   betyder "slotten krävs, men utan innehållsbegränsning" — nödvändigt för
+   verb vars subjekt kan vara vad som helst (regna, kosta, finnas). Tidigare
+   krävde villkoret exakt en av de två, vilket gjorde att sådana slots inte
+   gick att uttrycka alls och därmed föll bort ur mönstret (rättat 2026-08-10,
+   innan mönstertaggningen kördes).
 
    Kasus- och prepositionskolumnerna tillkom 2026-08-10 efter den vertikala
    skivan (paradigm/RENDERARE_KRAV.md §3.5, §3.8) — de lades till medan
@@ -214,7 +219,7 @@ CREATE TABLE MönsterKrav (
     frastyp    INTEGER,
     kasus      INTEGER,
     preposition_koncept_id INTEGER REFERENCES Koncept(id) ON DELETE SET NULL,
-    CHECK ((tagg IS NOT NULL) != (koncept_id IS NOT NULL))   -- exakt en av de två
+    CHECK (NOT (tagg IS NOT NULL AND koncept_id IS NOT NULL))  -- högst en av de två
 );
 
 CREATE INDEX idx_monsterkrav_monster ON MönsterKrav(mönster_id);

@@ -128,6 +128,7 @@ def tagga_koncept(
     conn: sqlite3.Connection,
     migration: Path,
     *,
+    antal: int | None = None,
     batch_storlek: int = 25,
     modell: str = STANDARD_TAGGNINGSMODELL,
     verbose: bool = False,
@@ -145,6 +146,9 @@ def tagga_koncept(
            OR (k.ordklass = 'Verb'        AND k.valens     IS NULL)
            OR (k.ordklass = 'Pronomen'    AND k.semantik   IS NULL)
         ORDER BY k.ordklass, k.nyckel""").fetchall()
+
+    if antal:
+        poster = poster[:antal]
 
     if not poster:
         print("  Inget kvar att tagga på Koncept.")
@@ -262,6 +266,7 @@ def tagga_monster(
     conn: sqlite3.Connection,
     migration: Path,
     *,
+    antal: int | None = None,
     batch_storlek: int = 10,
     modell: str = STANDARD_TAGGNINGSMODELL,
     verbose: bool = False,
@@ -277,6 +282,9 @@ def tagga_monster(
         WHERE k.ordklass = 'Verb'
           AND NOT EXISTS (SELECT 1 FROM Mönster m WHERE m.koncept_id = k.id)
         ORDER BY k.nyckel""").fetchall()
+
+    if antal:
+        poster = poster[:antal]
 
     if not poster:
         print("  Alla verb har redan mönster.")
@@ -311,15 +319,13 @@ def tagga_monster(
                     continue
                 tagg = sum(SEMANTIK.get(x, 0) for x in k.get("tagg") or [])
                 frastyp = sum(FRASTYP.get(x, 0) for x in k.get("frastyp") or [])
-                # CHECK-villkoret kräver exakt en av (tagg, koncept_id).
-                # Utan semantiskt krav faller vi tillbaka på Nominalfras utan
-                # begränsning — uttryckt som tagg=0 vore ett brott mot
-                # villkoret, så slotten hoppas över helt.
-                if not tagg:
-                    continue
+                # tagg=NULL betyder "slotten krävs, utan innehållsbegränsning".
+                # Nödvändigt för verb vars subjekt kan vara vad som helst
+                # (regna, kosta, finnas) — slotten får INTE hoppas över, då
+                # skulle mönstret sluta kräva ett subjekt.
                 satser.append(
                     f"INSERT INTO MönsterKrav (mönster_id, slot, tagg, frastyp) "
-                    f"SELECT m.id, {_sql_sträng(slot)}, {tagg}, "
+                    f"SELECT m.id, {_sql_sträng(slot)}, {tagg or 'NULL'}, "
                     f"{frastyp or 'NULL'} FROM Mönster m "
                     f"JOIN Koncept k ON k.id = m.koncept_id "
                     f"WHERE k.nyckel = {nyckel} AND m.språk IS NULL;"
