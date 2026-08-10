@@ -37,6 +37,8 @@ SEMANTIK = {
     "ANIMAT": 1, "KONKRET": 2, "ABSTRAKT": 4, "ÄTBAR": 8, "PLATS": 16,
     "MÄNSKLIG": 32, "RÖRELSE": 64, "RIKTNING": 128, "HÄNDELSE": 256,
     "TID": 512, "INSTRUMENT": 1024, "KOMMUNIKAT": 2048,
+    "DRICKBAR": 4096, "KROPPSDEL": 8192, "KLÄDESPLAGG": 16384,
+    "INREDNING": 32768, "NATURFENOMEN": 65536,
 }
 FRASTYP = {
     "Nominalfras": 1, "Adjektivfras": 2, "Prepositionsfras": 4,
@@ -244,6 +246,8 @@ Regler:
 - Håll semantikkraven MINIMALA. Ett för snävt krav gör att inga meningar
   kan byggas. "äta" kräver ÄTBAR på objektet — men "ge" kräver bara att
   objektet är KONKRET, inte att det är ett INSTRUMENT.
+- ÄTBAR och DRICKBAR är skilda: "äta" kräver ÄTBAR, "dricka" kräver
+  DRICKBAR. Vatten och öl har bara DRICKBAR, bröd bara ÄTBAR, soppa båda.
 - Subjekt för handlingsverb är oftast ANIMAT. För verb som beskriver
   händelser eller tillstånd (regna, finnas, kosta) kan subjektet vara
   vad som helst — utelämna då semantikkravet med "tagg": [].

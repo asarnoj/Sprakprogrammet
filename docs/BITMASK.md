@@ -351,7 +351,23 @@ Bit     Värde   Etikett       Vad det markerar
  512      512   TID           Tidsperiod eller tidpunkt (dag, år, morgon, april)
 1024     1024   INSTRUMENT    Föremål som används som verktyg (kniv, penna, bil)
 2048     2048   KOMMUNIKAT    Kommunikat / yttrande (fråga, ord, berättelse, svar)
+4096     4096   DRICKBAR      Dricks snarare än äts (vatten, mjölk, kaffe, öl, vin)
+8192     8192   KROPPSDEL     Kroppsdel (näsa, hand, hjärta) — kan inte ges bort
+16384   16384   KLÄDESPLAGG   Bärs på kroppen (byxa, sko, glasögon)
+32768   32768   INREDNING     Möbel, husgeråd, byggnadsdel (bord, lampa, dörr)
+65536   65536   NATURFENOMEN  Väder och naturkraft (regn, storm, eld) — ej föremål
 ```
+
+Bitarna 4096–65536 tillkom 2026-08-10. Mätning visade att 259 substantiv föll
+på bara 15 distinkta värden, med 84 ord i ett enda fack (enbart KONKRET) där
+näsa, byxa, bord och regn var utbytbara — "flickan gav sin bror en näsa"
+passerade varje semantiskt krav. Kategorierna fanns redan i konceptnycklarnas
+prefix och lyftes in i bitmasken via `ordbok/migrationer/semantik_utökad.sql`.
+Efter tillägget: 21 distinkta värden, största facket 42 (och det facket är
+MÄNSKLIG, alltså en sammanhängande klass).
+
+**ÄTBAR och DRICKBAR utesluter varandra** för rena drycker — vatten har
+DRICKBAR men inte ÄTBAR, så att "äta vatten" faller. Soppa har båda.
 
 ### Kombinationsexempel
 
