@@ -17,7 +17,7 @@ from pathlib import Path
 
 from ..db import STANDARD_DB, anslut
 from ..generering.granskning import (
-    STANDARD_BATCH, STANDARD_GRANSKNINGSMODELL, granska_former,
+    STANDARD_GRANSKNINGSMODELL, granska_former,
 )
 from ..modeller import ORDKLASSER, SPRÅK
 from .generera import ALLA_ORDKLASSER_MED_MORFOLOGI
@@ -38,9 +38,10 @@ def lägg_till_argument(p: argparse.ArgumentParser) -> None:
                    help="Kommaseparerad lista av lemman (default: alla i DB)")
     p.add_argument("--rapport", default=STANDARD_RAPPORT,
                    help=f"TSV-fil att skriva avvikelser till (default: {STANDARD_RAPPORT})")
-    p.add_argument("--batch-storlek", type=int, default=STANDARD_BATCH,
+    p.add_argument("--batch-storlek", type=int, default=None,
                    dest="batch_storlek",
-                   help=f"Antal lexem per LLM-anrop (default: {STANDARD_BATCH})")
+                   help="Antal lexem per LLM-anrop. Default: räknas ut från "
+                        "antalet celler i slot-filen, som vid generering.")
     p.add_argument("--modell", default=STANDARD_GRANSKNINGSMODELL,
                    help=f"Claude-modell (default: {STANDARD_GRANSKNINGSMODELL}). "
                         f"Poängen är en starkare modell än genereringens — "
