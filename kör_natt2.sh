@@ -4,20 +4,17 @@
 #
 #   ./kör_natt2.sh
 #
-# SÄKER ATT KÖRA HUR MÅNGA GÅNGER SOM HELST. Varje fas kvitteras i
-# .natt2_status och hoppas över nästa gång. Granskningen tar vid där den
-# slutade via ordbok/granskning.tsv.klara. Ta slut på kvot mitt i är
-# därför ofarligt — kör igen, ingenting görs om.
+# Starta en gång och låt det gå. Tar kvoten slut väntar skriptet ut den och
+# fortsätter av sig självt — ingen schemaläggning behövs.
+#
+# Ctrl-C när som helst är ofarligt. Varje fas kvitteras i .natt2_status och
+# granskningen kvitterar varje granskat lexem, så en omstart med exakt samma
+# kommando tar vid där den slutade. Ingenting görs om.
 #
 # Slutkoder:
-#   0   allt klart, inget mer att göra
-#   75  kvoten tog slut, mer återstår — kör igen senare
+#   0   allt klart
+#   75  gav upp efter DEADLINE_TIMMAR — starta om när kvoten är tillbaka
 #   1   något gick fel som inte löser sig av att vänta
-#
-# Schemaläggning (din vän): kör t.ex. var fjärde timme. Skriptet avslutar
-# direkt om det inte finns något kvar.
-#
-#   0 */4 * * *  cd ~/Spra-kprogrammet && ./kör_natt2.sh >> cron.log 2>&1
 #
 # ── Bakgrund ────────────────────────────────────────────────────────────
 # Nattkörning 1 rapporterade 2 088 fel. 568 var falska — granskningens
@@ -29,8 +26,11 @@
 
 MODELL_GEN="${MODELL_GEN:-claude-opus-5}"
 MODELL_GRANSK="${MODELL_GRANSK:-claude-sonnet-5}"
-ANTAL_FORSOK="${ANTAL_FORSOK:-4}"           # antal granskningsförsök per körning
-VANTAN="${VANTAN:-2700}"        # sekunder mellan forsok (45 min)
+# Kvoten återställs i ett rullande fönster, så det räcker att vänta ut den.
+# Skriptet försöker om och om igen tills allt är klart, eller tills
+# DEADLINE_TIMMAR passerat sedan starten.
+VANTAN="${VANTAN:-1800}"                    # sekunder mellan försök (30 min)
+DEADLINE_TIMMAR="${DEADLINE_TIMMAR:-10}"    # ge upp efter så här länge
 
 set -uo pipefail
 cd "$(dirname "$0")"
@@ -44,6 +44,28 @@ steg()  { echo; echo "═══════════════════�
 fatal() { echo "AVBRYTER: $*" >&2; exit 1; }
 klar()  { grep -qxF "$1" "$STATUS"; }
 kvittera() { echo "$1" >> "$STATUS"; }
+
+SLUTTID=$(( $(date +%s) + DEADLINE_TIMMAR * 3600 ))
+
+# Kör ett kommando och vänta ut kvoten om det misslyckas. Returnerar 0 när
+# kommandot lyckats, 1 om deadline passerats. Ctrl-C under sleep avbryter
+# hela skriptet, vilket är precis vad man vill.
+med_vantan() {
+  local vad="$1"; shift
+  local n=0
+  while true; do
+    n=$((n + 1))
+    [ "$n" -gt 1 ] && echo "  → $vad, försök $n — $(date '+%H:%M')"
+    if "$@"; then return 0; fi
+    if [ "$(date +%s)" -ge "$SLUTTID" ]; then
+      echo "  $vad: ger upp, ${DEADLINE_TIMMAR} timmar har gått sedan start."
+      return 1
+    fi
+    echo "  $vad avbröts — troligen slut på kvot."
+    echo "    Väntar $((VANTAN / 60)) min och försöker igen. Ctrl-C när du vill."
+    sleep "$VANTAN"
+  done
+}
 
 steg "0. Förberedelser"
 echo "  Generering: $MODELL_GEN     Granskning: $MODELL_GRANSK"
@@ -74,10 +96,9 @@ if klar de_adjektiv; then
 else
   # 16,9 % fel med haiku. Instruktionen har nu de fullständiga
   # ändelsetabellerna. Utan --fortsätt: formerna SKA skrivas över.
-  if ordbok generera --språk de --ordklass Adjektiv --modell "$MODELL_GEN" --verbose; then
+  if med_vantan "de/Adjektiv" ordbok generera --språk de --ordklass Adjektiv \
+       --modell "$MODELL_GEN" --verbose; then
     kvittera de_adjektiv
-  else
-    echo "  Misslyckades — försöker igen nästa körning."
   fi
 fi
 
@@ -86,10 +107,9 @@ steg "3. Generera om de/Verb (~20 anrop)"
 if klar de_verb; then
   echo "  Redan gjort i en tidigare körning."
 else
-  if ordbok generera --språk de --ordklass Verb --modell "$MODELL_GEN" --verbose; then
+  if med_vantan "de/Verb" ordbok generera --språk de --ordklass Verb \
+       --modell "$MODELL_GEN" --verbose; then
     kvittera de_verb
-  else
-    echo "  Misslyckades — försöker igen nästa körning."
   fi
 fi
 
@@ -125,19 +145,12 @@ if klar granskning; then
   echo "  Redan klar i en tidigare körning."
   GRANSKNING_KLAR=1
 else
-  for forsok in $(seq 1 "$ANTAL_FORSOK"); do
-    echo "  Försök $forsok/$ANTAL_FORSOK — $(date '+%H:%M:%S')"
-    if ordbok granska-former --alla-språk --rapport ordbok/granskning.tsv \
-         --fortsätt --modell "$MODELL_GRANSK" --verbose; then
-      kvittera granskning
-      GRANSKNING_KLAR=1
-      break
-    fi
-    if [ "$forsok" -lt "$ANTAL_FORSOK" ]; then
-      echo "  Avbröts — troligen slut på kvot. Väntar $((VANTAN/60)) min."
-      sleep "$VANTAN"
-    fi
-  done
+  if med_vantan "Granskningen" ordbok granska-former --alla-språk \
+       --rapport ordbok/granskning.tsv --fortsätt \
+       --modell "$MODELL_GRANSK" --verbose; then
+    kvittera granskning
+    GRANSKNING_KLAR=1
+  fi
 fi
 
 steg "5. Rensa inaktuella rader ur rapporten"
@@ -202,5 +215,6 @@ if klar de_adjektiv && klar de_verb && [ "$GRANSKNING_KLAR" = "1" ]; then
   echo "ALLT KLART $(date '+%Y-%m-%d %H:%M')."
   exit 0
 fi
-echo "MER ÅTERSTÅR — kör skriptet igen när kvoten återställts. $(date '+%H:%M')"
+echo "MER ÅTERSTÅR — starta om skriptet med samma kommando när kvoten är"
+echo "tillbaka. Det tar vid där det slutade. $(date '+%H:%M')"
 exit 75
