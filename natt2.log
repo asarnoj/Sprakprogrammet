@@ -1,0 +1,57 @@
+
+═══════════════════════════════════════════════════
+  0. Förberedelser — 12:07:35
+═══════════════════════════════════════════════════
+  Generering: claude-opus-5     Granskning: claude-sonnet-5
+  Redan klart: 
+Already up to date.
+
+═══════════════════════════════════════════════════
+  1. Bygg om databasen — 12:07:36
+═══════════════════════════════════════════════════
+✓ Importerade 733 koncept och 5130 lexem
+  bas_kärna: 167 koncept
+  grundord: 566 koncept
+  → sprak.db
+✓ Importerade 48135 Former-rader från ordbok/former.tsv
+  Former: 48135
+
+═══════════════════════════════════════════════════
+  2. Generera om de/Adjektiv (~55 anrop) — 12:07:37
+═══════════════════════════════════════════════════
+    [stub] generera --språk de --ordklass Adjektiv --modell claude-opus-5 --verbose
+
+═══════════════════════════════════════════════════
+  3. Generera om de/Verb (~20 anrop) — 12:07:37
+═══════════════════════════════════════════════════
+    [stub] generera --språk de --ordklass Verb --modell claude-opus-5 --verbose
+
+  Kontroll — stark dativ mask komparativ ska sluta på -em:
+    alt → älterem
+    durstig → durstigerm
+    blau → blauerm
+
+═══════════════════════════════════════════════════
+  4. Granska resten — 12:07:37
+═══════════════════════════════════════════════════
+  Kvittofilen rensad från omgenererade tyska lexem.
+  Försök 1/4 — 12:07:37
+    [stub] granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt --modell claude-sonnet-5 --verbose
+
+═══════════════════════════════════════════════════
+  5. Rensa inaktuella rader ur rapporten — 12:07:37
+═══════════════════════════════════════════════════
+  2147 rader → 1579 aktuella
+
+═══════════════════════════════════════════════════
+  6. Sammanfattning — 12:07:39
+═══════════════════════════════════════════════════
+  Kvar att granska: 3144 lexem
+  fel i de: 1489
+  fel i en: 4
+  fel i es: 27
+
+═══════════════════════════════════════════════════
+  7. Skicka tillbaka — 12:07:39
+═══════════════════════════════════════════════════
+✓ Exporterade 48135 Former-rader → ordbok/former.tsv
