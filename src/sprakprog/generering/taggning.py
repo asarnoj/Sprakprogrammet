@@ -24,12 +24,25 @@ dem kräver per-språk-kunskap som hör till renderarfasen.
 from __future__ import annotations
 
 import json
+import os
 import math
 import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from .pipeline import _anropa_llm, _språknamn
+
+def _vägra_i_claude_code() -> str | None:
+    """Samma spärr som generera_former har.
+
+    Anropen går via `claude -p` som subprocess. Körs det inifrån Claude Code
+    hänger subprocessen i stället för att svara.
+    """
+    if os.environ.get("CLAUDECODE"):
+        return ("Kör inte det här kommandot inifrån Claude Code — öppna ett "
+                "vanligt terminalfönster och kör det därifrån.")
+    return None
+
 
 STANDARD_TAGGNINGSMODELL = "claude-opus-5"
 
@@ -153,6 +166,8 @@ def tagga_koncept(
 ) -> Taggningsstatistik:
     """Fyll gradbarhet, räknebar, valens och semantik där de saknas."""
     stat = Taggningsstatistik()
+    if (v := _vägra_i_claude_code()):
+        stat.fel.append(v); return stat
 
     poster = conn.execute("""
         SELECT k.id, k.nyckel, k.ordklass,
@@ -297,6 +312,8 @@ def tagga_monster(
 ) -> Taggningsstatistik:
     """Bygg universella Mönster + MönsterKrav för alla verbkoncept."""
     stat = Taggningsstatistik()
+    if (v := _vägra_i_claude_code()):
+        stat.fel.append(v); return stat
 
     poster = conn.execute("""
         SELECT k.id, k.nyckel, k.valens,
@@ -452,6 +469,8 @@ def tagga_lexem(
     hamnar adjektivet på fel sida i de romanska språken.
     """
     stat = Taggningsstatistik()
+    if (v := _vägra_i_claude_code()):
+        stat.fel.append(v); return stat
     satser: list[str] = []
 
     for språk in ("sv", "de", "fr", "es", "it"):
