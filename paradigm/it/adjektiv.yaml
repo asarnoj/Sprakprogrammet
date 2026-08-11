@@ -25,46 +25,44 @@ celler:
     genus: UtrMask
     numerus: Sg
     grad: Pos
-    # "grande", "piccolo", "buono", "bello".
+    not: "'grande', 'piccolo', 'buono', 'bello'."
 
   - id: pos_fem_sg
     genus: NeuFem
     numerus: Sg
     grad: Pos
-    # "grande" (identisk för tvåformiga), "piccola", "buona", "bella".
+    not: "'grande' (identisk för tvåformiga), 'piccola', 'buona', 'bella'."
 
   - id: pos_msc_pl
     genus: UtrMask
     numerus: Pl
     grad: Pos
-    # "grandi", "piccoli", "buoni", "bei/begli".
+    not: "'grandi', 'piccoli', 'buoni', 'bei/begli'."
 
   - id: pos_fem_pl
     genus: NeuFem
     numerus: Pl
     grad: Pos
-    # "grandi" (identisk för tvåformiga), "piccole", "buone", "belle".
+    not: "'grandi' (identisk för tvåformiga), 'piccole', 'buone', 'belle'."
 
   # ── Komparativ (bara oregelbundna, genus-neutral) ──────────────────
   - id: komp_sg
     numerus: Sg
     grad: Komp
-    # "migliore", "peggiore", "maggiore", "minore".
-    # Gäller m+f — genus sätts ej (NULL i Former).
+    not: "'migliore', 'peggiore', 'maggiore', 'minore'. Gäller m+f — genus sätts ej (NULL i Former)."
 
   - id: komp_pl
     numerus: Pl
     grad: Komp
-    # "migliori", "peggiori", "maggiori", "minori".
+    not: "'migliori', 'peggiori', 'maggiori', 'minori'."
 
   # ── Superlativ (bara oregelbundna, genus-neutral) ──────────────────
   - id: superl_sg
     numerus: Sg
     grad: Superl
-    # Identisk med komp för dessa oregelbundna (migliore = bäst och bättre).
-    # Superlativ uttrycks med artikel: "il migliore". Lagras utan artikel.
+    not: "Identisk med komp för dessa oregelbundna (migliore = bäst och bättre). Superlativ uttrycks med artikel: 'il migliore'. Lagras utan artikel."
 
   - id: superl_pl
     numerus: Pl
     grad: Superl
-    # "migliori" — identisk med komp pl → bitmask-OR-kollaps vid lagring.
+    not: "'migliori' — identisk med komp pl → bitmask-OR-kollaps vid lagring."

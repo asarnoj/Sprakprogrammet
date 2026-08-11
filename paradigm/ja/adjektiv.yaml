@@ -28,33 +28,27 @@ celler:
   - id: jisho
     tempus: [Inf]
     grad: Pos
-    # い-adj: 高い, 大きい. な-adj: 静か, 便利.
-    # Grundform / uppslagsform.
+    not: "い-adj: 高い, 大きい. な-adj: 静か, 便利. Grundform / uppslagsform."
 
   - id: ta
     tempus: [Pret]
     grad: Pos
-    # い-adj past: 高かった, 大きかった.
-    # Saknas för な-adj (kopula-past: 静かだった — analytisk).
+    not: "い-adj past: 高かった, 大きかった. Saknas för な-adj (kopula-past: 静かだった — analytisk)."
 
   - id: nai
     tempus: [Neg]
     grad: Pos
-    # い-adj negative: 高くない, 大きくない.
-    # Saknas för な-adj (kopula-neg: 静かではない — analytisk).
+    not: "い-adj negative: 高くない, 大きくない. Saknas för な-adj (kopula-neg: 静かではない — analytisk)."
 
   - id: ku
     tempus: [Te]
     grad: Pos
-    # い-adj adverbial/te-form: 高く, 大きく.
-    # Används adverbialt ("高く跳ぶ") och i konstruktioner (〜くなる, 〜くて).
-    # Saknas för な-adj (kopula-te: 静かで — analytisk).
+    not: "い-adj adverbial/te-form: 高く, 大きく. Används adverbialt ('高く跳ぶ') och i konstruktioner (〜くなる, 〜くて). Saknas för な-adj (kopula-te: 静かで — analytisk)."
 
   - id: kereba
     tempus: [Kond]
     grad: Pos
-    # い-adj conditional (ば-form): 高ければ, 大きければ.
-    # "Om det är högt/stort". Saknas för な-adj (静かなら — analytisk).
+    not: "い-adj conditional (ば-form): 高ければ, 大きければ. 'Om det är högt/stort'. Saknas för な-adj (静かなら — analytisk)."
 
   # Komparativ och superlativ: japanska saknar morfologisk komparation.
   # "Mer X" = もっとX / Xの方が; "mest X" = 一番X — analytiska konstruktioner.

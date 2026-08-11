@@ -18,13 +18,12 @@ meta:
 celler:
   - id: nom
     kasus: [Nom]
-    # "who", "what", "which".
+    not: "'who', 'what', 'which'."
 
   - id: obl
     kasus: [Ack, Dat]
-    # "whom" (formellt), "what", "which".
-    # För "what" och "which": identisk med nom → bitmask-OR-kollaps.
+    not: "'whom' (formellt), 'what', 'which'. För 'what' och 'which': identisk med nom → bitmask-OR-kollaps."
 
   - id: gen
     kasus: [Gen]
-    # "whose". Saknas för "what" och "which" (analytiskt: "which one's" är ovanligt).
+    not: "'whose'. Saknas för 'what' och 'which' (analytiskt: 'which one's' är ovanligt)."

@@ -25,37 +25,29 @@ celler:
   - id: nom_sg
     kasus: [Nom]
     numerus: Sg
-    # "Mann", "Frau", "Kind".
+    not: "'Mann', 'Frau', 'Kind'."
 
   - id: akk_sg
     kasus: [Ack]
     numerus: Sg
-    # = nom_sg för de flesta (Fem alltid, Mask/Neut stark).
-    # ≠ nom_sg för n-Deklination: "den Menschen".
+    not: "= nom_sg för de flesta (Fem alltid, Mask/Neut stark). ≠ nom_sg för n-Deklination: 'den Menschen'."
 
   - id: dat_sg
     kasus: [Dat]
     numerus: Sg
-    # Fem/mask stark/neut: = nom_sg (Modern tyska; -e är arkaiskt).
-    # n-Deklination: "dem Menschen".
+    not: "Fem/mask stark/neut: = nom_sg (Modern tyska; -e är arkaiskt). n-Deklination: 'dem Menschen'."
 
   - id: gen_sg
     kasus: [Gen]
     numerus: Sg
-    # Mask/Neut: +(e)s ("des Mannes", "des Kindes").
-    # Fem: = nom_sg ("der Frau").
-    # n-Deklination: "des Menschen".
+    not: "Mask/Neut: +(e)s ('des Mannes', 'des Kindes'). Fem: = nom_sg ('der Frau'). n-Deklination: 'des Menschen'."
 
   - id: nom_akk_gen_pl
     kasus: [Nom, Ack, Gen]
     numerus: Pl
-    # Nästan alltid identiska tre former → lagras som en rad (kasus=11).
-    # "die Männer / die Männer / der Männer".
-    # Undantag: Gen pl av n-Deklination = "der Menschen" (= nom_pl) ✓.
+    not: "Nästan alltid identiska tre former → lagras som en rad (kasus=11). 'die Männer / die Männer / der Männer'. Undantag: Gen pl av n-Deklination = 'der Menschen' (= nom_pl) ✓."
 
   - id: dat_pl
     kasus: [Dat]
     numerus: Pl
-    # = nom_pl + -n om inte redan -n-final.
-    # "den Männern", "den Frauen", "den Kindern".
-    # Undantag: ord som slutar på -s tar ej extra -n (plural "Autos" → "Autos").
+    not: "= nom_pl + -n om inte redan -n-final. 'den Männern', 'den Frauen', 'den Kindern'. Undantag: ord som slutar på -s tar ej extra -n (plural 'Autos' → 'Autos')."

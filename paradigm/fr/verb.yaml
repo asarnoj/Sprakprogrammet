@@ -268,14 +268,13 @@ celler:
   - id: inf
     tempus: [Inf]
     diates: Aktiv
-    # "parler", "finir", "vendre".
+    not: "'parler', 'finir', 'vendre'."
 
   # ── Participe présent ──────────────────────────────────────────────
   - id: pres_part
     tempus: [Te]
     diates: Aktiv
-    # "parlant", "finissant". Invariant (kongruerar ej som adjektiv i
-    # participialgrupp; gérondif bildas analytiskt: "en parlant").
+    not: "'parlant', 'finissant'. Invariant (kongruerar ej som adjektiv i participialgrupp; gérondif bildas analytiskt: 'en parlant')."
 
   # ── Participe passé ────────────────────────────────────────────────
   # 4 former för kongruens med être-auxiliaire och framförställt direkt objekt.
@@ -284,25 +283,25 @@ celler:
     genus: UtrMask
     numerus: Sg
     diates: Aktiv
-    # "parlé", "fini", "fait".
+    not: "'parlé', 'fini', 'fait'."
 
   - id: pp_fem_sg
     tempus: [Sup]
     genus: NeuFem
     numerus: Sg
     diates: Aktiv
-    # "parlée", "finie", "faite".
+    not: "'parlée', 'finie', 'faite'."
 
   - id: pp_msc_pl
     tempus: [Sup]
     genus: UtrMask
     numerus: Pl
     diates: Aktiv
-    # "parlés", "finis", "faits".
+    not: "'parlés', 'finis', 'faits'."
 
   - id: pp_fem_pl
     tempus: [Sup]
     genus: NeuFem
     numerus: Pl
     diates: Aktiv
-    # "parlées", "finies", "faites".
+    not: "'parlées', 'finies', 'faites'."

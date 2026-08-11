@@ -98,12 +98,40 @@ def _former_per_cell(rader: list[sqlite3.Row], slot: Slot) -> dict[str, str]:
     """
     ut: dict[str, str] = {}
     for cell in slot.celler:
-        träff = next(
-            (r["form"] for r in rader
-             if all(_matchar(r[a], cell.axlar.get(a), a) for a in ALLA_AXLAR)),
-            "",
-        )
-        ut[cell.id] = träff
+        # Flera rader kan matcha: en kollapsad rad har fler bitar satta än
+        # cellen kräver, och en rad för en ANNAN cell kan därför också vara
+        # en supermängd. es subj_imperf_1sg (Vol|Imperf = 5120) matchar
+        # subj_1sg (Vol = 1024) på det viset, och gav 595 falska träffar i
+        # granskningen 2026-08-10. Välj därför den närmaste matchningen:
+        # exakt träff först, annars den med minst överskjutande bitar.
+        kandidater = [
+            r for r in rader
+            if all(_matchar(r[a], cell.axlar.get(a), a) for a in ALLA_AXLAR)
+        ]
+        if not kandidater:
+            ut[cell.id] = ""
+            continue
+
+        # Avståndet räcker inte som enda kriterium: för es subj_3pl ligger
+        # både "acepten" (Vol|Imp) och "aceptaran" (Vol|Imperf) en bit bort.
+        # Skillnaden är att aceptaran är den EXAKTA avtrycket av en annan
+        # cell (subj_imperf_3pl) och alltså redan har en ägare, medan 1040
+        # bara är en kollaps utan egen cell. Rader som ägs av en annan cell
+        # väljs därför sist.
+        andras = {
+            tuple(c.axlar.get(a) for a in ALLA_AXLAR)
+            for c in slot.celler if c.id != cell.id
+        }
+
+        def poäng(r: sqlite3.Row) -> tuple[int, int]:
+            ägs_av_annan = tuple(r[a] for a in ALLA_AXLAR) in andras
+            avstånd = sum(
+                bin((r[a] or 0) ^ (cell.axlar.get(a) or 0)).count("1")
+                for a in INTFLAG_AXLAR
+            )
+            return (int(ägs_av_annan), avstånd)
+
+        ut[cell.id] = min(kandidater, key=poäng)["form"]
     return ut
 
 

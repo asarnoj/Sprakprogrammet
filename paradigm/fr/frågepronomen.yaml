@@ -16,29 +16,28 @@ meta:
 celler:
   - id: nom
     kasus: [Nom]
-    # "qui" (animate subj), "qu'est-ce qui" (inanimate subj → analytisk).
+    not: "'qui' (animate subj), 'qu'est-ce qui' (inanimate subj → analytisk)."
 
   - id: obl
     kasus: [Ack, Dat]
-    # "qui" (animate obj), "que/quoi" (inanimate obj).
-    # OBS: "qui" är identisk med nom för animata → bitmask-OR-kollaps.
+    not: "'qui' (animate obj), 'que/quoi' (inanimate obj). OBS: 'qui' är identisk med nom för animata → bitmask-OR-kollaps."
 
   - id: quel_msc_sg
     genus: UtrMask
     numerus: Sg
-    # "quel". Används som determinant ("quel livre?") och predikativt.
+    not: "'quel'. Används som determinant ('quel livre?') och predikativt."
 
   - id: quel_fem_sg
     genus: NeuFem
     numerus: Sg
-    # "quelle".
+    not: "'quelle'."
 
   - id: quel_msc_pl
     genus: UtrMask
     numerus: Pl
-    # "quels".
+    not: "'quels'."
 
   - id: quel_fem_pl
     genus: NeuFem
     numerus: Pl
-    # "quelles".
+    not: "'quelles'."

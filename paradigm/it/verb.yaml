@@ -293,8 +293,7 @@ celler:
     person: P3
     numerus: Sg
     diates: Aktiv
-    # Lei-imperativo = congiuntivo presente P3sg för de flesta verb.
-    # Bitmask-OR-kollaps sker automatiskt vid identisk form.
+    not: "Lei-imperativo = congiuntivo presente P3sg för de flesta verb. Bitmask-OR-kollaps sker automatiskt vid identisk form."
 
   - id: imp_1pl
     tempus: [Imp]
@@ -317,7 +316,7 @@ celler:
   - id: gerundio
     tempus: [Te]
     diates: Aktiv
-    # "parlando", "finendo", "partendo". Invariant.
+    not: "'parlando', 'finendo', 'partendo'. Invariant."
 
   # ── Participio passato ─────────────────────────────────────────────
   - id: pp_msc_sg
@@ -325,25 +324,25 @@ celler:
     genus: UtrMask
     numerus: Sg
     diates: Aktiv
-    # "parlato", "finito", "fatto".
+    not: "'parlato', 'finito', 'fatto'."
 
   - id: pp_fem_sg
     tempus: [Sup]
     genus: NeuFem
     numerus: Sg
     diates: Aktiv
-    # "parlata", "finita", "fatta".
+    not: "'parlata', 'finita', 'fatta'."
 
   - id: pp_msc_pl
     tempus: [Sup]
     genus: UtrMask
     numerus: Pl
     diates: Aktiv
-    # "parlati", "finiti", "fatti".
+    not: "'parlati', 'finiti', 'fatti'."
 
   - id: pp_fem_pl
     tempus: [Sup]
     genus: NeuFem
     numerus: Pl
     diates: Aktiv
-    # "parlate", "finite", "fatte".
+    not: "'parlate', 'finite', 'fatte'."
