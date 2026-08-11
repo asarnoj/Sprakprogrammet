@@ -22,6 +22,16 @@
 # billiga och felen där är systematiska (imperativens pronomen, konjunktiv
 # II-omljud).
 
+# Modellval. Nattkörning 1 gjorde ~388 opus-anrop innan kvoten tog slut.
+# Natt 2 skulle bli ~400 med opus rakt igenom och ta slut på samma sätt.
+# Därför: opus BARA till omgenereringen av tyska, som är den dyra biten
+# kvalitetsmässigt (16,9 % fel). Granskningen går på sonnet — spanskan och
+# engelskan låg på 0,3–0,4 % fel, så där behövs ingen tung modell.
+#
+# Vill du styra om: MODELL_GEN=... MODELL_GRANSK=... ./kör_natt2.sh
+MODELL_GEN="${MODELL_GEN:-claude-opus-5}"
+MODELL_GRANSK="${MODELL_GRANSK:-claude-sonnet-5}"
+
 set -uo pipefail
 cd "$(dirname "$0")"
 
@@ -32,6 +42,8 @@ steg() { echo; echo "═══════════════════�
 fatal() { echo "AVBRYTER: $*" >&2; exit 1; }
 
 steg "0. Förberedelser"
+
+echo "  Generering: $MODELL_GEN     Granskning: $MODELL_GRANSK"
 
 [ -n "${ANTHROPIC_API_KEY:-}" ] && fatal "ANTHROPIC_API_KEY är satt — ta bort den."
 command -v claude >/dev/null || fatal "'claude' hittades inte."
@@ -53,12 +65,12 @@ steg "2. Generera om de/Adjektiv med starkare modell (~55 anrop)"
 # 16,9 % fel med haiku. Instruktionen har nu de fullständiga
 # ändelsetabellerna; kombinationen med en starkare modell ska ta ner det.
 # Utan --fortsätt: formerna SKA skrivas över.
-ordbok generera --språk de --ordklass Adjektiv --modell claude-opus-5 --verbose \
+ordbok generera --språk de --ordklass Adjektiv --modell "$MODELL_GEN" --verbose \
   || echo "  VARNING: se ovan."
 
 steg "3. Generera om de/Verb (~20 anrop)"
 
-ordbok generera --språk de --ordklass Verb --modell claude-opus-5 --verbose \
+ordbok generera --språk de --ordklass Verb --modell "$MODELL_GEN" --verbose \
   || echo "  VARNING: se ovan."
 
 echo
@@ -81,8 +93,10 @@ grep -vxF -f /tmp/omgjorda.tsv ordbok/granskning.tsv.klara > /tmp/klara.ny || tr
 mv /tmp/klara.ny ordbok/granskning.tsv.klara
 echo "  kvitterade kvar: $(wc -l < ordbok/granskning.tsv.klara)"
 
-ordbok granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt --verbose \
-  || echo "  VARNING: avbröts. Kör om skriptet — kvittofilen gör att den tar vid."
+ordbok granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt \
+  --modell "$MODELL_GRANSK" --verbose \
+  || echo "  Granskningen avbröts (troligen slut på kvot). Allt färdigt är
+  sparat — kör skriptet igen i morgon natt, det tar vid där det slutade."
 
 steg "5. Rensa inaktuella rader ur rapporten"
 

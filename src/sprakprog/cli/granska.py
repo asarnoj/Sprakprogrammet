@@ -101,6 +101,11 @@ def kör(args: argparse.Namespace) -> int:
                 verbose=args.verbose,
             )
             stat.skriv_ut()
+            if stat.avbruten:
+                print("\n  Avbryter hela granskningen — se felet ovan.",
+                      file=sys.stderr)
+                conn.close()
+                return 2
             summa_fel += stat.avvikelser_fel
             summa_osäkra += stat.avvikelser_osäkra
             summa_lexem += stat.granskade_lexem

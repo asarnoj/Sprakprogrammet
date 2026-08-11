@@ -35,6 +35,12 @@ from .pipeline import (
 # klart starkare modell än genereringens standard. --modell för att sänka.
 STANDARD_GRANSKNINGSMODELL = "claude-opus-5"
 
+# När prenumerationens kvot tar slut misslyckas VARJE följande anrop. Utan
+# en spärr fortsätter körningen genom alla återstående batchar och gör
+# hundratals meningslösa anrop, vilket dränker loggen och döljer var det
+# faktiskt stannade. Nattkörningen 2026-08-10 slutade så.
+MAX_FEL_I_RAD = 5
+
 RAPPORT_KOLUMNER = (
     "språk", "ordklass", "koncept", "lemma", "cell",
     "nuvarande", "förslag", "allvar", "motivering",
@@ -56,6 +62,7 @@ class Avvikelse:
 
 @dataclass
 class Granskningsstatistik:
+    avbruten: bool = False      # spärren slog till — sluta, kör om senare
     granskade_lexem: int = 0
     granskade_former: int = 0
     avvikelser_fel: int = 0
@@ -307,6 +314,7 @@ def granska_former(
         if ny_fil:
             skrivare.writerow(RAPPORT_KOLUMNER)
 
+        fel_i_rad = 0
         antal_batchar = math.ceil(len(poster) / batch_storlek)
         for i in range(antal_batchar):
             batch = poster[i * batch_storlek:(i + 1) * batch_storlek]
@@ -317,8 +325,17 @@ def granska_former(
             prompt = _bygg_granskningsprompt(batch, slot, inv_legend, instruktioner)
             try:
                 svar = _anropa_llm(prompt, modell)
+                fel_i_rad = 0
             except Exception as e:
+                fel_i_rad += 1
                 stat.fel.append(f"LLM-fel för batch {[l for l, _ in batch]}: {e}")
+                if fel_i_rad >= MAX_FEL_I_RAD:
+                    stat.fel.append(
+                        f"{MAX_FEL_I_RAD} fel i rad — avbryter. Trolig orsak: "
+                        f"kvoten är slut. Kör om med --fortsätt när den återställts."
+                    )
+                    stat.avbruten = True
+                    return stat
                 continue
 
             batch_dict = dict(batch)
