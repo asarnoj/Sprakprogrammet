@@ -113,3 +113,62 @@ Already up to date.
   7. Skicka tillbaka — 12:07:44
 ═══════════════════════════════════════════════════
 ✓ Exporterade 48135 Former-rader → ordbok/former.tsv
+  ✓ Pushat.
+
+ALLT KLART 2026-08-11 12:07.
+
+═══════════════════════════════════════════════════
+  0. Förberedelser — 12:07:47
+═══════════════════════════════════════════════════
+  Generering: claude-opus-5     Granskning: claude-sonnet-5
+  Redan klart: 
+Already up to date.
+
+═══════════════════════════════════════════════════
+  1. Bygg om databasen — 12:07:48
+═══════════════════════════════════════════════════
+✓ Importerade 733 koncept och 5130 lexem
+  bas_kärna: 167 koncept
+  grundord: 566 koncept
+  → sprak.db
+✓ Importerade 48135 Former-rader från ordbok/former.tsv
+  Former: 48135
+
+═══════════════════════════════════════════════════
+  2. Generera om de/Adjektiv (~55 anrop) — 12:07:49
+═══════════════════════════════════════════════════
+    [stub] generera --språk de --ordklass Adjektiv --modell claude-opus-5 --verbose
+  Misslyckades — försöker igen nästa körning.
+
+═══════════════════════════════════════════════════
+  3. Generera om de/Verb (~20 anrop) — 12:07:49
+═══════════════════════════════════════════════════
+    [stub] generera --språk de --ordklass Verb --modell claude-opus-5 --verbose
+  Misslyckades — försöker igen nästa körning.
+
+═══════════════════════════════════════════════════
+  4. Granska resten — 12:07:49
+═══════════════════════════════════════════════════
+  Försök 1/2 — 12:07:49
+    [stub] granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt --modell claude-sonnet-5 --verbose
+  Avbröts — troligen slut på kvot. Väntar 0 min.
+  Försök 2/2 — 12:07:50
+    [stub] granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt --modell claude-sonnet-5 --verbose
+
+═══════════════════════════════════════════════════
+  5. Rensa inaktuella rader ur rapporten — 12:07:50
+═══════════════════════════════════════════════════
+  1579 rader → 1579 aktuella
+
+═══════════════════════════════════════════════════
+  6. Sammanfattning — 12:07:51
+═══════════════════════════════════════════════════
+  Kvar att granska: 3144 lexem
+  fel i de: 1489
+  fel i en: 4
+  fel i es: 27
+
+═══════════════════════════════════════════════════
+  7. Skicka tillbaka — 12:07:51
+═══════════════════════════════════════════════════
+✓ Exporterade 48135 Former-rader → ordbok/former.tsv
