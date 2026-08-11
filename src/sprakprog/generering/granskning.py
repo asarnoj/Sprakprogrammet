@@ -243,12 +243,20 @@ def granska_former(
     for r in rader:
         per_lexem.setdefault(r["lexem_id"], []).append(r)
 
-    # Redan granskade lexem hoppas över — rapporten är återupptagbar.
+    # Redan granskade lexem hoppas över.
+    #
+    # Rapporten duger INTE som facit för vad som är gjort — den innehåller
+    # bara avvikelser. Ett lexem som granskades utan anmärkning saknas där
+    # och skulle granskas om vid varje --fortsätt. I nattkörningen
+    # 2026-08-10 gällde det 233 av 259 tyska substantiv, alltså ~90 % av
+    # arbetet. Därför en separat kvittofil med ett lexem per rad.
+    klarfil = rapport.with_suffix(rapport.suffix + ".klara")
     redan: set[tuple[str, str]] = set()
-    if fortsätt and rapport.exists():
-        with rapport.open(encoding="utf-8", newline="") as fh:
-            for rad in csv.DictReader(fh, delimiter="\t"):
-                redan.add((rad["språk"], rad["lemma"]))
+    if fortsätt and klarfil.exists():
+        for rad in klarfil.read_text(encoding="utf-8").splitlines():
+            språk_, _, lemma_ = rad.partition("\t")
+            if lemma_:
+                redan.add((språk_, lemma_))
 
     poster: list[tuple[str, dict[str, str]]] = []
     koncept_per_lemma: dict[str, str] = {}
@@ -265,7 +273,8 @@ def granska_former(
         return stat
 
     ny_fil = not rapport.exists()
-    with rapport.open("a", encoding="utf-8", newline="") as fh:
+    with rapport.open("a", encoding="utf-8", newline="") as fh, \
+            klarfil.open("a", encoding="utf-8") as kf:
         skrivare = csv.writer(fh, delimiter="\t", lineterminator="\n")
         if ny_fil:
             skrivare.writerow(RAPPORT_KOLUMNER)
@@ -303,6 +312,10 @@ def granska_former(
                 else:
                     stat.avvikelser_osäkra += 1
                 skrivare.writerow([getattr(a, k) for k in RAPPORT_KOLUMNER])
-            fh.flush()      # rapporten ska vara läsbar även om körningen avbryts
+
+            # Kvittera batchen som granskad, oavsett om något hittades.
+            for lemma, _ in batch:
+                kf.write(f"{slot.språk}\t{lemma}\n")
+            fh.flush(); kf.flush()   # läsbart även om körningen avbryts
 
     return stat

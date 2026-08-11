@@ -123,7 +123,8 @@ fi
 
 steg "7. Skicka tillbaka"
 
-git add -A ordbok/granskning.tsv ordbok/migrationer/ 2>/dev/null
+git add -A ordbok/granskning.tsv ordbok/granskning.tsv.klara \
+        ordbok/migrationer/ natt.log 2>/dev/null
 if git diff --cached --quiet; then
   echo "  Inget nytt att committa."
 else
