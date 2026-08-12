@@ -121,6 +121,51 @@ ge en bok       passerar
 köpa ett hus    passerar
 ```
 
+### Adjektivrelationen — mätning
+
+`Koncept.attributkrav`, en bitmask som HUVUDORDET måste uppfylla. 66 av 111
+adjektiv har krav, 45 passar allt (*bra*, *ny*, *viktig*).
+
+```
+adjektiv × substantiv   28 749 kombinationer
+passerar                20 236   (70 %)
+avvisas                  8 513   (30 %)
+```
+
+```
+en glad bok     AVVISAS   kräver ANIMAT, har KONKRET+KOMMUNIKAT+…
+en röd idé      AVVISAS   kräver KONKRET, har ABSTRAKT+ÖVERLÅTBAR
+en dyr sol      AVVISAS   kräver ÖVERLÅTBAR, har KONKRET+NATURFENOMEN
+en öppen idé    AVVISAS   kräver ÖPPNINGSBAR
+ett glatt barn  passerar
+en dyr bok      passerar
+en öppen dörr   passerar
+```
+
+**Taggat per ord, inte per grupp.** Substantivens kategorier låg i
+konceptnycklarnas prefix och kunde lyftas rakt in. Adjektivens gör det inte:
+`adj_ev_` innehåller både *snäll* (kräver levande) och *viktig* (kräver
+ingenting). Samma lärdom som ÖPPNINGSBAR gav — klassvis taggning är
+undantaget, inte regeln.
+
+Två medvetna utelämnanden: storlek (*stor*, *lång*, *kort*) kräver
+ingenting, eftersom "en stor idé" och "kort tid" är standardsvenska —
+storlek är metaforiskt produktiv på ett sätt som form inte är. Och
+*lätt* utelämnades ur temperaturgruppen: "ett lätt problem" är korrekt.
+
+### En bugg i taggningen, hittad av valideringen
+
+Första versionen av `restriktioner.sql` maskade med `semantik & 65535` för
+att matcha klasser. Den masken stryker NATURFENOMEN (65536) på köpet, så
+solen matchades som ren KONKRET och fick både ÖVERLÅTBAR och HANTERBAR.
+Tio ord drabbades.
+
+Det syntes inte i någon statistikrad. Det syntes i att `en dyr sol`
+passerade. Migrationen nollställer nu de tre nya bitarna först och är
+därmed idempotent.
+
+Mätningen 36 % gjordes med felet inne; rätt siffra är 37 %.
+
 ### De 34 otaggade objektsslotarna — mest korrekt otaggade
 
 Förra mätningen flaggade 34 objektsslots utan krav som ett hål. Vid

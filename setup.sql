@@ -70,7 +70,19 @@ CREATE TABLE Koncept (
     person       INTEGER CHECK (person  IN (1, 2, 3)),
     numerus      INTEGER CHECK (numerus IN (1, 2)),
     räknebar     INTEGER CHECK (räknebar IN (0, 1)),
-    semantik     INTEGER
+    semantik     INTEGER,
+    /* attributkrav : ENDAST Adjektiv. Bitmask som HUVUDORDET måste uppfylla
+       för att adjektivet ska få beskriva det. "glad" kräver ANIMAT, "röd"
+       kräver KONKRET, "dyr" kräver ÖVERLÅTBAR, "öppen" kräver ÖPPNINGSBAR.
+       NULL = adjektivet kan beskriva vad som helst (bra, ny, viktig).
+
+       Ligger som kolumn och INTE i MönsterKrav, trots att det ser ut som
+       samma sak. MönsterKrav beskriver argument ett ord STYR — de platser
+       verbet öppnar. Det här är motsatt riktning: en begränsning av vad
+       adjektivet får fästa på. Att trycka in det i MönsterKrav.slot hade
+       krävt en attribut-roll som inte betyder samma sak som de andra åtta.
+       Se paradigm/RESTRIKTIONER.md. */
+    attributkrav INTEGER
 );
 
 CREATE INDEX idx_koncept_ordklass ON Koncept(ordklass);
