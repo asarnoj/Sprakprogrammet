@@ -411,7 +411,22 @@ egna bitar.
 4. Adjektivrelationen — behöver egen representation, `MönsterKrav.slot` har
    ingen `attribut`-roll. Åtta adjektivklasser × 21 substantivklasser.
 5. Adverb → tempus. Tidsadverben behöver skiljas åt.
-6. Preposition → komplement, determinerare → räknebarhet.
+6. ~~Preposition → komplement, determinerare → räknebarhet.~~
+   **Går inte att göra ännu — och det är inte datans fel.**
+
+   `Mening` har fält för verb, subjekt, objekt, io, adverbial, tid och
+   aspekt. Ingenting annat. Det finns ingen prepositionsfras — `adverbial`
+   är en lista av adverbkoncept, inte fraser — så "på bordet" går inte att
+   uttrycka, och därmed inte heller att begränsa. Samma sak med
+   räknebarheten: `Nominalfras` har inget fält för räkneord, så "två ris"
+   kan inte formuleras.
+
+   Datan står redan färdig för båda: 20 av 26 prepositioner har semantik,
+   och alla 259 substantiv har `räknebar`. Det som saknas är plats i
+   specifikationen att sätta orden på.
+
+   De två posterna flyttar därför till meningskomplexiteten, där de hör
+   hemma. Restriktionsarbetet är klart för den meningsform som finns.
 7. Mätning efter varje steg: hur mycket strunt är kvar?
 
 Uppskattning: 8–12 arbetspass i den storlek projektet kört hittills.
