@@ -1,0 +1,102 @@
+"""Engelsk renderare.
+
+Morfologiskt det tunnaste språket i uppsättningen: inget genus, ingen
+kasus utom på pronomen, ingen adjektivkongruens. Det enda som kongruerar
+är presens tredje person singular (gives).
+
+Två saker är ändå värda att notera. Artikeln a/an väljs på nästa ords
+ljudform, samma sorts sandhi som franskans elision — och lika omöjlig att
+lagra som en cell. Och ordföljden är dativväxlad: "gave her brother a book"
+sätter det indirekta objektet först, utan preposition, precis som svenskan.
+"""
+
+from __future__ import annotations
+
+import sqlite3
+
+from .spec import (
+    Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+)
+from .uppslag import Uppslag
+
+VOKAL = set("aeiou")
+
+
+class EngelskRenderare:
+    def __init__(self, conn: sqlite3.Connection) -> None:
+        self.u = Uppslag(conn, "en")
+        self.conn = conn
+
+    def nominalfras(self, nf: Nominalfras, roll: str = "objekt") -> list[str]:
+        huvud = self.u.lexem(
+            nf.koncept, nf.referent.value if nf.referent else None)
+
+        if huvud["ordklass"] == "Pronomen":
+            if nf.attribut or nf.possessiv is not None:
+                raise RenderingsFel(
+                    f"en/{huvud['lemma']}: ett pronomen kan inte ta artikel, "
+                    f"attribut eller possessiv")
+            return [self.u.form(huvud, "nom" if roll == "subjekt" else "obl")]
+
+        ord: list[str] = []
+        if nf.possessiv is not None:
+            ord.append(self.u.form_för(nf.possessiv, "obest"))
+        elif nf.bestämdhet is Bestämdhet.BESTÄMD:
+            ord.append(self.u.form_för("artikel_bestamd", "inv"))
+        elif nf.numerus is Numerus.SG:
+            ord.append(self.u.form_för("artikel_obestamd", "inv"))
+        # Obestämd plural saknar artikel: "books".
+
+        for attribut in nf.attribut:
+            ord.append(self.u.form_för(attribut, "pos"))
+        try:
+            ord.append(self.u.form(
+                huvud, "pl" if nf.numerus is Numerus.PL else "sg"))
+        except RenderingsFel:
+            # Plurale tantum: "stairs", "scissors". Tomma singularceller ÄR
+            # markeringen — samma sak som sv pengar, de Jeans.
+            if nf.numerus is Numerus.SG and not self.u._celler(huvud).get("sg"):
+                raise RenderingsFel(
+                    f"en/{huvud['lemma']}: saknar singular helt (plurale tantum) "
+                    f"— meningen kan inte be om sg") from None
+            raise
+        return ord
+
+    def _tredje_person_sg(self, nf: Nominalfras) -> bool:
+        rad = self.conn.execute(
+            "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
+            (nf.koncept,)).fetchone()
+        person = rad["person"] if rad and rad["person"] else 3
+        if nf.numerus is Numerus.PL or (rad and rad["numerus"] == 2):
+            return False
+        return person == 3
+
+    def verbdelar(self, m: Mening) -> list[str]:
+        if m.tid is Tidsreferens.FRAMTID:
+            return [self.u.form_för("modal_ska", "pres_3sg"),
+                    self.u.form_för(m.verb, "inf_imp")]
+        if m.tid is Tidsreferens.FÖRFLUTEN:
+            return [self.u.form_för(m.verb, "pret")]
+        cell = "pres_3sg" if self._tredje_person_sg(m.subjekt) else "inf_imp"
+        return [self.u.form_för(m.verb, cell)]
+
+    def sandhi(self, ord: list[str]) -> list[str]:
+        """a → an framför vokalljud.
+
+        Approximerat på stavning. Engelskan går på LJUD, inte bokstav — "an
+        hour" men "a university" — och den skillnaden finns inte i databasen.
+        Inget ord i det nuvarande ordförrådet faller på det.
+        """
+        return [("an" if o == "a" and i + 1 < len(ord)
+                 and ord[i + 1][:1].lower() in VOKAL else o)
+                for i, o in enumerate(ord)]
+
+    def rendera(self, m: Mening) -> str:
+        ord = [*self.nominalfras(m.subjekt, "subjekt"), *self.verbdelar(m)]
+        for nf in (m.io, m.objekt):
+            if nf is not None:
+                ord += self.nominalfras(nf)
+        for adverbial in m.adverbial:
+            ord.append(self.u.form_för(adverbial, "pos"))
+        mening = " ".join(self.sandhi(ord))
+        return mening[0].upper() + mening[1:] + "."

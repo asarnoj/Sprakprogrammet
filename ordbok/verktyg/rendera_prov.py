@@ -20,8 +20,8 @@ from collections import Counter
 
 from sprakprog.rendering import (
     Bestämdhet, FranskRenderare, ItalienskRenderare, Mening, Nominalfras,
-    Numerus, RenderingsFel, SpanskRenderare, SvenskRenderare, Tidsreferens,
-    TyskRenderare,
+    EngelskRenderare, JapanskRenderare, Numerus, RenderingsFel,
+    SpanskRenderare, SvenskRenderare, Tidsreferens, TyskRenderare,
 )
 
 SPRÅK = "sv"
@@ -31,7 +31,8 @@ if "--språk" in sys.argv:
 conn = sqlite3.connect("sprak.db")
 conn.row_factory = sqlite3.Row
 r = {"sv": SvenskRenderare, "de": TyskRenderare, "fr": FranskRenderare,
-     "es": SpanskRenderare, "it": ItalienskRenderare}[SPRÅK](conn)
+     "es": SpanskRenderare, "it": ItalienskRenderare,
+     "en": EngelskRenderare, "ja": JapanskRenderare}[SPRÅK](conn)
 
 
 def koncept(ordklass, **filter):
@@ -54,11 +55,14 @@ print("═" * 72)
 print("GRAMMATISKT SVEP — samma ord, alla kombinationer")
 print("═" * 72)
 
-# de kodar neutrum som 3 (_legend.yaml: Alla), sv som 2.
-utrum = koncept("Substantiv", genus=1)[0]
-neutrum = koncept("Substantiv", genus=3 if SPRÅK == "de" else 2)[0]
-if SPRÅK in ("fr", "es", "it"):  # mask/fem, inte utrum/neutrum
-    neutrum = koncept("Substantiv", genus=2)[0]
+# Två substantiv med olika genus, där språket har genus alls. en och ja
+# saknar det helt och får två godtyckliga ord i stället.
+GENUS_2 = {"de": 3, "sv": 2, "fr": 2, "es": 2, "it": 2}
+if SPRÅK in GENUS_2:
+    utrum = koncept("Substantiv", genus=1)[0]
+    neutrum = koncept("Substantiv", genus=GENUS_2[SPRÅK])[0]
+else:
+    utrum, neutrum = koncept("Substantiv")[:2]
 subjekt = Nominalfras("pers_flicka", Bestämdhet.BESTÄMD)
 
 rader = 0
