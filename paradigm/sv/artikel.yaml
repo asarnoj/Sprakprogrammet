@@ -4,7 +4,7 @@ meta:
   språk: sv
   ordklass: Artikel
   beskrivning: >
-    Svensk obestämd artikel böjs efter genus: en/ett. Den bestämda artikeln är ett suffix på substantivet och ligger i Substantiv-paradigmet som species=Best, inte här.
+    Svensk obestämd artikel böjs efter genus: en/ett. Den bestämda artikeln är ett suffix på substantivet och ligger i Substantiv-paradigmet som species=Best, inte här. MEN svenskan har OCKSÅ en fristående bestämd artikel den/det/de, som krävs så fort en bestämd nominalfras har attribut: 'den röda boken' behöver både den fristående artikeln och suffixet. Det är svenskans dubbla bestämdhet.
 
 celler:
   - id: utr
@@ -13,3 +13,5 @@ celler:
   - id: neu
     genus: NeuFem
     numerus: Sg
+  - id: pl
+    numerus: Pl
