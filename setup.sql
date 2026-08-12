@@ -71,18 +71,6 @@ CREATE TABLE Koncept (
     numerus      INTEGER CHECK (numerus IN (1, 2)),
     räknebar     INTEGER CHECK (räknebar IN (0, 1)),
     semantik     INTEGER,
-    /* attributkrav : ENDAST Adjektiv. Bitmask som HUVUDORDET måste uppfylla
-       för att adjektivet ska få beskriva det. "glad" kräver ANIMAT, "röd"
-       kräver KONKRET, "dyr" kräver ÖVERLÅTBAR, "öppen" kräver ÖPPNINGSBAR.
-       NULL = adjektivet kan beskriva vad som helst (bra, ny, viktig).
-
-       Ligger som kolumn och INTE i MönsterKrav, trots att det ser ut som
-       samma sak. MönsterKrav beskriver argument ett ord STYR — de platser
-       verbet öppnar. Det här är motsatt riktning: en begränsning av vad
-       adjektivet får fästa på. Att trycka in det i MönsterKrav.slot hade
-       krävt en attribut-roll som inte betyder samma sak som de andra åtta.
-       Se paradigm/RESTRIKTIONER.md. */
-    attributkrav INTEGER,
     /* tempuskrav : ENDAST Adverb. Vilka TIDSREFERENSER adverbet får stå i.
        Bitarna är tempus-bitarna ur _legend.yaml: Pres=2, Pret=4, Fut=64.
        NULL = adverbet passar alla tempus.
@@ -95,6 +83,36 @@ CREATE TABLE Koncept (
 );
 
 CREATE INDEX idx_koncept_ordklass ON Koncept(ordklass);
+
+
+/* ── Attributkrav ─────────────────────────────────────────────────────────────
+   Vad ett adjektiv kräver av huvudordet det beskriver. "glad" kräver ANIMAT,
+   "röd" kräver KONKRET, "dyr" kräver ÖVERLÅTBAR. Saknas rad = adjektivet
+   passar allt (bra, ny, viktig).
+
+   EN TABELL och inte en kolumn, av samma skäl som MönsterKrav är rader:
+   flera rader för samma adjektiv betyder ELLER. "snabb" beskriver antingen
+   något som rör sig eller någon som är levande — en snabb bil, en snabb
+   pojke — och de två har ingen gemensam bit.
+
+     bitar inom EN rad  =  OCH   (konceptet måste ha alla)
+     flera RADER        =  ELLER (minst en rad måste uppfyllas)
+
+   Tillsammans är det disjunktiv normalform, vilket räcker för allt vi
+   behövt uttrycka. Se paradigm/RESTRIKTIONER.md.
+
+   Ligger separat från MönsterKrav trots att mekanismen är densamma:
+   MönsterKrav beskriver argument ett ord STYR, alltså platser verbet
+   öppnar. Det här är motsatt riktning — en begränsning av vad adjektivet
+   får fästa på.
+   ─────────────────────────────────────────────────────────────────────────── */
+CREATE TABLE Attributkrav (
+    id         INTEGER PRIMARY KEY,
+    koncept_id INTEGER NOT NULL REFERENCES Koncept(id) ON DELETE CASCADE,
+    tagg       INTEGER NOT NULL
+);
+
+CREATE INDEX idx_attributkrav_koncept ON Attributkrav(koncept_id);
 CREATE INDEX idx_koncept_källa    ON Koncept(källa);
 
 

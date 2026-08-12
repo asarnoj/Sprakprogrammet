@@ -8,12 +8,17 @@ Validering sker på SPECEN, inte på den renderade strängen, och därför en
 enda gång för alla sju språk. `MönsterKrav` hänger på det universella
 mönstret (`Mönster.språk IS NULL`), som är språkoberoende per definition.
 
-Matchningsregeln är OCH: konceptet måste ha ALLA bitar kravet anger.
+Matchningen är disjunktiv normalform:
 
-    Koncept.semantik & MönsterKrav.tagg == MönsterKrav.tagg
+    bitar inom EN rad  =  OCH   (konceptet måste ha alla)
+    flera RADER        =  ELLER (minst en rad måste uppfyllas)
 
-Regeln var odefinierad fram till 2026-08-12 — BITMASK.md §11 sade att
-masken används för att matcha, men aldrig hur. Se paradigm/RESTRIKTIONER.md.
+OCH-delen var odefinierad fram till 2026-08-12 — BITMASK.md §11 sade att
+masken används för att matcha, men aldrig hur. ELLER-delen tillkom när tre
+krav i rad visade sig omöjliga att uttrycka med enbart OCH: "bryta" tar
+KONSTRUERAD eller KROPPSDEL, "blanda" ÄTBAR eller DRICKBAR, "snabb"
+RÖRELSE eller ANIMAT. Ingen av dem har en gemensam bit, och att välja en
+bredare bit i stället släppte igenom för mycket.
 
 Vad den här modulen INTE gör: bedömer rimlighet. `Flickan köpte en dörr`
 passerar, och ska göra det enligt scope-beslutet. Kategorifel stoppas,
@@ -37,6 +42,14 @@ BITNAMN = {
     # Tillagda 2026-08-12, se paradigm/RESTRIKTIONER.md
     131072: "ÖVERLÅTBAR", 262144: "HANTERBAR", 524288: "ÖPPNINGSBAR",
 }
+
+
+def _slå_ihop(alternativ: list[int]) -> int:
+    """Bara för felmeddelandet: visa alla alternativ i en mask."""
+    mask = 0
+    for a in alternativ:
+        mask |= a
+    return mask
 
 
 def _etiketter(mask: int | None) -> str:
@@ -82,11 +95,11 @@ class Validator:
         self.conn.row_factory = sqlite3.Row
         self._krav: dict[str, dict[str, int]] = {}
         self._semantik: dict[str, int | None] = {}
-        self._attributkrav: dict[str, int | None] = {}
+        self._attributkrav: dict[str, list[int]] = {}
         self._tempuskrav: dict[str, int | None] = {}
 
-    def krav_för(self, verb: str) -> dict[str, int]:
-        """Slot → krävd bitmask, ur det universella mönstret."""
+    def krav_för(self, verb: str) -> dict[str, list[int]]:
+        """Slot → lista av alternativa bitmasker. Flera = ELLER."""
         if verb not in self._krav:
             rader = self.conn.execute(
                 """SELECT mk.slot, mk.tagg FROM Mönster m
@@ -94,8 +107,18 @@ class Validator:
                    JOIN MönsterKrav mk ON mk.mönster_id = m.id
                    WHERE k.nyckel = ? AND m.språk IS NULL
                      AND mk.tagg IS NOT NULL""", (verb,)).fetchall()
-            self._krav[verb] = {r["slot"]: r["tagg"] for r in rader}
+            ut: dict[str, list[int]] = {}
+            for r in rader:
+                ut.setdefault(r["slot"], []).append(r["tagg"])
+            self._krav[verb] = ut
         return self._krav[verb]
+
+    @staticmethod
+    def _uppfyller(faktisk: int | None, alternativ: list[int]) -> bool:
+        """Minst ETT alternativ måste vara helt uppfyllt."""
+        if faktisk is None:
+            return False
+        return any(faktisk & krav == krav for krav in alternativ)
 
     def semantik(self, koncept: str) -> int | None:
         if koncept not in self._semantik:
@@ -104,13 +127,14 @@ class Validator:
             self._semantik[koncept] = rad["semantik"] if rad else None
         return self._semantik[koncept]
 
-    def attributkrav(self, koncept: str) -> int | None:
-        """Vad ett adjektiv kräver av huvudordet. NULL = inget krav."""
+    def attributkrav(self, koncept: str) -> list[int]:
+        """Adjektivets alternativa krav på huvudordet. Tom lista = inget krav."""
         if koncept not in self._attributkrav:
-            rad = self.conn.execute(
-                "SELECT attributkrav FROM Koncept WHERE nyckel = ?",
-                (koncept,)).fetchone()
-            self._attributkrav[koncept] = rad["attributkrav"] if rad else None
+            self._attributkrav[koncept] = [
+                r["tagg"] for r in self.conn.execute(
+                    """SELECT a.tagg FROM Attributkrav a
+                       JOIN Koncept k ON k.id = a.koncept_id
+                       WHERE k.nyckel = ?""", (koncept,))]
         return self._attributkrav[koncept]
 
     def tempuskrav(self, koncept: str) -> int | None:
@@ -130,12 +154,11 @@ class Validator:
         huvud = self.semantik(nf.koncept)
         ut = []
         for attribut in nf.attribut:
-            krävd = self.attributkrav(attribut)
-            if krävd is None:
-                continue
-            if huvud is None or huvud & krävd != krävd:
+            alternativ = self.attributkrav(attribut)
+            if alternativ and not self._uppfyller(huvud, alternativ):
                 ut.append(Brott(f"{slot}.attribut={attribut}", nf.koncept,
-                                krävd, huvud))
+                                alternativ[0] if len(alternativ) == 1
+                                else _slå_ihop(alternativ), huvud))
         return ut
 
     def validera(self, m: Mening) -> list[Brott]:
@@ -147,10 +170,13 @@ class Validator:
                          ("io", m.io)):
             if nf is None or slot not in krav:
                 continue
-            krävd = krav[slot]
+            alternativ = krav[slot]
             faktisk = self.semantik(nf.koncept)
-            if faktisk is None or faktisk & krävd != krävd:
-                brott.append(Brott(slot, nf.koncept, krävd, faktisk))
+            if not self._uppfyller(faktisk, alternativ):
+                brott.append(Brott(
+                    slot, nf.koncept,
+                    alternativ[0] if len(alternativ) == 1
+                    else _slå_ihop(alternativ), faktisk))
 
         for slot, nf in (("subjekt", m.subjekt), ("objekt", m.objekt),
                          ("io", m.io)):
