@@ -132,24 +132,46 @@ def _former_per_cell(rader: list[sqlite3.Row], slot: Slot) -> dict[str, str]:
             ut[cell.id] = ""
             continue
 
-        # Avståndet räcker inte som enda kriterium: för es subj_3pl ligger
-        # både "acepten" (Vol|Imp) och "aceptaran" (Vol|Imperf) en bit bort.
-        # Skillnaden är att aceptaran är den EXAKTA avtrycket av en annan
-        # cell (subj_imperf_3pl) och alltså redan har en ägare, medan 1040
-        # bara är en kollaps utan egen cell. Rader som ägs av en annan cell
-        # väljs därför sist.
-        andras = {
+        # Avståndet räcker inte. it subj_2pl (Vol) har två kandidater två
+        # bitar bort: "assaggiate" (Pres|Imp|Vol = 1042, rätt svar) och
+        # "assaggiaste" (Pret|Vol|Imperf = 5124, congiuntivo imperfetto).
+        #
+        # Det som skiljer dem är att 5124 innehåller en ANNAN, mer specifik
+        # cells hela avtryck: subj_imperf_2pl är Vol|Imperf = 5120, och
+        # 5124 ⊇ 5120. Raden tillhör alltså den cellen, inte den här.
+        # 1042 innehåller ingen sådan mer specifik cell.
+        mer_specifika = [
             tuple(c.axlar.get(a) for a in ALLA_AXLAR)
-            for c in slot.celler if c.id != cell.id
-        }
+            for c in slot.celler
+            if c.id != cell.id
+            and all(
+                # samma IntEnum-axlar …
+                c.axlar.get(a) == cell.axlar.get(a) for a in ALLA_AXLAR
+                if a not in INTFLAG_AXLAR
+            )
+            and all(
+                # … men strikt fler IntFlag-bitar
+                (c.axlar.get(a) or 0) & (cell.axlar.get(a) or 0) == (cell.axlar.get(a) or 0)
+                for a in INTFLAG_AXLAR
+            )
+            and any(
+                (c.axlar.get(a) or 0) != (cell.axlar.get(a) or 0) for a in INTFLAG_AXLAR
+            )
+        ]
+
+        def tillhör_annan(r: sqlite3.Row) -> bool:
+            return any(
+                all((r[a] or 0) & (v or 0) == (v or 0)
+                    for a, v in zip(ALLA_AXLAR, spec) if a in INTFLAG_AXLAR)
+                for spec in mer_specifika
+            )
 
         def poäng(r: sqlite3.Row) -> tuple[int, int]:
-            ägs_av_annan = tuple(r[a] for a in ALLA_AXLAR) in andras
             avstånd = sum(
                 bin((r[a] or 0) ^ (cell.axlar.get(a) or 0)).count("1")
                 for a in INTFLAG_AXLAR
             )
-            return (int(ägs_av_annan), avstånd)
+            return (int(tillhör_annan(r)), avstånd)
 
         ut[cell.id] = min(kandidater, key=poäng)["form"]
     return ut
