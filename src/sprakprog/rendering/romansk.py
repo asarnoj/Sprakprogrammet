@@ -157,7 +157,14 @@ class RomanskRenderare:
             genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
         return person, numerus, genus
 
-    def verbdelar(self, m: Mening) -> list[str]:
+    def verbdelar(self, m: Mening, föregående_objekt=None) -> list[str]:
+        """`föregående_objekt` är (genus, numerus) för ett objektsklitikum.
+
+        Med 'ha'-hjälpverbet kongruerar participet med det direkta objektet
+        BARA när objektet står före verbet — vilket det gör just när det är
+        ett klitikum: "la fille les lui a donnés". Står objektet efter sker
+        ingen kongruens: "la fille a donné les livres".
+        """
         person, numerus, subjektsgenus = self._subjektsform(m.subjekt)
 
         sammansatt = (self.SAMMANSATT_DÅTID
@@ -180,8 +187,13 @@ class RomanskRenderare:
                     f"sammansatt dåtid kan inte byggas utan att veta vilket")
             # Particip med 'vara' kongruerar med subjektet (elle est venue,
             # è andata); med 'ha' gör det inte det när objektet står efter.
-            cell = ("pp_msc_sg" if hjälp == "ha" else
-                    f"pp_{_kön(subjektsgenus)}_{numerus}")
+            if hjälp == "vara":
+                cell = f"pp_{_kön(subjektsgenus)}_{numerus}"
+            elif föregående_objekt is not None:
+                objgenus, objnumerus = föregående_objekt
+                cell = f"pp_{_kön(objgenus)}_{_tal(objnumerus)}"
+            else:
+                cell = "pp_msc_sg"
             return [self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
                                     f"pres_{person}{numerus}"),
                     self.u.form(verb, cell)]
@@ -215,19 +227,71 @@ class RomanskRenderare:
     def eliderar(self, första: str, andra: str) -> bool:
         return False
 
+    # ── klitika ──────────────────────────────────────────────────────
+
+    DUBBLERAR = False
+
+    def _pronomen(self, nf: Nominalfras | None):
+        """Lexemet om frasen är ett rent pronomen, annars None."""
+        if nf is None:
+            return None
+        lx = self.u.lexem(nf.koncept, nf.referent.value if nf.referent else None)
+        return lx if lx["ordklass"] == "Pronomen" else None
+
+    def _klitika(self, nf: Nominalfras | None, cell: str):
+        """(form, person) för ett objektspronomen, annars None."""
+        lx = self._pronomen(nf)
+        if lx is None:
+            return None
+        rad = self.conn.execute(
+            "SELECT person FROM Koncept WHERE nyckel = ?", (nf.koncept,)).fetchone()
+        return self.u.form(lx, cell), (rad["person"] if rad else 3) or 3
+
+    def _objektskongruens(self, nf: Nominalfras | None):
+        """(genus, numerus) för ett objektsklitikum, för participkongruens."""
+        if nf is None:
+            return None
+        rad = self.conn.execute(
+            "SELECT numerus FROM Koncept WHERE nyckel = ?", (nf.koncept,)).fetchone()
+        numerus = (Numerus.PL if (rad and rad["numerus"] == 2)
+                   or nf.numerus is Numerus.PL else Numerus.SG)
+        if nf.referent is not None:
+            genus = FEMININ if nf.referent is Referentgenus.FEMININ else MASKULIN
+        else:
+            genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
+        return genus, numerus
+
+    def ordna_klitika(self, cod, coi) -> list[str]:
+        """Inbördes ordning mellan klitika framför verbet.
+
+        Franskans regel: första och andra person står först (me le donne),
+        tredje person tvärtom (le lui donne). Det är inte godtyckligt utan
+        två skilda serier som råkar dela plats.
+        """
+        if cod and coi:
+            return ([coi[0], cod[0]] if coi[1] in (1, 2)
+                    else [cod[0], coi[0]])
+        return [x[0] for x in (cod, coi) if x]
+
     # ── sats ─────────────────────────────────────────────────────────
 
-    def klitika(self, m: Mening) -> list[str]:
-        """Obligatoriska klitika före verbet. Bara spanskan har några."""
-        return []
-
     def rendera(self, m: Mening) -> str:
-        ord = [*self.nominalfras(m.subjekt, "subjekt"), *self.klitika(m),
-               *self.verbdelar(m)]
+        ord = list(self.nominalfras(m.subjekt, "subjekt"))
 
-        if m.objekt is not None:
+        # Objektspronomen realiseras som klitika FÖRE verbet, inte på
+        # substantivets plats. Det är därför nominalfras() vägrar rollen
+        # "objekt" för pronomen — de ska aldrig hamna där.
+        cod = self._klitika(m.objekt, "cod")
+        coi = self._klitika(m.io, "coi")
+        if coi is None and self.DUBBLERAR and m.io is not None:
+            coi = self._dubblering(m.io)
+
+        ord += self.ordna_klitika(cod, coi)
+        ord += self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
+
+        if m.objekt is not None and cod is None:
             ord += self.nominalfras(m.objekt, "objekt")
-        if m.io is not None:
+        if m.io is not None and self._pronomen(m.io) is None:
             prep = self.preposition_för(m.verb, "io")
             if prep is not None:
                 ord.append(self.u.form_för(prep, "inv"))

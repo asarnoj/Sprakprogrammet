@@ -75,15 +75,19 @@ class JapanskRenderare:
         """Artig form. Register är renderarens val, inte en Former-axel."""
         lexem = self.u.lexem(m.verb)
         celler = self.u._celler(lexem)
-        if not celler.get("masu") and celler.get("ku"):
+        # Läses genom VERB-paradigmet, så adjektivets ku-cell syns inte här.
+        # Kännetecknet är i stället att ます saknas medan grundformen slutar
+        # på い — det är ett i-adjektiv som råkat hamna under ett verbkoncept.
+        if not celler.get("masu") and celler.get("jisho", "").endswith("い"):
             # ku-formen finns bara i adjektivparadigmet. Konceptet är ett
-            # verb, men japanskan uttrycker det adjektiviskt: gen_sakna är
-            # 恋しい, "X が恋しい", inte ett verb alls. Predikativa adjektiv
-            # (恋しかったです) är en egen konstruktion som inte är byggd.
-            raise RenderingsFel(
-                f"ja/{lexem['lemma']}: konceptet är ett Verb men det japanska "
-                f"ordet är ett i-adjektiv — böjs som 恋しい/恋しかった, inte med "
-                f"ます. Adjektiviska predikat är inte byggda")
+            # Verb, men japanskan uttrycker det adjektiviskt: gen_sakna är
+            # 恋しい, "X が恋しい". Predikatet blir då adjektivform + です,
+            # inte en ます-form — 恋しいです / 恋しかったです.
+            grund = celler.get("ta" if m.tid is Tidsreferens.FÖRFLUTEN else "jisho")
+            if not grund:
+                raise RenderingsFel(
+                    f"ja/{lexem['lemma']}: varken ます- eller adjektivform finns")
+            return grund + "です"
         masu = self.u.form_för(m.verb, "masu")
         if m.tid is Tidsreferens.FÖRFLUTEN:
             if not masu.endswith("ます"):

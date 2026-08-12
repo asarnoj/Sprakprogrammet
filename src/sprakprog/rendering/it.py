@@ -9,7 +9,7 @@ eftersom det beror på nästa ord och inte på artikeln.
 
 from __future__ import annotations
 
-from .romansk import MASKULIN, Numerus, RomanskRenderare
+from .romansk import MASKULIN, Numerus, RenderingsFel, RomanskRenderare
 
 # Ord som kräver lo/gli i stället för il/i.
 LO_INLEDNING = ("z", "gn", "ps", "pn", "x", "y")
@@ -53,6 +53,19 @@ class ItalienskRenderare(RomanskRenderare):
             # Obestämd plural finns inte — den fångas som saknad cell.
             return "m_pl_gli" if _kräver_lo(huvudord) else "m_pl"
         return "m_sg_lo" if _kräver_lo(huvudord) else "m_sg"
+
+    def ordna_klitika(self, cod, coi) -> list[str]:
+        """Italienskan smälter ihop två klitika: gli + lo → glielo, mi + lo → me lo.
+
+        De sammansmälta formerna finns inte i Former — de är egna ord, inte
+        celler i något av de befintliga paradigmen. Ett enskilt klitikum går
+        bra; två stoppar hellre än gissar.
+        """
+        if cod and coi:
+            raise RenderingsFel(
+                "it: två klitika smälter ihop (glielo, me lo) och de formerna "
+                "finns inte i databasen — de är egna ord, inte celler")
+        return [x[0] for x in (cod, coi) if x]
 
     def eliderar(self, första: str, andra: str) -> bool:
         """lo/la → l' framför vokal. il elideras aldrig."""
