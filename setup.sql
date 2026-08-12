@@ -98,6 +98,24 @@ CREATE INDEX idx_koncept_källa    ON Koncept(källa);
                                verb eller inte alls — hoppas över av
                                adjektiv-böjningspipelinen
                 Taggas av ordbok/migrationer/ja_adjektiv_typ.sql efter import.
+   hjälpverb  : ENDAST fr/de/it + ordklass Verb. Vilket hjälpverb som bildar
+                sammansatt dåtid. Lagras ABSTRAKT, inte som lemma, eftersom
+                valet är samma distinktion i alla tre språken och renderaren
+                ändå slår upp hjälpverbets egna former:
+                  'ha'   — de haben, fr avoir, it avere (majoriteten)
+                  'vara' — de sein, fr être, it essere (rörelse, tillstånds-
+                           förändring; alla franska och italienska reflexiver)
+                  'båda' — verbet tar båda med olika betydelse, t.ex.
+                           de "ist gefahren" (åkte) vs "hat gefahren" (körde),
+                           it "è corso" vs "ha corso". Renderaren måste välja
+                           på transitivitet, inte på lexemet.
+                Taggas av ordbok/migrationer/hjälpverb.sql efter import.
+   variant    : diskriminator när ETT koncept har FLERA lemman i samma språk.
+                Utan den går de inte att skilja åt: poss_3sg_fem har både
+                sv "hans" och sv "sin", och ingenting säger vilken som är den
+                reflexiva. Värdet är en kort etikett vars betydelse är
+                gemensam över språken där den används — se
+                ordbok/migrationer/variant.sql för de använda etiketterna.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Lexem (
     id          INTEGER PRIMARY KEY,
@@ -106,7 +124,9 @@ CREATE TABLE Lexem (
     lemma       TEXT    NOT NULL,
     genus       INTEGER,
     prenominal  INTEGER CHECK (prenominal IN (0, 1)),
-    ja_adjektiv_typ TEXT CHECK (ja_adjektiv_typ IN ('i', 'na', 'no', 'verbfras'))
+    ja_adjektiv_typ TEXT CHECK (ja_adjektiv_typ IN ('i', 'na', 'no', 'verbfras')),
+    hjälpverb   TEXT    CHECK (hjälpverb IN ('ha', 'vara', 'båda')),
+    variant     TEXT
     /* Ingen UNIQUE på (koncept_id, språk): ett koncept kan ha flera
        lemman per språk när språket har genuint distinkta former för
        samma begrepp (t.ex. ja: 私/僕, es: ser/estar, de: dann/damals).

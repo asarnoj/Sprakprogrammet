@@ -40431,6 +40431,52 @@ pronomen_reflexiv	it	si	si			6
 pronomen_reflexiv	it	si	sé			8					
 pronomen_reflexiv	ja	自分	自分								
 pronomen_reflexiv	sv	sig	sig			7					
+räkn_0	sv	noll	noll								
+räkn_1	sv	en	en	1			1				
+räkn_1	sv	en	ett	1			2				
+räkn_10	sv	tio	tio								
+räkn_100	sv	hundra	hundra								
+räkn_1000	sv	tusen	tusen								
+räkn_11	sv	elva	elva								
+räkn_12	sv	tolv	tolv								
+räkn_13	sv	tretton	tretton								
+räkn_14	sv	fjorton	fjorton								
+räkn_15	sv	femton	femton								
+räkn_16	sv	sexton	sexton								
+räkn_17	sv	sjutton	sjutton								
+räkn_18	sv	arton	arton								
+räkn_19	sv	nitton	nitton								
+räkn_2	sv	två	två								
+räkn_20	sv	tjugo	tjugo								
+räkn_3	sv	tre	tre								
+räkn_30	sv	trettio	trettio								
+räkn_4	sv	fyra	fyra								
+räkn_40	sv	fyrtio	fyrtio								
+räkn_5	sv	fem	fem								
+räkn_50	sv	femtio	femtio								
+räkn_6	sv	sex	sex								
+räkn_60	sv	sextio	sextio								
+räkn_7	sv	sju	sju								
+räkn_70	sv	sjuttio	sjuttio								
+räkn_8	sv	åtta	åtta								
+räkn_80	sv	åttio	åttio								
+räkn_9	sv	nio	nio								
+räkn_90	sv	nittio	nittio								
+räkn_ord_1	sv	första	första	1	1		3				
+räkn_ord_1	sv	första	första	1	2		3				
+räkn_ord_1	sv	första	första	2			3				
+räkn_ord_2	sv	andra	andra	1	1		3				
+räkn_ord_2	sv	andra	andra	1	2		3				
+räkn_ord_2	sv	andra	andra	2			3				
+räkn_ord_3	sv	tredje	tredje	1	1		3				
+räkn_ord_3	sv	tredje	tredje	1	2		3				
+räkn_ord_3	sv	tredje	tredje	2			3				
+räkn_ord_4	sv	fjärde	fjärde	1	1		3				
+räkn_ord_4	sv	fjärde	fjärde	1	2		3				
+räkn_ord_4	sv	fjärde	fjärde	2			3				
+räkn_ord_5	sv	femte	femte	1	1		3				
+räkn_ord_5	sv	femte	femte	1	2		3				
+räkn_ord_5	sv	femte	femte	2			3				
 rör_byta	de	tauschen	getauscht					8			1
 rör_byta	de	tauschen	tausch	1				16		2	1
 rör_byta	de	tauschen	tausche	1				1024		3	1
