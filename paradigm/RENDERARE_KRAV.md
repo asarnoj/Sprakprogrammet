@@ -43,17 +43,17 @@ som saknas är lagrade fakta och renderarkod, inte en riktig konstruktion.
 | Element | Behövde | Källa |
 |---|---|---|
 | `flickan` / `la fille` | Former: species=Best, sg | ✅ Former |
-| `das` / `la` / `il` | Artikelparadigm + huvudordets genus | ❌ §3.3 ❌ §3.1 |
+| `das` / `la` / `il` | Artikelparadigm + huvudordets genus | ✅ §3.3 ✅ §3.1 |
 | `gav` / `gab` / `dio` | Former: tempus=Pret (+person/numerus) | ✅ Former |
-| `a donné` / `ha dato` | hjälpverb avoir/avere + particip | ❌ §3.4 |
+| `a donné` / `ha dato` | hjälpverb avoir/avere + particip | ✅ §3.4 |
 | universell dåtid → cell | mappning per språk | ❌ §3.6 |
-| `sin` (inte `hennes`) | diskriminator mellan multi-lemman | ❌ §3.7 |
-| `sin` böjd efter *bror* | brors genus | ❌ §3.1 |
-| `ihrem` | dativ (geben styr dativ) + Bruders genus | ❌ §3.5 ❌ §3.1 |
-| `en` / `un` / `ein` | obestämd artikel + boks genus | ❌ §3.3 ❌ §3.1 |
-| `röd` / `rotes` / `rouge` | boks genus, kasus, species=Bland (de) | ❌ §3.1 |
-| `rouge` **efter** substantivet | `Lexem.prenominal` | ❌ §3.2 |
-| `à son frère` / `a su hermano` | slot → preposition | ❌ §3.8 |
+| `sin` (inte `hennes`) | diskriminator mellan multi-lemman | ✅ §3.7 |
+| `sin` böjd efter *bror* | brors genus | ✅ §3.1 |
+| `ihrem` | dativ (geben styr dativ) + Bruders genus | ✅ §3.5 ✅ §3.1 |
+| `en` / `un` / `ein` | obestämd artikel + boks genus | ✅ §3.3 ✅ §3.1 |
+| `röd` / `rotes` / `rouge` | boks genus, kasus, species=Bland (de) | ✅ §3.1 |
+| `rouge` **efter** substantivet | `Lexem.prenominal` | ✅ §3.2 |
+| `à son frère` / `a su hermano` | slot → preposition | ✅ §3.8 |
 | `le dio` | spansk klitikdubblering | ❌ §3.9 |
 | ordföljd (alla sju) | V2, TeKaMoLo, SOV, klitikaordning | ❌ §3.10 |
 | `あげました` | ます-stam + た, komponerad | ❌ §3.11 |
@@ -63,9 +63,40 @@ som saknas är lagrade fakta och renderarkod, inte en riktig konstruktion.
 
 ## 3. Bristerna
 
+> **Status 2026-08-12.** Sju av elva brister är åtgärdade. Avsnitten står
+> kvar med sin ursprungliga text, men var och en inleds nu med vad som
+> faktiskt gäller. Läs statusraden först — brödtexten under är historik.
+>
+> | | Brist | Läge |
+> |---|---|---|
+> | 3.1 | Lexem.genus | ✅ 1 295/1 295 substantiv |
+> | 3.2 | Lexem.prenominal | ✅ 777/777 adjektiv |
+> | 3.3 | Determinerarparadigm | ✅ 117/117 lexem, 23 slot-filer |
+> | 3.4 | Hjälpverbsvalet | ✅ 522 verb i fr/de/it |
+> | 3.5 | Kasusrektion | ✅ schemat räckte; 197 mönster, 329 krav |
+> | 3.6 | TAM → cell | ❌ finns inte |
+> | 3.7 | Multi-lemma-diskriminator | ✅ 42 lexem i 21 koncept |
+> | 3.8 | Slot → preposition | ✅ fr/es/it io tar prep_till |
+> | 3.9 | Klitikdubblering (es) | ❌ renderarkod |
+> | 3.10 | Ordföljd | ❌ renderarkod, största posten |
+> | 3.11 | Japanskt artigt förflutet | ❌ renderarkod |
+>
+> **Två brister som saknades i listan** och som hittades vid avstämningen:
+>
+> - **Räkneord.** `paradigm/sv/räkneord.yaml` fanns med sex celler men noll
+>   former — slot-filen skrevs och genereringen kördes aldrig. Svenskan är
+>   åtgärdad (46 former). Övriga sex språk har 35 räkneord var utan slot-fil.
+> - **Adverb.** Ingen slot-fil i något språk, 358 lexem utan former.
+>   `PARAMETER_AUDIT` §3 nämner sv/en syntetisk adverbkomparation
+>   (fort/fortare/fortast) men det här dokumentet gjorde det inte.
+
 ### Grupp A — tomma kolumner som redan finns i schemat
 
 #### 3.1 `Lexem.genus` är NULL för samtliga 3 669 lexem
+
+> ✅ **Åtgärdat.** Påståendet var dessutom missvisande redan när det skrevs:
+> genus gäller bara substantiv, inte alla 3 669 lexem. 1 295 av 1 295
+> substantiv i sv/de/fr/es/it är taggade via `migrationer/lexemtaggning.sql`.
 
 Kolumnen finns och är dokumenterad i `setup.sql`, men ingen migration fyller
 den och CSV-formatet (`koncept,ordklass,nivå,språk,lemma`) har ingen kolumn
@@ -79,6 +110,8 @@ Det går inte att härleda ur betydelsen — det är precis vad kolumnen är til
 
 #### 3.2 `Lexem.prenominal` är NULL för samtliga
 
+> ✅ **Åtgärdat.** 777 av 777 adjektivlexem taggade i `lexemtaggning.sql`.
+
 Kolumnen finns för exakt det här: `un livre **rouge**`, `un libro **rojo**`,
 `un libro **rosso**` står efter substantivet, medan germanska språk har
 adjektivet före. Utan den hamnar adjektivet på fel sida i tre av sju språk.
@@ -89,6 +122,14 @@ Berör bara adjektivlexem (~780 rader).
 
 #### 3.3 Determinerarna har inga slot-filer
 
+> ✅ **Åtgärdat, och beslutet är fattat åt andra hållet än vad
+> PARAMETER_AUDIT §3 rekommenderade.** Determinerarna ligger i `Former`,
+> inte hårdkodade i renderaren. Skälet: projektet spårar vad inläraren kan
+> ner till enskild ordform med FSRS, och en hårdkodad artikel har ingen
+> Former-rad — den kan varken spåras eller övas. der/die/das är bland det
+> viktigaste en tysklärling måste drilla. 23 slot-filer, 310 former,
+> 117 av 117 lexem.
+
 117 lexem i Artikel, Demonstrativ, Kvantifikator, Interrogativdeterminant och
 Relativpronomen ligger i databasen som Koncept + Lexem men kan aldrig få
 Former-rader. Sex av sju meningar ovan börjar med ett sådant ord.
@@ -97,6 +138,8 @@ PARAMETER_AUDIT §3 rekommenderade att hårdkoda dem i renderaren. Beslutet är
 fortfarande öppet, men det måste tas — de kan inte bara lämnas.
 
 #### 3.11 Japanskt artigt förflutet finns inte som cell
+
+> ❌ **Kvarstår.** Renderarkod — morfologisk komposition ur ます-stammen.
 
 `ja/verb.yaml` har `masu` (artig presens) och `ta` (vanligt förflutet), men
 inte kombinationen. `あげました` måste komponeras morfologiskt av renderaren
@@ -108,12 +151,23 @@ och inte bara uppslagning.
 
 #### 3.4 Hjälpverbsvalet finns ingenstans
 
+> ✅ **Åtgärdat.** `Lexem.hjälpverb` med värdena 'ha'/'vara'/'båda'.
+> Abstrakt och inte som lemma, eftersom det är samma distinktion i alla
+> tre språken. 'båda' behövs för italienska modalverb, som ärver
+> hjälpverbet från verbet de styr ("sono dovuto andare").
+
 `a donné` kräver *avoir*, men `elle est allée` kräver *être*. Valet är en
 lexikal egenskap per verb: fr être/avoir, de sein/haben, it essere/avere.
 `Lexem` har ingen kolumn. Samma sak med participkongruens (`elle est allée`,
 `les livres que j'ai lus`).
 
 #### 3.5 Kasusrektion saknar plats i schemat
+
+> ✅ **Åtgärdat, och det var aldrig ett hål i schemat.** `Mönster.språk`
+> fanns redan och är nullbar just för det här: ett mönster med språk='de'
+> skuggar det universella och bär bara det som skiljer. Se
+> `migrationer/rektion.sql`. Tyskan är inte enhetlig — geben/anbieten/
+> erzählen tar dativt io, medan fragen och benachrichtigen tar ackusativ.
 
 `MönsterKrav` har `slot, tagg, frastyp` men ingen kasuskolumn. Tyska `geben`
 styr dativ på indirekt objekt; `in` styr ackusativ vid rörelse och dativ vid
@@ -125,6 +179,9 @@ resten är ofylld data eller obyggd kod.
 
 #### 3.6 Ingen mappning från universell tempus till cell
 
+> ❌ **Kvarstår.** Ingen kod och ingen data. Behövs innan renderaren kan
+> börja.
+
 Specifikationen säger "förfluten tid, perfektiv". fr måste välja mellan
 passé composé (`a donné`), passé simple (`donna`) och imparfait (`donnait`);
 sv/en/de har inga celler alls för perfekt och futurum eftersom de är
@@ -132,11 +189,20 @@ analytiska. Mappningstabellen universell TAM → cell per språk finns inte.
 
 #### 3.7 Multi-lemma saknar diskriminator
 
+> ✅ **Åtgärdat.** `Lexem.variant`, 42 lexem i 21 koncept. Etiketterna är
+> beskrivande och delas mellan språk: reflexiv/icke_reflexiv, mask/fem,
+> familjär/artig, permanent/tillfällig (es ser/estar).
+
 `poss_3sg_fem` har två svenska lemman, `hans` och `sin`, och ingenting säger
 vilket som är den reflexiva varianten. Gäller redan ja 私/僕 och es ser/estar.
 Enklaste fixen är en `variant`-kolumn på `Lexem`.
 
 #### 3.8 Slot → preposition
+
+> ✅ **Åtgärdat.** `MönsterKrav.preposition_koncept_id` pekar på
+> `prep_till` (fr à, es a, it a) för io-slotten i fys_ge, gen_erbjuda,
+> kom_berätta och kom_fråga. kom_meddela är medvetet utelämnat: franska
+> och italienska tar direkt objekt där.
 
 Franskt och spanskt indirekt objekt realiseras med `à`/`a`. `MönsterKrav` har
 en `preposition`-slot men inget sätt att säga "io-slotten realiseras med à i
@@ -144,10 +210,14 @@ franska".
 
 #### 3.9 Språkspecifika syntaxregler
 
+> ❌ **Kvarstår.** Renderarkod.
+
 Spanskan kräver klitikdubblering: `le dio un libro a su hermano` — dativ­klitikan
 `le` står kvar även när hela frasen finns utskriven.
 
 #### 3.10 Ordföljd är inte representerad alls
+
+> ❌ **Kvarstår.** Renderarkod, och fortfarande den enskilt största posten.
 
 Tysk V2 med verbfinal bisats, TeKaMoLo-ordning för adverbial, japansk SOV,
 franska klitiska pronomen i fast inbördes ordning. Renderarkod snarare än
@@ -168,6 +238,16 @@ Ingen av bristerna ovan tvingar fram en omkörning av `Former`. De kan alla
 ---
 
 ## 5. Skiss: de två taggningsmigrationerna
+
+> **Utförd.** Båda migrationerna finns och är körda — genus och prenominal
+> ligger i `ordbok/migrationer/lexemtaggning.sql`, inte i två separata filer
+> som skissen föreslog. Avsnittet står kvar som historik. Sedan dess har
+> `hjälpverb.sql`, `variant.sql` och `rektion.sql` tillkommit i samma stil.
+>
+> Varningen nedan gäller fortfarande, och har fått en sorts bekräftelse:
+> `granskningsrattelser.sql` låg i `migrationer/` men är en LOGG med
+> id-baserade DELETE/INSERT. Uppspelad mot en ombyggd databas hade den
+> träffat fel rader. Den är flyttad ut ur katalogen.
 
 Skrivs som `ordbok/migrationer/genus.sql` och `prenominal.sql`, i samma stil
 som `semantik.sql` — grupperade UPDATE-satser, körs om efter varje import.

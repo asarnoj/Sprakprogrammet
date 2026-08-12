@@ -26,11 +26,14 @@ som styr vilka ord som får kombineras.
 ```
 Koncept        733        Mönster        174   (alla verb)
 Lexem        5 130        MönsterKrav    301
-Former      48 217        genus        1 295/1 295
+Former      48 573        genus        1 295/1 295
                           prenominal     777/777
                           gradbarhet     111/111
                           räknebar       259/259
                           semantik       323
+                          hjälpverb    522/522
+                          variant        42/42
+                          determinerare 117/117
 ```
 
 **Alla 1 043 fel granskningen hittade är åtgärdade.** `ordbok
@@ -89,18 +92,24 @@ för hand till alla sju språk.
 tyska `geben` styr dativ. Kolumnerna `kasus` och `preposition_koncept_id`
 är tillagda men inte fyllda. Det är ett andra pass som hör till renderarfasen.
 
-**Fyra saker att bygga, i föreslagen ordning:**
+**Datalagret är slut.** Sju av elva brister i `RENDERARE_KRAV.md` är
+åtgärdade, och de fyra som återstår är alla kod, inte data:
 
 1. **Meningsspecifikationen** — `Mönster` säger vilka ord som får kombineras,
    men det finns ingen datastruktur för en *färdig* mening: tempus,
-   bestämdhet, negation, vem som är koreferent med vem. Designarbete.
-2. **Hjälpverbsvalet** — fr être/avoir, de sein/haben, it essere/avere är
-   lexikala egenskaper per verb. `Lexem` har ingen kolumn.
+   bestämdhet, negation, vem som är koreferent med vem. Designarbete, och
+   det som allt annat vilar på.
+2. **Tempusmappningen** (§3.6) — "förfluten tid, perfektiv" måste bli passé
+   composé i franska och preteritum i svenska. Tabellen finns inte.
 3. **Renderaren, ett språk i taget.** Svenska först (du kan bedöma resultatet
    direkt), sedan tyska (kasus + V2 tvingar fram rätt arkitektur medan den
    är billig att ändra). Klarar den de två är resten arbete, inte problem.
-4. **Ordföljd** — de V2/verbfinal, TeKaMoLo, ja SOV, fr klitikaordning.
+4. **Ordföljd** (§3.10) — de V2/verbfinal, TeKaMoLo, ja SOV, fr klitikaordning.
    Ingenting av det är representerat. Största enskilda posten.
+
+Kvar i datan finns bara två småposter, båda nyfunna: räkneord i sex språk
+(sv är klart) och adverb i alla sju — 358 lexem utan former, varav bara
+sv/en syntetiska komparativer (fort/fortare) faktiskt behöver böjas.
 
 Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
 
@@ -109,9 +118,9 @@ Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
   som styrande ord (`rädd för`, `intresserad av`) — inte taggat.
 - Ett mönster per verb. `äta` har ett transitivt mönster, men "hon äter"
   utan objekt är också korrekt. Additivt att lägga till.
-- Determinerarna (Artikel, Demonstrativ, Kvantifikator,
-  Interrogativdeterminant, Relativpronomen) har inga slot-filer — 117 lexem
-  utan former. Beslut behövs: generera eller hårdkoda i renderaren.
+- ~~Determinerarna har inga slot-filer.~~ **Åtgärdat 2026-08-12.** Beslutet
+  blev att lägga dem i `Former`, tvärtemot PARAMETER_AUDIT §3, eftersom FSRS
+  spårar per ordform och en hårdkodad artikel inte kan övas.
 - `mappa-kaikki` (validering mot Wiktionary-dumpar) är bara implementerad
   för svenska.
 - **Granskningens kvittofil skiljer inte på homonymer.**
