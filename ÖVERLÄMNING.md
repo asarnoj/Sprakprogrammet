@@ -24,8 +24,8 @@ som styr vilka ord som får kombineras.
 **Böjnings- och taggningslagret är klart.**
 
 ```
-Koncept        733        Mönster        174   (alla verb)
-Lexem        5 130        MönsterKrav    301
+Koncept        733        Mönster        197   (174 universella
+Lexem        5 130        MönsterKrav    329    + 23 språkspecifika)
 Former      48 573        genus        1 295/1 295
                           prenominal     777/777
                           gradbarhet     111/111
@@ -83,14 +83,14 @@ Uppslaget är nu nycklat på koncept. De felplacerade rättelserna är rättade.
 
 ## Vad som återstår i stort
 
-Datalagret är färdigt. Det som fattas är **kod och design**, inte data.
 Fullständig lista i [`paradigm/RENDERARE_KRAV.md`](paradigm/RENDERARE_KRAV.md),
 framtagen genom att rendera meningen *"flickan gav sin bror en röd bok igår"*
-för hand till alla sju språk.
+för hand till alla sju språk. Varje avsnitt där har en statusrad överst.
 
-**Det enda verkliga schemahålet:** `MönsterKrav` saknade kasusrektion —
-tyska `geben` styr dativ. Kolumnerna `kasus` och `preposition_koncept_id`
-är tillagda men inte fyllda. Det är ett andra pass som hör till renderarfasen.
+Det som förra överlämningen kallade **"det enda verkliga schemahålet"** —
+kasusrektion — var inget hål alls. `Mönster.språk` fanns redan och är
+nullbar just för det: ett mönster med `språk='de'` skuggar det universella
+och bär bara det som skiljer. Se `ordbok/migrationer/rektion.sql`.
 
 **Datalagret är slut.** Sju av elva brister i `RENDERARE_KRAV.md` är
 åtgärdade, och de fyra som återstår är alla kod, inte data:
