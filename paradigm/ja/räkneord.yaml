@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: ja
+  ordklass: Räkneord
+  beskrivning: >
+    Räkneord. Kardinaltalen är oböjliga utom 1, som böjs efter genus. Romanska ordinaltal böjs också (primero/primera). Tyska ordinaltal förenklas till citatformen — full adjektivböjning på dem vore oproportionerlig, se KONVENTIONER.md §5.
+
+celler:
+  - id: inv
