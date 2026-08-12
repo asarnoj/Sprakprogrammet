@@ -46,6 +46,23 @@ class Tidsreferens(StrEnum):
     FRAMTID = "framtid"
 
 
+class Referentgenus(StrEnum):
+    """Naturligt genus hos den som åsyftas — inte grammatiskt genus.
+
+    Behövs när ett språk har könsskilda pronomen där svenskan inte har det:
+    fr ils/elles, es ellos/ellas, es nosotros/nosotras. Vilket som väljs är
+    en egenskap hos MENINGEN (vilka personer talar vi om?), inte hos
+    språket, och hör därför hemma i specifikationen.
+
+    Värdena matchar `Lexem.variant` så att renderaren kan skicka dem rakt
+    igenom. Övriga variantetiketter hör INTE hemma här: familjär/artig är
+    register och ligger utanför projektets scope, och reflexiv uttrycks
+    redan med Nominalfras.possessiv_koreferent.
+    """
+    MASKULIN = "mask"
+    FEMININ = "fem"
+
+
 class Aspekt(StrEnum):
     """Perfektiv = avslutad händelse, imperfektiv = pågående eller vanemässig.
 
@@ -71,6 +88,7 @@ class Nominalfras:
     attribut: tuple[str, ...] = ()
     possessiv: str | None = None
     possessiv_koreferent: bool = False
+    referent: Referentgenus | None = None
 
 
 @dataclass(frozen=True, slots=True)

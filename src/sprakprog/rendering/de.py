@@ -86,7 +86,8 @@ class TyskRenderare:
     # ── nominalfras ──────────────────────────────────────────────────
 
     def nominalfras(self, nf: Nominalfras, kasus: int) -> list[str]:
-        huvud = self.u.lexem(nf.koncept)
+        huvud = self.u.lexem(
+            nf.koncept, nf.referent.value if nf.referent else None)
 
         # Ett pronomen ÄR hela frasen. Det bär sin kasus i själva formen
         # (ich/mich/mir) och tar varken artikel eller attribut.

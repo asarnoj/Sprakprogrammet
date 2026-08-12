@@ -84,7 +84,8 @@ class SvenskRenderare:
     # ── nominalfras ──────────────────────────────────────────────────
 
     def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False) -> list[str]:
-        huvud = self.u.lexem(nf.koncept)
+        huvud = self.u.lexem(
+            nf.koncept, nf.referent.value if nf.referent else None)
 
         # Svenskan har kasus — men bara på pronomen. "jag" mot "mig" är den
         # enda morfologiska kasusdistinktionen språket har kvar, och därför
