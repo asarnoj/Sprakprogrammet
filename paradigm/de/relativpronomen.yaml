@@ -1,0 +1,69 @@
+---
+meta:
+  version: 1
+  språk: de
+  ordklass: Relativpronomen
+  beskrivning: >
+    Tyska relativpronomen har samma former som bestämd artikel utom i genitiv (dessen/deren) och dativ plural (denen). rel_person och rel_sak är skilda koncept men samma tyska paradigm — tyskan kongruerar med korrelatets genus, inte med person/sak.
+
+celler:
+  - id: m_nom
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+  - id: m_akk
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+  - id: m_dat
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+  - id: m_gen
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+  - id: f_nom
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+  - id: f_akk
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+  - id: f_dat
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+  - id: f_gen
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+  - id: n_nom
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+  - id: n_akk
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+  - id: n_dat
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+  - id: n_gen
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+  - id: pl_nom
+    numerus: Pl
+    kasus: [Nom]
+  - id: pl_akk
+    numerus: Pl
+    kasus: [Ack]
+  - id: pl_dat
+    numerus: Pl
+    kasus: [Dat]
+  - id: pl_gen
+    numerus: Pl
+    kasus: [Gen]

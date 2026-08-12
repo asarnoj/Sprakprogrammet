@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: sv
+  ordklass: Relativpronomen
+  beskrivning: >
+    Svenskt 'som' är oböjligt.
+
+celler:
+  - id: inv

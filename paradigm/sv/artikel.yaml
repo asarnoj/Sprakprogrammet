@@ -1,0 +1,15 @@
+---
+meta:
+  version: 1
+  språk: sv
+  ordklass: Artikel
+  beskrivning: >
+    Svensk obestämd artikel böjs efter genus: en/ett. Den bestämda artikeln är ett suffix på substantivet och ligger i Substantiv-paradigmet som species=Best, inte här.
+
+celler:
+  - id: utr
+    genus: UtrMask
+    numerus: Sg
+  - id: neu
+    genus: NeuFem
+    numerus: Sg

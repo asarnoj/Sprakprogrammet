@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: sv
+  ordklass: Kvantifikator
+  beskrivning: >
+    Kvantifikatorerna används här som indefinita pronomen (ingen=nobody, inget=nothing) och är oböjliga i den rollen.
+
+celler:
+  - id: inv
