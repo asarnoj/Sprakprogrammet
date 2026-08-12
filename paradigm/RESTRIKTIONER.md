@@ -226,6 +226,67 @@ verkligheten.** Generatorn kommer inte att dra ord jämnt fördelat — den
 utgår från ett förfallet kort och söker en mening runt det. Andelen
 användbara kandidater blir högre än 37 % i praktiken.
 
+### Långsvansen — de åtta bearbetningsverben
+
+Tre nya bitar, två återanvända:
+
+```
+1048576  KONSTRUERAD   tillverkat föremål — reparera, bryta, bygga   77 ord
+2097152  BEHÅLLARE     kan fyllas — fylla                            21 ord
+4194304  YTA           yta att måla eller tvätta                     99 ord
+HANTERBAR (262144)     skära och blanda
+```
+
+```
+bryta en mamma    AVVISAS      bryta en stol      passerar
+fylla solen       AVVISAS      fylla en väska     passerar
+tvätta en idé     AVVISAS      tvätta en skjorta  passerar
+blanda en idé     AVVISAS      blanda mjölk       passerar
+bygga regn        AVVISAS      bygga ett hus      passerar
+```
+
+**Tredje gången en bit inte följer de befintliga klasserna.** Platser är
+blandade: hus, kontor och kök är byggda, men berg, hav, sjö, skog, strand
+och värld är det inte. Klassvis taggning är definitivt undantaget.
+
+En medveten förlust: `bryta armen` går inte att bygga, eftersom armen inte
+är ett tillverkat föremål. Att ge kroppsdelar KONSTRUERAD hade också
+tillåtit `reparera en arm` och `bygga ett ben`. Med OCH-matchning går
+"KONSTRUERAD eller KROPPSDEL" inte att uttrycka.
+
+`blanda` kräver HANTERBAR och inte ÄTBAR, eftersom mjölk är DRICKBAR och
+inte ätbar — samma OR-problem, löst genom att välja en bredare bit.
+
+### Slutmätning
+
+```
+                    passerar    avvisas
+utgångsläge          17 330      6 757   (28 %)   bara objektsslots
+tre bitar            15 116      8 971   (37 %)
++ adjektiv, adverb   73 645     126 355   (63 %)  hela kedjan
++ långsvansen        67 840     132 160   (66 %)
+```
+
+Vad som passerar nu:
+
+```
+Sonen förlorade en gammal mus igen.        rimlig
+Chefen nådde en rolig restaurang ofta.     rimlig
+Pappan mindes ett möjligt finger nu.       kategorifel — adj_m_ otaggad
+Flickan ska skapa ett snabbt salt imorgon. kategorifel — snabb otaggad
+Pojken glömde en rosa axel nu.             osannolik, godkänd per scope
+```
+
+Det som är kvar delar sig i två. Verb som `glömma`, `minnas`, `söka` och
+`skapa` är korrekt otaggade och producerar underliga men välformade
+meningar — det är scope-beslutet i arbete. Men två adjektivgrupper är
+verkliga kategorifel som inte taggades:
+
+- `möjlig`, `omöjlig`, `nödvändig` borde kräva ABSTRAKT
+- `snabb`, `långsam` borde kräva RÖRELSE **eller** ANIMAT — och det går
+  inte att uttrycka med OCH-matchning. Först här blir OR-begränsningen
+  ett verkligt hinder snarare än en olägenhet.
+
 ---
 
 ## Fem relationer, inte en
