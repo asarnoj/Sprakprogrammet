@@ -94,6 +94,45 @@ Ingen av dem går heller att uttrycka i `Mening` idag — specen har fält för
 subjekt, objekt, io och adverbial, inget annat. Det hör till
 meningskomplexiteten, inte till restriktionerna, men de möts här.
 
+### Mätning efter de tre bitarna
+
+```
+           passerar   avvisas
+före        17 330     6 757   (28 %)
+efter       15 306     8 781   (36 %)
+```
+
+Åtta procentenheter — mindre än jag gissade, och skälet är värt att veta.
+
+`ÖVERLÅTBAR` omfattar **176 av 259**, inte de ~100 jag uppskattade. Under
+taggningen visade det sig att mycket mer är överlåtbart än jag först
+räknade: hus och lägenheter köps, idéer och exempel ges, möbler säljs. Att
+smalna av den skulle vara felaktig modellering, inte ett bättre filter.
+
+**Procenttalet är inte måttet.** Det som skulle stoppas stoppas:
+
+```
+ge en näsa      AVVISAS   kräver ÖVERLÅTBAR, har KONKRET+KROPPSDEL
+ge ett barn     AVVISAS   kräver ÖVERLÅTBAR, har ANIMAT+KONKRET+MÄNSKLIG
+kasta ett bord  AVVISAS   kräver HANTERBAR, har KONKRET+INREDNING+ÖVERLÅTBAR
+öppna snön      AVVISAS   kräver ÖPPNINGSBAR, har KONKRET+NATURFENOMEN
+ge en bok       passerar
+öppna dörren    passerar
+köpa ett hus    passerar
+```
+
+### De 34 otaggade objektsslotarna — mest korrekt otaggade
+
+Förra mätningen flaggade 34 objektsslots utan krav som ett hål. Vid
+genomgång är de flesta rätt som de är: `älska`, `hata`, `sakna`, `glömma`,
+`minnas`, `önska`, `se`, `höra`, `välja`, `ha`, `förlora` tar genuint nästan
+vilket objekt som helst. Känslo-, kognitions- och perceptionsverb ÄR
+oselektiva.
+
+Bara `erbjuda` behövde tagg (ÖVERLÅTBAR, tillagd) och `köra`
+(RÖRELSE+INSTRUMENT, tillagd). Kvar att titta på: `kosta` (objektet är ett
+belopp, inte en sak) och `spela` (spel eller instrument).
+
 ---
 
 ## Fem relationer, inte en
