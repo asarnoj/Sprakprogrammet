@@ -1,6 +1,6 @@
 # Överlämning — Språkprogrammet, 2026-08-12
 
-Klistra in det här i en ny chatt. Allt är committat och pushat (`7071e41`).
+Klistra in det här i en ny chatt.
 
 ---
 
@@ -26,38 +26,55 @@ som styr vilka ord som får kombineras.
 ```
 Koncept        733        Mönster        174   (alla verb)
 Lexem        5 130        MönsterKrav    301
-Former      48 191        genus        1 295/1 295
+Former      48 217        genus        1 295/1 295
                           prenominal     777/777
                           gradbarhet     111/111
                           räknebar       259/259
                           semantik       323
 ```
 
-Kända fel i formerna: **0,12 %** (57 stycken), efter att 834 rättelser
-skrivits in. Alla sju språk är granskade av en starkare modell.
+**Alla 1 043 fel granskningen hittade är åtgärdade.** `ordbok
+tillämpa-granskning --torkörning` ger noll satser att köra. Alla sju språk är
+granskade av en starkare modell.
 
 **Renderaren finns inte.** Det är nästa fas.
 
 ---
 
-## Det enda som väntar på dig just nu
+## Vad som gjordes sist (2026-08-12)
 
-**59 rader i `ordbok/granskning.tsv` kräver ett mänskligt beslut**, inte en
-modell. Lista dem med:
+De 59 rader som förra överlämningen lämnade öppna är inskrivna. De krävde
+inte 59 bedömningar — de krävde tre operationer som `tillämpa-granskning`
+saknade. Kommandot gör nu fyra saker i stället för en: skriver om, **lägger
+till** (cellen var tom, alltså INSERT och inte UPDATE), **delar** (en rad
+täckte flera celler som visade sig behöva olika former) och **tar bort**.
 
-```bash
-ordbok tillämpa-granskning --torkörning
-```
+27 celler fick form, 11 tömdes, 21 bytte form. Ingen annan cell rördes —
+kontrollerat genom att jämföra cell-för-cell-bilder före och efter, inte
+genom att lita på statistikraderna.
 
-De är av tre slag:
+**Två fel i granskningen själv, som nu står i `ordbok/beslut.tsv`:**
 
-| Slag | Antal | Vad det betyder |
+| Fall | Granskningen sa | Rätt |
 |---|---|---|
-| Tomt förslag | 13 | Granskningen menar att formen inte borde finnas. Att radera raden tar bort den för alla celler den täcker — därför inget automatiskt beslut. Ex: `de/Schnee` plural. |
-| Kollaps med olika förslag | 18 | En Former-rad täcker flera celler som fått olika förslag. Samma rad kan inte få båda; formen behöver troligen delas i två rader. Ex: `de/blau superl_bland_pl` → `blauesten` eller `blauester`. |
-| Hittade ingen rad | 28 | Granskningen flaggade en cell som saknar form i databasen. Ex: `fr/vouloir imp_2sg`. |
+| `de/sie` dativ (3pl) | `ihr` | `ihnen` — den trodde två identiska sie-paradigm angivits, men lexemen är åtskilda och båda var redan rätt |
+| `de/blau superl_bland_pl_gen` | `blauester` | `blauesten` — blandad deklination tar svaga ändelser i hela pluralen |
 
-Det är en genomläsning, ingen körning.
+`beslut.tsv` går före `granskning.tsv`. Granskningen är en stark modells
+förslag, inte facit; när den har fel skrivs svaret in där med motivering,
+i stället för att granskningsrapporten ändras. Rapporten ska förbli vad
+modellen faktiskt sa.
+
+### Ett fel som satt i tillämpningen, inte i datan
+
+`tillämpa-granskning` slog upp lexem på `lemma + språk` och lät
+granskningens `koncept`-kolumn ligga oanvänd. 177 lemman är flera lexem
+inom samma språk. Rättelsen hamnade då på det lexem vars rad råkade komma
+först: `giocherebbero` skrevs till `arb_leka` medan `gen_spela`, som
+granskningen gällde, blev kvar med fel form. Samma sak för `de/finden`.
+Statistiken räknade båda som lyckade rättelser.
+
+Uppslaget är nu nycklat på koncept. De felplacerade rättelserna är rättade.
 
 ---
 
@@ -97,6 +114,22 @@ Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
   utan former. Beslut behövs: generera eller hårdkoda i renderaren.
 - `mappa-kaikki` (validering mot Wiktionary-dumpar) är bara implementerad
   för svenska.
+- **Granskningens kvittofil skiljer inte på homonymer.**
+  `granskning.tsv.klara` har en rad per `(språk, lemma)`, men 177 lemman är
+  flera lexem. För 120 av dem är lemmat kvitterat som granskat, vilket kan
+  betyda att bara det ena lexemet faktiskt granskades — upp till ~140 lexem
+  kan alltså vara ogranskade utan att det syns. Att stänga hålet kräver en
+  ny `granska-former`-körning, alltså LLM-anrop, alltså inte inifrån Claude
+  Code. Kvittot bör nycklas på koncept, samma fix som `tillämpa-granskning`
+  fick.
+- **`paradigm/it/frågepronomen.yaml` har två celler med identiska
+  koordinater.** `chi` och `cosa` är båda `kasus: [Nom, Ack, Dat]` och inget
+  annat. Former lagrar axlar, inte cell-id, så en rad som täcker den ena
+  täcker med nödvändighet den andra. Granskningen rapporterar därför den
+  främmande cellen som fel hos båda lemmana. Ofarligt för renderaren, som
+  väljer lemma på koncept och sedan axlar — men det går inte att åtgärda i
+  datan, bara i slot-filen. Beslutet att låta det vara står i `beslut.tsv`.
+  Det är det enda sådana fallet i alla slot-filer (kontrollerat).
 
 ---
 
@@ -111,15 +144,28 @@ databasen från CSV och tappar all taggning. Kör alltid
 `for m in ordbok/migrationer/*.sql; do sqlite3 sprak.db < "$m"; done`
 efteråt, sedan `ordbok importera-former ordbok/former.tsv --ersätt`.
 
+**`ordbok/granskningsrattelser.sql` är en LOGG, ingen migration.** Den låg
+i `ordbok/migrationer/` men är flyttad ut, just för att loopen ovan skulle
+ha spelat upp den. Satserna är knutna till `Former.id`, och DELETE/INSERT
+flyttar id:n — mot en ombyggd databas träffar de fel rader. Rättelserna
+bevaras i stället i `former.tsv`, som exporteras om direkt efter körningen.
+
 **`sprak.db` ligger i `.gitignore`.** Sanningen är `ordbok/former.tsv` plus
 migrationerna. Skicka aldrig databasfilen.
 
-**Lita inte på statistikrader.** Tre buggar under den här sessionen
-rapporterade "0 saknade, 0 tomma" och såg ut som lyckade körningar:
-duplicerade cell-ID:n som tyst tappade hela svenska s-passiven,
-lemma-nycklat uppslag som gav 96 homonymer noll former, och en cellmatchning
-som läste fel form och gav 588 falska fel. Jämför alltid antal producerade
-rader mot antal celler.
+**Lita inte på statistikrader.** Fyra buggar hittills har rapporterat
+"0 saknade, 0 tomma" och sett ut som lyckade körningar: duplicerade cell-ID:n
+som tyst tappade hela svenska s-passiven, lemma-nycklat uppslag som gav 96
+homonymer noll former, en cellmatchning som läste fel form och gav 588 falska
+fel, och ett lemma-nycklat uppslag i `tillämpa-granskning` som skrev
+rättelser till fel homonym och räknade dem som lyckade. Jämför alltid antal
+producerade rader mot antal celler — och för rättelser: ta en
+cell-för-cell-bild före och efter och diffa den:
+
+```bash
+python ordbok/verktyg/ögonblicksbild.py före.json   # kör rättelsen   # sedan:
+python ordbok/verktyg/ögonblicksbild.py efter.json && diff före.json efter.json
+```
 
 **`bash -n` räcker inte** för att validera ett skript. `FÖRSÖK="${FÖRSÖK:-4}"`
 passerade syntaxkontrollen men kraschar — bash tillåter inte å/ä/ö i
@@ -142,6 +188,8 @@ beslutar. Ändringar genomförs separat, aldrig direkt.
 | `ordbok/nivålistor/KONVENTIONER.md` | lemmaformat, förenklingsfilosofi §5, beslutsprocess §9 |
 | `RUNBOOK.md` | operativ referens för genereringskörningen |
 | `START_HÄR.md` | kort körinstruktion för den som genererar |
+| `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
+| `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
 ---
 
@@ -157,6 +205,10 @@ ordbok tillämpa-granskning                # skriv in granskningens förslag
 ordbok tagga-koncept | tagga-lexem | tagga-monster
 ordbok visa <koncept>                     # drill-down
 ```
+
+Efter `tillämpa-granskning`: kör alltid `ordbok exportera-former
+ordbok/former.tsv`. Annars ligger rättelserna bara i `sprak.db`, som inte
+versionshanteras.
 
 Nattkörningarna gjordes med `kör_natt.sh` och `kör_natt2.sh` på en väns
 maskin och kontot. Båda är idempotenta, väntar ut kvoten själva och kan

@@ -20,8 +20,9 @@ from ..generering.rattelse import tillämpa_granskning
 def lägg_till_argument(p: argparse.ArgumentParser) -> None:
     p.add_argument("--rapport", default="ordbok/granskning.tsv",
                    help="Granskningsrapport att läsa förslagen ur")
-    p.add_argument("--migration", default="ordbok/migrationer/granskningsrattelser.sql",
-                   help="SQL-fil att skriva rättelserna till")
+    p.add_argument("--migration", default="ordbok/granskningsrattelser.sql",
+                   help="SQL-fil att logga rättelserna till (INTE en migration — "
+                        "se filhuvudet; sanningen är ordbok/former.tsv)")
     p.add_argument("--torkörning", action="store_true",
                    help="Visa vad som skulle ändras, skriv ingenting")
 
