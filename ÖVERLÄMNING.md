@@ -133,14 +133,23 @@ Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
   spårar per ordform och en hårdkodad artikel inte kan övas.
 - `mappa-kaikki` (validering mot Wiktionary-dumpar) är bara implementerad
   för svenska.
-- **Granskningens kvittofil skiljer inte på homonymer.**
-  `granskning.tsv.klara` har en rad per `(språk, lemma)`, men 177 lemman är
-  flera lexem. För 120 av dem är lemmat kvitterat som granskat, vilket kan
-  betyda att bara det ena lexemet faktiskt granskades — upp till ~140 lexem
-  kan alltså vara ogranskade utan att det syns. Att stänga hålet kräver en
-  ny `granska-former`-körning, alltså LLM-anrop, alltså inte inifrån Claude
-  Code. Kvittot bör nycklas på koncept, samma fix som `tillämpa-granskning`
-  fick.
+- **Granskningens kvittofil skiljer inte på homonymer — men luckan är
+  liten.** `granskning.tsv.klara` har en rad per `(språk, lemma)`, och
+  kontrollen `if (språk, lemma) in redan: continue` ligger inne i loopen
+  över EN ordklass. Ett lemma som granskats som substantiv blockerar alltså
+  granskningen av samma lemma som adverb.
+
+  Första uppskattningen var "upp till ~140 ogranskade lexem". Den var för
+  hög. Av 177 homonymgrupper har **126 identiska paradigm** — de är samma
+  ord i två betydelser (de/finden = hitta/tycka), så en granskning av det
+  ena täcker det andra morfologiskt. Kvar: 51 grupper där formerna faktiskt
+  skiljer sig, och de flesta är korsordklassiga med bara en form på ena
+  sidan (en `back` = rygg/tillbaka, en `open` = öppna/öppen). Verkligt
+  granskningsbehov finns i en handfull: de/sein, de/sicher, es/poder,
+  de/ihr. de/finden är redan rättat.
+
+  Fixen är densamma som `tillämpa-granskning` fick: nyckla kvittot på
+  koncept i stället för lemma.
 - **`paradigm/it/frågepronomen.yaml` har två celler med identiska
   koordinater.** `chi` och `cosa` är båda `kasus: [Nom, Ack, Dat]` och inget
   annat. Former lagrar axlar, inte cell-id, så en rad som täcker den ena
