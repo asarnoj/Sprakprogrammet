@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: ja
+  ordklass: Demonstrativ
+  beskrivning: >
+    Japanska determinerare är oböjliga. この/その/あの och frågeorden böjs inte alls; japanskan saknar dessutom artiklar och relativpronomen helt.
+
+celler:
+  - id: inv

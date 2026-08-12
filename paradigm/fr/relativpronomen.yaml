@@ -1,0 +1,29 @@
+---
+meta:
+  version: 1
+  språk: fr
+  ordklass: Relativpronomen
+  beskrivning: >
+    Franska determinerare böjs i genus och numerus. species används som allomorfdiskriminator: Obest = grundform, Best = förvokalisk variant (ce/cet). Ingen bestämdhetssemantik ska läsas in i den. Ren elision (le/la → l') görs i renderaren.
+
+celler:
+  - id: inv
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    species: Obest
+  - id: m_sg_vokal
+    genus: UtrMask
+    numerus: Sg
+    species: Best
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+  - id: m_pl
+    genus: UtrMask
+    numerus: Pl
+  - id: f_pl
+    genus: NeuFem
+    numerus: Pl
+  - id: pl
+    numerus: Pl
