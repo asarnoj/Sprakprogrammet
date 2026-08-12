@@ -19,7 +19,7 @@ from ..rendering import (
     Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 
-RENDERARE = {"sv": "SvenskRenderare"}
+RENDERARE = ("sv", "de")
 
 # Meningen ur paradigm/RENDERARE_KRAV.md §1, den som hela kravlistan togs
 # fram ur. Att den renderas korrekt är den vertikala skivans kvitto.
@@ -60,7 +60,7 @@ def lägg_till_argument(p: argparse.ArgumentParser) -> None:
     p.add_argument("--exempel", action="store_true",
                    help="Rendera exempelmeningen ur RENDERARE_KRAV.md §1")
     p.add_argument("--språk", default="sv", choices=sorted(RENDERARE),
-                   help="Målspråk (bara sv finns än)")
+                   help="Målspråk. sv och de finns; övriga fem är inte byggda.")
 
 
 def kör(args: argparse.Namespace) -> int:
@@ -74,10 +74,11 @@ def kör(args: argparse.Namespace) -> int:
     mening = EXEMPEL if args.exempel else _mening(
         json.loads(Path(args.spec).read_text(encoding="utf-8")))
 
-    from ..rendering import SvenskRenderare
+    from ..rendering import SvenskRenderare, TyskRenderare
+    renderare = {"sv": SvenskRenderare, "de": TyskRenderare}[args.språk]
     conn = anslut()
     try:
-        print(SvenskRenderare(conn).rendera(mening))
+        print(renderare(conn).rendera(mening))
     except RenderingsFel as e:
         print(f"Kan inte rendera: {e}", file=sys.stderr)
         return 1

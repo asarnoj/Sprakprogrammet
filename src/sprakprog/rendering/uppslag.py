@@ -12,8 +12,6 @@ andra implementation skulle med säkerhet återinföra samma buggar.
 from __future__ import annotations
 
 import sqlite3
-from functools import lru_cache
-
 from ..generering.granskning import _former_per_cell
 from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
 from .spec import RenderingsFel
@@ -28,6 +26,10 @@ class Uppslag:
         self.språk = språk
         self._legend = ladda_legend()
         self._slot: dict[str, object] = {}
+        # Cellmatchningen är dyr och svaret beror bara på lexemet. Utan
+        # cache körs den om för varje enskild ordform: ett brett svep över
+        # databasen gick från minuter till sekunder med den här raden.
+        self._cellcache: dict[int, dict[str, str]] = {}
 
     # ── lexem ────────────────────────────────────────────────────────
 
@@ -61,10 +63,12 @@ class Uppslag:
     # ── former ───────────────────────────────────────────────────────
 
     def _celler(self, lexem: sqlite3.Row) -> dict[str, str]:
-        rader = self.conn.execute(
-            "SELECT * FROM Former WHERE lexem_id = ?", (lexem["id"],)).fetchall()
-        slot = self._slot_för(lexem["ordklass"])
-        return _former_per_cell(rader, slot)
+        if lexem["id"] not in self._cellcache:
+            rader = self.conn.execute(
+                "SELECT * FROM Former WHERE lexem_id = ?", (lexem["id"],)).fetchall()
+            self._cellcache[lexem["id"]] = _former_per_cell(
+                rader, self._slot_för(lexem["ordklass"]))
+        return self._cellcache[lexem["id"]]
 
     def _slot_för(self, ordklass: str):
         if ordklass not in self._slot:
