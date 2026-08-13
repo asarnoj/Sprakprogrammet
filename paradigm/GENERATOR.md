@@ -250,8 +250,8 @@ utökningarna flyttar bara taket.
  9  gav / ska ge                    + tempus
 10  flickans bok                    + genitiv          ✅ 2026-08-13
 11  hon är glad / hon är läkare     + predikativ       ✅ 2026-08-13
+12  flickan läser inte              + negation         ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
-12  flickan läser inte              + negation
 12  har gett                        + perfekt
 13  läser flickan?                  + frågor
 14  större än                       + komparation

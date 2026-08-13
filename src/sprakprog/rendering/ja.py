@@ -94,6 +94,15 @@ class JapanskRenderare:
                     f"ja/{lexem['lemma']}: varken ます- eller adjektivform finns")
             return grund + "です"
         masu = self.u.form_för(m.verb, "masu")
+        if m.negerad:
+            # Japanskan har inget nekande ord i satsen — verbet böjs.
+            # あげます → あげません → あげませんでした. Samma komposition ur
+            # ます-stammen som det artiga förflutna, ett steg längre.
+            if not masu.endswith("ます"):
+                raise RenderingsFel(
+                    f"ja: masu-formen {masu!r} slutar inte på ます")
+            stam = masu[:-2] + "ません"
+            return stam + "でした" if m.tid is Tidsreferens.FÖRFLUTEN else stam
         if m.tid is Tidsreferens.FÖRFLUTEN:
             if not masu.endswith("ます"):
                 raise RenderingsFel(

@@ -232,7 +232,13 @@ class SvenskRenderare:
         visar vilken form den behöver ha, inte innan.
         """
         ord = list(self.nominalfras(m.subjekt, subjekt=True))
-        ord.extend(self.verbfras(m))
+        verb = self.verbfras(m)
+        ord.append(verb[0])
+        if m.negerad:
+            # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
+            # inte "ska ge inte". Därför delas verbfrasen här.
+            ord.append(self.u.form_för("neg_inte", "inv"))
+        ord.extend(verb[1:])
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord.extend(self.nominalfras(nf))
