@@ -259,12 +259,9 @@ utökningarna flyttar bara taket.
 18  boken är större än huset        + komparation      ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
-12  har gett                        + perfekt
-13  läser flickan?                  + frågor
-14  större än                       + komparation
-15  boken lästes / blev läst        + passiv (båda sorterna)
-16  läs!                            + imperativ
-17  i huset, när hon kom, vill läsa  + fraser, bisatser, modalverb
+19  läs!                            + imperativ        ✗
+20  hon vet att han kom             + bisatser         ✗
+21  vem läser boken?                + wh-frågor        ✗
 ```
 
 ## Nivåerna härleds ur slot × frastyp
@@ -335,19 +332,37 @@ imperativ, resten.
 
 ## Det som blockerar
 
-**Bara 2 261 av 4 983 svenska former (45 %) går att nå med dagens
-meningsform** — 37 % före genitiven. De övriga 60 % är inte sällsynta i språket — de är
-oåtkomliga för specifikationen:
+Mätt om 2026-08-14 efter de åtta utökningarna, nu på alla sju språk och med
+ett verktyg i stället för för hand: `ordbok/verktyg/nåbarhet.py`. Det
+instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
+kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-genitiv                4 cellar × 259 ord    ingen genitivroll i Mening
-supinum, imperativ     8 av 12 verbceller    inget perfekt, ingen uppmaning
-komparativ, superlativ 3 av 8 adjektivceller ingen jämförelsekonstruktion
+sv  3 526 / 4 988   71 %      fr  5 088 /  9 070   56 %
+en  1 645 / 2 293   72 %      it  5 097 / 10 246   50 %
+                              es  4 637 / 10 596   44 %
+ja    770 / 2 498   31 %      de  7 839 / 23 493   33 %
 ```
 
-Generatorn skulle alltså bara kunna nå 40 % av korten, och det som saknas —
-genitiv, perfekt, imperativ, komparation — möter en nybörjare i vecka två.
+Svenskan gick 37 % → 45 % → **71 %**. Men de sju språken skiljer sig mer än
+väntat, och skälet är att **de stora onådda blocken inte är samma block**:
 
-**Meningskomplexiteten kommer före generatorn.** Frågan om täckande mot
-opportunistisk strategi är dessutom för tidig: med 60 % oåtkomligt är det
-inte strategin som avgör vad som övas, utan uttrycksförmågan.
+| Språk | Största onådda block | Vad som krävs |
+|---|---|---|
+| de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
+| fr/es/it | konjunktiv (6–12 celler) + konditionalis (6) | bisatser respektive villkorssatser |
+| alla | imperativ | satsmodus |
+| de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
+| ja | jisho/ta/nai — de enkla formerna | register, utanför scope |
+
+**Tyskans siffra är låg av en enda anledning.** 16 121 av 23 493 tyska
+former är adjektivformer, och två tredjedelar av adjektivparadigmet är
+komparativ och superlativ i attributiv ställning. `Grad` finns på `Mening`
+och styr predikativet; attributet är fortfarande bara en konceptnyckel.
+Att flytta graden in i `Nominalfras.attribut` är den enskilt största
+utökningen som återstår — värd omkring 10 500 tyska former.
+
+**Generatorn är inte längre blockerad av uttrycksförmågan.** Med 71 % på
+svenska och 72 % på engelska avgörs det som övas nu av strategin, inte av
+vad specen kan säga. Frågan om täckande mot opportunistisk urvalsstrategi
+är därmed mogen att ta.
