@@ -28,7 +28,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -185,6 +185,20 @@ class TyskRenderare:
         som hamnar i slutet.
         """
         person, numerus = self._subjektsform(m.subjekt)
+        if m.aspekt is Aspekt.PERFEKT:
+            # "sie hat gelesen" mot "sie ist gegangen" — hjälpverbet väljs
+            # per verb ur Lexem.hjälpverb, kolumnen som fylldes långt innan
+            # det fanns någon konstruktion som använde den.
+            verb = self.u.lexem(m.verb)
+            hjälp = verb["hjälpverb"]
+            if hjälp not in ("ha", "vara"):
+                raise RenderingsFel(
+                    f"de/{verb['lemma']}: hjälpverb={hjälp!r} — perfekt kan "
+                    f"inte byggas utan att veta om det är haben eller sein")
+            stam = "pret" if m.tid is Tidsreferens.FÖRFLUTEN else "pres"
+            return (self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
+                                    f"{stam}_{person}{numerus}"),
+                    [self.u.form(verb, "part2")])
         if m.tid is Tidsreferens.FRAMTID:
             # Futurum: werden böjt + huvudverbets infinitiv sist.
             return (self.u.form_för("modal_ska", f"pres_{person}{numerus}"),

@@ -61,6 +61,9 @@ class RomanskRenderare:
     SUBJEKTSCELL: str
     TONISK: str
     SAMMANSATT_DÅTID: bool
+    # Spanskan bildar ALLTID perfekt med haber. Franskan och italienskan
+    # väljer per verb ur Lexem.hjälpverb, som därför bara är ifylld för dem.
+    HJÄLPVERB_FAST: str | None = None
     VOKAL = set("aeiouyàâäéèêëîïôöûüùáíóúñòì")
     SAMMANDRAG: dict[tuple[str, str], str] = {}
 
@@ -175,12 +178,15 @@ class RomanskRenderare:
         person, numerus, subjektsgenus = self._subjektsform(m.subjekt)
         variant = self.kopulavariant(m)
 
-        sammansatt = (self.SAMMANSATT_DÅTID
-                      and m.tid is Tidsreferens.FÖRFLUTEN
-                      and m.aspekt is Aspekt.PERFEKTIV)
+        # Perfekt är alltid sammansatt. Perfektiv dåtid är det bara i
+        # franskan och italienskan — spanskan har ett syntetiskt preteritum
+        # där, vilket är hela skillnaden mellan "ha leído" och "leyó".
+        sammansatt = m.aspekt is Aspekt.PERFEKT or (
+            self.SAMMANSATT_DÅTID and m.tid is Tidsreferens.FÖRFLUTEN
+            and m.aspekt is Aspekt.PERFEKTIV)
         if sammansatt:
             verb = self.u.lexem(m.verb)
-            hjälp = verb["hjälpverb"]
+            hjälp = self.HJÄLPVERB_FAST or verb["hjälpverb"]
             if hjälp == "båda":
                 # 'båda' betyder att valet inte kan avgöras på lexemet utan
                 # på användningen: transitivt tar avere ("ha corso i 100 m"),
@@ -202,8 +208,12 @@ class RomanskRenderare:
                 cell = f"pp_{_kön(objgenus)}_{_tal(objnumerus)}"
             else:
                 cell = "pp_msc_sg"
+            # Pluskvamperfekt: hjälpverbet i imperfekt. "elle avait lu".
+            hjälpstam = ("imperf" if m.aspekt is Aspekt.PERFEKT
+                         and m.tid is Tidsreferens.FÖRFLUTEN else "pres")
             return [self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
-                                    f"pres_{person}{numerus}"),
+                                    f"{hjälpstam}_{person}{numerus}",
+                                    "hjälpverb" if hjälp == "ha" else None),
                     self.u.form(verb, cell)]
 
         if m.tid is Tidsreferens.FÖRFLUTEN and m.aspekt is Aspekt.PERFEKTIV:

@@ -23,6 +23,7 @@ class SpanskRenderare(RomanskRenderare):
     SUBJEKTSCELL = "sujeto"
     TONISK = "tonico"
     SAMMANSATT_DÅTID = False
+    HJÄLPVERB_FAST = "ha"
     SAMMANDRAG = {("a", "el"): "al", ("de", "el"): "del"}
 
     def possessivcell(self, genus: int, numerus: Numerus) -> str:
@@ -42,13 +43,23 @@ class SpanskRenderare(RomanskRenderare):
         return self.u.form_för(koncept, "coi", "mask"), 3
 
     def kopulavariant(self, m: Mening) -> str | None:
-        """ser eller estar — spanskans mest kända distinktion.
+        """Vilket av två spanska lexem huvudverbet ska bli.
+
+        Två koncept har dubbla lemman i spanskan, av olika skäl.
+
+        verb_ha: tener (äga) mot haber (hjälpverb). "Tengo un libro" men
+        "he leído". Som huvudverb är det alltid tener — haber existerar
+        bara som hjälpverb och kan inte stå ensamt.
+
+        verb_vara: ser eller estar — spanskans mest kända distinktion.
 
         estar för tillfälliga tillstånd ("está contenta"), ser för
         inneboende egenskaper och yrken ("es médica"). Konceptnycklarnas
         adj_es_-grupp ÄR tillståndsadjektiven — glad, ledsen, arg, trött,
         sjuk — så valet går att läsa ur datan i stället för att listas.
         """
+        if m.verb == "verb_ha":
+            return "possessiv"
         if m.verb != "verb_vara":
             return None
         if isinstance(m.predikativ, str) and m.predikativ.startswith("adj_es_"):

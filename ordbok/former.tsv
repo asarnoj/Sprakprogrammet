@@ -48853,6 +48853,33 @@ verb_ha	en	have	had					12			1
 verb_ha	en	have	has	1				2		3	1
 verb_ha	en	have	have					17			1
 verb_ha	en	have	having					128			1
+verb_ha	es	haber	ha	1				2		3	1
+verb_ha	es	haber	haber					1			1
+verb_ha	es	haber	habido	1			1	8			1
+verb_ha	es	haber	habiendo					128			1
+verb_ha	es	haber	habremos	2				64		1	1
+verb_ha	es	haber	habrá	1				64		3	1
+verb_ha	es	haber	habrán	2				64		3	1
+verb_ha	es	haber	habrás	1				64		2	1
+verb_ha	es	haber	habré	1				64		1	1
+verb_ha	es	haber	habréis	2				64		2	1
+verb_ha	es	haber	habéis	2				2		2	1
+verb_ha	es	haber	había	1				4096		1	1
+verb_ha	es	haber	había	1				4096		3	1
+verb_ha	es	haber	habíais	2				4096		2	1
+verb_ha	es	haber	habíamos	2				4096		1	1
+verb_ha	es	haber	habían	2				4096		3	1
+verb_ha	es	haber	habías	1				4096		2	1
+verb_ha	es	haber	han	2				2		3	1
+verb_ha	es	haber	has	1				2		2	1
+verb_ha	es	haber	he	1				2		1	1
+verb_ha	es	haber	hemos	2				2		1	1
+verb_ha	es	haber	hube	1				4		1	1
+verb_ha	es	haber	hubieron	2				4		3	1
+verb_ha	es	haber	hubimos	2				4		1	1
+verb_ha	es	haber	hubiste	1				4		2	1
+verb_ha	es	haber	hubisteis	2				4		2	1
+verb_ha	es	haber	hubo	1				4		3	1
 verb_ha	es	tener	ten	1				16		2	1
 verb_ha	es	tener	tendremos	2				64		1	1
 verb_ha	es	tener	tendrá	1				64		3	1

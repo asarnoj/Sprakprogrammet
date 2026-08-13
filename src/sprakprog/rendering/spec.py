@@ -64,13 +64,23 @@ class Referentgenus(StrEnum):
 
 
 class Aspekt(StrEnum):
-    """Perfektiv = avslutad händelse, imperfektiv = pågående eller vanemässig.
+    """Perfektiv = avslutad händelse, imperfektiv = pågående eller vanemässig,
+    perfekt = avslutad med relevans nu.
+
+    Perfekt kombineras med tidsreferensen: nutid + perfekt ger "har läst",
+    förfluten + perfekt ger "hade läst". Det är alltså inte ett tempus utan
+    en aspekt som lägger sig ovanpå tempus.
+
+    I franskan och italienskan sammanfaller nutid + perfekt med förfluten +
+    perfektiv — passé composé och passato prossimo är samma form. Spanskan
+    skiljer dem: "ha leído" mot "leyó".
 
     Svenskan och tyskan saknar morfologisk aspekt och ignorerar axeln.
     De romanska språken behöver den: "il donnait" (imperfekt) mot
     "il a donné" (passé composé) skiljer sig bara på aspekt.
     """
     PERFEKTIV = "perfektiv"
+    PERFEKT = "perfekt"
     IMPERFEKTIV = "imperfektiv"
 
 

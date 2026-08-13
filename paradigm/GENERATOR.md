@@ -252,8 +252,9 @@ utökningarna flyttar bara taket.
 11  hon är glad / hon är läkare     + predikativ       ✅ 2026-08-13
 12  flickan läser inte              + negation         ✅ 2026-08-13
 13  hon vill läsa / börjar att läsa + infinitivkompl.   ✅ 2026-08-13
+14  har läst / hade läst            + perfekt          ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
-    japanskan undantagen — modalitet är suffix, inte styrande verb
+    japanskan saknar både infinitivkomplement och perfektform
 12  har gett                        + perfekt
 13  läser flickan?                  + frågor
 14  större än                       + komparation
@@ -316,7 +317,7 @@ Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
 | Passiv | 601 | diates på `Mening` |
 | Perfektparticip | 454 | particip som attribut |
 | Komparation | 294 | jämförelsekonstruktion |
-| Perfekt | 165 | tempuskombination |
+| ~~Perfekt~~ | ~~165~~ | ✅ `Aspekt.PERFEKT` |
 | Imperativ | 161 | satsmodus |
 | Oböjda ordklasser | 105 | prepositionsfraser, konjunktioner |
 

@@ -15,7 +15,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -79,6 +79,14 @@ class EngelskRenderare:
     def verbdelar(self, m: Mening) -> list[str]:
         if m.negerad:
             return self._negerat_verb(m)
+        if m.aspekt is Aspekt.PERFEKT:
+            # "has read" / "had read". Hjälpverbet kongruerar, participet
+            # inte — och engelskan använder alltid have, aldrig be.
+            hjälp = ("pret" if m.tid is Tidsreferens.FÖRFLUTEN
+                     else "pres_3sg" if self._tredje_person_sg(m.subjekt)
+                     else "inf_imp")
+            return [self.u.form_för("verb_ha", hjälp),
+                    self.u.form_för(m.verb, "sup")]
         if m.tid is Tidsreferens.FRAMTID:
             return [self.u.form_för("modal_ska", "pres_3sg"),
                     self.u.form_för(m.verb, "inf_imp")]
