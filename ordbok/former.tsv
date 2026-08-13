@@ -37552,8 +37552,9 @@ modal_kan	ja	できる	できます					2			1
 modal_kan	ja	できる	できよう					1024			1
 modal_kan	ja	できる	できる					1			1
 modal_kan	ja	できる	できれば					2048			1
+modal_kan	sv	kan	kan					2			1
 modal_kan	sv	kan	kunde					4			1
-modal_kan	sv	kan	kunna					3			1
+modal_kan	sv	kan	kunna					1			1
 modal_kan	sv	kan	kunnat					8			1
 modal_måste	de	müssen	gemusst					8			1
 modal_måste	de	müssen	muss	1				2		1	1

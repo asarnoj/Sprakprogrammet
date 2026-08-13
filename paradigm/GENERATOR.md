@@ -251,7 +251,9 @@ utökningarna flyttar bara taket.
 10  flickans bok                    + genitiv          ✅ 2026-08-13
 11  hon är glad / hon är läkare     + predikativ       ✅ 2026-08-13
 12  flickan läser inte              + negation         ✅ 2026-08-13
+13  hon vill läsa / börjar att läsa + infinitivkompl.   ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
+    japanskan undantagen — modalitet är suffix, inte styrande verb
 12  har gett                        + perfekt
 13  läser flickan?                  + frågor
 14  större än                       + komparation
@@ -275,7 +277,7 @@ io           Nominalfras            5    ✅
 predikativ   Adjektivfras           4    ✅ 2026-08-13
 predikativ   Nominalfras            3    ✅ 2026-08-13
 ──────────────────────────────────────────────
-komplement   Infinitivfras         12    ✗   hon börjar springa
+komplement   Infinitivfras         12    ✅ 2026-08-13
 objekt       Bisatsfras            11    ✗   hon vet att han kom
 kommunikat   Bisatsfras            10    ✗   hon säger att han kom
 kommunikat   Nominalfras            6    ✗

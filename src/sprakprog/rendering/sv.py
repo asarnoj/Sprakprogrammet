@@ -186,6 +186,14 @@ class SvenskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def komplement(self, m: Mening) -> list[str]:
+        """Infinitivkomplement: "vill läsa", "börjar att läsa"."""
+        markör = self.u.infinitivmarkör(m.verb)
+        infinitiv = self.u.form_för(m.komplement, "inf")
+        if markör is None:
+            return [infinitiv]
+        return [self.u.form_för(markör, "inv"), infinitiv]
+
     def predikativ(self, m: Mening) -> list[str]:
         if isinstance(m.predikativ, str):
             huvud = self.u.lexem(m.subjekt.koncept)
@@ -242,6 +250,8 @@ class SvenskRenderare:
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord.extend(self.nominalfras(nf))
+        if m.komplement is not None:
+            ord.extend(self.komplement(m))
         if m.predikativ is not None:
             ord.extend(self.predikativ(m))
         for adverbial in m.adverbial:
