@@ -41,6 +41,20 @@ class SpanskRenderare(RomanskRenderare):
         koncept = "pronomen_3pl" if numerus == "pl" else "pronomen_3sg_mask"
         return self.u.form_för(koncept, "coi", "mask"), 3
 
+    def kopulavariant(self, m: Mening) -> str | None:
+        """ser eller estar — spanskans mest kända distinktion.
+
+        estar för tillfälliga tillstånd ("está contenta"), ser för
+        inneboende egenskaper och yrken ("es médica"). Konceptnycklarnas
+        adj_es_-grupp ÄR tillståndsadjektiven — glad, ledsen, arg, trött,
+        sjuk — så valet går att läsa ur datan i stället för att listas.
+        """
+        if m.verb != "verb_vara":
+            return None
+        if isinstance(m.predikativ, str) and m.predikativ.startswith("adj_es_"):
+            return "tillfällig"
+        return "permanent"
+
     def ordna_klitika(self, cod, coi) -> list[str]:
         """Spanskan har indirekt före direkt, och le blir se framför lo/la.
 

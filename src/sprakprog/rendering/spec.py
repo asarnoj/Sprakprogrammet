@@ -106,6 +106,20 @@ class Mening:
     subjekt: Nominalfras
     objekt: Nominalfras | None = None
     io: Nominalfras | None = None
+    predikativ: "str | Nominalfras | None" = None
+    """Predikativ till kopulaverb: "hon är glad", "hon är läkare".
+
+    En sträng är ett adjektivkoncept (Adjektivfras), en Nominalfras är en
+    substantivfras. Bara fyra verbmönster tar predikativ — men två av dem
+    är `vara` och `bli`, de mest frekventa verben i vilket språk som helst.
+
+    Predikativa adjektiv böjs INTE som attributiva: svenskan använder den
+    obestämda formen och kongruerar med subjektet ("hon är glad", "de är
+    glada"), tyskan böjer inte alls ("sie ist glücklich").
+
+    Ett predikativt substantiv står utan artikel i sv/de/fr/es/it — "hon är
+    läkare", inte "hon är en läkare" — men med artikel i engelskan.
+    """
     adverbial: tuple[str, ...] = field(default=())
     tid: Tidsreferens = Tidsreferens.NUTID
     aspekt: Aspekt = Aspekt.PERFEKTIV

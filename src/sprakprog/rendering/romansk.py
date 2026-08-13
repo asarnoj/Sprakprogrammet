@@ -173,6 +173,7 @@ class RomanskRenderare:
         ingen kongruens: "la fille a donné les livres".
         """
         person, numerus, subjektsgenus = self._subjektsform(m.subjekt)
+        variant = self.kopulavariant(m)
 
         sammansatt = (self.SAMMANSATT_DÅTID
                       and m.tid is Tidsreferens.FÖRFLUTEN
@@ -212,7 +213,7 @@ class RomanskRenderare:
         if stam is None:
             raise RenderingsFel(
                 f"{self.SPRÅK}: {m.tid}/{m.aspekt} saknar mappning till cell")
-        return [self.u.form_för(m.verb, f"{stam}_{person}{numerus}")]
+        return [self.u.form_för(m.verb, f"{stam}_{person}{numerus}", variant)]
 
     # ── sandhi ───────────────────────────────────────────────────────
 
@@ -282,6 +283,22 @@ class RomanskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def kopulavariant(self, m: Mening) -> str | None:
+        """Vilken kopula språket ska använda. Bara spanskan har ett val."""
+        return None
+
+    def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str):
+            # Romanska predikativ kongruerar med subjektet i genus och
+            # numerus: "elle est heureuse", "ils sont heureux".
+            _, numerus, genus = self._subjektsform(m.subjekt)
+            tal = Numerus.PL if numerus == "pl" else Numerus.SG
+            return [self.u.form_för(
+                m.predikativ, f"pos_{_kön(genus)}_{_tal(tal)}")]
+        # Yrkesbeteckningar står utan artikel: "elle est médecin".
+        return [self.u.form(self.u.lexem(m.predikativ.koncept),
+                            _tal(m.predikativ.numerus))]
+
     def rendera(self, m: Mening) -> str:
         ord = list(self.nominalfras(m.subjekt, "subjekt"))
 
@@ -296,6 +313,8 @@ class RomanskRenderare:
         ord += self.ordna_klitika(cod, coi)
         ord += self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
 
+        if m.predikativ is not None:
+            ord += self.predikativ(m)
         if m.objekt is not None and cod is None:
             ord += self.nominalfras(m.objekt, "objekt")
         if m.io is not None and self._pronomen(m.io) is None:
