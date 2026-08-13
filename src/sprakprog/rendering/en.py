@@ -15,7 +15,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -67,6 +67,41 @@ class EngelskRenderare:
             raise
         return ord
 
+    def _person_numerus(self, nf: Nominalfras) -> tuple[int, str]:
+        rad = self.conn.execute(
+            "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
+            (nf.koncept,)).fetchone()
+        person = rad["person"] if rad and rad["person"] else 3
+        numerus = ("pl" if nf.numerus is Numerus.PL
+                   or (rad and rad["numerus"] == 2) else "sg")
+        return person, numerus
+
+    def presens(self, koncept: str, nf: Nominalfras) -> str:
+        """Presens med personkongruens där verbet har den.
+
+        Bara "be" böjs efter person i engelskan (am/is/are). Övriga verb har
+        tomma personceller, och då faller uppslaget tillbaka på grundformen —
+        vilket är rätt för dem: "the girls read".
+        """
+        person, numerus = self._person_numerus(nf)
+        lexem = self.u.lexem(koncept)
+        celler = self.u._celler(lexem)
+        for cell in (f"pres_{person}{numerus}",
+                     "pres_3sg" if (person, numerus) == (3, "sg") else None,
+                     "inf_imp"):
+            if cell and celler.get(cell):
+                return celler[cell]
+        raise RenderingsFel(f"en/{lexem['lemma']}: ingen presensform")
+
+    def preteritum(self, koncept: str, nf: Nominalfras) -> str:
+        person, numerus = self._person_numerus(nf)
+        lexem = self.u.lexem(koncept)
+        celler = self.u._celler(lexem)
+        for cell in (f"pret_{person}{numerus}", "pret"):
+            if celler.get(cell):
+                return celler[cell]
+        raise RenderingsFel(f"en/{lexem['lemma']}: ingen preteritumform")
+
     def _tredje_person_sg(self, nf: Nominalfras) -> bool:
         rad = self.conn.execute(
             "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
@@ -77,23 +112,28 @@ class EngelskRenderare:
         return person == 3
 
     def verbdelar(self, m: Mening) -> list[str]:
+        if m.diates is not Diates.AKTIV:
+            # "the book is read" / "was read". Engelskan har bara en passiv,
+            # så båda specvärdena ger samma konstruktion.
+            hjälp = (self.preteritum("verb_vara", m.subjekt)
+                     if m.tid is Tidsreferens.FÖRFLUTEN
+                     else self.presens("verb_vara", m.subjekt))
+            return [hjälp, self.u.form_för(m.verb, "sup")]
         if m.negerad:
             return self._negerat_verb(m)
         if m.aspekt is Aspekt.PERFEKT:
             # "has read" / "had read". Hjälpverbet kongruerar, participet
             # inte — och engelskan använder alltid have, aldrig be.
-            hjälp = ("pret" if m.tid is Tidsreferens.FÖRFLUTEN
-                     else "pres_3sg" if self._tredje_person_sg(m.subjekt)
-                     else "inf_imp")
-            return [self.u.form_för("verb_ha", hjälp),
-                    self.u.form_för(m.verb, "sup")]
+            hjälp = (self.preteritum("verb_ha", m.subjekt)
+                     if m.tid is Tidsreferens.FÖRFLUTEN
+                     else self.presens("verb_ha", m.subjekt))
+            return [hjälp, self.u.form_för(m.verb, "sup")]
         if m.tid is Tidsreferens.FRAMTID:
             return [self.u.form_för("modal_ska", "pres_3sg"),
                     self.u.form_för(m.verb, "inf_imp")]
         if m.tid is Tidsreferens.FÖRFLUTEN:
-            return [self.u.form_för(m.verb, "pret")]
-        cell = "pres_3sg" if self._tredje_person_sg(m.subjekt) else "inf_imp"
-        return [self.u.form_för(m.verb, cell)]
+            return [self.preteritum(m.verb, m.subjekt)]
+        return [self.presens(m.verb, m.subjekt)]
 
     def _negerat_verb(self, m: Mening) -> list[str]:
         """Engelsk negation kräver do-omskrivning — utom med be och modaler.
@@ -112,10 +152,8 @@ class EngelskRenderare:
 
         def böjt(koncept: str) -> str:
             if m.tid is Tidsreferens.FÖRFLUTEN:
-                return self.u.form_för(koncept, "pret")
-            return self.u.form_för(
-                koncept, "pres_3sg" if self._tredje_person_sg(m.subjekt)
-                else "inf_imp")
+                return self.preteritum(koncept, m.subjekt)
+            return self.presens(koncept, m.subjekt)
 
         if m.verb == "verb_vara":
             # Kopulan negeras direkt: "she is not happy", inte "does not be".

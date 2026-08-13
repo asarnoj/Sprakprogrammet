@@ -21,6 +21,62 @@ meta:
     pres_3sg), diates.
 
 celler:
+  # ── be: engelskans enda verb med personböjning ──
+  #
+  # Alla andra engelska verb klarar sig med grundform och 3sg (give/gives,
+  # gave). "Be" har am/is/are och was/were, och de cellerna finns bara för
+  # dess skull — övriga verb lämnar dem tomma och renderaren faller
+  # tillbaka på inf_imp.
+  #
+  # De är värda att lagra ändå: be är engelskans vanligaste verb, och
+  # "are" och "were" är former en inlärare måste kunna. Utan dem gick
+  # "the girls are happy" inte att bygga.
+  - id: pres_1sg
+    tempus: [Pres]
+    person: P1
+    numerus: Sg
+    not: "am"
+  - id: pres_2sg
+    tempus: [Pres]
+    person: P2
+    numerus: Sg
+    not: "are"
+  - id: pres_1pl
+    tempus: [Pres]
+    person: P1
+    numerus: Pl
+    not: "are"
+  - id: pres_2pl
+    tempus: [Pres]
+    person: P2
+    numerus: Pl
+    not: "are"
+  - id: pres_3pl
+    tempus: [Pres]
+    person: P3
+    numerus: Pl
+    not: "are"
+  - id: pret_2sg
+    tempus: [Pret]
+    person: P2
+    numerus: Sg
+    not: "were"
+  - id: pret_1pl
+    tempus: [Pret]
+    person: P1
+    numerus: Pl
+    not: "were"
+  - id: pret_2pl
+    tempus: [Pret]
+    person: P2
+    numerus: Pl
+    not: "were"
+  - id: pret_3pl
+    tempus: [Pret]
+    person: P3
+    numerus: Pl
+    not: "were"
+
   - id: inf_imp
     tempus: [Inf, Imp]
     diates: Aktiv

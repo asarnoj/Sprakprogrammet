@@ -49060,11 +49060,20 @@ verb_vara	de	sein	wären	2				2048		1	1
 verb_vara	de	sein	wären	2				2048		3	1
 verb_vara	de	sein	wärest	1				2048		2	1
 verb_vara	de	sein	wäret	2				2048		2	1
+verb_vara	en	be	am	1				2		1	
+verb_vara	en	be	are	1				2		2	
+verb_vara	en	be	are	2				2		1	
+verb_vara	en	be	are	2				2		2	
+verb_vara	en	be	are	2				2		3	
 verb_vara	en	be	be					17			1
 verb_vara	en	be	been					8			1
 verb_vara	en	be	being					128			1
 verb_vara	en	be	is	1				2		3	1
 verb_vara	en	be	was					4			1
+verb_vara	en	be	were	1				4		2	
+verb_vara	en	be	were	2				4		1	
+verb_vara	en	be	were	2				4		2	
+verb_vara	en	be	were	2				4		3	
 verb_vara	es	estar	estaba	1				4096		1	1
 verb_vara	es	estar	estaba	1				4096		3	1
 verb_vara	es	estar	estabais	2				4096		2	1
