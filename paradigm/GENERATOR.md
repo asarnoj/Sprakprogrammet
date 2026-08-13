@@ -254,6 +254,7 @@ utökningarna flyttar bara taket.
 13  hon vill läsa / börjar att läsa + infinitivkompl.   ✅ 2026-08-13
 14  har läst / hade läst            + perfekt          ✅ 2026-08-13
 15  hon läser i skolan              + prepositionsfras ✅ 2026-08-13
+16  läser flickan boken?            + ja/nej-fråga     ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
 12  har gett                        + perfekt

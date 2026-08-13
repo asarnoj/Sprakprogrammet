@@ -253,9 +253,11 @@ class SvenskRenderare:
         kräva en riktig ordföljdsmodell, och den byggs när det andra språket
         visar vilken form den behöver ha, inte innan.
         """
-        ord = list(self.nominalfras(m.subjekt, subjekt=True))
+        subjekt = self.nominalfras(m.subjekt, subjekt=True)
         verb = self.verbfras(m)
-        ord.append(verb[0])
+        # Ja/nej-fråga är ren omkastning: det finita verbet först, subjektet
+        # sedan. Samma sats, annan ordning — inget ord läggs till.
+        ord = [verb[0], *subjekt] if m.fråga else [*subjekt, verb[0]]
         if m.negerad:
             # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
             # inte "ska ge inte". Därför delas verbfrasen här.
@@ -272,4 +274,4 @@ class SvenskRenderare:
             ord.extend(self.adverbial(adverbial))
 
         mening = " ".join(ord)
-        return mening[0].upper() + mening[1:] + "."
+        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")

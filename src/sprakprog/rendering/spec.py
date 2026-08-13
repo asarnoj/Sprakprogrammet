@@ -154,6 +154,17 @@ class Mening:
     språkspecifika mönstret. Ingen rad = ren infinitiv, vilket är fallet för
     de flesta modalverb.
     """
+    fråga: bool = False
+    """Ja/nej-fråga: "läser flickan boken?"
+
+    Låser upp noll nya ordformer men är den utökning som ställer störst krav
+    på ORDFÖLJDEN — det är första gången satsens led byter plats i stället
+    för att något läggs till.
+
+    Sex olika strategier: verbet först i sv och de, do-omskrivning plus
+    inversion i en, est-ce que i fr, enbart intonation och skiljetecken i
+    es och it, och partikeln か sist i ja.
+    """
     negerad: bool = False
     """Nekande sats: "flickan läser inte boken".
 

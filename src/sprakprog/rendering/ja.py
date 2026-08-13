@@ -181,6 +181,6 @@ class JapanskRenderare:
             if (m.verb == "verb_vara" and isinstance(m.predikativ, str)
                     and self.u.lexem(m.predikativ)["ja_adjektiv_typ"] == "i"):
                 delar.append(self.u.form_för(m.verb, "masu"))
-                return "".join(delar) + "。"
+                return "".join(delar) + ("か。" if m.fråga else "。")
         delar.append(self.verbform(m))
-        return "".join(delar) + "。"
+        return "".join(delar) + ("か。" if m.fråga else "。")

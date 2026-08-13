@@ -237,6 +237,7 @@ class RomanskRenderare:
                     ut[-1] = ersättning
                     continue
                 if self.eliderar(ut[-1], o):
+                    # Sista vokalen faller: le → l', ne → n', que → qu'.
                     ut[-1] = ut[-1][:-1] + "'" + o
                     continue
             ut.append(o)
@@ -282,6 +283,10 @@ class RomanskRenderare:
     # Franskans ne har ingen motsvarighet i es/it, som klarar sig med en
     # enda preverbal partikel.
     NEKANDE_FÖRLED: str | None = None
+    # Franskan inleder ja/nej-frågor med est-ce que. Spanskan och
+    # italienskan behåller ordföljden och markerar bara med skiljetecken.
+    FRÅGEINLEDNING: str | None = None
+    FRÅGETECKEN_FÖRE: str = ""
 
     def negation(self, m: Mening) -> tuple[list[str], list[str]]:
         """(före verbet, efter verbet). Romanska språk skiljer sig här.
@@ -329,7 +334,10 @@ class RomanskRenderare:
                             _tal(m.predikativ.numerus))]
 
     def rendera(self, m: Mening) -> str:
-        ord = list(self.nominalfras(m.subjekt, "subjekt"))
+        ord: list[str] = []
+        if m.fråga and self.FRÅGEINLEDNING:
+            ord.append(self.FRÅGEINLEDNING)
+        ord += self.nominalfras(m.subjekt, "subjekt")
 
         # Objektspronomen realiseras som klitika FÖRE verbet, inte på
         # substantivets plats. Det är därför nominalfras() vägrar rollen
@@ -375,4 +383,7 @@ class RomanskRenderare:
                 ord += self.nominalfras(adverbial.komplement)
 
         mening = " ".join(self.sandhi(ord))
-        return mening[0].upper() + mening[1:] + "."
+        mening = mening[0].upper() + mening[1:]
+        if m.fråga:
+            return self.FRÅGETECKEN_FÖRE + mening + "?"
+        return mening + "."
