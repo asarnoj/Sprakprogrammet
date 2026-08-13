@@ -256,6 +256,7 @@ utökningarna flyttar bara taket.
 15  hon läser i skolan              + prepositionsfras ✅ 2026-08-13
 16  läser flickan boken?            + ja/nej-fråga     ✅ 2026-08-13
 17  boken lästes / blev läst        + passiv           ✅ 2026-08-13
+18  boken är större än huset        + komparation      ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
 12  har gett                        + perfekt
@@ -319,7 +320,7 @@ Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
 | ~~Genitiv~~ | ~~992~~ | ✅ `Nominalfras.ägare` |
 | ~~Passiv~~ | ~~601~~ | ✅ `Diates` |
 | ~~Perfektparticip~~ | ~~454~~ | ✅ används av bli-passiven |
-| Komparation | 294 | jämförelsekonstruktion |
+| ~~Komparation~~ | ~~294~~ | ✅ `Grad` |
 | ~~Perfekt~~ | ~~165~~ | ✅ `Aspekt.PERFEKT` |
 | Imperativ | 161 | satsmodus |
 | ~~Oböjda ordklasser~~ | ~~105~~ | ✅ prepositionsfraser byggda |

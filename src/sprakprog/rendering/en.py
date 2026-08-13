@@ -15,7 +15,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -172,6 +172,19 @@ class EngelskRenderare:
                 for i, o in enumerate(ord)]
 
     def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str) and m.grad is not Grad.POSITIV:
+            # "bigger" men "more interesting" — engelskan avgör per ord,
+            # och datan vet: saknas cellen kompareras det analytiskt.
+            cell = "komp" if m.grad is Grad.KOMPARATIV else "superl"
+            form = self.u._celler(self.u.lexem(m.predikativ)).get(cell)
+            ut = ([form] if form else
+                  [self.u.form_för("komp_mer" if m.grad is Grad.KOMPARATIV
+                                   else "komp_mest", "pos"),
+                   self.u.form_för(m.predikativ, "pos")])
+            if m.jämförelse is not None:
+                ut.append(self.u.form_för("komp_än", "inv"))
+                ut += self.nominalfras(m.jämförelse)
+            return ut
         if isinstance(m.predikativ, str):
             # Engelska predikativa adjektiv böjs inte: "she is happy".
             return [self.u.form_för(m.predikativ, "pos")]

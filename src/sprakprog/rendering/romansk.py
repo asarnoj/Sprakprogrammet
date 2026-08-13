@@ -32,7 +32,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, Referentgenus,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Referentgenus,
     RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
@@ -341,6 +341,33 @@ class RomanskRenderare:
         return None
 
     def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str) and m.grad is not Grad.POSITIV:
+            # Franskan är alltid perifrastisk. Spanskan och italienskan har
+            # suppletiva former för ett fåtal (mayor, maggiore) och bygger
+            # resten med más/più — datan avgör vilket.
+            _, numerus, genus = self._subjektsform(m.subjekt)
+            tal = Numerus.PL if numerus == "pl" else Numerus.SG
+            stam = "komp" if m.grad is Grad.KOMPARATIV else "superl"
+            celler = self.u._celler(self.u.lexem(m.predikativ))
+            form = (celler.get(f"{stam}_{_kön(genus)}_{_tal(tal)}")
+                    or celler.get(f"{stam}_{_tal(tal)}"))
+            if form:
+                ut = [form]
+            else:
+                ut = [self.u.form_för("komp_mer" if m.grad is Grad.KOMPARATIV
+                                      else "komp_mest", "inv"),
+                      self.u.form_för(m.predikativ,
+                                      f"pos_{_kön(genus)}_{_tal(tal)}")]
+            if m.grad is Grad.SUPERLATIV:
+                # Romansk superlativ kräver bestämd artikel: "le plus
+                # grand", "el más grande". Utan den är frasen komparativ.
+                # Artikeln kongruerar med subjektet.
+                artikel = self.artikelcell(genus, tal, ut[0], bestämd=True)
+                ut.insert(0, self.u.form_för("artikel_bestamd", artikel))
+            if m.jämförelse is not None:
+                ut.append(self.u.form_för("komp_än", "inv"))
+                ut += self.nominalfras(m.jämförelse)
+            return ut
         if isinstance(m.predikativ, str):
             # Romanska predikativ kongruerar med subjektet i genus och
             # numerus: "elle est heureuse", "ils sont heureux".

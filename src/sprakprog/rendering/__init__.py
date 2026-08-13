@@ -8,7 +8,7 @@ from .it import ItalienskRenderare
 from .ja import JapanskRenderare
 from .restriktioner import Brott, Validator
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, Prepositionsfras,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Prepositionsfras,
     Referentgenus,
     RenderingsFel, Tidsreferens,
 )
@@ -16,7 +16,7 @@ from .sv import SvenskRenderare
 from .uppslag import Uppslag
 
 __all__ = [
-    "Aspekt", "Bestämdhet", "Brott", "Diates", "EngelskRenderare", "FranskRenderare",
+    "Aspekt", "Bestämdhet", "Brott", "Diates", "Grad", "EngelskRenderare", "FranskRenderare",
     "ItalienskRenderare", "JapanskRenderare", "Mening",
     "Nominalfras", "Numerus", "Prepositionsfras", "Referentgenus",
     "RenderingsFel",

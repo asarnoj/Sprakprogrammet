@@ -44,6 +44,13 @@ celler:
   # skiljer den från alla 144 attributiva celler.
   - id: pred
     grad: Pos
+  - id: pred_komp
+    grad: Komp
+    not: "Oböjd predikativ komparativ: 'sie ist größer'."
+  - id: pred_superl
+    grad: Superl
+    not: "Predikativ superlativ med am: 'sie ist am größten'."
+
     not: "Oböjd predikativform: 'sie ist glücklich'."
 
   # ── Pos / Stark / Mask sg ──────────────────────────────────────────

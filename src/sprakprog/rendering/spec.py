@@ -46,6 +46,22 @@ class Tidsreferens(StrEnum):
     FRAMTID = "framtid"
 
 
+class Grad(StrEnum):
+    """Komparationsgrad på predikativet: "stor", "större", "störst".
+
+    Realiseras syntetiskt eller perifrastiskt beroende på både SPRÅK och
+    ORD. Tyskan är alltid syntetisk (größer). Franskan alltid perifrastisk
+    (plus grand). Svenskan, engelskan, spanskan och italienskan blandar:
+    "större" men "mer intressant", "bigger" men "more interesting".
+
+    Renderaren avgör det på datan — finns komparativcellen används den,
+    annars byggs frasen med komp_mer.
+    """
+    POSITIV = "positiv"
+    KOMPARATIV = "komparativ"
+    SUPERLATIV = "superlativ"
+
+
 class Diates(StrEnum):
     """Aktiv eller passiv — och svenskan har två passiver.
 
@@ -171,6 +187,9 @@ class Mening:
     språkspecifika mönstret. Ingen rad = ren infinitiv, vilket är fallet för
     de flesta modalverb.
     """
+    grad: Grad = Grad.POSITIV
+    jämförelse: "Nominalfras | None" = None
+    """Jämförelseled: "boken är större ÄN huset". Kräver grad=KOMPARATIV."""
     diates: Diates = Diates.AKTIV
     fråga: bool = False
     """Ja/nej-fråga: "läser flickan boken?"

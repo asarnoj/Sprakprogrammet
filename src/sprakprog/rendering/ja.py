@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from .spec import Aspekt, Diates, Mening, Nominalfras, RenderingsFel, Tidsreferens
+from .spec import Aspekt, Diates, Grad, Mening, Nominalfras, RenderingsFel, Tidsreferens
 from .uppslag import Uppslag
 
 TOPIK, OBJEKT, DATIV = "は", "を", "に"
@@ -149,6 +149,18 @@ class JapanskRenderare:
         """
         if not isinstance(m.predikativ, str):
             return [self.u.form(self.u.lexem(m.predikativ.koncept), "jisho")]
+        if m.grad is not Grad.POSITIV:
+            # Japanskan böjer inte adjektiv i grad. Komparativ markeras med
+            # もっと eller inte alls, och jämförelseledet med より FÖRE det
+            # jämförda — omvänt mot alla sex andra språken.
+            adjektiv = self.u.lexem(m.predikativ)
+            ut = ""
+            if m.jämförelse is not None:
+                ut += self.nominalfras(m.jämförelse) + self.u.form_för(
+                    "komp_än", "inv")
+            elif m.grad is Grad.KOMPARATIV:
+                ut += self.u.form_för("komp_mer", "inv")
+            return [ut + self.u.form(adjektiv, "jisho")]
         adjektiv = self.u.lexem(m.predikativ)
         typ = adjektiv["ja_adjektiv_typ"]
 
