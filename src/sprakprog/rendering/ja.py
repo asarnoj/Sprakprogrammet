@@ -163,7 +163,13 @@ class JapanskRenderare:
                 "modell och är inte byggt")
         delar = [self.nominalfras(m.subjekt) + TOPIK]
         for adverbial in m.adverbial:
-            delar.append(self.u.form_för(adverbial, "inv") + "、")
+            if isinstance(adverbial, str):
+                delar.append(self.u.form_för(adverbial, "inv") + "、")
+            else:
+                # Japanskan har POSTpositioner: 学校で, inte で学校.
+                # Ordningen är alltså omvänd mot alla sex andra språken.
+                delar.append(self.nominalfras(adverbial.komplement)
+                             + self.u.form_för(adverbial.preposition, "inv"))
         if m.io is not None:
             delar.append(self.nominalfras(m.io) + DATIV)
         if m.objekt is not None:

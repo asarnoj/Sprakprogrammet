@@ -209,6 +209,30 @@ class TyskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def prepositionskasus(self, preposition: str) -> int:
+        """Vilken kasus prepositionen styr på sitt komplement.
+
+        Ligger på PREPOSITIONENS eget mönster, inte på verbets — schemat
+        tillät prepositioner som styrande ord långt innan något taggade dem.
+        """
+        rad = self.conn.execute(
+            """SELECT mk.kasus FROM Mönster m
+               JOIN Koncept k ON k.id = m.koncept_id
+               JOIN MönsterKrav mk ON mk.mönster_id = m.id
+               WHERE k.nyckel = ? AND m.språk = 'de' AND mk.slot = 'komplement'
+                 AND mk.kasus IS NOT NULL""", (preposition,)).fetchone()
+        if rad is None:
+            raise RenderingsFel(
+                f"de/{preposition}: prepositionens kasusrektion är inte taggad")
+        return rad["kasus"]
+
+    def adverbial(self, a) -> list[str]:
+        if isinstance(a, str):
+            return [self.u.form_för(a, "inv")]
+        return [self.u.form_för(a.preposition, "inv"),
+                *self.nominalfras(a.komplement,
+                                  self.prepositionskasus(a.preposition))]
+
     def predikativ(self, m: Mening) -> list[str]:
         if isinstance(m.predikativ, str):
             # Tyskan böjer inte predikativa adjektiv: "sie ist glücklich".
@@ -241,7 +265,7 @@ class TyskRenderare:
         if m.io is not None:
             mittelfeld += self.nominalfras(m.io, self.kasus_för(m.verb, "io"))
         for adverbial in m.adverbial:
-            mittelfeld.append(self.u.form_för(adverbial, "inv"))
+            mittelfeld += self.adverbial(adverbial)
         if m.objekt is not None:
             mittelfeld += self.nominalfras(
                 m.objekt, self.kasus_för(m.verb, "objekt"), negerad=kein_objekt)
