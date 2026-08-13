@@ -48720,6 +48720,7 @@ verb_bli	de	werden	werdest	1				1024		2	1
 verb_bli	de	werden	werdet	2				1042		2	1
 verb_bli	de	werden	wird	1				2		3	1
 verb_bli	de	werden	wirst	1				2		2	1
+verb_bli	de	werden	worden					8			2
 verb_bli	de	werden	wurde	1				4		1	1
 verb_bli	de	werden	wurde	1				4		3	1
 verb_bli	de	werden	wurden	2				4		1	1

@@ -16,6 +16,7 @@ kastar RenderingsFel med vad som saknas. En tyst felaktig mening är värre
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Prepositionsfras,
@@ -256,8 +257,13 @@ class SvenskRenderare:
             cell = ("perfpart_a" if m.subjekt.numerus is Numerus.PL
                     else "perfpart_obest_utr_sg" if genus == UTRUM
                     else "perfpart_obest_neu_sg")
-            return [self.u.form_för("verb_bli", TEMPUSCELL[m.tid]),
-                    self.u.form(lexem, cell)]
+            # Bli bär hela tempus- och aspektapparaten och böjs som vilket
+            # verb som helst: "ska bli läst", "har blivit läst". Den går
+            # därför genom den aktiva grenen i stället för att få egna
+            # tempusfall här — annars måste varje ny tempusform skrivas in
+            # på två ställen, och passiven blir efter.
+            hjälp = replace(m, verb="verb_bli", diates=Diates.AKTIV)
+            return [*self.verbfras(hjälp), self.u.form(lexem, cell)]
         # S-passiven är svenskans omarkerade: läses, lästes, lästs. Den
         # ligger som egna celler i Former, inte som en konstruktion.
         suffix = ("_passiv" if m.diates is Diates.PASSIV
