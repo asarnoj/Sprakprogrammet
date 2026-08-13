@@ -39,6 +39,14 @@ SUBSTANTIVCELL = {
     (Bestämdhet.BESTÄMD, Numerus.PL): "best_pl_ack_dat_nom",
 }
 
+# Genitiv är svenskans enda kvarvarande kasus på substantiv.
+SUBSTANTIVCELL_GEN = {
+    (Bestämdhet.OBESTÄMD, Numerus.SG): "obest_sg_gen",
+    (Bestämdhet.BESTÄMD, Numerus.SG): "best_sg_gen",
+    (Bestämdhet.OBESTÄMD, Numerus.PL): "obest_pl_gen",
+    (Bestämdhet.BESTÄMD, Numerus.PL): "best_pl_gen",
+}
+
 
 def _adjektivcell(bestämdhet: Bestämdhet, numerus: Numerus, genus: int,
                   efter_possessiv: bool = False) -> str:
@@ -83,7 +91,8 @@ class SvenskRenderare:
 
     # ── nominalfras ──────────────────────────────────────────────────
 
-    def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False) -> list[str]:
+    def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False,
+                    genitiv: bool = False) -> list[str]:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
@@ -109,7 +118,13 @@ class SvenskRenderare:
         # Bestämdhet realiseras olika beroende på vad som står framför
         # huvudordet: suffix i "flickan", fristående artikel i "en bok",
         # och ingen artikel alls när en possessiv tar platsen ("sin bror").
-        if nf.possessiv is not None:
+        if nf.ägare is not None:
+            # "flickans bok" — ägaren står i genitiv FÖRE huvudordet, och
+            # huvudordet blir obestämt precis som efter en possessiv.
+            # Svenskan säger aldrig "flickans boken".
+            ord.extend(self.nominalfras(nf.ägare, genitiv=True))
+            substantivform = Bestämdhet.OBESTÄMD
+        elif nf.possessiv is not None:
             # Possessiven tar artikelns plats: "sin bror", aldrig "sin en bror".
             # Substantivet står i obestämd form trots att frasen är bestämd.
             variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
@@ -133,11 +148,14 @@ class SvenskRenderare:
             substantivform = nf.bestämdhet
 
         for attribut in nf.attribut:
+            # Genitivattribut styr adjektivet likadant som en possessiv:
+            # "flickans röda bok", aldrig "flickans röd bok".
             ord.append(self.u.form_för(attribut, _adjektivcell(
                 nf.bestämdhet, nf.numerus, genus,
-                efter_possessiv=nf.possessiv is not None)))
+                efter_possessiv=nf.possessiv is not None or nf.ägare is not None)))
 
-        cell = SUBSTANTIVCELL[(substantivform, nf.numerus)]
+        tabell = SUBSTANTIVCELL_GEN if genitiv else SUBSTANTIVCELL
+        cell = tabell[(substantivform, nf.numerus)]
         try:
             ord.append(self.u.form(huvud, cell))
         except RenderingsFel:

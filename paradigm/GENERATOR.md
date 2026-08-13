@@ -232,10 +232,59 @@ franska         9,1            7 899                 871
 
 ---
 
+## Komplexitetsstegen
+
+Nivåerna är **finare än specutökningarna**, och tio av dem fungerar redan.
+Att begränsa generatorn till en nivå är generatorns sak, inte specens —
+utökningarna flyttar bara taket.
+
+```
+ 1  flickan sover                   subjekt + verb
+ 2  flickan läser en bok            + objekt
+ 3  boken                           + bestämdhet
+ 4  böcker                          + numerus
+ 5  en röd bok                      + adjektiv
+ 6  sin bok                         + possessiv
+ 7  ger sin bror en bok             + indirekt objekt
+ 8  ... igår                        + adverbial
+ 9  gav / ska ge                    + tempus
+10  flickans bok                    + genitiv          ✅ 2026-08-13
+──────────────────────────────────  allt ovan fungerar
+11  flickan läser inte              + negation
+12  har gett                        + perfekt
+13  läser flickan?                  + frågor
+14  större än                       + komparation
+15  boken lästes / blev läst        + passiv (båda sorterna)
+16  läs!                            + imperativ
+17  i huset, när hon kom, vill läsa  + fraser, bisatser, modalverb
+```
+
+## Utökningarnas avkastning
+
+Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
+
+| Utökning | Former | Vad `Mening` behöver |
+|---|---|---|
+| ~~Genitiv~~ | ~~992~~ | ✅ `Nominalfras.ägare` |
+| Passiv | 601 | diates på `Mening` |
+| Perfektparticip | 454 | particip som attribut |
+| Komparation | 294 | jämförelsekonstruktion |
+| Perfekt | 165 | tempuskombination |
+| Imperativ | 161 | satsmodus |
+| Oböjda ordklasser | 105 | prepositionsfraser, konjunktioner |
+
+**Negation och frågor låser upp noll former** — negationsadverben har redan
+sin `inv`-form. Men de mångdubblar antalet *meningar* som går att bygga av
+samma ord. "Antal former" kan alltså inte vara enda måttet på en utökning.
+
+Ordningen som valdes väger formvinst mot hur tidigt en nybörjare möter
+konstruktionen: genitiv, negation, perfekt, frågor, komparation, passiv,
+imperativ, resten.
+
 ## Det som blockerar
 
-**Bara 1 892 av 4 742 svenska former (40 %) går att nå med dagens
-meningsform.** De övriga 60 % är inte sällsynta i språket — de är
+**Bara 2 261 av 4 983 svenska former (45 %) går att nå med dagens
+meningsform** — 37 % före genitiven. De övriga 60 % är inte sällsynta i språket — de är
 oåtkomliga för specifikationen:
 
 ```

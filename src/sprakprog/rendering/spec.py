@@ -89,6 +89,14 @@ class Nominalfras:
     possessiv: str | None = None
     possessiv_koreferent: bool = False
     referent: Referentgenus | None = None
+    ägare: "Nominalfras | None" = None
+    """Genitivattribut: "flickans bok". Ägaren är en egen nominalfras.
+
+    Skilt från `possessiv`, som är ett pronomen (sin, hennes). Här är
+    ägaren ett substantiv med egen bestämdhet och eget numerus, och den
+    realiseras olika i de sju språken: morfologisk genitiv före huvudordet
+    i sv/en, efter i de, preposition i fr/es/it, partikel i ja.
+    """
 
 
 @dataclass(frozen=True, slots=True)
