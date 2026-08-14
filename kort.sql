@@ -134,6 +134,18 @@ CREATE INDEX idx_cellkort_kort ON Cellkort(kort_id);
    `spec` är meningsspecifikationen serialiserad, så att en mening går att
    återskapa exakt. `budget` är Σ(1−R) den siktade mot, `förväntat` samma
    summa för de kort den faktiskt fick.
+
+   `förväntat` RÄKNAS BARA ÖVER SEDDA KORT, och `nya` står för sig. Det är
+   inte en detalj utan förutsättningen för att loggen ska gå att analysera:
+   `förväntat` är FSRS förutsägelse av antalet fel, och en förutsägelse om
+   ett kort modellen aldrig sett finns inte. Räknas osedda kort med R = 0
+   blir talet förväntade fel PLUS antalet nya ord — två storheter adderade,
+   och skillnaden mot `fel` mäter då ingenting.
+
+   Det är den skillnaden hela svårighetsfrågan hänger på: faktiska fel minus
+   förväntade fel är det enda måttet som skiljer "meningen var för svår" från
+   "korten i den var svaga", eftersom kortens svaghet är precis vad
+   förutsägelsen redan räknar bort.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Mening (
     id         INTEGER PRIMARY KEY,
@@ -144,6 +156,8 @@ CREATE TABLE Mening (
     text       TEXT    NOT NULL,
     budget     REAL,
     förväntat  REAL,
+    sedda      INTEGER,
+    nya        INTEGER,
     fel        INTEGER NOT NULL DEFAULT 0
 );
 
@@ -163,6 +177,18 @@ CREATE INDEX idx_mening_tid ON Mening(tidpunkt);
    `betyg` följer FSRS fyra steg. `förfluten` är faktisk tid sedan förra
    prövningen i dagar — det är den algoritmen räknar på, och den sparas
    explicit så att loggen går att läsa utan att räkna om den.
+
+   `r_före` är FSRS förutsägelse av att kortet skulle klaras, FÖRE prövningen.
+   Den är nollmodellen: skillnaden mellan faktiska och förutsagda fel är det
+   enda sättet att pröva om meningens sammansättning gör något utöver vad
+   korten var för sig gör. Utan den frågan går det inte att skilja "svåra
+   meningar orsakar fel" från "svaga kort är svaga".
+
+   Den går att räkna fram ur föregående rads `stabilitet` och den här radens
+   `förfluten`, men sparas ändå: kedjan bryts om FSRS-parametrarna någon gång
+   optimeras om, och en logg som måste tolkas i ljuset av vilka parametrar som
+   gällde när den skrevs är inte en logg. `stabilitet` och `svårighet` är
+   värdena EFTER prövningen; `r_före` är det enda som beskriver läget före.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Repetition (
     id        INTEGER PRIMARY KEY,
@@ -171,6 +197,7 @@ CREATE TABLE Repetition (
     tidpunkt  TEXT    NOT NULL,
     betyg     INTEGER NOT NULL CHECK (betyg IN (1, 2, 3, 4)),
     förfluten REAL,
+    r_före    REAL,
     stabilitet REAL,
     svårighet  REAL
 );

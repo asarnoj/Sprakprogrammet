@@ -122,6 +122,8 @@ class Schemaläggare:
         före = _till_card(rad)
         förfluten = ((nu - före.last_review).total_seconds() / 86400
                      if före.last_review else None)
+        # Nollmodellen, sparad före prövningen. Se kort.sql, Repetition.
+        r_före = self.retention(rad, nu) if rad["sedd"] else None
         efter, _ = self.fsrs.review_card(före, RÄTT if rätt else FEL, nu)
 
         self.db.execute(
@@ -133,10 +135,11 @@ class Schemaläggare:
              efter.due.isoformat(), nu.isoformat(), 0 if rätt else 1, kort_id))
         self.db.execute(
             """INSERT INTO Repetition
-               (kort_id, mening_id, tidpunkt, betyg, förfluten, stabilitet, svårighet)
-               VALUES (?,?,?,?,?,?,?)""",
+               (kort_id, mening_id, tidpunkt, betyg, förfluten, r_före,
+                stabilitet, svårighet)
+               VALUES (?,?,?,?,?,?,?,?)""",
             (kort_id, mening_id, nu.isoformat(), int(RÄTT if rätt else FEL),
-             förfluten, efter.stability, efter.difficulty))
+             förfluten, r_före, efter.stability, efter.difficulty))
         return self.db.execute("SELECT * FROM Kort WHERE id = ?", (kort_id,)).fetchone()
 
     def registrera_mening(self, språk: str, spec: str, text: str,
@@ -150,14 +153,22 @@ class Schemaläggare:
         sitt passerade förfallodatum, eftersom de aldrig prövades.
         """
         nu = nu or datetime.now(UTC)
-        förväntat = sum(
-            1 - self.retention(r, nu)
-            for r in self._rader(utfall)) if utfall else 0.0
+        # NOLLMODELLEN RÄKNAS BARA ÖVER SEDDA KORT. Ett osett kort har R = 0,
+        # och att summera det in i `förväntat` vore att påstå att FSRS
+        # förutsäger ett säkert fel — men modellen förutsäger ingenting alls
+        # om ett kort den aldrig sett. Talet blev då två storheter adderade,
+        # förväntade fel plus antalet nya ord, och därmed oanvändbart som
+        # nollmodell. Poängsättaren gjorde redan den här uppdelningen; loggen
+        # gjorde det inte, så samma namn betydde olika saker på två ställen.
+        rader = self._rader(utfall)
+        sedda = [r for r in rader if r["sedd"] is not None]
+        förväntat = sum(1 - self.retention(r, nu) for r in sedda)
         markör = self.db.execute(
             """INSERT INTO Mening (tidpunkt, språk, källspråk, spec, text,
-                                   budget, förväntat, fel)
-               VALUES (?,?,?,?,?,?,?,?)""",
+                                   budget, förväntat, sedda, nya, fel)
+               VALUES (?,?,?,?,?,?,?,?,?,?)""",
             (nu.isoformat(), språk, källspråk, spec, text, budget, förväntat,
+             len(sedda), len(rader) - len(sedda),
              sum(1 for v in utfall.values() if not v)))
         mening_id = markör.lastrowid
 
