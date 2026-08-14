@@ -99,6 +99,16 @@ class Satsmodus(StrEnum):
     """
     INDIKATIV = "indikativ"
     IMPERATIV = "imperativ"
+    KONJUNKTIV = "konjunktiv"
+    """Sätts inte av den som bygger meningen — den STYRS fram.
+
+    Ett ord i den överordnade satsen bestämmer att bisatsen ska stå i
+    konjunktiv: subjunktionen (fr "avant que", es "para que", it "benché")
+    eller verbet (it "credere che"). Renderaren läser modusrektionen ur
+    `MönsterKrav.tempus` och sätter värdet själv, på samma sätt som den
+    läser kasusrektion och hjälpverbsval. Att sätta det för hand vore som
+    att sätta kasus för hand: det följer av språket, inte av meningen.
+    """
 
 
 #: Subjektskonceptet i en imperativsats → tilltalsform. Fyra tilltal räcker:

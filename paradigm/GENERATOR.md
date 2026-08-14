@@ -365,9 +365,9 @@ instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-sv  3 892 / 4 988   78 %      fr  5 606 /  9 070   62 %
-en  1 802 / 2 293   79 %      it  5 801 / 10 246   57 %
-ja  1 472 / 2 498   59 %      es  6 054 / 10 596   57 %
+sv  3 892 / 4 988   78 %      it  7 877 / 10 246   77 %
+en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
+ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
                               de  8 531 / 23 494   36 %
 ```
 
@@ -378,7 +378,7 @@ block**:
 | Språk | Största onådda block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv + konditionalis (6 celler) | modusrektion i datan, respektive villkorssatser |
+| fr/es/it | konditionalis (6 celler) | villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
@@ -388,6 +388,17 @@ komparativ och superlativ i attributiv ställning. `Grad` finns på `Mening`
 och styr predikativet; attributet är fortfarande bara en konceptnyckel.
 Att flytta graden in i `Nominalfras.attribut` är den enskilt största
 utökningen som återstår — värd omkring 10 500 tyska former.
+
+**Modusrektionen flyttade de tre romanska språken mest av allt.** it 57 →
+77 %, fr 62 → 73 %, es 57 → 67 % — konjunktivparadigmet är 6–12 celler per
+verb och var helt onått innan bisatserna kunde styras i modus. Italienskan
+gick från näst sämst till näst bäst av de sju.
+
+Men **halva den vinsten låg i svepet igen**: med bisatsens subjekt låst till
+tredje person singular mättes bara 2 av 12 konjunktivceller, och siffrorna
+stannade på 64/59/60 %. Samma artefakt som huvudsatsens subjekt hade, en
+nivå ner. Tredje gången personvariation visade sig vara det som begränsade
+mätningen.
 
 **Mätningen mäter också sig själv.** Japanskan låg på 31 % tills
 uppmaningen byggdes — men bara 8 av de 346 formerna syntes först, eftersom

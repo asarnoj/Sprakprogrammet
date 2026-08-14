@@ -32,11 +32,9 @@ class FranskRenderare(RomanskRenderare):
     # till flera. Negationen ändrar ingen form — bara ne ... pas runt om.
     IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
                      "artig": "imp_2pl", "1pl": "imp_1pl"}
-    # "bien qu'il vienne", "avant qu'il vienne", "pour qu'il vienne".
-    # Notera att après que INTE står här: franskan skiljer på före och
-    # efter, och bara den ena styr konjunktiv.
-    KONJUNKTIVSUBJUNKTIONER = frozenset({
-        "subj_trots_att", "subj_innan", "subj_för_att", "subj_tills"})
+    # Franskans imperfektkonjunktiv ("qu'il vînt") är litterär på samma
+    # sätt som passé simple, och paradigmet saknar cellerna helt.
+    HAR_IMPERFEKTKONJUNKTIV = False
     NEKANDE_FÖRLED = "ne"
     FRÅGEINLEDNING = "est-ce que"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",

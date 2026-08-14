@@ -262,9 +262,27 @@ CREATE INDEX idx_monster_koncept ON Mönster(koncept_id);
    gick att uttrycka alls och därmed föll bort ur mönstret (rättat 2026-08-10,
    innan mönstertaggningen kördes).
 
+   tempus     : det MODUS slottens sats måste stå i. 1024 = konjunktiv
+                (_legend.yaml Vol; samma bit som subj-cellerna i Former
+                bär). NULL = indikativ, vilket är normalfallet.
+
+                Modusrektion fungerar exakt som kasusrektionen ovan och
+                sitter på samma sorts rad: fr "avant que" styr konjunktiv
+                på sin sats medan "après que" inte gör det, precis som
+                de "mit" styr dativ medan "für" styr ackusativ. Det är en
+                LEXIKAL egenskap hos det styrande ordet, per språk, och
+                därför data och inte en lista i renderaren.
+
+                Ligger både på subjunktioner (avant que, para que, benché)
+                och på verb (vouloir que, esperar que, pensare che) — samma
+                mekanism, två ordklasser, precis som mönster i övrigt.
+
    Kasus- och prepositionskolumnerna tillkom 2026-08-10 efter den vertikala
    skivan (paradigm/RENDERARE_KRAV.md §3.5, §3.8) — de lades till medan
    tabellen ännu var tom, så att mönstertaggningen inte behöver göras om.
+   tempus tillkom 2026-08-14, med tabellen ifylld; se
+   ordbok/migrationer/modusrektion.sql, som både lägger till kolumnen och
+   fyller den.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE MönsterKrav (
     id         INTEGER PRIMARY KEY,
@@ -277,6 +295,7 @@ CREATE TABLE MönsterKrav (
     tagg       INTEGER,
     frastyp    INTEGER,
     kasus      INTEGER,
+    tempus     INTEGER,
     preposition_koncept_id INTEGER REFERENCES Koncept(id) ON DELETE SET NULL,
     CHECK (NOT (tagg IS NOT NULL AND koncept_id IS NOT NULL))  -- högst en av de två
 );

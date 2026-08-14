@@ -41,6 +41,10 @@ from .uppslag import Uppslag
 
 MASKULIN, FEMININ = 1, 2
 
+# _legend.yaml tempus: Vol = konjunktiv. Samma bit som subj-cellerna
+# i Former bär, och den MönsterKrav.tempus använder.
+KONJUNKTIVBIT = 1024
+
 ENKELT_TEMPUS = {
     (Tidsreferens.NUTID, Aspekt.PERFEKTIV): "pres",
     (Tidsreferens.NUTID, Aspekt.IMPERFEKTIV): "pres",
@@ -86,6 +90,22 @@ class RomanskRenderare:
         return "m_sg" if genus == MASKULIN else "f_sg"
 
     # ── rektion ──────────────────────────────────────────────────────
+
+    def modusrektion(self, styrande: str, slot: str) -> int | None:
+        """Vilket modus ordet styr på slotten. Samma uppslag som kasus.
+
+        Ligger på det STYRANDE ordets språkspecifika mönster — subjunktionen
+        eller verbet — och läses precis som tyskans kasusrektion. 1024 är
+        konjunktiv (_legend.yaml Vol); NULL är indikativ.
+        """
+        rad = self.conn.execute(
+            """SELECT mk.tempus FROM Mönster m
+               JOIN Koncept k ON k.id = m.koncept_id
+               JOIN MönsterKrav mk ON mk.mönster_id = m.id
+               WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = ?
+                 AND mk.tempus IS NOT NULL""",
+            (styrande, self.SPRÅK, slot)).fetchone()
+        return rad["tempus"] if rad else None
 
     def preposition_för(self, verb: str, slot: str) -> str | None:
         rad = self.conn.execute(
@@ -242,14 +262,20 @@ class RomanskRenderare:
             else:
                 cell = "pp_msc_sg"
             # Pluskvamperfekt: hjälpverbet i imperfekt. "elle avait lu".
-            hjälpstam = ("imperf" if m.aspekt is Aspekt.PERFEKT
+            # I konjunktiv är det HJÄLPVERBET som byter modus: "qu'il ait
+            # lu", "que haya leído", "che abbia letto". Participet är
+            # oförändrat, precis som i indikativ.
+            hjälpstam = (self.konjunktivstam(m) if m.modus is Satsmodus.KONJUNKTIV
+                         else "imperf" if m.aspekt is Aspekt.PERFEKT
                          and m.tid is Tidsreferens.FÖRFLUTEN else "pres")
             return [self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
                                     f"{hjälpstam}_{person}{numerus}",
                                     "hjälpverb" if hjälp == "ha" else None),
                     self.u.form(verb, cell)]
 
-        if m.tid is Tidsreferens.FÖRFLUTEN and m.aspekt is Aspekt.PERFEKTIV:
+        if m.modus is Satsmodus.KONJUNKTIV:
+            stam = self.konjunktivstam(m)
+        elif m.tid is Tidsreferens.FÖRFLUTEN and m.aspekt is Aspekt.PERFEKTIV:
             stam = "pret"
         else:
             stam = ENKELT_TEMPUS.get((m.tid, m.aspekt))
@@ -321,10 +347,9 @@ class RomanskRenderare:
     # byter till konjunktiv i hela paradigmet ("¡no leas!"), italienskan
     # bara i 2sg, och där till infinitiv ("non leggere!"). Tom = oförändrad.
     NEKAD_IMPERATIVCELL: dict[str, str] = {}
-    # Subjunktioner som styr konjunktiv. Vägras tills modusrektionen finns
-    # i datan — se bisats(). Listan skiljer sig mellan språken, vilket är
-    # hela skälet att den inte hör hemma i koden på sikt.
-    KONJUNKTIVSUBJUNKTIONER: frozenset[str] = frozenset()
+    # Har språket en levande imperfektkonjunktiv? Franskans är litterär,
+    # som passé simple, och paradigmet saknar cellerna.
+    HAR_IMPERFEKTKONJUNKTIV: bool = True
 
     # Franskans ne har ingen motsvarighet i es/it, som klarar sig med en
     # enda preverbal partikel.
@@ -490,15 +515,31 @@ class RomanskRenderare:
             if isinstance(adverbial, str):
                 ord.append(self.u.form_för(adverbial, "inv"))
             elif isinstance(adverbial, Bisats):
-                ord += self.bisats(adverbial)
+                ord += self.bisats(adverbial)   # adverbialbisats: bara subjunktionen styr
             else:
                 # Sammandragningen de+le→du sköts av sandhi, precis som
                 # för genitivet — samma mekanism, annan preposition.
                 ord.append(self.u.form_för(adverbial.preposition, "inv"))
                 ord += self.nominalfras(adverbial.komplement)
         if m.bisats is not None:
-            ord += self.bisats(m.bisats)
+            ord += self.bisats(m.bisats, styrande=m)
         return ord
+
+    def konjunktivstam(self, m: Mening) -> str:
+        """Presens eller imperfekt konjunktiv, valt på SATSENS egen tid.
+
+        Tidsföljden (concordancia de tiempos) styrs egentligen av den
+        överordnade satsens tempus, men bisatsens eget tempus säger samma
+        sak i praktiken: "antes de que venga" mot "antes de que viniera".
+
+        Franskan har ingen levande imperfektkonjunktiv — "qu'il vînt" är
+        litterärt på samma sätt som passé simple — och tar därför alltid
+        presens. Att paradigmet SAKNAR subj_imperf i fr är det som avgör,
+        inte en regel här: språket får den stam vars celler finns.
+        """
+        if m.tid is Tidsreferens.FÖRFLUTEN and self.HAR_IMPERFEKTKONJUNKTIV:
+            return "subj_imperf"
+        return "subj"
 
     def frågecell(self, koncept: str, subjekt: bool) -> str:
         """Cellen i frågepronomenets paradigm. Franskans är kasusdelad."""
@@ -535,26 +576,32 @@ class RomanskRenderare:
             ord.insert(0, self.u.form_för(prep, "inv"))
         return ord
 
-    def bisats(self, b: Bisats) -> list[str]:
-        """Subjunktion plus sats.
+    def bisats(self, b: Bisats, styrande: Mening | None = None) -> list[str]:
+        """Subjunktion plus sats, i det modus något ord styr fram.
 
-        KÄND GRÄNS: de subjunktioner som styr KONJUNKTIV vägras. Vilka de är
-        är en lexikal egenskap hos varje subjunktion och skiljer sig mellan
-        språken — fr "avant que" tar konjunktiv men "après que" indikativ,
-        es "aunque" tar BÅDA och betydelsen ändras med valet. Det är samma
-        sorts fakta som prepositionernas kasusrektion, och hör hemma på
-        subjunktionens eget Mönster, inte i en lista här. MönsterKrav saknar
-        en moduskolumn, så det kräver en schemaändring.
-
-        Konjunktivcellerna finns i datan och är det största onådda blocket i
-        fr/es/it efter det här. Att rendera dem i indikativ vore en tyst
-        felaktig mening, vilket är precis vad projektet inte ska producera.
+        TVÅ ord kan styra modus, och båda måste frågas: subjunktionen som
+        inleder satsen ("avant que", "benché") och — när satsen är ett
+        ARGUMENT — verbet som tar den ("volere che", "esperar que"). Det
+        senare är skälet till att den överordnade meningen skickas med:
+        bisatsen kan inte veta vad som styr den.
         """
-        if b.subjunktion in self.KONJUNKTIVSUBJUNKTIONER:
-            raise RenderingsFel(
-                f"{self.SPRÅK}: {b.subjunktion} styr konjunktiv, och "
-                f"modusrektionen finns inte i datan än — se bisats()")
-        return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(b.sats)]
+        modus = self.modusrektion(b.subjunktion, "komplement")
+        if modus is None and styrande is not None:
+            modus = self.modusrektion(styrande.verb, self.bisatsslot(styrande.verb))
+        sats = (replace(b.sats, modus=Satsmodus.KONJUNKTIV)
+                if modus == KONJUNKTIVBIT else b.sats)
+        return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(sats)]
+
+    def bisatsslot(self, verb: str) -> str:
+        """Vilken slot verbet har sin Bisatsfras på — objekt, kommunikat
+        eller komplement. Ligger på det universella mönstret."""
+        rad = self.conn.execute(
+            """SELECT mk.slot FROM Mönster m
+               JOIN Koncept k ON k.id = m.koncept_id
+               JOIN MönsterKrav mk ON mk.mönster_id = m.id
+               WHERE k.nyckel = ? AND m.språk IS NULL
+                 AND (mk.frastyp & 32) = 32""", (verb,)).fetchone()
+        return rad["slot"] if rad else "objekt"
 
     def rendera(self, m: Mening) -> str:
         ord = self.satsled(m)

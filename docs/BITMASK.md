@@ -323,6 +323,23 @@ Bit   Värde   Frastyp
  32      32   Bisatsfras        (att han springer, när du äter)
 ```
 
+**`MönsterKrav` bär tre sorters rektion, alla med samma mekanism:** ett
+mönster med `språk` satt, på det STYRANDE ordets koncept.
+
+```
+kolumn    värden          styr                     exempel
+─────────────────────────────────────────────────────────────────────────
+kasus     Nom/Ack/Dat/Gen kasus på komplementet    de "mit" → Dat
+tempus    Vol (1024)      MODUS på slottens sats   fr "avant que" → konj
+preposition_koncept_id    prepositionen som        fr io → prep_till (à)
+                          realiserar slotten
+```
+
+`tempus` heter så därför att konjunktiven ligger i tempusaxeln (§3, Vol) —
+samma bit som `Former.tempus` bär på subj-cellerna. NULL betyder indikativ.
+Sitter både på subjunktioner (`avant que`, `para que`, `benché`) och på verb
+(`souhaiter que`, `esperar que`, `credere che`).
+
 ---
 
 ## 11. Semantik (IntFlag — kombinerbar)

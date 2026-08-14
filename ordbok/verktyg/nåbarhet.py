@@ -142,14 +142,22 @@ def specar():
     # ta, nai) är onåbara utan den här slingan.
     for verb in VERB_TRANS + VERB_INTRANS:
         objekt = Nominalfras(OBJ) if verb in VERB_TRANS else None
+        # Bisatsens subjekt måste variera i person precis som huvudsatsens,
+        # annars mäts bara tredje person singular av konjunktivparadigmet.
         for tid in Tidsreferens:
             for negerad in (False, True):
-                for diates in Diates:
-                    inre = Mening(verb, SUBJ, objekt=objekt, tid=tid,
-                                  negerad=negerad, diates=diates)
+                for inre_subj in SUBJEKT:
+                    inre = Mening(verb, inre_subj, objekt=objekt, tid=tid,
+                                  negerad=negerad)
                     yield Mening("kog_veta", SUBJ, bisats=Bisats("subj_att", inre))
                     yield Mening("krop_v_sova", SUBJ,
                                  adverbial=(Bisats("subj_när", inre),))
+                    # modusstyrda bisatser: konjunktiven når man bara så här
+                    yield Mening("gen_önska", SUBJ, bisats=Bisats("subj_att", inre))
+                    for subjunktion in ("subj_innan", "subj_för_att",
+                                        "subj_trots_att", "subj_ifall"):
+                        yield Mening("krop_v_sova", SUBJ,
+                                     adverbial=(Bisats(subjunktion, inre),))
     # wh-frågor: tre argumentslottar plus sex frågadverb
     for fråga_om in ("subjekt", "objekt", "io", "frågadverb_tid",
                      "frågadverb_plats", "frågadverb_sätt", "frågadverb_orsak",
