@@ -116,7 +116,15 @@ def main(argv: list[str] | None = None) -> int:
     from .rendera import lägg_till_argument as _rendera_args
     _rendera_args(p_rendera)
 
+    # ── kort ─────────────────────────────────────────────────────────────
+    from .kort import lägg_till_parser as _kort_parser
+    _kort_parser(sub)
+
     args = parser.parse_args(argv)
+
+    if args.kommando == "kort":
+        return args.func(args)
+
 
     # Lazy import för snabb startup på enskilda kommandon
     if args.kommando == "import":

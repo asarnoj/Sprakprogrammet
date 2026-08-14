@@ -701,7 +701,13 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ## Vad som återstår
 
-1. **Meningsgeneratorn.** Kortmodellen är utredd och nedskriven i
+1. **Meningsgeneratorn.** KORTLAGRET är byggt (2026-08-14): `kort.sql`,
+   `src/sprakprog/kort/`, `ordbok kort`. 24 187 kort och 124 191
+   cellkopplingar härledda ur språkdatabasen och stamanalysen, och
+   beroendekartan täcker varje formuppslag i alla sju språk. Kvar av
+   generatorn: FSRS-schemaläggningen och poängfunktionen.
+
+   Kortmodellen är utredd och nedskriven i
    [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
    som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
    förfluten tid. Utökad 2026-08-14 med kortens UPPLÖSNING (stam- och
@@ -761,6 +767,11 @@ direkt efter körningen.
 
 **`sprak.db` ligger i `.gitignore`.** Sanningen är `ordbok/former.tsv` plus
 migrationerna. Skicka aldrig databasfilen.
+
+**`kort.db` ligger också i `.gitignore`, men av MOTSATT skäl.** sprak.db går
+att bygga om ur repot; inlärardatabasen går inte det. Den innehåller
+repetitionshistoriken, det enda i systemet som inte kan återskapas. Radera
+den aldrig, och kör `ordbok kort --återinitiera` bara mot en ny användare.
 
 **Lita inte på statistikrader.** Sex buggar hittills har rapporterat
 "0 saknade, 0 tomma" och sett ut som lyckade körningar: duplicerade cell-ID:n
@@ -822,6 +833,8 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `src/sprakprog/rendering/spec.py` | meningsspecifikationen — enda källan till vad som går att uttrycka |
 | `ordbok/verktyg/nåbarhet.py` | mäter hur mycket av formbeståndet specen når; modulhuvudet varnar för mätartefakterna |
 | `ordbok/verktyg/stammar.py` | härleder stamuppsättning och ändelsetabeller ur Former → `stammar.tsv`, `ändelser.tsv` |
+| `kort.sql` | inlärardatabasens schema; huvudet förklarar varför den är en egen fil |
+| `src/sprakprog/kort/befolka.py` | härleder kortbeståndet; ORDFÖLJD-listan är korttyp 4 |
 | `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
