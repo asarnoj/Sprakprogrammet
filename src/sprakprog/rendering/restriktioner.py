@@ -30,7 +30,9 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-from .spec import Bisats, Diates, Mening, Nominalfras, Tidsreferens
+from .spec import (
+    Bisats, Diates, Mening, Nominalfras, Tidsreferens, attribut_med_grad,
+)
 
 # docs/BITMASK.md §11. Bara för läsbara felmeddelanden.
 BITNAMN = {
@@ -160,7 +162,13 @@ class Validator:
         """
         huvud = self.semantik(nf.koncept)
         ut = []
-        for attribut in nf.attribut:
+        for a in nf.attribut:
+            # `attribut` blev en union när graden tillkom. Att glömma det här
+            # var samma fel som med Prepositionsfras i adverbial-slotten:
+            # validatorn skickade dataklassen till ett uppslag som väntar sig
+            # en sträng, och kraschade först när någon validerade en mening
+            # som faktiskt hade en.
+            attribut = attribut_med_grad(a).koncept
             alternativ = self.attributkrav(attribut)
             if alternativ and not self._uppfyller(huvud, alternativ):
                 ut.append(Brott(f"{slot}.attribut={attribut}", nf.koncept,
