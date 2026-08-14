@@ -182,6 +182,12 @@ CREATE INDEX idx_repetition_kort ON Repetition(kort_id, tidpunkt);
    Käll- och målspråk är låsta per kurs (GENERATOR.md, "Kursmodell"). Flera
    kurser parallellt går bra, och alla kombinationer av de sju är tillåtna.
    `nivå` är hur långt på komplexitetsstegen kursen låst upp.
+
+   `meningar_per_dag` är hur mycket användaren vill öva. Det är ett VAL och
+   ingen härledning — en uppgift om användarens liv, som systemet omöjligt kan
+   räkna ut. Det står här bredvid `budget` därför att de är samma sorts tal:
+   de två inställningar hela kursen styrs av. Upplåsningen räknas fram ur det
+   här talet, FSRS egna intervall, och en mätning (schemalaggning.py).
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Kurs (
     id        INTEGER PRIMARY KEY,
@@ -189,6 +195,7 @@ CREATE TABLE Kurs (
     målspråk  TEXT    NOT NULL,
     nivå      INTEGER NOT NULL DEFAULT 1,
     budget    REAL    NOT NULL DEFAULT 1.5,
+    meningar_per_dag INTEGER NOT NULL DEFAULT 20,
     startad   TEXT    NOT NULL,
     UNIQUE (källspråk, målspråk),
     CHECK (källspråk <> målspråk)

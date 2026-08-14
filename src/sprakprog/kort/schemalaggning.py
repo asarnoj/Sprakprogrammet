@@ -188,35 +188,132 @@ class Schemaläggare:
                 if r["typ"] in ("form", "stam") and r["koncept"] in fallna_ord}
 
 
-#: Nivån öppnas när så här stor del av dess schemalagda kort har en
-#: stabilitet över UPPLÅSNINGSDAGAR. Stabilitet är det FSRS faktiskt
-#: modellerar; sju dagar betyder "överlevt minst en riktig glömskekurva";
-#: nittio procent lämnar plats för de svåraste korten att släpa efter utan
-#: att blockera.
-#:
-#: Två tal, båda första gissningar av samma sort som vikterna i poang.py —
-#: men till skillnad från dem är de lätta att ändra och lätta att förstå.
-UPPLÅSNINGSANDEL = 0.9
-UPPLÅSNINGSDAGAR = 7.0
+#: Förval för hur mycket användaren vill öva, när kursen inte säger något.
+#: DET ENDA VALDA TALET I UPPLÅSNINGEN — och det är användarens val och inte
+#: vårt: en uppgift om hens dygn, som ingen mätning kan ersätta. Allt annat
+#: räknas fram (se `upplåsningsläge`).
+STANDARD_MENINGAR_PER_DAG = 20
 
 
-def upplåsningsläge(kort_db: sqlite3.Connection, språk: str) -> dict:
-    """Hur nära nästa nivå kursen står.
+def belastning(kort_db: sqlite3.Connection, språk: str) -> tuple[float, float | None]:
+    """(repetitioner per dag för det lärda, per osett kort) — i jämvikt.
 
-    Räknar bara SCHEMALAGDA kort. De mätta står aldrig i kön och kan därför
-    aldrig bli mogna på kösidan — att kräva det av dem vore att kräva något
-    systemet med flit inte gör.
+    Ett kort med stabilitet S ska enligt FSRS ses var I(S):e dag, alltså
+    1/I(S) gånger per dag. Summan över de SEDDA korten är kursens dagliga
+    arbetsmängd i jämvikt. Intervallet är schemaläggarens eget.
+
+    ETT OSETT KORT KAN INTE RÄKNAS SÅ. Frestelsen är att sätta in stabiliteten
+    efter första rätta svaret, men det ger kortets kostnad DEN DAG det lärs in,
+    och beskriver därmed en topp som aldrig inträffar: generatorn introducerar
+    nya kort i den takt användaren övar, inte alla på en gång, och intervallen
+    växer med varje repetition. Måttet skulle säga att 262 nya kort kostar
+    22 meningar om dagen för alltid, när sanningen är att de kostar det en dag
+    var och sedan allt mindre.
+
+    Vad ett osett kort kostar när det väl SITTER går däremot att mäta, och
+    inte på användare i allmänhet utan på just den här: medelbelastningen över
+    hens egna sedda kort i samma kurs. Det är en mätning av hens minne, inte
+    ett antagande om det. None när kursen är oövad och mätningen saknas.
+
+    Bara SCHEMALAGDA kort räknas. De mätta står aldrig i kön och belastar inte.
+    """
+    f = _skapa_schemaläggare()
+    takter = [1 / f._next_interval(stability=r["stabilitet"])
+              for r in kort_db.execute(
+                  """SELECT stabilitet FROM Kort
+                     WHERE språk = ? AND schemalagt = 1 AND sedd IS NOT NULL
+                       AND stabilitet IS NOT NULL""", (språk,))]
+    return sum(takter), (sum(takter) / len(takter) if takter else None)
+
+
+def kort_per_mening(kort_db: sqlite3.Connection, språk: str) -> float | None:
+    """Hur många kort en mening rör. MÄTT ur användarens egen historik.
+
+    Bron mellan det användaren väljer (meningar per dag) och det systemet
+    räknar i (repetitioner per dag). Storheten är stram — 5,3 till 6,7 över
+    språk och nivåer, med sd omkring 1 — så medelvärdet konvergerar på tio
+    meningar. Därför ingen spärr för minsta historik.
+
+    None när kursen är oövad. Då finns heller ingen upplåsningsfråga: man kan
+    inte lämna en nivå man inte börjat på, och att öva den skapar mätningen.
     """
     rad = kort_db.execute(
+        """SELECT COUNT(*) AS rep, COUNT(DISTINCT r.mening_id) AS meningar
+           FROM Repetition r
+           JOIN Kort k ON k.id = r.kort_id
+           WHERE k.språk = ? AND r.mening_id IS NOT NULL""", (språk,)).fetchone()
+    return rad["rep"] / rad["meningar"] if rad["meningar"] else None
+
+
+def upplåsningsläge(kort_db: sqlite3.Connection, språk: str,
+                    meningar_per_dag: int | None = None) -> dict:
+    """Finns det plats för mer material?
+
+    UPPLÅSNING ÄR EN KAPACITETSFRÅGA OCH INTE EN BEHÄRSKNINGSFRÅGA. Att mäta
+    om användaren "kan" nivån vore att implementera om FSRS garanti: håller
+    man repetitionerna minns man per konstruktion 90 % av sina kort, hela
+    tiden. Det finns ingen behärskning kvar att pröva. Det som däremot är en
+    verklig gräns är arbetsmängden — nya kort kostar repetitioner, och dygnet
+    är ändligt.
+
+    Alltså: nivån öppnas när belastningen den skulle ge ryms i det användaren
+    valt att öva. Tre tal, varav bara ett är valt:
+
+        belastning        Σ 1/intervall          — FSRS egna intervall
+        kort per mening   mätt ur historiken     — användarens egen logg
+        meningar per dag  användarens val        — en uppgift om hens liv
+
+    Måttet blandar inte ihop "kan inte" med "repeterade nyss", vilket varje
+    mått byggt på R gör: R faller med tiden sedan repetitionen, stabiliteten
+    gör det inte.
+    """
+    if meningar_per_dag is None:
+        rad = kort_db.execute(
+            "SELECT meningar_per_dag FROM Kurs WHERE målspråk = ?", (språk,)).fetchone()
+        meningar_per_dag = rad["meningar_per_dag"] if rad else STANDARD_MENINGAR_PER_DAG
+
+    rad = kort_db.execute(
         """SELECT COUNT(*) AS totalt,
-                  SUM(CASE WHEN stabilitet >= ? THEN 1 ELSE 0 END) AS mogna
-           FROM Kort WHERE språk = ? AND schemalagt = 1""",
-        (UPPLÅSNINGSDAGAR, språk)).fetchone()
-    totalt = rad["totalt"] or 0
-    mogna = rad["mogna"] or 0
-    andel = mogna / totalt if totalt else 0.0
-    return {"totalt": totalt, "mogna": mogna, "andel": andel,
-            "klar": andel >= UPPLÅSNINGSANDEL}
+                  SUM(CASE WHEN sedd IS NULL THEN 1 ELSE 0 END) AS osedda
+           FROM Kort WHERE språk = ? AND schemalagt = 1""", (språk,)).fetchone()
+    lärt, per_kort = belastning(kort_db, språk)
+    k = kort_per_mening(kort_db, språk)
+    rep_per_dag = (lärt + (rad["osedda"] or 0) * per_kort
+                   if per_kort is not None else None)
+    krävs = rep_per_dag / k if (k and rep_per_dag is not None) else None
+    return {"totalt": rad["totalt"], "osedda": rad["osedda"] or 0,
+            "rep_per_dag": rep_per_dag, "kort_per_mening": k, "per_kort": per_kort,
+            "krävs": krävs, "kapacitet": meningar_per_dag,
+            "klar": krävs is not None and krävs <= meningar_per_dag}
+
+
+def kostnad(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection, språk: str,
+            nivå: int, cefr: str, meningar_per_dag: int | None = None) -> dict:
+    """Vad nivån `nivå` skulle kosta, utan att låsa upp den.
+
+    Befolkningen är additiv och idempotent men skriver, så frågan ställs i en
+    kopia av inlärardatabasen. Att fråga vad något kostar får inte vara att
+    köpa det.
+    """
+    import tempfile
+    from pathlib import Path
+
+    from .befolka import befolka
+    from .db import anslut_kort
+
+    läge = upplåsningsläge(kort_db, språk, meningar_per_dag)
+    with tempfile.TemporaryDirectory() as d:
+        kopia = Path(d) / "prov.db"
+        kort_db.commit()
+        with sqlite3.connect(kopia) as mål:
+            kort_db.backup(mål)
+        prov = anslut_kort(kopia)
+        befolka(prov, språk_db, {språk}, nivå=nivå, cefr=cefr)
+        efter = upplåsningsläge(prov, språk, läge["kapacitet"])
+        prov.close()
+    return {"nivå": nivå, "före": läge, "efter": efter,
+            "nya_kort": efter["totalt"] - läge["totalt"],
+            "ryms": efter["klar"]}
 
 
 def kö(kort_db: sqlite3.Connection, språk: str, antal: int = 20) -> list[sqlite3.Row]:
