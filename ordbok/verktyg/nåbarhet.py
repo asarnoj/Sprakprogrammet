@@ -10,12 +10,20 @@ sondord räcker för att kartlägga den — men flera sonder per klass behövs
 ändå, eftersom valet av cell kan bero på ordet (deponens, adjektiv utan
 komparativcell som får perifrastisk komparation).
 
-VARNING: siffran mäter svepet lika mycket som specen. En dimension som
-saknas i `specar()` ser ut som en spec-brist utan att vara det. Två sådana
-artefakter är redan hittade och rättade: subjektet var alltid tredje person
-(hela person­böjningen såg onåbar ut) och attributet satt bara i objektet
-(bara ackusativ mättes). Lägg till en dimension i svepet innan du drar
-slutsatsen att specen inte når en cell.
+VARNING: siffran mäter svepet lika mycket som specen, och FYRA gånger nu har
+svepet varit det som begränsade. Varje gång såg det ut som en spec-brist.
+
+  subjektet var alltid tredje person      hela personböjningen såg onåbar ut
+  attributet satt bara i objektet         bara ackusativ mättes
+  bisatsens subjekt var 3sg               2 av 12 konjunktivceller mättes
+  ägaren var alltid bestämd singular      genitivböjningen såg onåbar ut
+
+Den sista tog svenskan från 80 till 95 % utan att en rad renderarkod ändrades.
+Mönstret är alltid detsamma: en axel som varieras i huvudsatsen men inte i
+den inbäddade frasen. Lägg till dimensionen och mät om INNAN du drar
+slutsatsen att specen inte når en cell — och kontrollera dessutom att
+renderaren hämtar formen genom `Uppslag.form`, som är den enda väg
+instrumenteringen ser.
 
 Kör: .venv/bin/python ordbok/verktyg/nåbarhet.py [språk...] [-v]
 """
@@ -61,6 +69,10 @@ SUBJEKT = [SUBJ,
 OBJ = "skol_bok"
 # tre genus i de/fr/es/it, två i sv — samma koncept bär olika genus per språk
 HUVUDORD = ["skol_bok", "fam_pappa", "fam_mamma", "fam_barn", "hem_hus"]
+# Naken singular kräver oräknebart huvudord — tyskans starka deklination
+# i m/n singular nås inte utan dem.
+# Alla tre tyska genus behövs: Wasser (n), Wein (m), Milch (f).
+ORÄKNEBARA = ["mat_vatten", "mat_vin", "mat_mjölk"]
 VERB_TRANS = ["fys_ge", "kom_läsa", "per_se"]
 VERB_INTRANS = ["krop_v_sova", "rör_springa"]
 MODALER = ["modal_kan", "modal_vill", "asp_börja", "gen_försöka"]
@@ -73,14 +85,19 @@ def specar():
     # nominalfrasens inre: bestämdhet × numerus × attribut × possessiv × ägare,
     # i VARJE nominalfrasslot — kasus kommer in via slotten, så en attributiv
     # fras bara i objektet mäter bara ackusativ.
-    for huvud in HUVUDORD:
+    for huvud in HUVUDORD + ORÄKNEBARA:
         for best in Bestämdhet:
             for num in Numerus:
                 for attribut in ((), *((Attribut("färg_röd", g),) for g in Grad)):
                     for poss in (None, "poss_3sg_fem"):
+                        # Ägaren bär genitiv, och dess egen bestämdhet och
+                        # numerus avgör adjektivets deklination där.
                         for ägare in (None, *(Nominalfras(
-                                ä, Bestämdhet.BESTÄMD, attribut=("färg_röd",))
-                                for ä in HUVUDORD)):
+                                ä, äbest, änum, attribut=(Attribut("färg_röd", ägrad),))
+                                for ä in HUVUDORD
+                                for äbest in Bestämdhet
+                                for änum in Numerus
+                                for ägrad in Grad)):
                             nf = Nominalfras(huvud, best, num, attribut, poss,
                                              possessiv_koreferent=poss is not None,
                                              ägare=ägare)

@@ -17,7 +17,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
-    RenderingsFel, attribut_med_grad, bestämd_fras,
+    NAKEN, RenderingsFel, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -42,6 +42,8 @@ class EngelskRenderare:
                     f"attribut eller possessiv")
             return [self.u.form(huvud, "nom" if roll == "subjekt" else "obl")]
 
+        self.u.kontrollera_naken(nf)
+
         ord: list[str] = []
         if nf.frågedeterminant is not None:
             ord.append(self.u.form_för(nf.frågedeterminant, "inv"))
@@ -52,6 +54,8 @@ class EngelskRenderare:
             ord.append(self.u.form_för(nf.possessiv, "obest"))
         elif nf.bestämdhet is Bestämdhet.BESTÄMD:
             ord.append(self.u.form_för("artikel_bestamd", "inv"))
+        elif nf.bestämdhet in NAKEN:
+            pass          # "water", "books are expensive" — ingen artikel
         elif nf.numerus is Numerus.SG:
             ord.append(self.u.form_för("artikel_obestamd", "inv"))
         # Obestämd plural saknar artikel: "books".

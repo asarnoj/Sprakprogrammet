@@ -25,6 +25,7 @@ class SpanskRenderare(RomanskRenderare):
     SAMMANSATT_DÅTID = False
     HJÄLPVERB_FAST = "ha"
     UTROPSTECKEN_FÖRE = "¡"
+    PARTITIV_MED_PREPOSITION = False
     # Usted och ustedes tar tredje person: "¡lea!", "¡lean!" — artigheten
     # är grammatiskt en tredjepersonsform, precis som tyskans Sie.
     IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",

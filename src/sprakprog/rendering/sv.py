@@ -20,7 +20,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
-    Numerus, attribut_med_grad, bestämd_fras,
+    NAKEN, Numerus, attribut_med_grad, bestämd_fras,
     Prepositionsfras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
@@ -123,6 +123,8 @@ class SvenskRenderare:
                     f"attribut eller possessiv")
             return [self.u.form(huvud, "nom" if subjekt else "ack_dat")]
 
+        self.u.kontrollera_naken(nf)
+
         genus = huvud["genus"]
         if genus is None:
             raise RenderingsFel(
@@ -160,6 +162,10 @@ class SvenskRenderare:
             # demonstrativt i stället för bestämt.
             ord.append(self.u.form_för("artikel_bestamd", _artikelcell(nf.numerus, genus)))
             substantivform = Bestämdhet.BESTÄMD
+        elif nf.bestämdhet in NAKEN:
+            # "vatten", "böcker är dyra" — ingen artikel alls. Svenskan
+            # skiljer inte sort från mängd; båda står nakna.
+            substantivform = Bestämdhet.OBESTÄMD
         elif nf.bestämdhet is Bestämdhet.OBESTÄMD and nf.numerus is Numerus.SG:
             ord.append(self.u.form_för(
                 "artikel_obestamd", "utr" if genus == UTRUM else "neu"))

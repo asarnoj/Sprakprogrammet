@@ -301,11 +301,23 @@ UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_salt';
 UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_smör';
 UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_socker';
 UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'mat_soppa';
-UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'mat_te';
+/* te, vin och öl rättade till oräknebara 2026-08-14. De stod som räknebara
+   medan juice, kaffe och mjölk stod som oräknebara — samma sorts dryck, två
+   olika svar. Kriteriet som gäller för de övriga är att ordet namnger ett
+   ÄMNE som mäts i mängd, inte ett räknebart föremål, och det gäller alla
+   sex. Räkneläsningen ("två viner" = två sorter) är den härledda.
+
+   Felet syntes först när naken nominalfras byggdes: "hon dricker vin" gick
+   inte att rendera medan "hon dricker kaffe" gjorde det. Kolumnen hade
+   legat ifylld sedan koncepttaggningen utan att någon konstruktion läst
+   den. — Kvar som inkonsekvens: ost, soppa och bröd står som räknebara
+   trots att de normalt är ämnen. De har en levande räkneläsning ("ett
+   bröd", "en soppa") och lämnas därför, men gränsen är inte skarp. */
+UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_te';
 UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_vatten';
-UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'mat_vin';
+UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_vin';
 UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'mat_ägg';
-UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'mat_öl';
+UPDATE Koncept SET räknebar = 0 WHERE nyckel = 'mat_öl';
 UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'nat_berg';
 UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'nat_blomma';
 UPDATE Koncept SET räknebar = 1 WHERE nyckel = 'nat_eld';

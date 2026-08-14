@@ -34,7 +34,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
-    Numerus, Referentgenus, attribut_med_grad, bestämd_fras,
+    NAKEN, Numerus, Referentgenus, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -138,6 +138,8 @@ class RomanskRenderare:
                 f"står FÖRE verbet, inte där ett substantiv står. "
                 f"Klitikaplacering är inte byggd — se RENDERARE_KRAV §3.9")
 
+        self.u.kontrollera_naken(nf)
+
         genus = huvud["genus"]
         if genus is None:
             raise RenderingsFel(
@@ -155,6 +157,23 @@ class RomanskRenderare:
         elif nf.possessiv is not None:
             före.append(self.u.form_för(
                 nf.possessiv, self.possessivcell(genus, nf.numerus)))
+        elif nf.bestämdhet in NAKEN:
+            # De romanska språken saknar naken fras nästan helt, och de
+            # skiljer dessutom SORT från MÄNGD där de fyra andra inte gör
+            # det: "les livres sont chers" men "je bois de l'eau".
+            #
+            # Generisk tar bestämd artikel. Partitiv tar de/di plus samma
+            # artikel — och sammandragningen du/della sköts av sandhi, exakt
+            # som för genitivet, så konstruktionen kostade ingen ny data.
+            if nf.bestämdhet is Bestämdhet.PARTITIV and self.PARTITIV_MED_PREPOSITION:
+                före.append(self.u.form_för("prep_av", "inv"))
+            elif nf.bestämdhet is Bestämdhet.PARTITIV:
+                # Spanskan står naken i mängdbetydelse: "bebo agua".
+                pass
+            if not (nf.bestämdhet is Bestämdhet.PARTITIV
+                    and not self.PARTITIV_MED_PREPOSITION):
+                före.append(self.u.form_för("artikel_bestamd", self.artikelcell(
+                    genus, nf.numerus, huvudform, bestämd=True)))
         else:
             bestämd = nf.bestämdhet is Bestämdhet.BESTÄMD
             före.append(self.u.form_för(
@@ -370,6 +389,10 @@ class RomanskRenderare:
     # byter till konjunktiv i hela paradigmet ("¡no leas!"), italienskan
     # bara i 2sg, och där till infinitiv ("non leggere!"). Tom = oförändrad.
     NEKAD_IMPERATIVCELL: dict[str, str] = {}
+    # Bildas partitiven med de/di + artikel? fr och it ja ("de l'eau",
+    # "dell'acqua"), spanskan nej — den står naken ("bebo agua").
+    PARTITIV_MED_PREPOSITION: bool = True
+
     # Ställs ett komparerat adjektiv alltid efter huvudordet? es/it ja,
     # franskan nej — där behåller adjektivet sin lexikala placering.
     KOMPARERAD_EFTERSTÄLLD: bool = True

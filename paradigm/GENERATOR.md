@@ -365,10 +365,10 @@ instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-sv  3 988 / 4 988   80 %      it  7 877 / 10 246   77 %
-en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
-ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
-                              de 14 417 / 23 494   61 %
+sv  4 728 / 4 988   95 %      de 19 242 / 23 494   82 %
+en  2 034 / 2 293   89 %      it  7 877 / 10 246   77 %
+ja  1 472 / 2 498   59 %      fr  6 650 /  9 070   73 %
+                              es  7 114 / 10 608   67 %
 ```
 
 Svenskan gick 37 % → 45 % → 71 % → **78 %**. Men de sju språken skiljer sig
@@ -377,8 +377,8 @@ block**:
 
 | Språk | Största onådda block | Vad som krävs |
 |---|---|---|
-| de | 39 av 147 adjektivceller — stark deklination | `Bestämdhet` saknar artikellös fras ("roter Wein") |
 | fr/es/it | konditionalis (6 celler) | villkorssatser |
+| ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
 **Tyskan var låg av en enda anledning, och den är åtgärdad.** 16 121 av
@@ -391,6 +391,20 @@ former — den största enskilda utökningen i projektet.
 Kvar i tyskan är den STARKA deklinationen: 39 celler som kräver en fras helt
 utan determinerare ("roter Wein", "kaltes Wasser"). `Bestämdhet` har bara
 OBESTÄMD och BESTÄMD, och den obestämda ger "ein roter Wein".
+
+**Fyra gånger har SVEPET varit det som begränsade mätningen**, och varje
+gång såg det ut som en spec-brist:
+
+```
+subjektet var alltid tredje person      hela personböjningen såg onåbar ut
+attributet satt bara i objektet         bara ackusativ mättes
+bisatsens subjekt var 3sg               2 av 12 konjunktivceller mättes
+ägaren var alltid bestämd singular      genitivböjningen såg onåbar ut
+```
+
+Den sista tog svenskan från 80 till **95 %** och engelskan från 79 till 89 %
+utan att en rad renderarkod ändrades. Mönstret är alltid detsamma: en axel
+som varieras i huvudsatsen men inte i den inbäddade frasen.
 
 **Modusrektionen flyttade de tre romanska språken mest av allt.** it 57 →
 77 %, fr 62 → 73 %, es 57 → 67 % — konjunktivparadigmet är 6–12 celler per
