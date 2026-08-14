@@ -704,8 +704,10 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 1. **Meningsgeneratorn.** KORTLAGRET är byggt (2026-08-14): `kort.sql`,
    `src/sprakprog/kort/`, `ordbok kort`. 24 187 kort och 124 191
    cellkopplingar härledda ur språkdatabasen och stamanalysen, och
-   beroendekartan täcker varje formuppslag i alla sju språk. Kvar av
-   generatorn: FSRS-schemaläggningen och poängfunktionen.
+   beroendekartan täcker varje formuppslag i alla sju språk.
+   FSRS-SCHEMALÄGGNINGEN är också byggd: `src/sprakprog/kort/schemalaggning.py`,
+   ovanpå paketet `fsrs` 6.3.2. Kvar av generatorn: poängfunktionen och
+   sökningen.
 
    Kortmodellen är utredd och nedskriven i
    [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
@@ -835,6 +837,7 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `ordbok/verktyg/stammar.py` | härleder stamuppsättning och ändelsetabeller ur Former → `stammar.tsv`, `ändelser.tsv` |
 | `kort.sql` | inlärardatabasens schema; huvudet förklarar varför den är en egen fil |
 | `src/sprakprog/kort/befolka.py` | härleder kortbeståndet; ORDFÖLJD-listan är korttyp 4 |
+| `src/sprakprog/kort/schemalaggning.py` | FSRS-omslaget; modulhuvudet förklarar de tre besluten som är våra |
 | `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
