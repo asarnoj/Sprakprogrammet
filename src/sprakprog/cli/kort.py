@@ -32,8 +32,35 @@ def kör(args: argparse.Namespace) -> int:
             return 1
         kort_db = anslut_kort(mål)
 
+    # Läsvyerna befolkar INTE. Att göra det skulle rasera nivåspärren:
+    # utan --nivå skapar befolka() hela beståndet, och `--läge` är en fråga
+    # och inte en ändring.
+    if args.läge:
+        from ..kort import upplåsningsläge
+        from ..kort.schemalaggning import UPPLÅSNINGSANDEL, UPPLÅSNINGSDAGAR
+        print(f"\nUpplåsning (mogen = stabilitet ≥ {UPPLÅSNINGSDAGAR:.0f} dagar):")
+        for s_ in sorted(språk):
+            l = upplåsningsläge(kort_db, s_)
+            if not l["totalt"]:
+                continue
+            märke = "✓ klar" if l["klar"] else f"{UPPLÅSNINGSANDEL:.0%} krävs"
+            print(f"   {s_}  {l['mogna']:5}/{l['totalt']:<5} {l['andel']:5.0%}   {märke}")
+        return 0
+
+    if args.kö:
+        from ..kort import Schemaläggare, kö
+        s = Schemaläggare(kort_db)
+        rader = kö(kort_db, args.kö, args.antal)
+        print(f"\nKö för {args.kö}: {len(rader)} kort")
+        print(f"{'typ':10}{'facit':16}{'R':>6}{'förfaller':>22}{'antal':>7}")
+        for r in rader:
+            print(f"{r['typ']:10}{(r['facit'] or '')[:15]:16}"
+                  f"{s.retention(r):6.2f}{(r['förfaller'] or '—')[:19]:>22}{r['antal']:7}")
+        return 0
+
+
     with anslut() as språk_db:
-        r = befolka(kort_db, språk_db, språk)
+        r = befolka(kort_db, språk_db, språk, nivå=args.nivå, cefr=args.cefr)
         print(f"✓ {r['nya']} nya kort, {r['totalt']} totalt, "
               f"{r['kopplingar']} cellkopplingar")
         if r["föräldralösa"]:
@@ -46,17 +73,6 @@ def kör(args: argparse.Namespace) -> int:
                 print(f"  {s}: exponering mätt på {n} meningar")
             print(f"✓ {sätt_schemalagt(kort_db)} kort möts för ofta för att "
                   f"schemaläggas — de mäts i stället")
-
-    if args.kö:
-        from ..kort import Schemaläggare, kö
-        s = Schemaläggare(kort_db)
-        rader = kö(kort_db, args.kö, args.antal)
-        print(f"\nKö för {args.kö}: {len(rader)} kort")
-        print(f"{'typ':10}{'facit':16}{'R':>6}{'förfaller':>22}{'antal':>7}")
-        for r in rader:
-            print(f"{r['typ']:10}{(r['facit'] or '')[:15]:16}"
-                  f"{s.retention(r):6.2f}{(r['förfaller'] or '—')[:19]:>22}{r['antal']:7}")
-        return 0
 
     print()
     print(f"{'':4}{'typ':12}{'antal':>7}{'schemalagda':>13}{'räckvidd':>10}")
@@ -77,7 +93,15 @@ def lägg_till_parser(sub) -> None:
                    help="mät exponering och sätt schemalagt/mätt")
     p.add_argument("--meningar", type=int, default=2000,
                    help="antal meningar per språk vid mätning")
+    p.add_argument("--nivå", type=int,
+                   help="skapa bara kort som går att möta på den här nivån "
+                        "på komplexitetsstegen (utelämnad: alla)")
+    p.add_argument("--cefr", default="C2",
+                   choices=("A1", "A2", "B1", "B2", "C1", "C2"),
+                   help="tak på ordförrådets CEFR-nivå")
     p.add_argument("--kö", choices=SPRÅK, help="visa dagens kö för ett språk")
     p.add_argument("--antal", type=int, default=20, help="kölängd")
+    p.add_argument("--läge", action="store_true",
+                   help="hur nära nästa nivå kursen står")
     p.add_argument("--db", help="annan sökväg än kort.db")
     p.set_defaults(func=kör)

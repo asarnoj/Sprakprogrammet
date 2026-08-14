@@ -667,6 +667,56 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Upplåsningen: nivån avgör vilka kort som FINNS
+
+*Byggt 2026-08-14.* Mätningen som avgjorde formen: en tysk nybörjare har
+2 119 kort på A1, men på nivå 4 går bara **643 av dem att möta**. De övriga
+1 476 skulle ligga i kön, väljas som mål, och aldrig kunna nås.
+
+```
+nivå 4    643 av 2119    30 %
+nivå 9    813            38 %
+nivå 14   938            44 %
+nivå 21   984            46 %
+```
+
+Därav principen: **ett kort ska inte finnas förrän det går att möta.** Det
+är samma regel som redan gällde för former specen inte når, med en gräns som
+flyttar sig. Nivån är alltså inte ett lager ovanpå kortlagret utan det som
+avgör vilka kort som existerar.
+
+`befolka(..., nivå=N, cefr=X)` skapar bara nåbara kort, och nåbarheten MÄTS
+— samplaren bygger meningar på nivån och instrumenteringen säger vilka
+former som slogs upp. Bakvägen från cell till specparametrar finns inte och
+behövs inte.
+
+```
+nivå  4 A1   1 112 kort        nivå 21 A1   1 601
+nivå  9 A1   1 360             nivå 21 A2   2 987
+nivå 14 A1   1 517             allt         4 821
+```
+
+Att öppna en nivå ÄR att köra befolkningen igen. Den är additiv och
+idempotent, så historiken överlever — och det är precis vad som ska hända:
+gamla ord får nya former att lära sig.
+
+**Tröskeln** ligger i `schemalaggning.py`: nivån är klar när 90 % av dess
+schemalagda kort har stabilitet över sju dagar. Stabilitet är det FSRS
+faktiskt modellerar, sju dagar betyder "överlevt minst en glömskekurva", och
+nittio procent lämnar plats för de svåraste korten att släpa efter.
+`ordbok kort --läge` visar hur nära man är. Två tal, båda gissningar av
+samma sort som vikterna — men lätta att ändra och lätta att förstå.
+
+Hela cykeln, körd:
+
+```
+nivå 4                    1 112 kort,   0 % mogna
+öva tills tröskeln nås    1 112 kort,  94 % mogna   ✓ klar
+lås upp nivå 9           +262 kort,   76 % mogna   90 % krävs
+```
+
+---
+
 ## Nivåerna: två oberoende tak
 
 *Infört 2026-08-14.* `Koncept.nivå` bär CEFR-nivån — 393 A1, 328 A2, 15 B1.
@@ -785,11 +835,12 @@ Kvar av de tre mekanismerna i GENERATOR.md: "meningen vittnar" (kongruens
 över flera ord) och "självrättning som möjlighet" kräver mer kontext
 respektive ett gränssnitt. Historikmekanismen finns.
 
-1. **Lektionerna och upplåsningen.** Båda nivåtaken fungerar nu — CEFR för
-   ORDEN, komplexitetsstegen för KONSTRUKTIONERNA — men ingenting öppnar
-   dem automatiskt, och det finns inga lektionssidor. GENERATOR.md har
-   besluten ("automatisk tröskel, användaren får skjuta upp",
-   "undervisning vid upplåsning"); de är obyggda.
+1. **Lektionssidorna.** Upplåsningen fungerar (se avsnittet nedan), men
+   ingenting VISAR paradigmtabellen och exempelmeningarna när en nivå
+   öppnas. Tabellen går att generera ur systemkorten och exemplen ur
+   generatorn — det som återstår att skriva är prosan, och den hör till
+   komplexitetsstegens 21 konstruktioner och inte till 21 × 7, eftersom
+   konstruktionen är språkoberoende och tabellen visar realiseringen.
 
 2. **Vikterna i `poang.py`.** En första gissning, och det står i
    modulhuvudet. De går bara att hitta genom att köra systemet — men allt
