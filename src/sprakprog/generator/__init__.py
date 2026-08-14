@@ -37,6 +37,7 @@ from ..rendering import (
     Uppslag, Validator,
 )
 from .poang import Poäng, Poängsättare
+from .rattning import Anmärkning, Rättare, Rättning
 from .urval import Ordförråd, Samplare
 
 RENDERARE = {"sv": SvenskRenderare, "en": EngelskRenderare, "de": TyskRenderare,
@@ -50,6 +51,9 @@ class Förslag:
     text: str
     kort: list
     poäng: Poäng
+    #: (koncept, variant, cell) i den ordning formerna slogs upp. Rättningen
+    #: behöver den för att veta vilket ord i facit som kom varifrån.
+    uppslag: list = None
 
 
 class Generator:
@@ -71,6 +75,7 @@ class Generator:
         # Ordkortet hänger på KONCEPTET och inte på cellen, så det ligger
         # inte i Cellkort. Att glömma det gjorde att varje mening
         # attribuerade noll ordkort — det mest grundläggande av alla.
+        self.rättare = Rättare(språk_db, kort_db, språk)
         self._ordkort: dict[tuple, int] = {
             (r["koncept"], r["variant"]): r["id"]
             for r in self._kort.values() if r["typ"] == "ord"}
@@ -86,7 +91,7 @@ class Generator:
 
     # ── rendering med beroendekarta ──────────────────────────────────
 
-    def _rendera(self, m: Mening) -> tuple[str, list] | None:
+    def _rendera(self, m: Mening) -> tuple[str, list, list] | None:
         """Texten och de kort meningen rörde, eller None om den inte går.
 
         Instrumenteringen är samma väg som nåbarhetsmätningen använder, och
@@ -117,7 +122,7 @@ class Generator:
             if kid is not None:
                 idn.add(kid)
         kort = [self._kort[i] for i in idn if i in self._kort]
-        return text, kort
+        return text, kort, rörda
 
     # ── generering ───────────────────────────────────────────────────
 
@@ -138,14 +143,26 @@ class Generator:
             resultat = self._rendera(m)
             if resultat is None:
                 continue
-            text, kort = resultat
+            text, kort, uppslag = resultat
             p = self.poängsättare.sätt(kort, förfallna, nu)
             if bäst is None or p.total > bäst.poäng.total:
-                bäst = Förslag(m, text, kort, p)
+                bäst = Förslag(m, text, kort, p, uppslag)
         if bäst is not None:
             self.poängsättare.minns(
                 {k["koncept"] for k in bäst.kort if k["koncept"]})
         return bäst
+
+    def rätta(self, förslag: Förslag, svar: str) -> Rättning:
+        """Användarens text → ett betyg per kort."""
+        return self.rättare.rätta(svar, förslag.text, förslag.uppslag or [],
+                                  förslag.kort)
+
+    def svara(self, förslag: Förslag, svar: str, *, källspråk: str | None = None,
+              nu=None) -> Rättning:
+        """Rätta OCH registrera — hela slingan i ett anrop."""
+        rättning = self.rätta(förslag, svar)
+        self.registrera(förslag, rättning.utfall, källspråk=källspråk, nu=nu)
+        return rättning
 
     def registrera(self, förslag: Förslag, utfall: dict[int, bool],
                    *, källspråk: str | None = None, nu=None) -> int:
@@ -154,4 +171,5 @@ class Generator:
             källspråk=källspråk, budget=self.poängsättare.budget, nu=nu)
 
 
-__all__ = ["Förslag", "Generator", "Ordförråd", "Poäng", "Poängsättare", "Samplare"]
+__all__ = ["Anmärkning", "Förslag", "Generator", "Ordförråd", "Poäng",
+           "Poängsättare", "Rättare", "Rättning", "Samplare"]
