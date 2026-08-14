@@ -426,23 +426,36 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             "kopplingar": kopplingar, "föräldralösa": len(föräldralösa)}
 
 
-#: Över så många möten per mening slutar schemaläggning ha en spak.
-#: Vid 20 meningar om dagen är 0,05 ungefär ett möte om dagen, och FSRS
-#: kortaste meningsfulla intervall ÄR en dag — ett kort som möts oftare än
-#: så kan aldrig spacas, hur kön än ser ut. Se GENERATOR.md, "Schemalagda
-#: kort mot mätta kort".
-EXPONERINGSGRÄNS = 0.05
+def exponeringsgräns(meningar_per_dag: int) -> float:
+    """Över så många möten per mening slutar schemaläggning ha en spak.
+
+    RÄKNAS, står inte i koden. Ett kort möts `exponering × meningar_per_dag`
+    gånger om dagen, och FSRS kortaste meningsfulla intervall ÄR en dag — ett
+    kort som möts oftare än så kan aldrig spacas, hur kön än ser ut. Alltså
+    är gränsen 1/meningar_per_dag.
+
+    Talet stod tidigare som 0,05 med härledningen i en kommentar, vilket var
+    rätt uträknat för 20 meningar om dagen och tyst fel för alla andra. Nu när
+    takten är användarens val måste gränsen följa den. Se GENERATOR.md,
+    "Schemalagda kort mot mätta kort".
+    """
+    return 1.0 / meningar_per_dag
 
 
-def sätt_schemalagt(kort_db: sqlite3.Connection) -> int:
+def sätt_schemalagt(kort_db: sqlite3.Connection,
+                    meningar_per_dag: int | None = None) -> int:
     """Kort som möts oftare än gränsen mäts men schemaläggs inte.
 
     Kräver att `exponering` är mätt. Omätta kort lämnas schemalagda — att
     gissa vore att bygga in en tumregel där beslutet säger mätning.
     """
+    from .schemalaggning import STANDARD_MENINGAR_PER_DAG
+    if meningar_per_dag is None:
+        rad = kort_db.execute("SELECT MIN(meningar_per_dag) AS m FROM Kurs").fetchone()
+        meningar_per_dag = (rad["m"] if rad and rad["m"] else STANDARD_MENINGAR_PER_DAG)
     n = kort_db.execute(
         "UPDATE Kort SET schemalagt = (exponering IS NULL OR exponering <= ?)",
-        (EXPONERINGSGRÄNS,)).rowcount
+        (exponeringsgräns(meningar_per_dag),)).rowcount
     kort_db.commit()
     return kort_db.execute(
         "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0").fetchone()[0]
