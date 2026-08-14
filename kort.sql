@@ -208,7 +208,9 @@ CREATE INDEX idx_repetition_kort ON Repetition(kort_id, tidpunkt);
 /* ── Kurs ────────────────────────────────────────────────────────────────────
    Käll- och målspråk är låsta per kurs (GENERATOR.md, "Kursmodell"). Flera
    kurser parallellt går bra, och alla kombinationer av de sju är tillåtna.
-   `nivå` är hur långt på komplexitetsstegen kursen låst upp.
+   `nivå` och `cefr` är kursens två oberoende tak: komplexitetsstegen styr
+   vilka KONSTRUKTIONER som finns, CEFR vilka ORD. Båda behövs — en kurs som
+   bara känner sin stegnivå vet halva sin nivå.
 
    `meningar_per_dag` är hur mycket användaren vill öva. Det är ett VAL och
    ingen härledning — en uppgift om användarens liv, som systemet omöjligt kan
@@ -221,6 +223,7 @@ CREATE TABLE Kurs (
     källspråk TEXT    NOT NULL,
     målspråk  TEXT    NOT NULL,
     nivå      INTEGER NOT NULL DEFAULT 1,
+    cefr      TEXT    NOT NULL DEFAULT 'C2',
     budget    REAL    NOT NULL DEFAULT 1.5,
     meningar_per_dag INTEGER NOT NULL DEFAULT 20,
     startad   TEXT    NOT NULL,

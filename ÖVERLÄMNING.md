@@ -667,6 +667,56 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Appen: uppgiften, servern och sidan
+
+*Byggt 2026-08-15.*
+
+**Uppgiften saknades helt.** `Kurs.källspråk` loggades men renderades aldrig —
+generatorn hade en enda renderare, så `ordbok öva` utan `--facit` visade
+ingenting alls. Det var inte en lucka i gränssnittet utan i modellen: uppgiften
+ÄR samma spec renderad till källspråket, vilket är hela skälet att `Mening` är
+språkoberoende. Frågan och svaret är inte två texter som råkar höra ihop.
+
+```
+sv  Ni har gått.          sv  En flygplats ska böra höra.
+de  Ihr seid gegangen.    de  Ein Flughafen wird sollen hören.   ← fel ordföljd
+```
+
+Källspråket renderas först för den kandidat som vinner, inte för alla tusen.
+En mening som inte går att STÄLLA förkastas, men det händer sällan nog att en
+förhandskontroll inte lönar sig. Kostnad: 202 ms per mening.
+
+**Servern** (`sprakprog/webb/`) är standardbiblioteket, utan beroenden. En
+användare på localhost och fyra rutter — och slutmålet är en Tauri-app där
+Python följer med som sidecar, där varje paket som ska buntas är arbete.
+Anslutningarna delas mellan trådar och serialiseras av ett lås.
+
+**Sidan är webb hela vägen.** Tauri är ett skal av Rust runt systemets webbvy,
+så innehållet ÄR en webbfrontend: att bygga sidan nu är att bygga Tauri-appens
+frontend, inte en prototyp som ska kastas. Det som tillkommer vid inramningen
+är paketeringen av Python-körtiden, och den rör ingenting i sidan.
+
+```bash
+ordbok kurs --ny sv de --nivå 4 --cefr A1
+ordbok webb          # http://127.0.0.1:8765
+```
+
+Rättningen visar vad kortmodellen är till för:
+
+```
+Han frågar.  →  skrev "Er fragen."
+✗ Fel        Er fragt.
+   fragen → fragt   rätt stam 'frag', fel ändelse — pres_1pl i stället för pres_3sg
+```
+
+**Känt: `kort.db` har 262 kort för många.** De kommer från en befolkning före
+nivåspärren — adjektivens egenskapskort bland annat, och nivå 4 har inga
+attributiva adjektiv. De ligger i kön som mål ingen mening kan nå. Ingen
+historik finns, så ombyggnad kostar ingenting:
+`ordbok kort --återinitiera --språk de` följt av `ordbok kurs --ny sv de`.
+
+---
+
 ## Vad som faktiskt går att mäta ur användningen
 
 *Skrivet 2026-08-15, efter en fråga om vilka tal som egentligen är mätbara.*

@@ -14,10 +14,18 @@ SCHEMA_FIL = PROJEKTROT / "setup.sql"
 STANDARD_DB = PROJEKTROT / "sprak.db"
 
 
-def anslut(db_sökväg: Path | None = None) -> sqlite3.Connection:
-    """Returnerar en anslutning med foreign keys aktiverade."""
+def anslut(db_sökväg: Path | None = None, *,
+           delad_mellan_trådar: bool = False) -> sqlite3.Connection:
+    """Returnerar en anslutning med foreign keys aktiverade.
+
+    `delad_mellan_trådar` stänger av sqlite3:s egen trådkontroll. Den finns
+    för att en anslutning inte tål samtidig användning — så den får bara
+    sättas av en anropare som SJÄLV serialiserar åtkomsten. Webbservern gör
+    det med ett lås; ingen annan har anledning att röra flaggan.
+    """
     sökväg = db_sökväg if db_sökväg is not None else STANDARD_DB
-    conn = sqlite3.connect(sökväg, timeout=60)
+    conn = sqlite3.connect(sökväg, timeout=60,
+                           check_same_thread=not delad_mellan_trådar)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     # Genereringen kan köras som ett jobb per språk samtidigt. Skrivningarna
