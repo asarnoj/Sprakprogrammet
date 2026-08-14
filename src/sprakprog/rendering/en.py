@@ -16,7 +16,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
+    RenderingsFel, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -56,7 +57,7 @@ class EngelskRenderare:
         # Obestämd plural saknar artikel: "books".
 
         for attribut in nf.attribut:
-            ord.append(self.u.form_för(attribut, "pos"))
+            ord += self.attribut(attribut, bestämd=bestämd_fras(nf))
         try:
             ord.append(self.u.form(huvud, ("pl_gen" if genitiv else "pl")
                                    if nf.numerus is Numerus.PL
@@ -70,6 +71,30 @@ class EngelskRenderare:
                     f"— meningen kan inte be om sg") from None
             raise
         return ord
+
+    def attribut(self, a: str | Attribut, bestämd: bool = True) -> list[str]:
+        """"a bigger book", "a more interesting book" — datan avgör vilket.
+
+        Samma regel som predikativet: finns cellen används den, annars
+        byggs frasen med more/most. Engelskan böjer inte attributet efter
+        huvudordet, så graden är hela variationen.
+        """
+        a = attribut_med_grad(a)
+        if a.grad is Grad.POSITIV:
+            return [self.u.form_för(a.koncept, "pos")]
+        if a.grad is Grad.SUPERLATIV and not bestämd:
+            # "a biggest book" finns inte — superlativen pekar ut ett unikt
+            # exemplar och kräver the. Samma sak som i svenskan.
+            raise RenderingsFel(
+                f"en/{a.koncept}: attributiv superlativ kräver bestämd fras "
+                f"— 'the biggest book', inte 'a biggest book'")
+        cell = "komp" if a.grad is Grad.KOMPARATIV else "superl"
+        lexem = self.u.lexem(a.koncept)
+        if self.u._celler(lexem).get(cell):
+            return [self.u.form(lexem, cell)]
+        return [self.u.form_för("komp_mer" if a.grad is Grad.KOMPARATIV
+                                else "komp_mest", "pos"),
+                self.u.form_för(a.koncept, "pos")]
 
     def _person_numerus(self, nf: Nominalfras) -> tuple[int, str]:
         rad = self.conn.execute(

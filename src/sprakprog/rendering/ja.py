@@ -28,7 +28,8 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    FRÅGESLOTTAR, Aspekt, Bisats, Diates, Grad, Mening, Nominalfras,
+    FRÅGESLOTTAR, Aspekt, Attribut, Bisats, Diates, Grad, Mening, Nominalfras,
+    attribut_med_grad,
     RenderingsFel, Satsmodus,
     Tidsreferens, tilltal,
 )
@@ -72,6 +73,14 @@ class JapanskRenderare:
             ord += self.u.form_för(nf.possessiv, "jisho")
 
         for attribut in nf.attribut:
+            a = attribut_med_grad(attribut)
+            if a.grad is not Grad.POSITIV:
+                # Japanska adjektiv böjs inte i grad alls. もっと大きい本,
+                # 一番大きい本 — markören står före och adjektivet är
+                # oförändrat, vilket är hela skillnaden mot de sex andra.
+                ord += self.u.form_för(
+                    "komp_mer" if a.grad is Grad.KOMPARATIV else "komp_mest", "inv")
+            attribut = a.koncept
             adjektiv = self.u.lexem(attribut)
             typ = adjektiv["ja_adjektiv_typ"]
             if typ == "i":

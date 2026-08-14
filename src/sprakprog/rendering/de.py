@@ -29,7 +29,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
+    RenderingsFel, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -57,6 +58,11 @@ TEMPUSSTAM = {
 IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
                  "artig": "imp_3sg", "1pl": "imp_1pl"}
 IMPERATIVPRONOMEN = {"artig": "pronomen_2sg_formal", "1pl": "pronomen_1pl"}
+
+# Tyskan komparerar ALLTID syntetiskt — det finns ingen "mehr schön" — så
+# gradstammen räcker och ingen perifrastisk reservväg behövs.
+GRADSTAM = {Grad.POSITIV: "pos", Grad.KOMPARATIV: "komp",
+            Grad.SUPERLATIV: "superl"}
 
 
 def _substantivcell(kasus: int, numerus: Numerus) -> str:
@@ -155,8 +161,21 @@ class TyskRenderare:
 
         formgenus = g if nf.numerus is Numerus.SG else "pl"
         for attribut in nf.attribut:
+            # Graden är bara ett annat prefix på samma cell: tyskans
+            # adjektivparadigm har 49 celler per grad, med identisk
+            # struktur. Det var därför två tredjedelar av paradigmet —
+            # 96 av 147 celler — var onåbart så länge attributet saknade
+            # grad, och därför det räckte med den här raden för att nå dem.
+            a = attribut_med_grad(attribut)
+            if a.grad is Grad.SUPERLATIV and not bestämd_fras(nf):
+                # "mein größtes Problem" går bra — possessiv räknas som
+                # bestämd — men "ein größtes Buch" gör det inte.
+                raise RenderingsFel(
+                    f"de/{a.koncept}: attributiv superlativ kräver bestämd "
+                    f"fras eller possessiv, inte ein")
             ord.append(self.u.form_för(
-                attribut, f"pos_{deklination}_{formgenus}_{k}"))
+                a.koncept,
+                f"{GRADSTAM[a.grad]}_{deklination}_{formgenus}_{k}"))
 
         try:
             ord.append(self.u.form(huvud, _substantivcell(kasus, nf.numerus)))

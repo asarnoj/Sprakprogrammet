@@ -365,10 +365,10 @@ instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-sv  3 892 / 4 988   78 %      it  7 877 / 10 246   77 %
+sv  3 988 / 4 988   80 %      it  7 877 / 10 246   77 %
 en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
 ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
-                              de  8 531 / 23 494   36 %
+                              de 14 417 / 23 494   61 %
 ```
 
 Svenskan gick 37 % → 45 % → 71 % → **78 %**. Men de sju språken skiljer sig
@@ -377,17 +377,20 @@ block**:
 
 | Språk | Största onådda block | Vad som krävs |
 |---|---|---|
-| de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
+| de | 39 av 147 adjektivceller — stark deklination | `Bestämdhet` saknar artikellös fras ("roter Wein") |
 | fr/es/it | konditionalis (6 celler) | villkorssatser |
-| de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
-**Tyskans siffra är låg av en enda anledning.** 16 121 av 23 494 tyska
-former är adjektivformer, och två tredjedelar av adjektivparadigmet är
-komparativ och superlativ i attributiv ställning. `Grad` finns på `Mening`
-och styr predikativet; attributet är fortfarande bara en konceptnyckel.
-Att flytta graden in i `Nominalfras.attribut` är den enskilt största
-utökningen som återstår — värd omkring 10 500 tyska former.
+**Tyskan var låg av en enda anledning, och den är åtgärdad.** 16 121 av
+23 494 tyska former är adjektivformer, och två tredjedelar av paradigmet är
+komparativ och superlativ i attributiv ställning. `Grad` fanns på `Mening`
+och styrde predikativet; attributet var bara en konceptnyckel. Med
+`Attribut(koncept, grad)` gick tyskan **36 → 61 %**, en vinst på 5 886
+former — den största enskilda utökningen i projektet.
+
+Kvar i tyskan är den STARKA deklinationen: 39 celler som kräver en fras helt
+utan determinerare ("roter Wein", "kaltes Wasser"). `Bestämdhet` har bara
+OBESTÄMD och BESTÄMD, och den obestämda ger "ein roter Wein".
 
 **Modusrektionen flyttade de tre romanska språken mest av allt.** it 57 →
 77 %, fr 62 → 73 %, es 57 → 67 % — konjunktivparadigmet är 6–12 celler per

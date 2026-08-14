@@ -33,8 +33,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
-    Referentgenus,
+    Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
+    Numerus, Referentgenus, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -165,10 +165,33 @@ class RomanskRenderare:
         # adjektiv står efter substantivet, men en liten grupp står före.
         efter: list[str] = []
         for attribut in nf.attribut:
-            adjektiv = self.u.lexem(attribut)
-            form = self.u.form(
-                adjektiv, f"pos_{_kön(genus)}_{_tal(nf.numerus)}")
-            (före if adjektiv["prenominal"] else efter).append(form)
+            a = attribut_med_grad(attribut)
+            if a.grad is Grad.SUPERLATIV and not bestämd_fras(nf):
+                # "un libro más interesante" ÄR komparativen — de romanska
+                # språken skiljer graderna med artikeln och kan inte märka
+                # en obestämd superlativ alls. Att rendera den vore att
+                # tyst ge tillbaka komparativen.
+                raise RenderingsFel(
+                    f"{self.SPRÅK}/{a.koncept}: attributiv superlativ kräver "
+                    f"bestämd fras — graden markeras med artikeln")
+            adjektiv = self.u.lexem(a.koncept)
+            delar = self.attributgrad(a, adjektiv, genus, nf.numerus)
+            # Komparation kan FLYTTA adjektivet. es/it ställer det komparerade
+            # efter huvudordet oavsett var positiven står: "un libro mayor",
+            # aldrig "un mayor libro". Franskan behåller placeringen — "le
+            # plus grand livre" — och markerar i stället superlativen med
+            # dubblerad artikel när adjektivet står efter: "le livre le plus
+            # grand". Utan den vore komparativ och superlativ omöjliga att
+            # skilja åt, eftersom plus/más/più är samma ord i båda.
+            efterställd = (a.grad is not Grad.POSITIV
+                           and self.KOMPARERAD_EFTERSTÄLLD) or not adjektiv["prenominal"]
+            if (efterställd and a.grad is Grad.SUPERLATIV
+                    and self.DUBBEL_SUPERLATIVARTIKEL):
+                delar = [self.u.form_för(
+                    "artikel_bestamd",
+                    self.artikelcell(genus, nf.numerus, delar[0], bestämd=True)),
+                    *delar]
+            (efter if efterställd else före).extend(delar)
 
         # "le livre de la fille" — romanska språk uttrycker genitiv med
         # preposition, inte med kasus, och attributet står efter huvudordet.
@@ -347,6 +370,13 @@ class RomanskRenderare:
     # byter till konjunktiv i hela paradigmet ("¡no leas!"), italienskan
     # bara i 2sg, och där till infinitiv ("non leggere!"). Tom = oförändrad.
     NEKAD_IMPERATIVCELL: dict[str, str] = {}
+    # Ställs ett komparerat adjektiv alltid efter huvudordet? es/it ja,
+    # franskan nej — där behåller adjektivet sin lexikala placering.
+    KOMPARERAD_EFTERSTÄLLD: bool = True
+    # Upprepas den bestämda artikeln före superlativen? Bara franskan:
+    # "le livre le plus grand".
+    DUBBEL_SUPERLATIVARTIKEL: bool = False
+
     # Har språket en levande imperfektkonjunktiv? Franskans är litterär,
     # som passé simple, och paradigmet saknar cellerna.
     HAR_IMPERFEKTKONJUNKTIV: bool = True
@@ -524,6 +554,31 @@ class RomanskRenderare:
         if m.bisats is not None:
             ord += self.bisats(m.bisats, styrande=m)
         return ord
+
+    def attributgrad(self, a: Attribut, adjektiv, genus: int,
+                     numerus: Numerus) -> list[str]:
+        """Attributets form i sin grad. Perifrastisk när cellen saknas.
+
+        De romanska språken komparerar nästan alltid perifrastiskt: bara
+        ett tiotal adjektiv per språk har suppletiva former (meilleur,
+        mayor, migliore). Datan avgör, precis som för predikativet.
+
+        Superlativens bestämda artikel sätts INTE här. Attributet sitter i
+        en nominalfras som redan har en artikel, och "il libro più grande"
+        tar bara en — till skillnad från predikativet, som står utan fras
+        och därför måste ta med sin egen.
+        """
+        if a.grad is Grad.POSITIV:
+            return [self.u.form(adjektiv, f"pos_{_kön(genus)}_{_tal(numerus)}")]
+        stam = "komp" if a.grad is Grad.KOMPARATIV else "superl"
+        celler = self.u._celler(adjektiv)
+        cell = next((c for c in (f"{stam}_{_kön(genus)}_{_tal(numerus)}",
+                                 f"{stam}_{_tal(numerus)}") if celler.get(c)), None)
+        if cell is not None:
+            return [self.u.form(adjektiv, cell)]
+        return [self.u.form_för("komp_mer" if a.grad is Grad.KOMPARATIV
+                                else "komp_mest", "inv"),
+                self.u.form(adjektiv, f"pos_{_kön(genus)}_{_tal(numerus)}")]
 
     def konjunktivstam(self, m: Mening) -> str:
         """Presens eller imperfekt konjunktiv, valt på SATSENS egen tid.
