@@ -70,6 +70,26 @@ class ItalienskRenderare(RomanskRenderare):
                   ("su", "il"): "sul", ("su", "la"): "sulla",
                   ("con", "il"): "col"}
 
+    #: Omodifierade släktskapsord i SINGULAR står utan artikel efter
+    #: possessiv: "mia madre", inte "la mia madre". Undantaget gäller den
+    #: enskilda släktingen, inte familjen som helhet eller vänkretsen —
+    #: "la mia famiglia", "il mio amico" — och inte de sammansatta
+    #: ("il mio fratello maggiore"), som är modifierade och därför tar
+    #: artikel igen. Plural tar också artikel: "le mie sorelle".
+    SLÄKTSKAP = frozenset({
+        "fam_mamma", "fam_pappa", "fam_bror", "fam_syster",
+        "fam_son", "fam_dotter", "fam_make", "fam_maka",
+    })
+
+    def possessivartikel(self, nf: Nominalfras) -> bool:
+        if nf.possessiv == "poss_3pl":
+            # loro är undantagets undantag: "il loro padre" tar alltid
+            # artikel, också med släktskapsord.
+            return True
+        return not (nf.koncept in self.SLÄKTSKAP
+                    and nf.numerus is Numerus.SG
+                    and not nf.attribut)
+
     def frågedeterminantcell(self, genus: int, numerus: Numerus) -> str:
         # quale/quali skiljer numerus men inte genus.
         return "pl" if numerus is Numerus.PL else "m_sg"

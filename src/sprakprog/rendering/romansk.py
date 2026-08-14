@@ -82,6 +82,10 @@ class RomanskRenderare:
     def possessivcell(self, genus: int, numerus: Numerus) -> str:
         raise NotImplementedError
 
+    def possessivartikel(self, nf: Nominalfras) -> bool:
+        """Ska bestämd artikel stå före possessiven? Bara italienskan."""
+        return False
+
     def artikelcell(self, genus: int, numerus: Numerus, huvudord: str,
                     bestämd: bool) -> str:
         """Cell i artikelparadigmet. `huvudord` behövs bara för italienskan."""
@@ -155,8 +159,18 @@ class RomanskRenderare:
                 nf.frågedeterminant,
                 self.frågedeterminantcell(genus, nf.numerus)))
         elif nf.possessiv is not None:
-            före.append(self.u.form_för(
-                nf.possessiv, self.possessivcell(genus, nf.numerus)))
+            # Italienskan sätter BESTÄMD ARTIKEL före possessiven: "il mio
+            # libro". Spanskan och franskan gör inte det ("su libro", "son
+            # livre"), så villkoret är språkets och inte konstruktionens.
+            possessivform = self.u.form_för(
+                nf.possessiv, self.possessivcell(genus, nf.numerus))
+            if self.possessivartikel(nf):
+                # Allomorfen väljs på NÄSTA ord, och det är possessiven som
+                # följer artikeln — inte huvudordet. "il suo amico", inte
+                # "lo suo amico": det är suo som avgör, inte amico.
+                före.append(self.u.form_för("artikel_bestamd", self.artikelcell(
+                    genus, nf.numerus, possessivform, bestämd=True)))
+            före.append(possessivform)
         elif nf.bestämdhet in NAKEN:
             # De romanska språken saknar naken fras nästan helt, och de
             # skiljer dessutom SORT från MÄNGD där de fyra andra inte gör

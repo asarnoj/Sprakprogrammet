@@ -667,6 +667,53 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Tre språkfel, lagade 2026-08-14
+
+Alla tre satt i kod som varit "klar" i flera pass, och alla tre hittades av
+att systemet kördes på riktigt.
+
+**Tyska partikelverb särar partikeln i finita former** och skriver ihop den i
+infinitiv och particip. Datan lagrar formen som den ser ut — "ruft an" — men
+partikeln hör hemma i satsklammern:
+
+```
+Das Mädchen ruft den Bruder an.          huvudsats: partikeln sist
+Das Mädchen ruft den Bruder nicht an.    efter satsadverbialet
+Das Mädchen hat den Bruder angerufen.    particip: ihopskriven, orörd
+Wen ruft das Mädchen an?                 wh-fråga
+dass das Mädchen den Bruder anruft       BISATS: partikeln återförenas
+```
+
+Regeln är att ett mellanslag i en finit form betyder partikel. Fjorton verb.
+Att den återförenas i bisats följer av att verbet står sist där — ingenting
+skiljer dem längre åt.
+
+**Italienska possessiver tar bestämd artikel**: "il suo libro". Undantaget är
+omodifierade släktskapsord i singular — "sua madre" — men inte familjen som
+helhet ("la sua famiglia"), inte de sammansatta ("il suo fratello maggiore"),
+inte plural ("le sue sorelle") och inte `loro` ("la loro madre").
+
+En detalj som är lätt att missa: artikelns allomorf väljs på NÄSTA ord, och
+det är possessiven som följer artikeln — "il suo amico", inte "lo suo amico".
+Det är *suo* som avgör, inte *amico*.
+
+**Spanskans `el agua`.** Feminina ord vars första stavelse bär betoningen
+byter artikel i singular. Betoningen HÄRLEDS ur stavningen i stället för att
+listas, för spanskan stavar den regelbundet: skriven accent går först,
+annars näst sista stavelsen om ordet slutar på vokal/n/s, sist annars.
+
+```
+agua        a-gua, två stavelser på vokal  → el agua
+águila      skriven accent på första       → el águila
+arena       a-re-na, tre stavelser         → la arena
+habitación  accenten ligger sist           → la habitación
+```
+
+Bara ett ord i dagens ordförråd berörs. Att ändå härleda är poängen: regeln
+gäller också de ord som läggs till sedan.
+
+---
+
 ## Kända täckningsgränser
 
 (Inga fel, men bra att veta.)
@@ -713,15 +760,9 @@ Kvar av de tre mekanismerna i GENERATOR.md: "meningen vittnar" (kongruens
 över flera ord) och "självrättning som möjlighet" kräver mer kontext
 respektive ett gränssnitt. Historikmekanismen finns.
 
-1. **Tre språkfel som väntar, alla hittade under bygget:**
-   - Italienska possessiver saknar artikel — "suo libro" ska vara "il suo
-     libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
-   - Spanskans *el agua* — feminina ord på betonat /a/ tar `el` i singular.
-     Kräver en flagga på lexemet; betoningen syns inte i stavningen.
-   - Partikelverbens satsklammer i tyskan. 14 verb, fel redan i indikativen:
-     "ruft an den Bruder" ska vara "ruft den Bruder an".
-   - Och japanskan renderar enstaka verb som "たいです", där masu-formen
-     saknas och adjektivgrenen tar över.
+1. **Japanskan renderar enstaka verb som "たいです"**, där masu-formen saknas
+   och adjektivgrenen tar över. Det enda kvarvarande av de fyra språkfel
+   generatorn drog fram; de tre andra är lagade — se avsnittet nedan.
 
 2. **Nivåerna och lektionerna.** CEFR-nivån finns i `ordbok/nivålistor/*.csv`
    (397 A1, 329 A2, 15 B1 för svenska) men importerades aldrig till
