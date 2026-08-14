@@ -370,6 +370,138 @@ inte lättare av sällskap, vilket var kravet.
 Meningen behöver aldrig ett samlat betyg. **Betyget sätts per kort**,
 eftersom diffen lokaliserar felen.
 
+### Vad forskningen säger, och vad den inte säger
+
+*Utrett 2026-08-14.* Siffran 95–98 % dyker upp i litteraturen och gäller
+**extensiv läsning** (Nation, Hu & Nation): hur stor andel kända ord en
+löpande text behöver för att de okända ska gå att gissa ur sammanhanget och
+läras oavsiktligt.
+
+**Den gäller inte oss.** Tre skillnader: långa texter mot enstaka meningar,
+oavsiktligt mot avsiktligt lärande, och — det avgörande — att det okända
+ordet ska *härledas* ur kontexten. Hos oss ska det testade kortet plockas
+fram ur minnet, inte gissas.
+
+Den relevanta litteraturen är i stället *desirable difficulties* och arbetet
+om optimal felfrekvens, som landar runt **85 % rätt**. Med tio kort i en
+mening är 1–2 förväntade fel exakt det. Beslutet ovan togs innan den
+kopplingen gjordes och landade ändå rätt.
+
+### Men budgeten räcker inte — FORMEN måste också styras
+
+```
+tio kort à R=0,90                    Σ(1−R) = 1,0
+ett kort à R=0,30 + nio à R=0,98     Σ(1−R) = 0,88
+```
+
+Nästan samma budget, helt olika upplevelse. Den andra är "en sak jag
+sträcker mig efter, omgiven av fast mark"; den första är "allt vacklar
+lite". **Det är där 95 %-intuitionen överlever** — inte som en tröskel för
+förståelse utan som ett krav på fördelningen.
+
+Alltså två rattar:
+
+- **budgeten** — Σ(1−R), hur mycket motstånd totalt
+- **koncentrationen** — hur få kort som bär den
+
+Och en spridning åt motsatt håll: två kort ur SAMMA ändelsetabell i samma
+mening är interferens, inte träning. De liknar varandra för mycket för att
+gå att skilja åt, vilket är precis vad som får en att fastna på liknande
+Anki-kort i evighet. Ett negativt villkor i sökningen.
+
+### Inget privilegierat huvudkort
+
+*Avgjort 2026-08-14.* Flera förfallna kort får samsas i en mening så länge
+budgeten hålls. Det finns alltså ingen roll som "kortet meningen är till
+för" — bara en budget och en packning. All bokföring om vilket kort som var
+huvudkortet försvinner, och packningen blir en vanlig **ryggsäck**:
+maximera antalet förfallna kort som ryms under viktgränsen. Girig heuristik
+räcker till över 90 % av optimum, vilket är gott nog med marginal.
+
+### Vissa kort tvingar fram en större mening
+
+Korttypen styr meningens minsta storlek, och därmed hur mycket av budgeten
+som går åt till sådant man inte valde. Mätt på tyska:
+
+```
+konstruktion             kort   minsta mening som testar den
+intransitiv                 2   Sie schläft.
+modalverb                   3   Sie kann lesen.
+wh-fråga                    3   Was liest sie?
++ objekt                    4   Sie liest das Buch.
+perfekt (satsklammer)       5   Sie hat das Buch gelesen.
+bisats (verb sist)          5   Sie weiß, dass er kommt.
+indirekt objekt             6   Sie gibt dem Bruder das Buch.
+passiv perfekt              6   Das Buch ist gelesen worden.
+```
+
+Spannet är en faktor tre, och kostnaden hör hemma i packningen. **Men
+golvet är lågt**: fem stödkort à R≈0,95 kostar 0,25 av budgeten, så inget
+kort är så dyrt att testa att det äter utrymmet. Oron var befogad men
+utfallet litet.
+
+### En loop, inte två
+
+*Avgjort 2026-08-14.* Budgeten skulle kunna anpassa sig efter hur
+användaren presterar. **Den ska inte det.**
+
+FSRS anpassar sig redan efter personen — det är vad parameteroptimeringen
+gör. En andra adaptiv loop ovanpå ger två system som reglerar mot varandra:
+presterar du dåligt sänker FSRS intervallen *och* budgeten sjunker, vilket
+ger lättare meningar, vilket ser ut som bättre prestation. Sådana kopplade
+loopar går inte att felsöka och inte att resonera om.
+
+```
+FSRS            anpassar sig efter personen
+budgeten        en inställning med vettigt förval, användaren styr
+dagsformen      en tillfällig multiplikator, inte en inlärd parameter
+```
+
+**Och allt loggas från första dagen** — budget och utfall per mening. Vilken
+svårighetsgrad man lär sig mest av går inte att slå upp, eftersom ingen
+byggt det här systemet. Men den går att MÄTA i efterhand, och designen ska
+säkra att frågan är besvarbar i stället för gissad.
+
+---
+
+## Sökningen: sampla och poängsätt
+
+*Avgjort 2026-08-14, efter mätning.*
+
+Att välja verb, mönster, slotfyllnad och alla grammatiska parametrar så att
+budgeten träffas, förfallna kort täcks och restriktionerna hålls är i
+allmänhet ett NP-svårt problem. Det spelar ingen roll, för genomströmningen
+gör brute force möjlig:
+
+```
+41 423 kandidatmeningar per sekund
+ 3 710 färdigrenderade och restriktionsgodkända per sekund
+```
+
+**Sampla tusen kandidater, poängsätt varje, ta den bästa.** Tre tiondelar av
+en sekund. Ingen lösare behövs.
+
+Sample-and-score valdes framför en constraint-lösare av tre skäl som spelar
+roll i praktiken:
+
+- **Varje nytt villkor är en term i poängen, inte en omskrivning.**
+  Interferens, upprepning från förra meningen, variation i satstyp — allt
+  läggs på additivt.
+- **Den degraderar mjukt.** Finns ingen bra mening tas den minst dåliga, i
+  stället för att sökningen misslyckas.
+- **Den går att trimma empiriskt.** En lösare gör inte det.
+
+Priset är att optimum inte hittas. Skillnaden mellan bästa och näst bästa
+mening är omätbar för användaren.
+
+**Arbetet ligger i poängfunktionen, inte i sökningen.** Den kommer att ha
+sex–åtta termer som ska vägas mot varandra, och vikterna går bara att hitta
+genom att köra systemet. Det är där tiden kommer att gå.
+
+**R har felmarginaler.** FSRS ger en sannolikhet, och tidigt i ett korts liv
+är den grovt skattad. Att sikta på Σ = 1,4 exakt är falsk precision; målet
+är ett intervall.
+
 ---
 
 ## Attribution: vems fel var det?
@@ -476,6 +608,20 @@ bra.
 
 **Strategi: täckande med reservutgång.** Bygg meningen om det går, skjut upp
 kortet om det inte går. Förvräng aldrig en mening för att klämma in ett kort.
+
+**Ingen beroendeordning mellan kort** (2026-08-14). Frestelsen är att bygga
+logik som säger "ta kort A först, så blir kort B lättare sedan". Den ska
+motstås: den kräver en beroendemodell mellan kort som ingen kan validera,
+och den skulle ge fel svar tyst. FSRS är dessutom robust mot ordning — ett
+kort som görs lite sent är bara lite sent.
+
+Går ett kort inte att bygga en mening kring skjuts det upp och nästa tas.
+Det kommer tillbaka i nästa mening ändå. Blir det upprepat ogörbart är det
+en signal om något annat: att ordet hör tillbaka till introduktionen.
+
+**Vilka kort som ens existerar avgörs av nåbarheten.** Ett kort går att
+testa precis när dess form går att nå med `Mening` — sv 95 %, en 89 %,
+de 82 %. Kort för onåbara former ska inte skapas.
 
 **Upplåsning: automatisk tröskel, användaren får skjuta upp.** Nivån öppnas
 när tillräckligt är kunnat, men man tvingas inte börja.
