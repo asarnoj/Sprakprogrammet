@@ -705,9 +705,15 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
    `src/sprakprog/kort/`, `ordbok kort`. 24 187 kort och 124 191
    cellkopplingar härledda ur språkdatabasen och stamanalysen, och
    beroendekartan täcker varje formuppslag i alla sju språk.
-   FSRS-SCHEMALÄGGNINGEN är också byggd: `src/sprakprog/kort/schemalaggning.py`,
-   ovanpå paketet `fsrs` 6.3.2. Kvar av generatorn: poängfunktionen och
-   sökningen.
+   FSRS-SCHEMALÄGGNINGEN är byggd: `src/sprakprog/kort/schemalaggning.py`,
+   ovanpå paketet `fsrs` 6.3.2. Och GENERATORN själv:
+   `src/sprakprog/generator/` — samplare, poängfunktion och sökning, 0,18 s
+   per mening i alla sju språk.
+
+   **Vikterna i `poang.py` är en första gissning.** De går bara att hitta
+   genom att köra systemet, precis som GENERATOR.md säger. Allt loggas —
+   budget och utfall per mening — så frågan är besvarbar när det finns
+   användning att mäta mot.
 
    Kortmodellen är utredd och nedskriven i
    [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
@@ -838,6 +844,8 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `kort.sql` | inlärardatabasens schema; huvudet förklarar varför den är en egen fil |
 | `src/sprakprog/kort/befolka.py` | härleder kortbeståndet; ORDFÖLJD-listan är korttyp 4 |
 | `src/sprakprog/kort/schemalaggning.py` | FSRS-omslaget; modulhuvudet förklarar de tre besluten som är våra |
+| `src/sprakprog/generator/poang.py` | poängfunktionens sju termer, med vikterna samlade överst |
+| `src/sprakprog/generator/urval.py` | samplaren och nivåstegen |
 | `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
