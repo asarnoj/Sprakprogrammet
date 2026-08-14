@@ -204,6 +204,56 @@ Två skydd, båda sådant projektet redan gör i övrigt:
 Det värsta som kan hända med ett framtida språk är att det inte får någon
 rabatt — inte att kortmodellen blir konstig.
 
+### Stamuppsättningen, härledd 2026-08-14
+
+`ordbok/verktyg/stammar.py` räknar fram uppdelningen ur `Former` och skriver
+`ordbok/stammar.tsv` (11 479 rader) och `ordbok/ändelser.tsv` (831).
+
+```
+                    former   klasser  ändelser  stammar  rester    kort
+de/Adjektiv         16 121         1       147      275     476     898   18×
+es/Verb              9 287         3       159      913     351   1 423    7×
+it/Verb              8 996         3       156      840     520   1 516    6×
+fr/Verb              7 815         2        90      519     528   1 137    7×
+de/Verb              5 367         2        62      949     102   1 113    5×
+ja/Verb              1 671         1        10      858     183   1 051    2×
+de/Substantiv        1 500         2        12      651       1     664    2×
+──────────────────────────────────────────────────────────────────────────
+SUMMA               61 416                  831    9 013   2 466  12 310    5×
+```
+
+**61 416 former blir 12 310 kort.** Tyska adjektiv går från 16 121 till 898.
+
+Ändelsen väljs som den längsta som en tröskelandel av orden delar, med ett
+**tak på längden** — och taket är hela metoden. Utan det väljs `-sten` för
+tyskans superlativ, ett suffix som mycket riktigt återkommer men som bakar
+in gradmarkören och gör varje oregelbunden superlativ till en rest: `groß` →
+`größte` slutar inte på `-sten`. Med taket blir ändelsen `-en`, stammen
+`größt`, och alla fem superlativceller delar den.
+
+Tröskel och tak söks per språk och ordklass genom att minimera kortantalet.
+Vilket värde som är rätt beror på hur mycket språket delar och går inte att
+veta i förväg — samma hållning som resten av projektet: mät, anta inte.
+
+**Kvalitetsmåttet är var resterna hamnar.** Sprids de jämnt över lexikonet är
+analysen fel; samlas de hos de ord som faktiskt är oregelbundna är den rätt.
+
+```
+de   33 av 560 ord ger rester      värst: rosa, lila, orange (oböjliga), groß
+es   57 av 561                     värst: ser
+fr   72 av 551                     värst: être och de vanligaste oregelbundna
+```
+
+Det är utfallet man vill se: metoden hittar oregelbundenhet, den skapar den
+inte.
+
+**Resultatet är en approximation, inte en morfologisk analys.** Sökningen
+hittar inte alltid minimum — tyska adjektiv landar på 898 kort där 813
+troligen går, därför att alla celler i en grad måste byta ändelselängd
+samtidigt medan sökningen rör en åt gången. Det spelar ingen roll för
+kortmodellen: skillnaden är tio procent i en ordklass, och kortidentiteten
+bygger på konceptnyckel och stamgrupp, inte på att uppdelningen är optimal.
+
 ### Testet, i en mening
 
 Gränsdragningen går att avgöra utan att räkna, med den här frågan:

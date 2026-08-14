@@ -1,0 +1,832 @@
+språk	ordklass	klass	cell	ändelse
+sv	Substantiv	K0	best_pl_ack_dat_nom	rna
+sv	Substantiv	K0	best_pl_gen	rnas
+sv	Substantiv	K0	best_sg_ack_dat_nom	n
+sv	Substantiv	K0	best_sg_gen	ns
+sv	Substantiv	K0	obest_pl_ack_dat_nom	r
+sv	Substantiv	K0	obest_pl_gen	rs
+sv	Substantiv	K0	obest_sg_ack_dat_nom	
+sv	Substantiv	K0	obest_sg_gen	s
+sv	Substantiv	K1	best_pl_ack_dat_nom	en
+sv	Substantiv	K1	best_pl_gen	ens
+sv	Substantiv	K1	best_sg_ack_dat_nom	et
+sv	Substantiv	K1	best_sg_gen	ets
+sv	Substantiv	K1	obest_pl_ack_dat_nom	
+sv	Substantiv	K1	obest_pl_gen	s
+sv	Substantiv	K1	obest_sg_ack_dat_nom	
+sv	Substantiv	K1	obest_sg_gen	s
+sv	Substantiv	K2	best_pl_ack_dat_nom	a
+sv	Substantiv	K2	best_pl_gen	as
+sv	Substantiv	K2	best_sg_ack_dat_nom	
+sv	Substantiv	K2	best_sg_gen	s
+sv	Substantiv	K2	obest_pl_ack_dat_nom	
+sv	Substantiv	K2	obest_pl_gen	
+sv	Substantiv	K2	obest_sg_ack_dat_nom	
+sv	Substantiv	K2	obest_sg_gen	s
+sv	Verb	K0	imp	
+sv	Verb	K0	inf	
+sv	Verb	K0	inf_passiv	s
+sv	Verb	K0	perfpart_a	
+sv	Verb	K0	perfpart_obest_neu_sg	t
+sv	Verb	K0	perfpart_obest_utr_sg	
+sv	Verb	K0	pres	r
+sv	Verb	K0	pres_passiv	s
+sv	Verb	K0	pret	
+sv	Verb	K0	pret_passiv	s
+sv	Verb	K0	sup	t
+sv	Verb	K0	sup_passiv	ts
+sv	Verb	K1	imp	
+sv	Verb	K1	inf	
+sv	Verb	K1	perfpart_a	
+sv	Verb	K1	perfpart_obest_neu_sg	
+sv	Verb	K1	perfpart_obest_utr_sg	
+sv	Verb	K1	pres	
+sv	Verb	K1	pret	
+sv	Verb	K1	sup	
+sv	Adjektiv	K0	best_a_pl_pos	a
+sv	Adjektiv	K0	best_a_sg_pos	a
+sv	Adjektiv	K0	best_superl	aste
+sv	Adjektiv	K0	komp	are
+sv	Adjektiv	K0	obest_a_pl_pos	a
+sv	Adjektiv	K0	obest_f_sg_pos	t
+sv	Adjektiv	K0	obest_m_sg_pos	
+sv	Adjektiv	K0	obest_superl	ast
+sv	Adjektiv	K1	best_a_pl_pos	
+sv	Adjektiv	K1	best_a_sg_pos	
+sv	Adjektiv	K1	best_superl	sta
+sv	Adjektiv	K1	komp	re
+sv	Adjektiv	K1	obest_a_pl_pos	
+sv	Adjektiv	K1	obest_f_sg_pos	
+sv	Adjektiv	K1	obest_m_sg_pos	
+sv	Adjektiv	K1	obest_superl	st
+sv	Pronomen	K0	ack_dat	
+sv	Pronomen	K0	nom	
+sv	Possessiv	K0	a_pl	a
+sv	Possessiv	K0	f_sg	t
+sv	Possessiv	K0	m_sg	
+sv	Räkneord	K0	a_pl	
+sv	Räkneord	K0	best_a_sg	
+sv	Räkneord	K0	obest_a_sg	
+en	Substantiv	K0	pl	s
+en	Substantiv	K0	pl_gen	s'
+en	Substantiv	K0	sg	
+en	Substantiv	K0	sg_gen	's
+en	Substantiv	K1	pl	
+en	Substantiv	K1	pl_gen	's
+en	Substantiv	K1	sg	
+en	Substantiv	K1	sg_gen	's
+en	Verb	K0	gerund	ing
+en	Verb	K0	inf_imp	
+en	Verb	K0	pres_3sg	s
+en	Verb	K0	pret	ed
+en	Verb	K0	sup	ed
+en	Adjektiv	K0	komp	er
+en	Adjektiv	K0	pos	
+en	Adjektiv	K0	superl	est
+en	Pronomen	K0	nom	
+en	Pronomen	K0	obl	
+en	Possessiv	K0	best	rs
+en	Possessiv	K0	obest	r
+de	Substantiv	K0	akk_sg	
+de	Substantiv	K0	dat_pl	n
+de	Substantiv	K0	dat_sg	
+de	Substantiv	K0	gen_sg	
+de	Substantiv	K0	nom_akk_gen_pl	
+de	Substantiv	K0	nom_sg	
+de	Substantiv	K1	akk_sg	
+de	Substantiv	K1	dat_pl	s
+de	Substantiv	K1	dat_sg	
+de	Substantiv	K1	gen_sg	s
+de	Substantiv	K1	nom_akk_gen_pl	s
+de	Substantiv	K1	nom_sg	
+de	Verb	K0	imp_1pl	en
+de	Verb	K0	imp_2pl	t
+de	Verb	K0	imp_2sg	
+de	Verb	K0	imp_3sg	en
+de	Verb	K0	inf	en
+de	Verb	K0	konj1_1pl	en
+de	Verb	K0	konj1_1sg	e
+de	Verb	K0	konj1_2pl	et
+de	Verb	K0	konj1_2sg	est
+de	Verb	K0	konj1_3pl	en
+de	Verb	K0	konj1_3sg	e
+de	Verb	K0	konj2_1pl	en
+de	Verb	K0	konj2_1sg	e
+de	Verb	K0	konj2_2pl	et
+de	Verb	K0	konj2_2sg	est
+de	Verb	K0	konj2_3pl	en
+de	Verb	K0	konj2_3sg	e
+de	Verb	K0	part1	end
+de	Verb	K0	part2	
+de	Verb	K0	pres_1pl	en
+de	Verb	K0	pres_1sg	e
+de	Verb	K0	pres_2pl	t
+de	Verb	K0	pres_2sg	st
+de	Verb	K0	pres_3pl	en
+de	Verb	K0	pres_3sg	t
+de	Verb	K0	pret_1pl	en
+de	Verb	K0	pret_1sg	
+de	Verb	K0	pret_2pl	t
+de	Verb	K0	pret_2sg	st
+de	Verb	K0	pret_3pl	en
+de	Verb	K0	pret_3sg	
+de	Verb	K1	imp_1pl	
+de	Verb	K1	imp_2pl	
+de	Verb	K1	imp_2sg	
+de	Verb	K1	imp_3sg	
+de	Verb	K1	inf	en
+de	Verb	K1	konj1_1pl	
+de	Verb	K1	konj1_1sg	
+de	Verb	K1	konj1_2pl	
+de	Verb	K1	konj1_2sg	
+de	Verb	K1	konj1_3pl	
+de	Verb	K1	konj1_3sg	
+de	Verb	K1	konj2_1pl	
+de	Verb	K1	konj2_1sg	
+de	Verb	K1	konj2_2pl	
+de	Verb	K1	konj2_2sg	
+de	Verb	K1	konj2_3pl	
+de	Verb	K1	konj2_3sg	
+de	Verb	K1	part1	end
+de	Verb	K1	part2	
+de	Verb	K1	pres_1pl	
+de	Verb	K1	pres_1sg	
+de	Verb	K1	pres_2pl	
+de	Verb	K1	pres_2sg	
+de	Verb	K1	pres_3pl	
+de	Verb	K1	pres_3sg	
+de	Verb	K1	pret_1pl	
+de	Verb	K1	pret_1sg	
+de	Verb	K1	pret_2pl	
+de	Verb	K1	pret_2sg	
+de	Verb	K1	pret_3pl	
+de	Verb	K1	pret_3sg	
+de	Adjektiv	K0	komp_bland_f_akk	ere
+de	Adjektiv	K0	komp_bland_f_dat	eren
+de	Adjektiv	K0	komp_bland_f_gen	eren
+de	Adjektiv	K0	komp_bland_f_nom	ere
+de	Adjektiv	K0	komp_bland_m_akk	eren
+de	Adjektiv	K0	komp_bland_m_dat	eren
+de	Adjektiv	K0	komp_bland_m_gen	eren
+de	Adjektiv	K0	komp_bland_m_nom	erer
+de	Adjektiv	K0	komp_bland_n_akk	eres
+de	Adjektiv	K0	komp_bland_n_dat	eren
+de	Adjektiv	K0	komp_bland_n_gen	eren
+de	Adjektiv	K0	komp_bland_n_nom	eres
+de	Adjektiv	K0	komp_bland_pl_akk	eren
+de	Adjektiv	K0	komp_bland_pl_dat	eren
+de	Adjektiv	K0	komp_bland_pl_gen	eren
+de	Adjektiv	K0	komp_bland_pl_nom	eren
+de	Adjektiv	K0	komp_stark_f_akk	ere
+de	Adjektiv	K0	komp_stark_f_dat	erer
+de	Adjektiv	K0	komp_stark_f_gen	erer
+de	Adjektiv	K0	komp_stark_f_nom	ere
+de	Adjektiv	K0	komp_stark_m_akk	eren
+de	Adjektiv	K0	komp_stark_m_dat	erem
+de	Adjektiv	K0	komp_stark_m_gen	eren
+de	Adjektiv	K0	komp_stark_m_nom	erer
+de	Adjektiv	K0	komp_stark_n_akk	eres
+de	Adjektiv	K0	komp_stark_n_dat	erem
+de	Adjektiv	K0	komp_stark_n_gen	eren
+de	Adjektiv	K0	komp_stark_n_nom	eres
+de	Adjektiv	K0	komp_stark_pl_akk	ere
+de	Adjektiv	K0	komp_stark_pl_dat	eren
+de	Adjektiv	K0	komp_stark_pl_gen	erer
+de	Adjektiv	K0	komp_stark_pl_nom	ere
+de	Adjektiv	K0	komp_svag_f_akk	ere
+de	Adjektiv	K0	komp_svag_f_dat	eren
+de	Adjektiv	K0	komp_svag_f_gen	eren
+de	Adjektiv	K0	komp_svag_f_nom	ere
+de	Adjektiv	K0	komp_svag_m_akk	eren
+de	Adjektiv	K0	komp_svag_m_dat	eren
+de	Adjektiv	K0	komp_svag_m_gen	eren
+de	Adjektiv	K0	komp_svag_m_nom	ere
+de	Adjektiv	K0	komp_svag_n_akk	ere
+de	Adjektiv	K0	komp_svag_n_dat	eren
+de	Adjektiv	K0	komp_svag_n_gen	eren
+de	Adjektiv	K0	komp_svag_n_nom	ere
+de	Adjektiv	K0	komp_svag_pl_akk	eren
+de	Adjektiv	K0	komp_svag_pl_dat	eren
+de	Adjektiv	K0	komp_svag_pl_gen	eren
+de	Adjektiv	K0	komp_svag_pl_nom	eren
+de	Adjektiv	K0	pos_bland_f_akk	e
+de	Adjektiv	K0	pos_bland_f_dat	en
+de	Adjektiv	K0	pos_bland_f_gen	en
+de	Adjektiv	K0	pos_bland_f_nom	e
+de	Adjektiv	K0	pos_bland_m_akk	en
+de	Adjektiv	K0	pos_bland_m_dat	en
+de	Adjektiv	K0	pos_bland_m_gen	en
+de	Adjektiv	K0	pos_bland_m_nom	er
+de	Adjektiv	K0	pos_bland_n_akk	es
+de	Adjektiv	K0	pos_bland_n_dat	en
+de	Adjektiv	K0	pos_bland_n_gen	en
+de	Adjektiv	K0	pos_bland_n_nom	es
+de	Adjektiv	K0	pos_bland_pl_akk	en
+de	Adjektiv	K0	pos_bland_pl_dat	en
+de	Adjektiv	K0	pos_bland_pl_gen	en
+de	Adjektiv	K0	pos_bland_pl_nom	en
+de	Adjektiv	K0	pos_stark_f_akk	e
+de	Adjektiv	K0	pos_stark_f_dat	er
+de	Adjektiv	K0	pos_stark_f_gen	er
+de	Adjektiv	K0	pos_stark_f_nom	e
+de	Adjektiv	K0	pos_stark_m_akk	en
+de	Adjektiv	K0	pos_stark_m_dat	em
+de	Adjektiv	K0	pos_stark_m_gen	en
+de	Adjektiv	K0	pos_stark_m_nom	er
+de	Adjektiv	K0	pos_stark_n_akk	es
+de	Adjektiv	K0	pos_stark_n_dat	em
+de	Adjektiv	K0	pos_stark_n_gen	en
+de	Adjektiv	K0	pos_stark_n_nom	es
+de	Adjektiv	K0	pos_stark_pl_akk	e
+de	Adjektiv	K0	pos_stark_pl_dat	en
+de	Adjektiv	K0	pos_stark_pl_gen	er
+de	Adjektiv	K0	pos_stark_pl_nom	e
+de	Adjektiv	K0	pos_svag_f_akk	e
+de	Adjektiv	K0	pos_svag_f_dat	en
+de	Adjektiv	K0	pos_svag_f_gen	en
+de	Adjektiv	K0	pos_svag_f_nom	e
+de	Adjektiv	K0	pos_svag_m_akk	en
+de	Adjektiv	K0	pos_svag_m_dat	en
+de	Adjektiv	K0	pos_svag_m_gen	en
+de	Adjektiv	K0	pos_svag_m_nom	e
+de	Adjektiv	K0	pos_svag_n_akk	e
+de	Adjektiv	K0	pos_svag_n_dat	en
+de	Adjektiv	K0	pos_svag_n_gen	en
+de	Adjektiv	K0	pos_svag_n_nom	e
+de	Adjektiv	K0	pos_svag_pl_akk	en
+de	Adjektiv	K0	pos_svag_pl_dat	en
+de	Adjektiv	K0	pos_svag_pl_gen	en
+de	Adjektiv	K0	pos_svag_pl_nom	en
+de	Adjektiv	K0	pred	
+de	Adjektiv	K0	pred_komp	er
+de	Adjektiv	K0	pred_superl	sten
+de	Adjektiv	K0	superl_bland_f_akk	ste
+de	Adjektiv	K0	superl_bland_f_dat	sten
+de	Adjektiv	K0	superl_bland_f_gen	sten
+de	Adjektiv	K0	superl_bland_f_nom	ste
+de	Adjektiv	K0	superl_bland_m_akk	sten
+de	Adjektiv	K0	superl_bland_m_dat	sten
+de	Adjektiv	K0	superl_bland_m_gen	sten
+de	Adjektiv	K0	superl_bland_m_nom	ster
+de	Adjektiv	K0	superl_bland_n_akk	stes
+de	Adjektiv	K0	superl_bland_n_dat	sten
+de	Adjektiv	K0	superl_bland_n_gen	sten
+de	Adjektiv	K0	superl_bland_n_nom	stes
+de	Adjektiv	K0	superl_bland_pl_akk	sten
+de	Adjektiv	K0	superl_bland_pl_dat	sten
+de	Adjektiv	K0	superl_bland_pl_gen	sten
+de	Adjektiv	K0	superl_bland_pl_nom	sten
+de	Adjektiv	K0	superl_stark_f_akk	ste
+de	Adjektiv	K0	superl_stark_f_dat	ster
+de	Adjektiv	K0	superl_stark_f_gen	ster
+de	Adjektiv	K0	superl_stark_f_nom	ste
+de	Adjektiv	K0	superl_stark_m_akk	sten
+de	Adjektiv	K0	superl_stark_m_dat	stem
+de	Adjektiv	K0	superl_stark_m_gen	sten
+de	Adjektiv	K0	superl_stark_m_nom	ster
+de	Adjektiv	K0	superl_stark_n_akk	stes
+de	Adjektiv	K0	superl_stark_n_dat	stem
+de	Adjektiv	K0	superl_stark_n_gen	sten
+de	Adjektiv	K0	superl_stark_n_nom	stes
+de	Adjektiv	K0	superl_stark_pl_akk	ste
+de	Adjektiv	K0	superl_stark_pl_dat	sten
+de	Adjektiv	K0	superl_stark_pl_gen	ster
+de	Adjektiv	K0	superl_stark_pl_nom	ste
+de	Adjektiv	K0	superl_svag_f_akk	ste
+de	Adjektiv	K0	superl_svag_f_dat	sten
+de	Adjektiv	K0	superl_svag_f_gen	sten
+de	Adjektiv	K0	superl_svag_f_nom	ste
+de	Adjektiv	K0	superl_svag_m_akk	sten
+de	Adjektiv	K0	superl_svag_m_dat	sten
+de	Adjektiv	K0	superl_svag_m_gen	sten
+de	Adjektiv	K0	superl_svag_m_nom	ste
+de	Adjektiv	K0	superl_svag_n_akk	ste
+de	Adjektiv	K0	superl_svag_n_dat	sten
+de	Adjektiv	K0	superl_svag_n_gen	sten
+de	Adjektiv	K0	superl_svag_n_nom	ste
+de	Adjektiv	K0	superl_svag_pl_akk	sten
+de	Adjektiv	K0	superl_svag_pl_dat	sten
+de	Adjektiv	K0	superl_svag_pl_gen	sten
+de	Adjektiv	K0	superl_svag_pl_nom	sten
+de	Pronomen	K0	akk	
+de	Pronomen	K0	dat	
+de	Pronomen	K0	gen	er
+de	Pronomen	K0	nom	
+de	Possessiv	K0	f_akk	re
+de	Possessiv	K0	f_dat	rer
+de	Possessiv	K0	f_gen	rer
+de	Possessiv	K0	f_nom	re
+de	Possessiv	K0	m_akk	ren
+de	Possessiv	K0	m_dat	rem
+de	Possessiv	K0	m_gen	res
+de	Possessiv	K0	m_nom	r
+de	Possessiv	K0	n_akk	r
+de	Possessiv	K0	n_dat	rem
+de	Possessiv	K0	n_gen	res
+de	Possessiv	K0	n_nom	r
+de	Possessiv	K0	pl_akk	re
+de	Possessiv	K0	pl_dat	ren
+de	Possessiv	K0	pl_gen	rer
+de	Possessiv	K0	pl_nom	re
+fr	Substantiv	K0	pl	s
+fr	Substantiv	K0	sg	
+fr	Substantiv	K1	pl	x
+fr	Substantiv	K1	sg	
+fr	Substantiv	K2	pl	
+fr	Substantiv	K2	sg	
+fr	Verb	K0	fut_1pl	erons
+fr	Verb	K0	fut_1sg	erai
+fr	Verb	K0	fut_2pl	erez
+fr	Verb	K0	fut_2sg	eras
+fr	Verb	K0	fut_3pl	eront
+fr	Verb	K0	fut_3sg	era
+fr	Verb	K0	imp_1pl	ons
+fr	Verb	K0	imp_2pl	ez
+fr	Verb	K0	imp_2sg	e
+fr	Verb	K0	imperf_1pl	ions
+fr	Verb	K0	imperf_1sg	ais
+fr	Verb	K0	imperf_2pl	iez
+fr	Verb	K0	imperf_2sg	ais
+fr	Verb	K0	imperf_3pl	aient
+fr	Verb	K0	imperf_3sg	ait
+fr	Verb	K0	inf	er
+fr	Verb	K0	kond_1pl	erions
+fr	Verb	K0	kond_1sg	erais
+fr	Verb	K0	kond_2pl	eriez
+fr	Verb	K0	kond_2sg	erais
+fr	Verb	K0	kond_3pl	raient
+fr	Verb	K0	kond_3sg	erait
+fr	Verb	K0	pp_fem_pl	ées
+fr	Verb	K0	pp_fem_sg	ée
+fr	Verb	K0	pp_msc_pl	és
+fr	Verb	K0	pp_msc_sg	é
+fr	Verb	K0	pres_1pl	ons
+fr	Verb	K0	pres_1sg	e
+fr	Verb	K0	pres_2pl	ez
+fr	Verb	K0	pres_2sg	es
+fr	Verb	K0	pres_3pl	ent
+fr	Verb	K0	pres_3sg	e
+fr	Verb	K0	pres_part	ant
+fr	Verb	K0	pret_1pl	âmes
+fr	Verb	K0	pret_1sg	ai
+fr	Verb	K0	pret_2pl	âtes
+fr	Verb	K0	pret_2sg	as
+fr	Verb	K0	pret_3pl	èrent
+fr	Verb	K0	pret_3sg	a
+fr	Verb	K0	subj_1pl	ions
+fr	Verb	K0	subj_1sg	e
+fr	Verb	K0	subj_2pl	iez
+fr	Verb	K0	subj_2sg	es
+fr	Verb	K0	subj_3pl	ent
+fr	Verb	K0	subj_3sg	e
+fr	Verb	K1	fut_1pl	rons
+fr	Verb	K1	fut_1sg	rai
+fr	Verb	K1	fut_2pl	rez
+fr	Verb	K1	fut_2sg	ras
+fr	Verb	K1	fut_3pl	ront
+fr	Verb	K1	fut_3sg	ra
+fr	Verb	K1	imp_1pl	ons
+fr	Verb	K1	imp_2pl	ez
+fr	Verb	K1	imp_2sg	s
+fr	Verb	K1	imperf_1pl	ions
+fr	Verb	K1	imperf_1sg	ais
+fr	Verb	K1	imperf_2pl	iez
+fr	Verb	K1	imperf_2sg	ais
+fr	Verb	K1	imperf_3pl	aient
+fr	Verb	K1	imperf_3sg	ait
+fr	Verb	K1	inf	e
+fr	Verb	K1	kond_1pl	rions
+fr	Verb	K1	kond_1sg	rais
+fr	Verb	K1	kond_2pl	riez
+fr	Verb	K1	kond_2sg	rais
+fr	Verb	K1	kond_3pl	raient
+fr	Verb	K1	kond_3sg	rait
+fr	Verb	K1	pp_fem_pl	es
+fr	Verb	K1	pp_fem_sg	e
+fr	Verb	K1	pp_msc_pl	s
+fr	Verb	K1	pp_msc_sg	
+fr	Verb	K1	pres_1pl	ons
+fr	Verb	K1	pres_1sg	s
+fr	Verb	K1	pres_2pl	ez
+fr	Verb	K1	pres_2sg	s
+fr	Verb	K1	pres_3pl	ent
+fr	Verb	K1	pres_3sg	t
+fr	Verb	K1	pres_part	ant
+fr	Verb	K1	pret_1pl	îmes
+fr	Verb	K1	pret_1sg	is
+fr	Verb	K1	pret_2pl	îtes
+fr	Verb	K1	pret_2sg	is
+fr	Verb	K1	pret_3pl	irent
+fr	Verb	K1	pret_3sg	it
+fr	Verb	K1	subj_1pl	ions
+fr	Verb	K1	subj_1sg	e
+fr	Verb	K1	subj_2pl	iez
+fr	Verb	K1	subj_2sg	es
+fr	Verb	K1	subj_3pl	ent
+fr	Verb	K1	subj_3sg	e
+fr	Adjektiv	K0	pos_fem_pl	es
+fr	Adjektiv	K0	pos_fem_sg	e
+fr	Adjektiv	K0	pos_msc_pl	s
+fr	Adjektiv	K0	pos_msc_sg	
+fr	Pronomen	K0	cod	
+fr	Pronomen	K0	coi	
+fr	Pronomen	K0	sujet	
+fr	Pronomen	K0	tonique	
+fr	Possessiv	K0	best_f_pl	s
+fr	Possessiv	K0	best_f_sg	
+fr	Possessiv	K0	best_m_pl	s
+fr	Possessiv	K0	best_m_sg	
+fr	Possessiv	K0	obest_a_pl	s
+fr	Possessiv	K0	obest_f_sg	
+fr	Possessiv	K0	obest_m_sg	
+es	Substantiv	K0	pl	s
+es	Substantiv	K0	sg	
+es	Verb	K0	fut_1pl	aremos
+es	Verb	K0	fut_1sg	aré
+es	Verb	K0	fut_2pl	aréis
+es	Verb	K0	fut_2sg	arás
+es	Verb	K0	fut_3pl	arán
+es	Verb	K0	fut_3sg	ará
+es	Verb	K0	gerundio	ando
+es	Verb	K0	imp_1pl	emos
+es	Verb	K0	imp_2pl	ad
+es	Verb	K0	imp_2sg	a
+es	Verb	K0	imp_3pl	en
+es	Verb	K0	imp_3sg	e
+es	Verb	K0	imperf_1pl	ábamos
+es	Verb	K0	imperf_1sg	aba
+es	Verb	K0	imperf_2pl	abais
+es	Verb	K0	imperf_2sg	abas
+es	Verb	K0	imperf_3pl	aban
+es	Verb	K0	imperf_3sg	aba
+es	Verb	K0	inf	ar
+es	Verb	K0	kond_1pl	ríamos
+es	Verb	K0	kond_1sg	aría
+es	Verb	K0	kond_2pl	aríais
+es	Verb	K0	kond_2sg	arías
+es	Verb	K0	kond_3pl	arían
+es	Verb	K0	kond_3sg	aría
+es	Verb	K0	pp_fem_pl	adas
+es	Verb	K0	pp_fem_sg	ada
+es	Verb	K0	pp_msc_pl	ados
+es	Verb	K0	pp_msc_sg	ado
+es	Verb	K0	pres_1pl	amos
+es	Verb	K0	pres_1sg	o
+es	Verb	K0	pres_2pl	áis
+es	Verb	K0	pres_2sg	as
+es	Verb	K0	pres_3pl	an
+es	Verb	K0	pres_3sg	a
+es	Verb	K0	pret_1pl	amos
+es	Verb	K0	pret_1sg	é
+es	Verb	K0	pret_2pl	asteis
+es	Verb	K0	pret_2sg	aste
+es	Verb	K0	pret_3pl	aron
+es	Verb	K0	pret_3sg	ó
+es	Verb	K0	subj_1pl	emos
+es	Verb	K0	subj_1sg	e
+es	Verb	K0	subj_2pl	éis
+es	Verb	K0	subj_2sg	es
+es	Verb	K0	subj_3pl	en
+es	Verb	K0	subj_3sg	e
+es	Verb	K0	subj_imperf_1pl	áramos
+es	Verb	K0	subj_imperf_1sg	ara
+es	Verb	K0	subj_imperf_2pl	arais
+es	Verb	K0	subj_imperf_2sg	aras
+es	Verb	K0	subj_imperf_3pl	aran
+es	Verb	K0	subj_imperf_3sg	ara
+es	Verb	K1	fut_1pl	remos
+es	Verb	K1	fut_1sg	ré
+es	Verb	K1	fut_2pl	réis
+es	Verb	K1	fut_2sg	rás
+es	Verb	K1	fut_3pl	rán
+es	Verb	K1	fut_3sg	rá
+es	Verb	K1	gerundio	iendo
+es	Verb	K1	imp_1pl	amos
+es	Verb	K1	imp_2pl	d
+es	Verb	K1	imp_2sg	e
+es	Verb	K1	imp_3pl	an
+es	Verb	K1	imp_3sg	a
+es	Verb	K1	imperf_1pl	íamos
+es	Verb	K1	imperf_1sg	ía
+es	Verb	K1	imperf_2pl	íais
+es	Verb	K1	imperf_2sg	ías
+es	Verb	K1	imperf_3pl	ían
+es	Verb	K1	imperf_3sg	ía
+es	Verb	K1	inf	er
+es	Verb	K1	kond_1pl	ríamos
+es	Verb	K1	kond_1sg	ría
+es	Verb	K1	kond_2pl	ríais
+es	Verb	K1	kond_2sg	rías
+es	Verb	K1	kond_3pl	rían
+es	Verb	K1	kond_3sg	ría
+es	Verb	K1	pp_fem_pl	idas
+es	Verb	K1	pp_fem_sg	ida
+es	Verb	K1	pp_msc_pl	idos
+es	Verb	K1	pp_msc_sg	ido
+es	Verb	K1	pres_1pl	emos
+es	Verb	K1	pres_1sg	o
+es	Verb	K1	pres_2pl	is
+es	Verb	K1	pres_2sg	es
+es	Verb	K1	pres_3pl	en
+es	Verb	K1	pres_3sg	e
+es	Verb	K1	pret_1pl	imos
+es	Verb	K1	pret_1sg	í
+es	Verb	K1	pret_2pl	isteis
+es	Verb	K1	pret_2sg	iste
+es	Verb	K1	pret_3pl	ieron
+es	Verb	K1	pret_3sg	ió
+es	Verb	K1	subj_1pl	amos
+es	Verb	K1	subj_1sg	a
+es	Verb	K1	subj_2pl	áis
+es	Verb	K1	subj_2sg	as
+es	Verb	K1	subj_3pl	an
+es	Verb	K1	subj_3sg	a
+es	Verb	K1	subj_imperf_1pl	éramos
+es	Verb	K1	subj_imperf_1sg	iera
+es	Verb	K1	subj_imperf_2pl	ierais
+es	Verb	K1	subj_imperf_2sg	ieras
+es	Verb	K1	subj_imperf_3pl	ieran
+es	Verb	K1	subj_imperf_3sg	iera
+es	Verb	K2	fut_1pl	
+es	Verb	K2	fut_1sg	
+es	Verb	K2	fut_2pl	
+es	Verb	K2	fut_2sg	
+es	Verb	K2	fut_3pl	
+es	Verb	K2	fut_3sg	
+es	Verb	K2	gerundio	
+es	Verb	K2	imp_1pl	
+es	Verb	K2	imp_2pl	
+es	Verb	K2	imp_2sg	
+es	Verb	K2	imp_3pl	
+es	Verb	K2	imp_3sg	
+es	Verb	K2	imperf_1pl	
+es	Verb	K2	imperf_1sg	
+es	Verb	K2	imperf_2pl	
+es	Verb	K2	imperf_2sg	
+es	Verb	K2	imperf_3pl	
+es	Verb	K2	imperf_3sg	
+es	Verb	K2	inf	
+es	Verb	K2	kond_1pl	
+es	Verb	K2	kond_1sg	
+es	Verb	K2	kond_2pl	
+es	Verb	K2	kond_2sg	
+es	Verb	K2	kond_3pl	
+es	Verb	K2	kond_3sg	
+es	Verb	K2	pp_fem_pl	
+es	Verb	K2	pp_fem_sg	
+es	Verb	K2	pp_msc_pl	
+es	Verb	K2	pp_msc_sg	
+es	Verb	K2	pres_1pl	
+es	Verb	K2	pres_1sg	
+es	Verb	K2	pres_2pl	
+es	Verb	K2	pres_2sg	
+es	Verb	K2	pres_3pl	
+es	Verb	K2	pres_3sg	
+es	Verb	K2	pret_1pl	
+es	Verb	K2	pret_1sg	
+es	Verb	K2	pret_2pl	
+es	Verb	K2	pret_2sg	
+es	Verb	K2	pret_3pl	
+es	Verb	K2	pret_3sg	
+es	Verb	K2	subj_1pl	
+es	Verb	K2	subj_1sg	
+es	Verb	K2	subj_2pl	
+es	Verb	K2	subj_2sg	
+es	Verb	K2	subj_3pl	
+es	Verb	K2	subj_3sg	
+es	Verb	K2	subj_imperf_1pl	
+es	Verb	K2	subj_imperf_1sg	
+es	Verb	K2	subj_imperf_2pl	
+es	Verb	K2	subj_imperf_2sg	
+es	Verb	K2	subj_imperf_3pl	
+es	Verb	K2	subj_imperf_3sg	
+es	Adjektiv	K0	komp_fem_pl	ores
+es	Adjektiv	K0	komp_fem_sg	or
+es	Adjektiv	K0	komp_msc_pl	ores
+es	Adjektiv	K0	komp_msc_sg	or
+es	Adjektiv	K0	pos_fem_pl	as
+es	Adjektiv	K0	pos_fem_sg	a
+es	Adjektiv	K0	pos_msc_pl	os
+es	Adjektiv	K0	pos_msc_sg	o
+es	Adjektiv	K0	superl_fem_pl	ores
+es	Adjektiv	K0	superl_fem_sg	or
+es	Adjektiv	K0	superl_msc_pl	ores
+es	Adjektiv	K0	superl_msc_sg	or
+es	Adjektiv	K1	pos_fem_pl	es
+es	Adjektiv	K1	pos_fem_sg	
+es	Adjektiv	K1	pos_msc_pl	es
+es	Adjektiv	K1	pos_msc_sg	
+es	Pronomen	K0	cod	
+es	Pronomen	K0	coi	
+es	Pronomen	K0	sujeto	
+es	Pronomen	K0	tonico	
+es	Possessiv	K0	best_f_pl	uyas
+es	Possessiv	K0	best_f_sg	uya
+es	Possessiv	K0	best_m_pl	uyos
+es	Possessiv	K0	best_m_sg	uyo
+es	Possessiv	K0	obest_f_pl	us
+es	Possessiv	K0	obest_f_sg	u
+es	Possessiv	K0	obest_m_pl	us
+es	Possessiv	K0	obest_m_sg	u
+es	Räkneord	K0	f_sg	a
+es	Räkneord	K0	m_sg	o
+it	Substantiv	K0	pl	
+it	Substantiv	K0	sg	
+it	Verb	K0	fut_1pl	eremo
+it	Verb	K0	fut_1sg	erò
+it	Verb	K0	fut_2pl	erete
+it	Verb	K0	fut_2sg	erai
+it	Verb	K0	fut_3pl	eranno
+it	Verb	K0	fut_3sg	erà
+it	Verb	K0	gerundio	ando
+it	Verb	K0	imp_1pl	iamo
+it	Verb	K0	imp_2pl	ate
+it	Verb	K0	imp_2sg	a
+it	Verb	K0	imp_3sg	i
+it	Verb	K0	imperf_1pl	avamo
+it	Verb	K0	imperf_1sg	avo
+it	Verb	K0	imperf_2pl	avate
+it	Verb	K0	imperf_2sg	avi
+it	Verb	K0	imperf_3pl	avano
+it	Verb	K0	imperf_3sg	ava
+it	Verb	K0	inf	are
+it	Verb	K0	kond_1pl	eremmo
+it	Verb	K0	kond_1sg	erei
+it	Verb	K0	kond_2pl	ereste
+it	Verb	K0	kond_2sg	eresti
+it	Verb	K0	kond_3pl	ebbero
+it	Verb	K0	kond_3sg	erebbe
+it	Verb	K0	pp_fem_pl	ate
+it	Verb	K0	pp_fem_sg	ata
+it	Verb	K0	pp_msc_pl	ati
+it	Verb	K0	pp_msc_sg	ato
+it	Verb	K0	pres_1pl	iamo
+it	Verb	K0	pres_1sg	o
+it	Verb	K0	pres_2pl	ate
+it	Verb	K0	pres_2sg	i
+it	Verb	K0	pres_3pl	ano
+it	Verb	K0	pres_3sg	a
+it	Verb	K0	pret_1pl	ammo
+it	Verb	K0	pret_1sg	ai
+it	Verb	K0	pret_2pl	aste
+it	Verb	K0	pret_2sg	asti
+it	Verb	K0	pret_3pl	arono
+it	Verb	K0	pret_3sg	ò
+it	Verb	K0	subj_1pl	iamo
+it	Verb	K0	subj_1sg	i
+it	Verb	K0	subj_2pl	iate
+it	Verb	K0	subj_2sg	i
+it	Verb	K0	subj_3pl	ino
+it	Verb	K0	subj_3sg	i
+it	Verb	K0	subj_imperf_1pl	assimo
+it	Verb	K0	subj_imperf_1sg	assi
+it	Verb	K0	subj_imperf_2pl	aste
+it	Verb	K0	subj_imperf_2sg	assi
+it	Verb	K0	subj_imperf_3pl	assero
+it	Verb	K0	subj_imperf_3sg	asse
+it	Verb	K1	fut_1pl	remo
+it	Verb	K1	fut_1sg	rò
+it	Verb	K1	fut_2pl	rete
+it	Verb	K1	fut_2sg	rai
+it	Verb	K1	fut_3pl	ranno
+it	Verb	K1	fut_3sg	rà
+it	Verb	K1	gerundio	endo
+it	Verb	K1	imp_1pl	iamo
+it	Verb	K1	imp_2pl	ete
+it	Verb	K1	imp_2sg	i
+it	Verb	K1	imp_3sg	a
+it	Verb	K1	imperf_1pl	evamo
+it	Verb	K1	imperf_1sg	evo
+it	Verb	K1	imperf_2pl	evate
+it	Verb	K1	imperf_2sg	evi
+it	Verb	K1	imperf_3pl	evano
+it	Verb	K1	imperf_3sg	eva
+it	Verb	K1	inf	ere
+it	Verb	K1	kond_1pl	remmo
+it	Verb	K1	kond_1sg	rei
+it	Verb	K1	kond_2pl	reste
+it	Verb	K1	kond_2sg	resti
+it	Verb	K1	kond_3pl	ebbero
+it	Verb	K1	kond_3sg	rebbe
+it	Verb	K1	pp_fem_pl	te
+it	Verb	K1	pp_fem_sg	ta
+it	Verb	K1	pp_msc_pl	ti
+it	Verb	K1	pp_msc_sg	to
+it	Verb	K1	pres_1pl	iamo
+it	Verb	K1	pres_1sg	o
+it	Verb	K1	pres_2pl	ete
+it	Verb	K1	pres_2sg	i
+it	Verb	K1	pres_3pl	ono
+it	Verb	K1	pres_3sg	e
+it	Verb	K1	pret_1pl	emmo
+it	Verb	K1	pret_1sg	i
+it	Verb	K1	pret_2pl	este
+it	Verb	K1	pret_2sg	esti
+it	Verb	K1	pret_3pl	ero
+it	Verb	K1	pret_3sg	e
+it	Verb	K1	subj_1pl	iamo
+it	Verb	K1	subj_1sg	a
+it	Verb	K1	subj_2pl	iate
+it	Verb	K1	subj_2sg	a
+it	Verb	K1	subj_3pl	ano
+it	Verb	K1	subj_3sg	a
+it	Verb	K1	subj_imperf_1pl	essimo
+it	Verb	K1	subj_imperf_1sg	essi
+it	Verb	K1	subj_imperf_2pl	este
+it	Verb	K1	subj_imperf_2sg	essi
+it	Verb	K1	subj_imperf_3pl	essero
+it	Verb	K1	subj_imperf_3sg	esse
+it	Verb	K2	fut_1pl	
+it	Verb	K2	fut_1sg	
+it	Verb	K2	fut_2pl	
+it	Verb	K2	fut_2sg	
+it	Verb	K2	fut_3pl	
+it	Verb	K2	fut_3sg	
+it	Verb	K2	gerundio	
+it	Verb	K2	imp_1pl	
+it	Verb	K2	imp_2pl	
+it	Verb	K2	imp_2sg	
+it	Verb	K2	imp_3sg	
+it	Verb	K2	imperf_1pl	
+it	Verb	K2	imperf_1sg	
+it	Verb	K2	imperf_2pl	
+it	Verb	K2	imperf_2sg	
+it	Verb	K2	imperf_3pl	
+it	Verb	K2	imperf_3sg	
+it	Verb	K2	inf	
+it	Verb	K2	kond_1pl	
+it	Verb	K2	kond_1sg	
+it	Verb	K2	kond_2pl	
+it	Verb	K2	kond_2sg	
+it	Verb	K2	kond_3pl	
+it	Verb	K2	kond_3sg	
+it	Verb	K2	pp_fem_pl	
+it	Verb	K2	pp_fem_sg	
+it	Verb	K2	pp_msc_pl	
+it	Verb	K2	pp_msc_sg	
+it	Verb	K2	pres_1pl	
+it	Verb	K2	pres_1sg	
+it	Verb	K2	pres_2pl	
+it	Verb	K2	pres_2sg	
+it	Verb	K2	pres_3pl	
+it	Verb	K2	pres_3sg	
+it	Verb	K2	pret_1pl	
+it	Verb	K2	pret_1sg	
+it	Verb	K2	pret_2pl	
+it	Verb	K2	pret_2sg	
+it	Verb	K2	pret_3pl	
+it	Verb	K2	pret_3sg	
+it	Verb	K2	subj_1pl	
+it	Verb	K2	subj_1sg	
+it	Verb	K2	subj_2pl	
+it	Verb	K2	subj_2sg	
+it	Verb	K2	subj_3pl	
+it	Verb	K2	subj_3sg	
+it	Verb	K2	subj_imperf_1pl	
+it	Verb	K2	subj_imperf_1sg	
+it	Verb	K2	subj_imperf_2pl	
+it	Verb	K2	subj_imperf_2sg	
+it	Verb	K2	subj_imperf_3pl	
+it	Verb	K2	subj_imperf_3sg	
+it	Adjektiv	K0	komp_pl	i
+it	Adjektiv	K0	komp_sg	e
+it	Adjektiv	K0	pos_fem_pl	e
+it	Adjektiv	K0	pos_fem_sg	a
+it	Adjektiv	K0	pos_msc_pl	i
+it	Adjektiv	K0	pos_msc_sg	o
+it	Adjektiv	K0	superl_pl	i
+it	Adjektiv	K0	superl_sg	e
+it	Adjektiv	K1	pos_fem_pl	i
+it	Adjektiv	K1	pos_fem_sg	e
+it	Adjektiv	K1	pos_msc_pl	i
+it	Adjektiv	K1	pos_msc_sg	e
+it	Pronomen	K0	cod	i
+it	Pronomen	K0	coi	i
+it	Pronomen	K0	soggetto	i
+it	Pronomen	K0	tonico	i
+it	Possessiv	K0	f_pl	e
+it	Possessiv	K0	f_sg	a
+it	Possessiv	K0	m_pl	i
+it	Possessiv	K0	m_sg	o
+it	Räkneord	K0	f_sg	a
+it	Räkneord	K0	m_sg	o
+ja	Verb	K0	imp	
+ja	Verb	K0	jisho	る
+ja	Verb	K0	kond	れば
+ja	Verb	K0	masu	ます
+ja	Verb	K0	nai	ない
+ja	Verb	K0	pot	る
+ja	Verb	K0	ta	た
+ja	Verb	K0	te	て
+ja	Verb	K0	ukemi	れる
+ja	Verb	K0	vol	う
+ja	Adjektiv	K0	jisho	い
+ja	Adjektiv	K0	kereba	ければ
+ja	Adjektiv	K0	ku	く
+ja	Adjektiv	K0	nai	くない
+ja	Adjektiv	K0	ta	かった
+ja	Adjektiv	K1	jisho	
+ja	Adjektiv	K1	kereba	なら
+ja	Adjektiv	K1	ku	に
+ja	Adjektiv	K1	nai	ではない
+ja	Adjektiv	K1	ta	だった
