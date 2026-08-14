@@ -22,7 +22,7 @@ som styr vilka ord som får kombineras.
 ## Var vi står
 
 **Datalagret, renderaren och restriktionerna är klara. Meningsformen är
-utbyggd genom tjugoen nivåer — **stegen är slut**. Generatorn är inte byggd.**
+utbyggd genom tjugoen nivåer — stegen är slut. Generatorn är inte byggd.**
 
 ```
 Koncept        736        Mönster        271   (universella
@@ -114,8 +114,8 @@ ja  1 472 / 2 498   59 %      fr  6 650 /  9 070   73 %
                               es  7 114 / 10 608   67 %
 ```
 
-Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
-Japanskan: 31 % → 45 % (imperativ) → **58 %** (bisatser).
+Svenskan: 37 % → 45 % (genitiv) → 71 % → 80 % → **95 %**.
+Japanskan: 31 % → 45 % (imperativ) → **59 %** (bisatser).
 
 **Siffran mäter svepet lika mycket som specen — FYRA gånger har svepet varit
 det som begränsade**, och varje gång såg det ut som en spec-brist:
