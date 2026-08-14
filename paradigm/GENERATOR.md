@@ -1,7 +1,7 @@
 # Meningsgeneratorn och kortmodellen — beslut
 
-*2026-08-13. Framtagen i diskussion, med mätningar mot databasen efter hand.
-Skriven innan något byggdes.*
+*2026-08-13, utökad 2026-08-14. Framtagen i diskussion, med mätningar mot
+databasen efter hand. Skriven innan något byggdes.*
 
 ---
 
@@ -31,13 +31,18 @@ Sju identifierades. Fyra används.
 | 2 | **Formkort** | ✅ | En specifik böjd form |
 | 3 | **Böjningsval** | ✅ | Att en viss böjning *ska* användas |
 | 4 | **Ordföljd** | ✅ | Ledens inbördes ordning |
-| 5 | **Lexikal egenskap** | ✅ | Genus, hjälpverb, prenominal |
+| 5 | **Lexikal egenskap** | ✅ | Genus, hjälpverb, prenominal, böjningsklass |
 | 6 | Konstruktion | ❌ | Löser upp sig i 3, 4 och 5 |
 | 7 | Meningskort | ❌ | Utesluten av att meningar är färska varje gång |
 
 Typ 5 var inte med i första genomgången och är viktig: att veta att *Buch*
 är neutrum är varken ordet eller en form, men det syns när artikeln blir
 fel. Det ligger redan i `Lexem.genus`, `Lexem.hjälpverb`, `Lexem.prenominal`.
+
+**Böjningsklass tillkom 2026-08-14** och hör hemma här av samma skäl: att
+franskans *finir* och *partir* böjs olika syns inte i något av orden själva.
+Se nästa avsnitt för hur stor den posten är — den visade sig liten och
+mätbar.
 
 ### Ord mot form
 
@@ -69,6 +74,163 @@ lära sig, utan något man vet per ord.
 
 ---
 
+## Hur fint ska ett formkort skäras?
+
+*Avgjort 2026-08-14, efter fyra mätningar mot databasen.*
+
+Frågan uppstod när tyskan visade sig ha **76 böjda former per adjektiv**.
+Ska var och en vara ett eget kort? Spänningen är verklig och går åt båda
+hållen: högsta möjliga upplösning på vad användaren kan, mot att utnyttja
+att den som kan en regel får alla orden gratis.
+
+```
+              sv    en    de    fr    es    it    ja      former per ord
+Substantiv     8     4     3     2     2     2     1
+Verb          10     4    22    38    49    46    10
+Adjektiv       8     2    76     4     4     4     5      ← ensam avvikare
+```
+
+76 är alltså inte typiskt. Det är det enda stället i hela databasen där ett
+ord har fler än 49 former.
+
+### Mätning 1: de 76 är inte 76 fakta
+
+```
+15 792 former (111 tyska adjektiv × ~76)
+   333 fakta om ORDEN      111 adjektiv × 3 stammar (groß / größer / größt)
+   144 fakta om SYSTEMET   ändelsetabellen, delad av alla adjektiv
+   ───
+   477 oberoende fakta, inte 15 792
+```
+
+**97,9 % av alla former är stam plus den ändelse cellen alltid har.**
+Avvikelserna är inte utspridda: de är *orange*, *rosa* och *lila* — tre
+oböjliga färgadjektiv som därför "avviker" i samtliga 111 böjda celler.
+
+### Mätning 2: verben beter sig tvärtom
+
+```
+              former/ord   stammar (median)
+de verb           22             5
+sv verb           10             4
+es verb           49             2
+it verb           46             2
+fr verb           38             1
+```
+
+Spanska verb har 49 former men två stammar; tyska har 22 men fem.
+**Antalet former säger nästan ingenting om hur mycket som ska läras.**
+Franskans 38 former är ett ord plus en tabell, tyskans 22 är fem separata
+saker att veta.
+
+Därför har frågan inget policysvar. Den har ett mätvärde per språk och
+ordklass.
+
+### Beslutet
+
+> **En form får ett eget kort när den inte går att härleda ur det
+> användaren redan har kort för.**
+
+Ingen lista över undantag behövs — undantagen definierar sig själva genom
+att misslyckas med härledningen, och testet är detsamma i alla sju språk.
+*Orange* får kort för att den faller ur tabellen. *Gehen* får fem stamkort
+för att den har fem stammar. *Hablar* får två.
+
+Upplösningen försvinner inte, den **flyttar**. Systemfakta är kort de också
+— det är typ 3 — så *dem größte* i stället för *dem größten* fäller
+ändelsekortet, medan *dem großen* i stället för *dem größten* fäller
+superlativstammen. Fortfarande två kort, men de rätta två.
+
+```
+        per cell   stam+system
+de        23 494         1 929      12×
+es        10 608         1 414       8×
+fr         9 070         1 287       7×
+sv         4 988         1 069       5×
+en         2 293           934       2×
+```
+
+Faktorn följer hur mycket *system* språket har, vilket är precis det en
+inlärare lär sig som en regel.
+
+### Mätning 3: klasstillhörighet måste ibland läras
+
+Invändningen som fyllde i hålet: om ett ord tillhör en böjningsklass är
+DET en egenskap hos ordet, och den täcks varken av stammen eller av
+tabellen. Mätt som "går ordets ändelsesignatur att gissa ur lemmats
+stavning?":
+
+```
+                  klasser   går att gissa   måste läras per ord
+de/Verb              150         17 %              145
+it/Verb               69         44 %               97
+fr/Verb               61         72 %               48
+sv/Verb               87         73 %               47
+de/Substantiv         81         83 %               45
+ja/allt             1–23        100 %                0
+```
+
+**~500 ord över sju språk.** Två saker faller ut:
+
+Där oregelbundenheten är hög **kollapsar klasskortet in i stamkortet**.
+150 klasser på 174 tyska verb betyder att nästan varje starkt verb är sin
+egen klass — att kunna `ging` *är* att kunna att *gehen* inte är svagt.
+
+Det separata kortet behövs bara när klassen ändrar ÄNDELSER utan att ändra
+stammen: fr *finir* mot *partir*. Där är det en lexikal egenskap av samma
+sort som genus, alltså typ 5.
+
+### Universaliteten, och varför den inte spårar ur
+
+Stam-plus-ändelse är **ingen universell modell**. Den förutsätter
+konkatenativ morfologi. Arabiskans rot och mönster (k-t-b → *kataba*,
+*kitāb*, *maktūb*) har ingen stam att skala av; kinesiskan böjer inte alls.
+
+Det som generaliserar är inte uppdelningen utan **kriteriet**, och det
+faktum att härledbarheten *mäts* i stället för antas. Mätningen gav olika
+svar per språk redan inom de sju: 97,9 % för tyska adjektiv, 13,7 % för
+tyska verb med en stam, 100 % förutsägbarhet för japanska.
+
+Två skydd, båda sådant projektet redan gör i övrigt:
+
+- **Uppdelningen lagras som data, inte som kod.** Per språk och ordklass:
+  vilka celler grupperar sig till vilken stam, vilka ändelser delas. Samma
+  princip som `Mönster.språk` som skuggar det universella.
+- **Per-cell-modellen är GOLVET, inte alternativet.** Visar ett språks
+  mätning låg härledbarhet överallt blir svaret automatiskt "varje form är
+  sitt eget kort". Vi satsar inte på att stammar fungerar; vi mäter hur
+  mycket de sparar och tar besparingen där den finns.
+
+Det värsta som kan hända med ett framtida språk är att det inte får någon
+rabatt — inte att kortmodellen blir konstig.
+
+### Testet, i en mening
+
+Gränsdragningen går att avgöra utan att räkna, med den här frågan:
+
+> **Om inläraren lär sig det här — vad mer blir rätt på köpet?**
+>
+> Ingenting → ordkort.  Alla ord i klassen → systemkort.
+> Alla ord med egenskapen → typ 5.
+
+Fyra fall som visar den i arbete:
+
+| Inläraren skriver | Facit | Vad som fallerar | Varför det är rätt |
+|---|---|---|---|
+| den **störst** boken | största | systemkort: attributiv superlativ tar bestämd form | samma fel kommer i *vackrast*, *intressantast* — ett missförstånd, inte hundra |
+| dem **größte** Bruder | größten | systemkort: svag deklination m dat tar -en | hen KAN superlativen av *groß*; hen kan inte tabellen |
+| yo **dormo** | duermo | stamkort: *dormir* har `duerm-` under betoning | ändelsen `-o` var rätt använd — regeln satt, ordet inte |
+| **der** Mädchen | dem | typ 5: genus hos *Mädchen* | felet syns på artikeln, kortet hör till substantivet |
+
+**Priset**, sagt rakt ut: det delade kortet kan inte peka ut vilket ord som
+drog med sig felet. Sätter du fel ändelse på ett adjektiv men rätt på tjugo
+andra ser kortet 21 repetitioner med ett fel och förblir starkt. Alternativet
+påstår i gengäld att du kan `-en` efter `dem` för *Bruder* men inte för
+*Vater* — att det vore två separata kunskaper. Det är det inte, och sitter
+felet ändå i ett visst ord fälls ordets eget stamkort bredvid.
+
+---
+
 ## FSRS och de oavsiktliga repetitionerna
 
 En mening rör 7–10 kort men valdes för ett av dem. Vad händer med de andra?
@@ -80,6 +242,42 @@ explicit modellerad. Anki-användare repeterar för tidigt hela tiden.
 
 Vi tvingar alltså inte in FSRS i något den inte är byggd för. Den
 nedvärderar redan gratisrepetitioner själv.
+
+**Kostnaden, sagt rakt ut:** repeterar man systematiskt i förväg slutar
+intervallen växa, och arbetsbördan ligger kvar. Modellen tar ingen skada,
+men effektiviteten sjunker. Följden för sessionen är daglig kvot först och
+frivillig fortsättning sedan — först blir det bara förtidsrepetition, men
+efterhand skjuts korten fram och det uppstår rum för nytt.
+
+### Schemalagda kort mot mätta kort
+
+*Avgjort 2026-08-14.* Systemkorten är delade och möts därför mycket oftare
+än ord. Mätt över 321 renderade tyska meningar:
+
+```
+Substantiv  nom_akk_gen_pl    0,91 ggr/mening      ← det mest frekventa
+Substantiv  nom_sg            0,52
+Verb        pres_3sg          0,46
+median över alla 58            0,07 ggr/mening
+ett vanligt ORD                0,012 ggr/mening
+```
+
+Vid 20 meningar om dagen möts det vanligaste systemkortet arton gånger,
+medianen 1,4 gånger, ett vanligt ord var fjärde dag.
+
+**Ett kort som möts i nästan varje mening går inte att schemalägga — och
+behöver inte det.** Spacing finns för att motverka glömska, och något man
+möter arton gånger dagligen glöms inte. Fallerar användaren det gör
+prioritering ingenting, eftersom kortet skulle ha dykt upp ändå.
+
+Schemaläggaren har alltså ingen spak för dem. Det är inte ett fel i FSRS —
+kön är fel verktyg för något allestädes närvarande. Därav uppdelningen:
+
+> **Schemalagda kort** avgör vilken mening som byggs.
+> **Mätta kort** följs upp — rätt/fel registreras, resultatet syns för
+> användaren och styr upplåsning — men de står aldrig i kön.
+
+Gränsen sätts på uppmätt exponeringsfrekvens, inte på en tumregel.
 
 ### Misslyckade kort
 
@@ -184,6 +382,31 @@ inte systematiskt fel.
 Att skylla på **båda** korten valdes bort: det straffar garanterat ett kort
 användaren kan, varje gång. Mekanism 1 och 2 har fel ibland; att alltid
 skylla på båda har fel halva tiden per definition.
+
+---
+
+## Var kortlagret bor
+
+*Avgjort 2026-08-14, innan något byggdes.*
+
+**Repetitionshistoriken ligger i en EGEN databasfil, inte i `sprak.db`.**
+`ordbok import --återinitiera` bygger om språkdatabasen från grunden, och
+en användares historik är det enda i systemet som inte går att återskapa.
+
+**Ett kort får aldrig peka på `Former.id`.** Överlämningen slår fast att
+DELETE/INSERT flyttar id:n — det är redan skälet till att
+`granskningsrattelser.sql` ligger utanför migrationerna. Den stabila
+nyckeln är den naturliga:
+
+```
+formkort    (konceptnyckel, språk, variant, cell)
+stamkort    (konceptnyckel, språk, variant, stamgrupp)
+systemkort  (språk, ordklass, klass, cell)
+typ 5       (konceptnyckel, språk, egenskap)
+```
+
+Fyra strängar i varje fall, alla oberoende av radordning. En ombyggd
+språkdatabas ska kunna mötas av en orörd inlärardatabas.
 
 ---
 

@@ -704,7 +704,11 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 1. **Meningsgeneratorn.** Kortmodellen är utredd och nedskriven i
    [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
    som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
-   förfluten tid. **Den var blockerad av meningskomplexiteten och är det
+   förfluten tid. Utökad 2026-08-14 med kortens UPPLÖSNING (stam- och
+   systemkort i stället för ett kort per cell, mätt fram i fyra steg),
+   uppdelningen schemalagda mot mätta kort, och var kortlagret bor —
+   inlärardatabasen ska vara en egen fil och kort får aldrig peka på
+   `Former.id`, som flyttar vid ombyggnad. **Den var blockerad av meningskomplexiteten och är det
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
    nu mogen — med 59–95 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
