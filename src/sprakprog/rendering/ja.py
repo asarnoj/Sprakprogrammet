@@ -119,6 +119,19 @@ class JapanskRenderare:
         # Läses genom VERB-paradigmet, så adjektivets ku-cell syns inte här.
         # Kännetecknet är i stället att ます saknas medan grundformen slutar
         # på い — det är ett i-adjektiv som råkat hamna under ett verbkoncept.
+        if not celler.get("masu") and not celler.get("ta"):
+            # Fem japanska "verb" är i själva verket SUFFIX: たい (vill),
+            # なければならない (måste), べき (bör), つもり (ska), してもいい
+            # (får). De kan inte stå som predikat alls — modalitet fästs på
+            # huvudverbet, vilket rendera() redan säger om komplementet.
+            #
+            # Tre av dem slutar på い och togs därför för i-adjektiv, vilket
+            # gav "たいです". Skillnaden är att ett i-adjektiv HAR en
+            # た-form (恋しかった) medan ett suffix inte har det — datan
+            # skiljer dem åt, ingen lista behövs.
+            raise RenderingsFel(
+                f"ja/{lexem['lemma']}: modalitet är suffixal i japanskan och "
+                f"kan inte vara satsens verb — 読みたい, inte 'たい'")
         if not celler.get("masu") and celler.get("jisho", "").endswith("い"):
             # ku-formen finns bara i adjektivparadigmet. Konceptet är ett
             # Verb, men japanskan uttrycker det adjektiviskt: gen_sakna är

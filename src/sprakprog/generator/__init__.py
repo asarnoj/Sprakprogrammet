@@ -58,8 +58,8 @@ class Förslag:
 
 class Generator:
     def __init__(self, språk_db: sqlite3.Connection, kort_db: sqlite3.Connection,
-                 språk: str, *, nivå: int = 21, budget: float = 1.5,
-                 frö: int | None = None) -> None:
+                 språk: str, *, nivå: int = 21, cefr: str = "C2",
+                 budget: float = 1.5, frö: int | None = None) -> None:
         self.språk = språk
         self.språk_db = språk_db
         self.kort_db = kort_db
@@ -68,7 +68,8 @@ class Generator:
         self.validator = Validator(språk_db)
         self.schemaläggare = Schemaläggare(kort_db)
         self.poängsättare = Poängsättare(kort_db, self.schemaläggare, budget)
-        self.samplare = Samplare(Ordförråd(språk_db, språk), nivå, self.rng)
+        self.samplare = Samplare(
+            Ordförråd(språk_db, språk, cefr), nivå, self.rng)
         self._karta = self._läs_karta()
         self._kort = {r["id"]: r for r in kort_db.execute(
             "SELECT * FROM Kort WHERE språk = ?", (språk,))}

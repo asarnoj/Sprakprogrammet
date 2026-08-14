@@ -2,9 +2,10 @@
 
 CSV-formatet är: koncept,ordklass,nivå,språk,lemma
 
-Notera: nivå-kolumnen läses men ignoreras — den finns kvar i
-filerna men är inte längre del av schemat. Den kommer att tas
-bort ur CSV:erna i ett senare städsteg.
+nivå-kolumnen är CEFR-nivån och läses in i `Koncept.nivå`. Den ignorerades
+i ett tidigare skede, men generatorn behöver veta vilka ord en nybörjare ska
+möta — se setup.sql. Nivån är en egenskap hos konceptet: noll av 736 koncept
+har olika nivå i olika språk.
 
 Rader som börjar med '#' eller är tomma hoppas över.
 Header-raden ('koncept,ordklass,...') hoppas också över.
@@ -22,6 +23,7 @@ class CSVRad:
     """En enskild datarad från CSV-fil."""
     koncept: str
     ordklass: str
+    nivå: str
     språk: str
     lemma: str
     radnummer: int  # 1-indexerat, för felmeddelanden
@@ -50,10 +52,11 @@ def läs_csv(sökväg: Path) -> Iterator[CSVRad]:
                 raise ValueError(
                     f"{filnamn}:{radnummer}: förväntade 5 fält, fick {len(delar)}: {rad!r}"
                 )
-            koncept, ordklass, _nivå, språk, lemma = delar
+            koncept, ordklass, nivå, språk, lemma = delar
             yield CSVRad(
                 koncept=koncept.strip(),
                 ordklass=ordklass.strip(),
+                nivå=nivå.strip(),
                 språk=språk.strip(),
                 lemma=lemma.strip(),
                 radnummer=radnummer,

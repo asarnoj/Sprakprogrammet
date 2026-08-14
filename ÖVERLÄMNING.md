@@ -667,6 +667,31 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Nivåerna: två oberoende tak
+
+*Infört 2026-08-14.* `Koncept.nivå` bär CEFR-nivån — 393 A1, 328 A2, 15 B1.
+Kolumnen fanns i `ordbok/nivålistor/*.csv` från början men lästes aldrig in;
+läsaren kastade den med kommentaren att den "inte längre är del av schemat".
+Det beslutet fattades innan generatorn fanns.
+
+**Nivån är en egenskap hos KONCEPTET, inte hos lexemet** — noll av 736
+koncept har olika nivå i olika språk, vilket är väntat: nivån säger hur
+grundläggande begreppet är, inte hur svårt ordet är. Importen kontrollerar
+det påståendet vid varje körning i stället för att anta det.
+
+Och de två taken är **ortogonala**:
+
+```
+ordbok öva sv --cefr A1 --nivå 4     Han spelar dig.  Ni arbetar.
+ordbok öva de --cefr A1 --nivå 11    Er fragt euch.   Du danktest ihr.
+ordbok öva de --cefr C2 --nivå 21    Wer vergab einem Mann?
+```
+
+Att blanda ihop dem vore att påstå att den som lärt sig bisatser också kan
+alla ord.
+
+---
+
 ## Tre språkfel, lagade 2026-08-14
 
 Alla tre satt i kod som varit "klar" i flera pass, och alla tre hittades av
@@ -760,22 +785,18 @@ Kvar av de tre mekanismerna i GENERATOR.md: "meningen vittnar" (kongruens
 över flera ord) och "självrättning som möjlighet" kräver mer kontext
 respektive ett gränssnitt. Historikmekanismen finns.
 
-1. **Japanskan renderar enstaka verb som "たいです"**, där masu-formen saknas
-   och adjektivgrenen tar över. Det enda kvarvarande av de fyra språkfel
-   generatorn drog fram; de tre andra är lagade — se avsnittet nedan.
+1. **Lektionerna och upplåsningen.** Båda nivåtaken fungerar nu — CEFR för
+   ORDEN, komplexitetsstegen för KONSTRUKTIONERNA — men ingenting öppnar
+   dem automatiskt, och det finns inga lektionssidor. GENERATOR.md har
+   besluten ("automatisk tröskel, användaren får skjuta upp",
+   "undervisning vid upplåsning"); de är obyggda.
 
-2. **Nivåerna och lektionerna.** CEFR-nivån finns i `ordbok/nivålistor/*.csv`
-   (397 A1, 329 A2, 15 B1 för svenska) men importerades aldrig till
-   `Koncept`. Generatorns `nivå`-parameter finns och fungerar, men ingenting
-   fyller den med innehåll. Upplåsning och undervisning vid upplåsning är
-   beslutade i GENERATOR.md men obyggda.
-
-3. **Vikterna i `poang.py`.** En första gissning, och det står i
+2. **Vikterna i `poang.py`.** En första gissning, och det står i
    modulhuvudet. De går bara att hitta genom att köra systemet — men allt
    loggas redan, budget och utfall per mening, så frågan är besvarbar när
    det finns användning att mäta mot.
 
-4. **Appen.** Desktop först, mobil senare. Terminalslingan (`ordbok öva`)
+3. **Appen.** Desktop först, mobil senare. Terminalslingan (`ordbok öva`)
    finns och kan användas för att trimma vikterna innan gränssnittet byggs.
 
 **Komplexitetsstegen är slut** — de 21 nivåerna är byggda i alla sju språk.

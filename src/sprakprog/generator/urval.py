@@ -31,6 +31,14 @@ from ..rendering import (
     Numerus, Prepositionsfras, Satsmodus, Tidsreferens,
 )
 
+#: CEFR-nivåerna i stigande ordning. Ett tak på A2 släpper in A1 också.
+#:
+#: Ortogonal mot komplexitetsstegen nedan, och båda behövs: den ena säger
+#: vilka ORD en nybörjare möter, den andra vilka KONSTRUKTIONER. Att blanda
+#: ihop dem vore att påstå att den som lärt sig bisatser också kan alla ord.
+CEFR = ("A1", "A2", "B1", "B2", "C1", "C2")
+
+
 #: Vad varje nivå på komplexitetsstegen låser upp. Nycklarna är egenskaper
 #: hos specen, inte konstruktioner i språket — det är specen samplaren rör.
 #: Se GENERATOR.md, "Komplexitetsstegen".
@@ -56,18 +64,23 @@ class Ordförråd:
     av tio, vilket är precis vad den första mätningen visade.
     """
 
-    def __init__(self, conn: sqlite3.Connection, språk: str) -> None:
+    def __init__(self, conn: sqlite3.Connection, språk: str,
+                 cefr: str = "C2") -> None:
         self.conn = conn
         self.språk = språk
+        self.cefr = cefr
         self.semantik: dict[str, int] = {}
         self.ordklass: dict[str, str] = {}
         self.räknebar: dict[str, bool] = {}
+        tillåtna = CEFR[:CEFR.index(cefr) + 1] if cefr in CEFR else CEFR
+        platser = ",".join("?" * len(tillåtna))
         for r in conn.execute(
-                """SELECT k.nyckel, k.ordklass, k.semantik, k.räknebar
-                   FROM Koncept k JOIN Lexem l ON l.koncept_id = k.id
-                   WHERE l.språk = ?
-                     AND EXISTS (SELECT 1 FROM Former f WHERE f.lexem_id = l.id)
-                   GROUP BY k.id""", (språk,)):
+                f"""SELECT k.nyckel, k.ordklass, k.semantik, k.räknebar
+                    FROM Koncept k JOIN Lexem l ON l.koncept_id = k.id
+                    WHERE l.språk = ?
+                      AND (k.nivå IS NULL OR k.nivå IN ({platser}))
+                      AND EXISTS (SELECT 1 FROM Former f WHERE f.lexem_id = l.id)
+                    GROUP BY k.id""", (språk, *tillåtna)):
             self.ordklass[r["nyckel"]] = r["ordklass"]
             self.räknebar[r["nyckel"]] = bool(r["räknebar"])
             if r["semantik"] is not None:
@@ -203,7 +216,23 @@ class Samplare:
             if "komplement" not in self.tillåtet:
                 return None
             komplement = r.choice(list(self.o.verb))
-        m = Mening(verb, subjekt, objekt=objekt, io=io, komplement=komplement)
+
+        # Samma sak för kopulan: "Sie ist." är ingen mening. Ett verb med
+        # predikativslot MÅSTE få ett predikativ, och det får vara adjektiv
+        # eller substantiv — mönstret säger vilket.
+        predikativ = None
+        if "predikativ" in slotkrav:
+            if "predikativ" not in self.tillåtet:
+                return None
+            if adjektiv and r.random() < 0.7:
+                predikativ = r.choice(adjektiv)
+            else:
+                val = self.o.uppfyller([], "Substantiv")
+                if not val:
+                    return None
+                predikativ = Nominalfras(r.choice(val))
+        m = Mening(verb, subjekt, objekt=objekt, io=io, komplement=komplement,
+                   predikativ=predikativ)
         if "tempus" in self.tillåtet:
             m = _med(m, tid=r.choice(list(Tidsreferens)))
         if "perfekt" in self.tillåtet and r.random() < 0.2:

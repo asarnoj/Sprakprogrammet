@@ -63,6 +63,7 @@ def kör(args: argparse.Namespace) -> int:
     # ── 5. Konsistenskontroller per koncept ──────────────────────────────
     koncept_till_fil: dict[str, str] = {}
     koncept_till_ordklass: dict[str, str] = {}
+    koncept_till_nivå: dict[str, str] = {}
     koncept_första_rad: dict[str, CSVRad] = {}
     lexem_per_koncept: dict[str, list[CSVRad]] = defaultdict(list)
 
@@ -83,9 +84,19 @@ def kör(args: argparse.Namespace) -> int:
                     f"{första.fil}:{första.radnummer} '{koncept_till_ordklass[nyckel]}' "
                     f"vs {rad.fil}:{rad.radnummer} '{rad.ordklass}'"
                 )
+            # Nivån är en egenskap hos KONCEPTET, inte hos lexemet, och det
+            # är ett påstående som ska kontrolleras och inte antas. Vid
+            # införandet 2026-08-14 var noll av 736 koncept motstridiga.
+            if koncept_till_nivå[nyckel] != rad.nivå:
+                konflikter.append(
+                    f"koncept {nyckel!r} har motstridig nivå: "
+                    f"{första.fil}:{första.radnummer} '{koncept_till_nivå[nyckel]}' "
+                    f"vs {rad.fil}:{rad.radnummer} '{rad.nivå}'"
+                )
         else:
             koncept_till_fil[nyckel] = rad.fil
             koncept_till_ordklass[nyckel] = rad.ordklass
+            koncept_till_nivå[nyckel] = rad.nivå
             koncept_första_rad[nyckel] = rad
         lexem_per_koncept[nyckel].append(rad)
 
@@ -128,8 +139,8 @@ def kör(args: argparse.Namespace) -> int:
             for nyckel, ordklass in koncept_till_ordklass.items():
                 källa = Path(koncept_till_fil[nyckel]).stem  # 'bas_kärna.csv' → 'bas_kärna'
                 cur = conn.execute(
-                    "INSERT INTO Koncept (nyckel, ordklass, källa) VALUES (?, ?, ?)",
-                    (nyckel, ordklass, källa),
+                    "INSERT INTO Koncept (nyckel, ordklass, källa, nivå) VALUES (?, ?, ?, ?)",
+                    (nyckel, ordklass, källa, koncept_till_nivå[nyckel] or None),
                 )
                 koncept_id_map[nyckel] = cur.lastrowid
 
