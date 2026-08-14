@@ -26,7 +26,7 @@ from collections import defaultdict
 from sprakprog.generering.granskning import _former_per_cell
 from sprakprog.rendering import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus,
-    Prepositionsfras, RenderingsFel, Tidsreferens, Uppslag,
+    Prepositionsfras, RenderingsFel, Satsmodus, Tidsreferens, Uppslag,
 )
 from sprakprog.rendering import (
     EngelskRenderare, FranskRenderare, ItalienskRenderare, JapanskRenderare,
@@ -128,6 +128,15 @@ def specar():
         for best in Bestämdhet:
             yield Mening("krop_v_sova", SUBJ, adverbial=(
                 Prepositionsfras(prep, Nominalfras("plats_skola", best)),))
+    # imperativ: fyra tilltal × jakande/nekande. Tilltalet är subjektet,
+    # och det är också det som väljer cell.
+    for verb in VERB_TRANS + VERB_INTRANS:
+        objekt = Nominalfras(OBJ) if verb in VERB_TRANS else None
+        for tilltalad in ("pronomen_2sg", "pronomen_2pl",
+                          "pronomen_2sg_formal", "pronomen_1pl"):
+            for negerad in (False, True):
+                yield Mening(verb, Nominalfras(tilltalad), objekt=objekt,
+                             modus=Satsmodus.IMPERATIV, negerad=negerad)
     # adverb
     yield Mening("fys_ge", SUBJ, objekt=Nominalfras(OBJ), adverbial=("adv_igår",),
                  tid=Tidsreferens.FÖRFLUTEN)

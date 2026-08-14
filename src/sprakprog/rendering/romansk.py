@@ -34,7 +34,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Referentgenus,
-    RenderingsFel, Tidsreferens,
+    RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -169,6 +169,11 @@ class RomanskRenderare:
         return person, numerus, genus
 
     def verbdelar(self, m: Mening, föregående_objekt=None) -> list[str]:
+        if m.modus is Satsmodus.IMPERATIV:
+            tal = tilltal(m, self.SPRÅK, tuple(self.IMPERATIVCELL))
+            celler = self.NEKAD_IMPERATIVCELL if m.negerad else {}
+            return [self.u.form_för(
+                m.verb, celler.get(tal) or self.IMPERATIVCELL[tal])]
         if m.diates is not Diates.AKTIV:
             # "le livre est lu", "el libro es leído" — vara plus particip
             # som kongruerar med subjektet, precis som être-participen i
@@ -301,6 +306,15 @@ class RomanskRenderare:
             genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
         return genus, numerus
 
+    # Tilltal → imperativcell. De tre språken skiljer sig på artigheten:
+    # franskan lånar 2pl-formen (vouvoiement), spanskan och italienskan har
+    # en egen tredjepersonsform (usted, Lei).
+    IMPERATIVCELL: dict[str, str] = {}
+    # Nekad imperativ är INTE alltid samma form som den jakande. Spanskan
+    # byter till konjunktiv i hela paradigmet ("¡no leas!"), italienskan
+    # bara i 2sg, och där till infinitiv ("non leggere!"). Tom = oförändrad.
+    NEKAD_IMPERATIVCELL: dict[str, str] = {}
+
     # Franskans ne har ingen motsvarighet i es/it, som klarar sig med en
     # enda preverbal partikel.
     NEKANDE_FÖRLED: str | None = None
@@ -308,6 +322,7 @@ class RomanskRenderare:
     # italienskan behåller ordföljden och markerar bara med skiljetecken.
     FRÅGEINLEDNING: str | None = None
     FRÅGETECKEN_FÖRE: str = ""
+    UTROPSTECKEN_FÖRE: str = ""
 
     def negation(self, m: Mening) -> tuple[list[str], list[str]]:
         """(före verbet, efter verbet). Romanska språk skiljer sig här.
@@ -350,11 +365,12 @@ class RomanskRenderare:
             _, numerus, genus = self._subjektsform(m.subjekt)
             tal = Numerus.PL if numerus == "pl" else Numerus.SG
             stam = "komp" if m.grad is Grad.KOMPARATIV else "superl"
-            celler = self.u._celler(self.u.lexem(m.predikativ))
-            form = (celler.get(f"{stam}_{_kön(genus)}_{_tal(tal)}")
-                    or celler.get(f"{stam}_{_tal(tal)}"))
-            if form:
-                ut = [form]
+            adjektiv = self.u.lexem(m.predikativ)
+            celler = self.u._celler(adjektiv)
+            cell = next((c for c in (f"{stam}_{_kön(genus)}_{_tal(tal)}",
+                                     f"{stam}_{_tal(tal)}") if celler.get(c)), None)
+            if cell is not None:
+                ut = [self.u.form(adjektiv, cell)]
             else:
                 ut = [self.u.form_för("komp_mer" if m.grad is Grad.KOMPARATIV
                                       else "komp_mest", "inv"),
@@ -385,7 +401,9 @@ class RomanskRenderare:
         ord: list[str] = []
         if m.fråga and self.FRÅGEINLEDNING:
             ord.append(self.FRÅGEINLEDNING)
-        ord += self.nominalfras(m.subjekt, "subjekt")
+        # Imperativen säger inte ut den tilltalade.
+        if m.modus is not Satsmodus.IMPERATIV:
+            ord += self.nominalfras(m.subjekt, "subjekt")
 
         # Objektspronomen realiseras som klitika FÖRE verbet, inte på
         # substantivets plats. Det är därför nominalfras() vägrar rollen
@@ -394,6 +412,18 @@ class RomanskRenderare:
         coi = self._klitika(m.io, "coi")
         if coi is None and self.DUBBLERAR and m.io is not None:
             coi = self._dubblering(m.io)
+        if (m.modus is Satsmodus.IMPERATIV and not m.negerad
+                and (cod is not None or coi is not None)):
+            # JAKANDE imperativ fäster klitikan EFTER verbet, och inte som
+            # ett eget ord: "donne-le-moi", "¡dámelo!", "dammelo!". Enklisen
+            # har egna regler i varje språk — bindestreck och moi/toi i
+            # franskan, accentflytt i spanskan, konsonantfördubbling i
+            # italienskan — och byggs inte av samma maskineri som proklisen.
+            # Den NEKADE imperativen är proklitisk som alla andra satser
+            # ("no me lo des") och går därför igenom här.
+            raise RenderingsFel(
+                f"{self.SPRÅK}: jakande imperativ med klitika kräver enklis "
+                f"— inte byggd. Nekad imperativ fungerar.")
 
         före, efter = self.negation(m)
         ord += före
@@ -434,4 +464,7 @@ class RomanskRenderare:
         mening = mening[0].upper() + mening[1:]
         if m.fråga:
             return self.FRÅGETECKEN_FÖRE + mening + "?"
+        if m.modus is Satsmodus.IMPERATIV:
+            # Spanskan sätter ut det inledande utropstecknet också.
+            return self.UTROPSTECKEN_FÖRE + mening + "!"
         return mening + "."

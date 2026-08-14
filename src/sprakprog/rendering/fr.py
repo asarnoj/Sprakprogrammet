@@ -17,6 +17,11 @@ class FranskRenderare(RomanskRenderare):
     # a donné, inte "donna" — passé simple är litterärt och passé composé
     # är den levande perfektiva dåtiden.
     SAMMANSATT_DÅTID = True
+    # Franskan saknar egen artighetsform i imperativ: vouvoiement ÄR
+    # andra person plural. "Lisez!" säger man till både en främling och
+    # till flera. Negationen ändrar ingen form — bara ne ... pas runt om.
+    IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
+                     "artig": "imp_2pl", "1pl": "imp_1pl"}
     NEKANDE_FÖRLED = "ne"
     FRÅGEINLEDNING = "est-ce que"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",

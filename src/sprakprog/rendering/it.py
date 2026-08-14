@@ -41,6 +41,14 @@ class ItalienskRenderare(RomanskRenderare):
     SUBJEKTSCELL = "soggetto"
     TONISK = "tonico"
     SAMMANSATT_DÅTID = True
+    # Lei tar tredje person som spanskans usted. Italienskan saknar egen
+    # 3pl-imperativ i paradigmet — Loro är i praktiken utdött.
+    IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
+                     "artig": "imp_3sg", "1pl": "imp_1pl"}
+    # Nekad imperativ i andra person SINGULAR tar infinitiv: "non
+    # leggere!", aldrig "non leggi!". Bara den formen — "non leggete!" är
+    # imperativ som vanligt. Ett av språkets egendomligaste undantag.
+    NEKAD_IMPERATIVCELL = {"2sg": "inf"}
     # Italienskan smälter ihop preposition och bestämd artikel obligatoriskt.
     # Sex prepositioner × sju artikelformer; de vanligaste tas här.
     SAMMANDRAG = {("a", "il"): "al", ("a", "lo"): "allo", ("a", "la"): "alla",

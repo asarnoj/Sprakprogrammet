@@ -24,6 +24,17 @@ class SpanskRenderare(RomanskRenderare):
     TONISK = "tonico"
     SAMMANSATT_DÅTID = False
     HJÄLPVERB_FAST = "ha"
+    UTROPSTECKEN_FÖRE = "¡"
+    # Usted och ustedes tar tredje person: "¡lea!", "¡lean!" — artigheten
+    # är grammatiskt en tredjepersonsform, precis som tyskans Sie.
+    IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
+                     "artig": "imp_3sg", "1pl": "imp_1pl"}
+    # Spanskan har ingen nekad imperativ alls: "¡no leas!" är presens
+    # konjunktiv, inte imperativens "lee". Hela paradigmet byter form, och
+    # det är den enskilt största skillnaden mellan jakande och nekande
+    # uppmaning i något av de sju språken.
+    NEKAD_IMPERATIVCELL = {"2sg": "subj_2sg", "2pl": "subj_2pl",
+                           "artig": "subj_3sg", "1pl": "subj_1pl"}
     FRÅGETECKEN_FÖRE = "¿"
     SAMMANDRAG = {("a", "el"): "al", ("de", "el"): "del"}
 
