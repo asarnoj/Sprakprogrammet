@@ -167,6 +167,15 @@ class Nominalfras:
     possessiv: str | None = None
     possessiv_koreferent: bool = False
     referent: Referentgenus | None = None
+    frågedeterminant: str | None = None
+    """Frågande bestämning: "vilken bok", "hur många böcker".
+
+    Tar artikelns plats precis som en possessiv gör, och styr adjektivet
+    likadant. Skilt från `Mening.fråga_om` som ersätter HELA ledet med vem
+    eller vad — här står huvudordet kvar och det är valet mellan exemplar
+    som efterfrågas. Meningen måste ändå säga vilken SLOT frågan gäller,
+    så att renderaren vet vad som ska flyttas först.
+    """
     ägare: "Nominalfras | None" = None
     """Genitivattribut: "flickans bok". Ägaren är en egen nominalfras.
 
@@ -282,6 +291,30 @@ class Mening:
     avgörs av verbets MönsterKrav och spelar ingen roll för ordföljden, så
     renderaren behöver inte veta vilken. Validatorn gör det.
     """
+    fråga_om: str | None = None
+    """Vad frågan gäller — gör meningen till en wh-fråga.
+
+    Två sorters värden, och skillnaden är grammatisk och inte godtycklig:
+
+      "subjekt" / "objekt" / "io"   ett ARGUMENT efterfrågas. Slotten står
+                                    kvar i specen med svaret i sig ("vem
+                                    läser boken?" byggs ur "flickan läser
+                                    boken"), och renderaren byter ut ordet
+                                    mot vem eller vad. Vilketdera avgörs på
+                                    MÄNSKLIG-biten hos det som efterfrågas,
+                                    inte på slotten.
+
+      "frågadverb_tid" m.fl.        en OMSTÄNDIGHET efterfrågas. Inget
+                                    argument tas bort; adverbet läggs till.
+
+    Att svaret ligger kvar i specen är inte en tillfällighet: en fråga och
+    dess svar är samma mening, och en inlärningsapp behöver båda.
+
+    Sex av sju språk flyttar frågeordet först. Japanskan flyttar det inte
+    alls — 何 står kvar där objektet stod. Och SUBJEKTSfrågan inverterar
+    inte i något språk, eftersom frågeordet redan står på subjektets plats:
+    "vem läser boken?" mot "vad läser hon?".
+    """
     modus: Satsmodus = Satsmodus.INDIKATIV
     """Satsmodus. IMPERATIV gör meningen till en uppmaning: "läs boken!".
 
@@ -300,6 +333,11 @@ class RenderingsFel(Exception):
     """
 
 
+#: De argumentslottar en wh-fråga kan efterfråga. Adverbialfrågor namnger
+#: i stället frågadverbets koncept, som ju inte har någon slot att peka på.
+FRÅGESLOTTAR = ("subjekt", "objekt", "io")
+
+
 def slutar(m: "Mening") -> str:
     """Satsens skiljetecken. Frågan vinner över uppmaningen.
 
@@ -308,7 +346,7 @@ def slutar(m: "Mening") -> str:
     som syns i ordföljden. Spanskans inledande ¡ och ¿ hanteras i sin egen
     renderare; det här är tecknet på slutet.
     """
-    if m.fråga:
+    if m.fråga or m.fråga_om is not None:
         return "?"
     return "!" if m.modus is Satsmodus.IMPERATIV else "."
 

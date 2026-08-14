@@ -30,7 +30,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
-    Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -122,7 +122,14 @@ class TyskRenderare:
         # Determineraren avgör adjektivets deklination. Det är den enskilt
         # mest tyska regeln i filen: samma adjektiv får tre olika ändelser
         # beroende på vad som råkar stå framför det.
-        if nf.possessiv is not None:
+        if nf.frågedeterminant is not None:
+            # "welches rote Buch" — welcher böjs som den bestämda artikeln
+            # och ger adjektivet SVAG deklination, av samma skäl: det finns
+            # en fullt böjd determinerare framför.
+            cell = f"{g}_{k}" if nf.numerus is Numerus.SG else f"pl_{k}"
+            ord.append(self.u.form_för(nf.frågedeterminant, cell))
+            deklination = "svag"
+        elif nf.possessiv is not None:
             cell = f"{g}_{k}" if nf.numerus is Numerus.SG else f"pl_{k}"
             ord.append(self.u.form_för(nf.possessiv, cell, "reflexiv"
                                        if nf.possessiv_koreferent else None))
@@ -322,7 +329,17 @@ class TyskRenderare:
         else:
             vorfeld = self.nominalfras(m.subjekt, self.kasus_för(m.verb, "subjekt"))
             mittelfeld = []
-        if m.io is not None:
+
+        # Wh-frågan behöver ingen egen ordföljdsregel i tyskan: frågeordet
+        # tar Vorfeld, och V2 gör resten. Subjektsfrågan blir då rak
+        # ordföljd och objektsfrågan omvänd, utan att något sägs om det —
+        # exakt samma mekanism som när ett adverbial står först.
+        frågeord = self.frågeord(m)
+        if frågeord is not None:
+            if m.fråga_om != "subjekt":
+                mittelfeld = [*vorfeld, *mittelfeld]
+            vorfeld = [frågeord]
+        if m.io is not None and m.fråga_om != "io":
             mittelfeld += self.nominalfras(m.io, self.kasus_för(m.verb, "io"))
         # Bisatser hör inte hemma i Mittelfeld. De står i Nachfeld, alltså
         # UTANFÖR satsklammern: "sie las das Buch, als er kam" — aldrig
@@ -333,7 +350,7 @@ class TyskRenderare:
                 efterfält += [",", *self.bisats(adverbial)]
             else:
                 mittelfeld += self.adverbial(adverbial)
-        if m.objekt is not None:
+        if m.objekt is not None and m.fråga_om != "objekt":
             mittelfeld += self.nominalfras(
                 m.objekt, self.kasus_för(m.verb, "objekt"), negerad=kein_objekt)
 
@@ -364,6 +381,28 @@ class TyskRenderare:
         return ([finit, *vorfeld, *mittelfeld, *infinit, *efterfält]
                 if m.fråga or m.modus is Satsmodus.IMPERATIV
                 else [*vorfeld, finit, *mittelfeld, *infinit, *efterfält])
+
+    def frågeord(self, m: Mening) -> str | None:
+        """wer/wen/wem/was — tyskan är det enda språk som böjer frågeordet.
+
+        Kasusen kommer från verbets rektion, precis som för nominalfraser:
+        "wem gibt sie das Buch" har dativ därför att geben styr dativ på io.
+        Cellnamnen börjar alla på wer_, också i was-paradigmet — de två
+        lexemen delar cellstruktur.
+        """
+        if m.fråga_om is None:
+            return None
+        if m.fråga_om not in FRÅGESLOTTAR:
+            return self.u.form_för(m.fråga_om, "inv")
+        efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
+        if efterfrågat is None:
+            raise RenderingsFel(
+                f"de: fråga_om={m.fråga_om!r} men den slotten är tom")
+        kasus = self.kasus_för(m.verb, m.fråga_om)
+        if efterfrågat.frågedeterminant is not None:
+            return " ".join(self.nominalfras(efterfrågat, kasus))
+        return self.u.form_för(self.u.frågepronomen(efterfrågat.koncept),
+                               f"wer_{KASUSNAMN[kasus]}")
 
     def bisats(self, b: Bisats) -> list[str]:
         """Subjunktion plus sats med verbet sist."""

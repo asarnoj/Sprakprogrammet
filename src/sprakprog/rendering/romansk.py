@@ -35,7 +35,7 @@ from dataclasses import replace
 from .spec import (
     Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
     Referentgenus,
-    RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -126,7 +126,13 @@ class RomanskRenderare:
 
         huvudform = self.u.form(huvud, _tal(nf.numerus))
         före: list[str] = []
-        if nf.possessiv is not None:
+        if nf.frågedeterminant is not None:
+            # "quel livre", "qué libro", "quale libro" — determinanten tar
+            # artikelns plats, och frasen står utan artikel.
+            före.append(self.u.form_för(
+                nf.frågedeterminant,
+                self.frågedeterminantcell(genus, nf.numerus)))
+        elif nf.possessiv is not None:
             före.append(self.u.form_för(
                 nf.possessiv, self.possessivcell(genus, nf.numerus)))
         else:
@@ -412,8 +418,23 @@ class RomanskRenderare:
         ord: list[str] = []
         if m.fråga and self.FRÅGEINLEDNING:
             ord.append(self.FRÅGEINLEDNING)
-        # Imperativen säger inte ut den tilltalade.
-        if m.modus is not Satsmodus.IMPERATIV:
+        # Wh-frågan flyttar frågeordet först. Subjektsfrågan låter det ta
+        # subjektets plats och behåller rak ordföljd; övriga frågor kastar
+        # om subjekt och verb i es/it och skjuter in est-ce que i fr.
+        frågeord = self.frågeord(m)
+        # Subjektet står efter verbet i es/it när något annat än subjektet
+        # efterfrågas: "¿Qué dio la chica?". Franskan slipper inversionen
+        # genom est-ce que, som är hela skälet att den konstruktionen finns.
+        inverterar = (frågeord is not None and m.fråga_om != "subjekt"
+                      and not self.FRÅGEINLEDNING)
+        if frågeord is not None:
+            ord += frågeord
+            if m.fråga_om != "subjekt" and self.FRÅGEINLEDNING:
+                ord.append(self.FRÅGEINLEDNING)
+        # Imperativen säger inte ut den tilltalade, och subjektsfrågan har
+        # frågeordet på subjektets plats.
+        if (m.modus is not Satsmodus.IMPERATIV
+                and m.fråga_om != "subjekt" and not inverterar):
             ord += self.nominalfras(m.subjekt, "subjekt")
 
         # Objektspronomen realiseras som klitika FÖRE verbet, inte på
@@ -445,6 +466,8 @@ class RomanskRenderare:
         ord.append(verb[0])
         ord += efter
         ord += verb[1:]
+        if inverterar:
+            ord += self.nominalfras(m.subjekt, "subjekt")
 
         if m.komplement is not None:
             markör = self.u.infinitivmarkör(m.verb)
@@ -453,9 +476,10 @@ class RomanskRenderare:
             ord.append(self.u.form_för(m.komplement, "inf"))
         if m.predikativ is not None:
             ord += self.predikativ(m)
-        if m.objekt is not None and cod is None:
+        if m.objekt is not None and cod is None and m.fråga_om != "objekt":
             ord += self.nominalfras(m.objekt, "objekt")
-        if m.io is not None and self._pronomen(m.io) is None:
+        if (m.io is not None and self._pronomen(m.io) is None
+                and m.fråga_om != "io"):
             prep = self.preposition_för(m.verb, "io")
             if prep is not None:
                 ord.append(self.u.form_för(prep, "inv"))
@@ -474,6 +498,41 @@ class RomanskRenderare:
                 ord += self.nominalfras(adverbial.komplement)
         if m.bisats is not None:
             ord += self.bisats(m.bisats)
+        return ord
+
+    def frågecell(self, koncept: str, subjekt: bool) -> str:
+        """Cellen i frågepronomenets paradigm. Franskans är kasusdelad."""
+        return "nom" if subjekt else "obl"
+
+    def frågedeterminantcell(self, genus: int, numerus: Numerus) -> str:
+        """quel kongruerar som en artikel. Överskrivs där paradigmet är tunnare."""
+        return self.artikelcell(genus, numerus, "", bestämd=True)
+
+    def frågeord(self, m: Mening) -> list[str] | None:
+        """Frågeordet, med preposition om slotten är prepositionsstyrd.
+
+        Det indirekta objektet realiseras med à/a i de romanska språken, och
+        prepositionen följer med frågan: "à qui a-t-elle donné le livre".
+        Den läses ur samma MönsterKrav som styr påståendet.
+        """
+        if m.fråga_om is None:
+            return None
+        if m.fråga_om not in FRÅGESLOTTAR:
+            return [self.u.form_för(m.fråga_om, "inv")]
+        efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
+        if efterfrågat is None:
+            raise RenderingsFel(
+                f"{self.SPRÅK}: fråga_om={m.fråga_om!r} men den slotten är tom")
+        if efterfrågat.frågedeterminant is not None:
+            ord = self.nominalfras(
+                efterfrågat, "subjekt" if m.fråga_om == "subjekt" else "objekt")
+        else:
+            koncept = self.u.frågepronomen(efterfrågat.koncept)
+            ord = [self.u.form_för(
+                koncept, self.frågecell(koncept, m.fråga_om == "subjekt"))]
+        prep = self.preposition_för(m.verb, m.fråga_om)
+        if prep is not None:
+            ord.insert(0, self.u.form_för(prep, "inv"))
         return ord
 
     def bisats(self, b: Bisats) -> list[str]:
@@ -501,7 +560,7 @@ class RomanskRenderare:
         ord = self.satsled(m)
         mening = " ".join(self.sandhi(ord))
         mening = mening[0].upper() + mening[1:]
-        if m.fråga:
+        if m.fråga or m.fråga_om is not None:
             return self.FRÅGETECKEN_FÖRE + mening + "?"
         if m.modus is Satsmodus.IMPERATIV:
             # Spanskan sätter ut det inledande utropstecknet också.

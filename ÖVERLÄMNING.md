@@ -22,7 +22,7 @@ som styr vilka ord som får kombineras.
 ## Var vi står
 
 **Datalagret, renderaren och restriktionerna är klara. Meningsformen är
-utbyggd genom tjugo nivåer. Generatorn är inte byggd.**
+utbyggd genom tjugoen nivåer — **stegen är slut**. Generatorn är inte byggd.**
 
 ```
 Koncept        736        Mönster        271   (universella
@@ -51,7 +51,7 @@ uttrycksförmågan. Det är den inte längre; se nåbarhetsmätningen nedan.
 
 ## Vad som gjordes sist (2026-08-13 — 08-14)
 
-Tio konstruktioner byggdes, en i taget, var och en i alla sju språk innan
+Elva konstruktioner byggdes, en i taget, var och en i alla sju språk innan
 nästa påbörjades. Ordningen togs inte på känsla utan **härleddes ur
 `MönsterKrav.slot` × `MönsterKrav.frastyp`** — en kolumn som legat ifylld
 sedan mönstertaggningen utan att någon läst den. Metoden flyttade
@@ -71,6 +71,7 @@ fyra dimensioner och inte en. Se GENERATOR.md, avsnittet med samma namn.
 | 18 | komparation | `Grad`, `jämförelse` |
 | 19 | imperativ | `Satsmodus` |
 | 20 | bisatser | `Bisats`, och `Mening` i `Mening` |
+| 21 | wh-frågor | `fråga_om`, `Nominalfras.frågedeterminant` |
 
 Renderarna växte med det: `kein` i tyskan, do-support i engelskan,
 klitikaordning och sandhi i de romanska, ukemi-passiv och より-jämförelse i
@@ -107,10 +108,10 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 `Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
 ```
-sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
-en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
-ja  1 459 / 2 498   58 %      es  6 045 / 10 596   57 %
-                              de  8 508 / 23 494   36 %
+sv  3 892 / 4 988   78 %      fr  5 606 /  9 070   62 %
+en  1 802 / 2 293   79 %      it  5 801 / 10 246   57 %
+ja  1 472 / 2 498   59 %      es  6 054 / 10 596   57 %
+                              de  8 531 / 23 494   36 %
 ```
 
 Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
@@ -151,7 +152,7 @@ adjektivformer, och två tredjedelar av det paradigmet är komparativ och
 superlativ i attributiv ställning. `Grad` finns på `Mening` men styr bara
 predikativet. Att flytta graden in i `Nominalfras.attribut` är den enskilt
 största utökningen som återstår — värd omkring 10 500 tyska former, mer än
-alla tio gjorda utökningar tillsammans på det språket.
+alla elva gjorda utökningar tillsammans på det språket.
 
 ---
 
@@ -388,6 +389,98 @@ vore en tyst felaktig mening.
 
 ---
 
+## Wh-frågorna — nivå 21, och stegen är slut
+
+`Mening.fråga_om` säger vad frågan gäller. Två sorters värden, och
+skillnaden är grammatisk:
+
+- **`"subjekt"` / `"objekt"` / `"io"`** — ett argument efterfrågas. Slotten
+  står kvar i specen **med svaret i sig**: "vem läser boken?" byggs ur
+  "flickan läser boken", och renderaren byter ut ordet mot vem eller vad.
+  Vilketdera avgörs på MÄNSKLIG-biten hos det efterfrågade — samma
+  semantikbit restriktionerna redan använder, så frågeordet behövde ingen
+  egen taggning.
+- **`"frågadverb_tid"` m.fl.** — en omständighet efterfrågas. Inget
+  argument tas bort; adverbet läggs till.
+
+Att svaret ligger kvar i specen är inte en tillfällighet: en fråga och dess
+svar är samma mening, och en inlärningsapp behöver båda. Restriktionerna
+prövar därför frågan mot svaret utan att veta att det är en fråga.
+
+```
+             subjekt              objekt                     io
+sv   Vem gav brodern boken?   Vad gav flickan brodern?   Vem gav flickan boken?
+en   Who gave the brother…?   What did the girl give…?   Whom did the girl give…?
+de   Wer gab dem Bruder…?     Was gab das Mädchen…?      Wem gab das Mädchen…?
+fr   Qui a donné le livre…?   Qu'est-ce que la fille…?   À qui est-ce que…?
+es   ¿Quién le dio el libro…? ¿Qué le dio la chica…?     ¿A quién le dio…?
+it   Chi ha dato il libro…?   Cosa ha dato la ragazza…?  A chi ha dato…?
+ja   誰が兄弟に本をあげましたか。 女の子は兄弟に何をあげましたか。 女の子は誰に本を…
+```
+
+### Två regler räckte till sex språk
+
+**Subjektsfrågan inverterar inte.** Frågeordet står redan på subjektets
+plats, så "vem läser boken?" har rak ordföljd medan "vad läser hon?" har
+omvänd. Det gäller alla sex, och det är skälet till att engelskan säger
+"Who reads the book?" och inte "Who does read the book?" — do-omskrivningen
+finns bara för att något ska kunna flytta förbi subjektet, och här flyttar
+ingenting.
+
+**Tyskan behövde ingen regel alls.** Frågeordet tar Vorfeld och V2 gör
+resten: subjektsfrågan blir rak ordföljd och objektsfrågan omvänd, av sig
+självt. Kasus på frågeordet — wer/wen/wem — läses ur verbets rektion, samma
+väg som för nominalfraser: "wem gibt sie das Buch" har dativ därför att
+geben styr dativ på io.
+
+**Japanskan flyttar ingenting.** 何 står kvar där objektet stod, med sin
+partikel kvar. Det är den enskilt största syntaktiska skillnaden mot de sex
+andra. Ett efterfrågat subjekt tar dessutom alltid が — 誰は finns inte,
+eftersom det okända inte kan vara tema.
+
+### Frågedeterminanterna
+
+`Nominalfras.frågedeterminant` för "vilken bok": här står huvudordet kvar
+och det är valet mellan exemplar som efterfrågas. Determinanten tar
+artikelns plats precis som en possessiv, och styr adjektivet likadant —
+tyskans `welcher` böjs som den bestämda artikeln och ger svag deklination.
+
+```
+sv  Vilken bok läste flickan?      de  Welchem Bruder gab das Mädchen das Buch?
+en  Which book did the girl read?  fr  Quelle fille lit le livre?
+```
+
+### Det datan bar på
+
+Jakten på snedstreck i formerna — `que/quoi` i franskans frågepronomen —
+drog fram att **224 franska verbformer har subjektspronomenet inbakat**:
+"je travaille", "j'écoute", "il/elle travailla". Sju lexem, sex av dem
+vokalinledda.
+
+Skälet visade sig vara **renderaren**: franskans elision fanns bara för
+le/la/ne/que. "J'écoute" gick inte att bygga, så någon skrev in pronomenet
+i formen. Med `je` och de andra klitika i elisionslistan bygger renderaren
+det själv, och formerna kunde städas.
+
+Det är tredje gången samma mönster dyker upp — tyska substantiv med artikeln
+inbakad, tyska imperativer med pronomenet inbakat, franska verb med
+pronomenet inbakat. Alla tre är *rätt böjda, fel avgränsade*, och alla tre
+är osynliga för en granskning som frågar "är formen korrekt?".
+
+Två småfel till: `fr/que` obl-cell hade "que/quoi" (två former i en cell,
+nu "que" — quoi är den toniska varianten), och `es/vosotros` hade
+"vosotros/vosotras". Femininum kräver ett eget lexem som `nosotras` har;
+det saknas fortfarande och 2pl femininum vägrar därför i spanskan, precis
+som förut.
+
+### Vad wh-frågorna INTE låste upp
+
+8–23 former per språk — frågeorden själva, inget mer. Det är den minsta
+formvinsten av alla elva utökningar, och samtidigt den konstruktion en
+nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll.
+
+---
+
 ## Kända täckningsgränser
 
 (Inga fel, men bra att veta.)
@@ -429,18 +522,20 @@ vore en tyst felaktig mening.
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
    nu mogen — med 78 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **En konstruktion kvar på stegen:** wh-frågor. De 76 frågeorden har
-   former; specen saknar sätt att markera vilken slot som efterfrågas.
-3. **Modusrektion på subjunktionerna** — se bisatsavsnittet. Låser upp de
+2. **Modusrektion på subjunktionerna** — se bisatsavsnittet. Låser upp de
    romanska konjunktiverna (fr 1 044, es 2 100, it 2 075 former) och kräver
    en moduskolumn på `MönsterKrav`, alltså en ändring i `setup.sql`.
-4. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
+3. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
    allt som återstår (~10 500 tyska former), och billig: graden finns redan
    som `Grad`, den sitter bara på fel ställe.
-5. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
+4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
    indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
    Partikeln ligger i formen och borde ligga i det infinita fältet.
-6. **Appen.** Desktop först, mobil senare.
+5. **Appen.** Desktop först, mobil senare.
+
+**Komplexitetsstegen är slut.** De 21 nivåerna i GENERATOR.md är byggda i
+alla sju språk. Det som återstår ovan är inte fler satstyper utan djup i
+dem som finns — och generatorn.
 
 Håll FSRS, ljuduppläsning och appen utanför tills generatorn löser fram
 meningar.

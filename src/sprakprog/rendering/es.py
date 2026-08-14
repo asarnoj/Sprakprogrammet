@@ -45,6 +45,14 @@ class SpanskRenderare(RomanskRenderare):
     FRÅGETECKEN_FÖRE = "¿"
     SAMMANDRAG = {("a", "el"): "al", ("de", "el"): "del"}
 
+    def frågedeterminantcell(self, genus: int, numerus: Numerus) -> str:
+        # qué böjs inte alls.
+        return "inv"
+
+    def frågecell(self, koncept: str, subjekt: bool) -> str:
+        # Spanskan böjer quién i numerus, inte i kasus, och qué inte alls.
+        return "quien_sg" if koncept.endswith("person") else "que"
+
     def possessivcell(self, genus: int, numerus: Numerus) -> str:
         kön = "m" if genus == MASKULIN else "f"
         return f"obest_{kön}_{'pl' if numerus is Numerus.PL else 'sg'}"

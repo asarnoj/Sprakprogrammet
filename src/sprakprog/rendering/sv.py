@@ -21,7 +21,7 @@ from dataclasses import replace
 from .spec import (
     Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
     Prepositionsfras,
-    RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -133,7 +133,13 @@ class SvenskRenderare:
         # Bestämdhet realiseras olika beroende på vad som står framför
         # huvudordet: suffix i "flickan", fristående artikel i "en bok",
         # och ingen artikel alls när en possessiv tar platsen ("sin bror").
-        if nf.ägare is not None:
+        if nf.frågedeterminant is not None:
+            # "vilken bok" — frågedeterminanten tar artikelns plats, och
+            # substantivet står obestämt precis som efter en possessiv.
+            ord.append(self.u.form_för(nf.frågedeterminant, _artikelcell(
+                nf.numerus, genus).replace("utr", "utr_sg").replace("neu", "neu_sg")))
+            substantivform = Bestämdhet.OBESTÄMD
+        elif nf.ägare is not None:
             # "flickans bok" — ägaren står i genitiv FÖRE huvudordet, och
             # huvudordet blir obestämt precis som efter en possessiv.
             # Svenskan säger aldrig "flickans boken".
@@ -319,6 +325,15 @@ class SvenskRenderare:
             subjekt = self.nominalfras(m.subjekt, subjekt=True)
         # Ja/nej-fråga är ren omkastning: det finita verbet först, subjektet
         # sedan. Samma sats, annan ordning — inget ord läggs till.
+        # Wh-frågan ersätter det efterfrågade ledet med ett frågeord och
+        # flyttar det först. Subjektsfrågan inverterar INTE: frågeordet står
+        # redan på subjektets plats, så "vem läser boken?" har rak ordföljd
+        # medan "vad läser hon?" har omvänd.
+        frågeord = self.frågeord(m)
+        if frågeord is not None and m.fråga_om == "subjekt":
+            subjekt = [frågeord]
+            frågeord = None
+
         if bisats:
             # BIFF: negationen kilar in sig mellan subjektet och verbet.
             ord = [*subjekt]
@@ -326,14 +341,17 @@ class SvenskRenderare:
                 ord.append(self.u.form_för("neg_inte", "inv"))
             ord.extend(verb)
         else:
-            ord = [verb[0], *subjekt] if m.fråga else [*subjekt, verb[0]]
+            omvänd = m.fråga or frågeord is not None
+            ord = [verb[0], *subjekt] if omvänd else [*subjekt, verb[0]]
+            if frågeord is not None:
+                ord.insert(0, frågeord)
             if m.negerad:
                 # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
                 # inte "ska ge inte". Därför delas verbfrasen här.
                 ord.append(self.u.form_för("neg_inte", "inv"))
             ord.extend(verb[1:])
-        for nf in (m.io, m.objekt):
-            if nf is not None:
+        for slot, nf in (("io", m.io), ("objekt", m.objekt)):
+            if nf is not None and slot != m.fråga_om:
                 ord.extend(self.nominalfras(nf))
         if m.komplement is not None:
             ord.extend(self.komplement(m))
@@ -344,6 +362,31 @@ class SvenskRenderare:
         if m.bisats is not None:
             ord.extend(self.bisats(m.bisats))
         return ord
+
+    def frågeord(self, m: Mening) -> str | None:
+        """Frågeordet i en wh-fråga, böjt efter sin roll. None = ingen sådan.
+
+        Svenskan har kasus kvar bara i genitiv (vems), så subjekt och objekt
+        får samma form — men rollen skickas ändå med, eftersom uppslaget är
+        detsamma i alla sju och tyskan skiljer wer/wen/wem.
+        """
+        if m.fråga_om is None:
+            return None
+        if m.fråga_om not in FRÅGESLOTTAR:
+            return self.u.form_för(m.fråga_om, "inv")
+        efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
+        if efterfrågat is None:
+            raise RenderingsFel(
+                f"sv: fråga_om={m.fråga_om!r} men den slotten är tom — "
+                f"frågan behöver ett svar att ställa sig om")
+        if efterfrågat.frågedeterminant is not None:
+            # "vilken bok läser hon?" — hela frasen flyttas, inte bara ett
+            # pronomen. Huvudordet står kvar och sägs ut.
+            return " ".join(self.nominalfras(
+                efterfrågat, subjekt=m.fråga_om == "subjekt"))
+        return self.u.form_för(
+            self.u.frågepronomen(efterfrågat.koncept),
+            "nom" if m.fråga_om == "subjekt" else "ack_dat")
 
     def bisats(self, b: Bisats) -> list[str]:
         """Subjunktion plus satsen i bisatsordföljd."""

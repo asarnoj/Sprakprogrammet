@@ -28,7 +28,8 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bisats, Diates, Grad, Mening, Nominalfras, RenderingsFel, Satsmodus,
+    FRÅGESLOTTAR, Aspekt, Bisats, Diates, Grad, Mening, Nominalfras,
+    RenderingsFel, Satsmodus,
     Tidsreferens, tilltal,
 )
 from .uppslag import Uppslag
@@ -37,6 +38,10 @@ from .uppslag import Uppslag
 # informationsstruktur i huvudsats — men i bisats är den
 # obligatorisk: en bisats har inget eget tema.
 TOPIK, OBJEKT, DATIV, SUBJEKT = "は", "を", "に", "が"
+
+# Frågadverb som kräver en partikel efter sig. どこ betyder "vilken
+# plats" och är ett substantiv; どこで är "på vilken plats".
+FRÅGEADVERBPARTIKEL = {"frågadverb_plats": "で"}
 
 
 class JapanskRenderare:
@@ -47,6 +52,8 @@ class JapanskRenderare:
         huvud = self.u.lexem(nf.koncept)
         ord = ""
 
+        if nf.frågedeterminant is not None:
+            ord += self.u.form_för(nf.frågedeterminant, "inv")
         if nf.ägare is not None:
             # 女の子の本 — ägaren följd av partikeln の, före huvudordet.
             # Samma partikel som possessivlemmana redan bär (彼女の).
@@ -297,8 +304,28 @@ class JapanskRenderare:
         # Uppmaningen säger inte ut den tilltalade — 本を読んでください,
         # inte あなたは本を読んでください. Att sätta ut あなた är
         # dessutom påfallande i japanskan, inte bara överflödigt.
-        delar = ([] if m.modus is Satsmodus.IMPERATIV
-                 else [self.nominalfras(m.subjekt) + (SUBJEKT if bisats else TOPIK)])
+        # Wh-frågan flyttar INGENTING i japanskan: frågeordet står kvar där
+        # ledet stod, med sin partikel kvar. Det är den enskilt största
+        # syntaktiska skillnaden mot de sex andra språken, som alla flyttar
+        # frågeordet först. Ett efterfrågat subjekt tar dessutom alltid が —
+        # 誰は finns inte, eftersom det okända inte kan vara tema.
+        if m.fråga_om == "subjekt":
+            huvud = (self.nominalfras(m.subjekt)
+                     if m.subjekt.frågedeterminant is not None
+                     else self.u.form_för(
+                         self.u.frågepronomen(m.subjekt.koncept), "jisho"))
+            delar = [huvud + SUBJEKT]
+        elif m.modus is Satsmodus.IMPERATIV:
+            delar = []
+        else:
+            delar = [self.nominalfras(m.subjekt) + (SUBJEKT if bisats else TOPIK)]
+        if m.fråga_om is not None and m.fråga_om not in FRÅGESLOTTAR:
+            # どこ är ett substantiviskt frågeord och behöver platspartikeln
+            # で precis som 学校で — den ligger redan i databasen som prep_i.
+            # いつ och なぜ är adverb och står nakna. Skillnaden är lexikal,
+            # inte syntaktisk, och därför en tabell och inte en regel.
+            delar.append(self.u.form_för(m.fråga_om, "inv")
+                         + FRÅGEADVERBPARTIKEL.get(m.fråga_om, ""))
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
                 delar.append(self.u.form_för(adverbial, "inv") + "、")
@@ -316,9 +343,9 @@ class JapanskRenderare:
             # subjunktionen ligger i databasen som ett vanligt lemma.
             delar.append(self.bisats(m.bisats) + OBJEKT)
         if m.io is not None:
-            delar.append(self.nominalfras(m.io) + DATIV)
+            delar.append(self._led(m, "io", m.io) + DATIV)
         if m.objekt is not None:
-            delar.append(self.nominalfras(m.objekt) + OBJEKT)
+            delar.append(self._led(m, "objekt", m.objekt) + OBJEKT)
         if m.predikativ is not None:
             delar.append("".join(self.predikativ(m)))
             # I-adjektivet bär tempus i KOPULASATSER (嬉しかったです), men
@@ -332,6 +359,12 @@ class JapanskRenderare:
         delar.append(self.verbform(m, enkel=bisats))
         return delar
 
+    def _led(self, m: Mening, slot: str, nf: Nominalfras) -> str:
+        """Ledet självt, eller frågeordet om det är just det som efterfrågas."""
+        if m.fråga_om == slot and nf.frågedeterminant is None:
+            return self.u.form_för(self.u.frågepronomen(nf.koncept), "jisho")
+        return self.nominalfras(nf)
+
     def bisats(self, b: Bisats) -> str:
         """Satsen först, subjunktionen sist — japanskan har POSTpositioner.
 
@@ -341,4 +374,5 @@ class JapanskRenderare:
                 + self.u.form_för(b.subjunktion, "inv"))
 
     def rendera(self, m: Mening) -> str:
-        return "".join(self.satsled(m)) + ("か。" if m.fråga else "。")
+        frågande = m.fråga or m.fråga_om is not None
+        return "".join(self.satsled(m)) + ("か。" if frågande else "。")

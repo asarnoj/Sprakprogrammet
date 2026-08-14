@@ -261,7 +261,8 @@ utökningarna flyttar bara taket.
     japanskan saknar både infinitivkomplement och perfektform
 19  läs boken!                      + imperativ        ✅ 2026-08-14
 20  hon vet att han kom             + bisatser         ✅ 2026-08-14
-21  vem läser boken?                + wh-frågor        ✗
+21  vem läser boken?                + wh-frågor        ✅ 2026-08-14
+──────────────────────────────────  stegen är slut
 ```
 
 ## Nivåerna härleds ur slot × frastyp
@@ -336,6 +337,10 @@ Engelskan vinner noll: `inf_imp` ÄR imperativcellen, och den var redan nådd
 som infinitiv. Att en utökning ger noll former i ett språk och 1 388 i ett
 annat är regel, inte undantag — vilket är skälet att mäta per språk.
 
+**Wh-frågorna är det motsatta fallet.** De låser upp 8–23 former per språk
+— frågeorden själva, inget mer — men de är den utökning en nybörjare möter
+tidigast av alla. "Antal former" är ett dåligt mått också åt det hållet.
+
 **Bisatserna är det tydligaste fallet.** Sex av sju språk vinner NOLL
 former: en bisats använder samma celler som en huvudsats, bara i annan
 ordning. Japanskan vinner 343 (45 → 58 %), därför att den byter FORM och
@@ -354,16 +359,16 @@ imperativ, resten.
 
 ## Det som blockerar
 
-Mätt om 2026-08-14 efter de tio utökningarna, nu på alla sju språk och med
+Mätt om 2026-08-14 efter de elva utökningarna, nu på alla sju språk och med
 ett verktyg i stället för för hand: `ordbok/verktyg/nåbarhet.py`. Det
 instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
-en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
-ja  1 459 / 2 498   58 %      es  6 045 / 10 596   57 %
-                              de  8 508 / 23 494   36 %
+sv  3 892 / 4 988   78 %      fr  5 606 /  9 070   62 %
+en  1 802 / 2 293   79 %      it  5 801 / 10 246   57 %
+ja  1 472 / 2 498   59 %      es  6 054 / 10 596   57 %
+                              de  8 531 / 23 494   36 %
 ```
 
 Svenskan gick 37 % → 45 % → 71 % → **78 %**. Men de sju språken skiljer sig

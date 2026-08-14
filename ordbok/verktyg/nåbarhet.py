@@ -150,6 +150,24 @@ def specar():
                     yield Mening("kog_veta", SUBJ, bisats=Bisats("subj_att", inre))
                     yield Mening("krop_v_sova", SUBJ,
                                  adverbial=(Bisats("subj_när", inre),))
+    # wh-frågor: tre argumentslottar plus sex frågadverb
+    for fråga_om in ("subjekt", "objekt", "io", "frågadverb_tid",
+                     "frågadverb_plats", "frågadverb_sätt", "frågadverb_orsak",
+                     "frågadverb_riktning", "frågadverb_ursprung"):
+        for tid in Tidsreferens:
+            yield Mening("fys_ge", SUBJ, objekt=Nominalfras(OBJ),
+                         io=Nominalfras("fam_bror"), tid=tid, fråga_om=fråga_om)
+    # frågedeterminanter: hela frasen flyttas, huvudordet står kvar
+    for det in ("interr_det_vilken", "interr_det_hur_många", "interr_det_hur_mycket"):
+        for huvud in HUVUDORD:
+            for num in Numerus:
+                nf = Nominalfras(huvud, numerus=num, frågedeterminant=det)
+                yield Mening("fys_ge", nf, objekt=Nominalfras(OBJ),
+                             io=Nominalfras("fam_bror"), fråga_om="subjekt")
+                yield Mening("fys_ge", SUBJ, objekt=nf,
+                             io=Nominalfras("fam_bror"), fråga_om="objekt")
+                yield Mening("fys_ge", SUBJ, objekt=Nominalfras(OBJ),
+                             io=nf, fråga_om="io")
     # adverb
     yield Mening("fys_ge", SUBJ, objekt=Nominalfras(OBJ), adverbial=("adv_igår",),
                  tid=Tidsreferens.FÖRFLUTEN)
