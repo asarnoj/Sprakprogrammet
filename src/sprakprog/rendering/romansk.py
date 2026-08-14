@@ -33,7 +33,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Referentgenus,
+    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
+    Referentgenus,
     RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -314,6 +315,10 @@ class RomanskRenderare:
     # byter till konjunktiv i hela paradigmet ("¡no leas!"), italienskan
     # bara i 2sg, och där till infinitiv ("non leggere!"). Tom = oförändrad.
     NEKAD_IMPERATIVCELL: dict[str, str] = {}
+    # Subjunktioner som styr konjunktiv. Vägras tills modusrektionen finns
+    # i datan — se bisats(). Listan skiljer sig mellan språken, vilket är
+    # hela skälet att den inte hör hemma i koden på sikt.
+    KONJUNKTIVSUBJUNKTIONER: frozenset[str] = frozenset()
 
     # Franskans ne har ingen motsvarighet i es/it, som klarar sig med en
     # enda preverbal partikel.
@@ -397,7 +402,13 @@ class RomanskRenderare:
         return [self.u.form(self.u.lexem(m.predikativ.koncept),
                             _tal(m.predikativ.numerus))]
 
-    def rendera(self, m: Mening) -> str:
+    def satsled(self, m: Mening) -> list[str]:
+        """Satsens ord. Romansk bisats har samma ordföljd som huvudsatsen.
+
+        Det som SKILJER är modus: en rad subjunktioner styr konjunktiv
+        ("bien qu\'il vienne", "antes de que venga", "benché venga"), och
+        vilka de är skiljer sig mellan de tre språken. Se `bisats`.
+        """
         ord: list[str] = []
         if m.fråga and self.FRÅGEINLEDNING:
             ord.append(self.FRÅGEINLEDNING)
@@ -454,12 +465,40 @@ class RomanskRenderare:
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
                 ord.append(self.u.form_för(adverbial, "inv"))
+            elif isinstance(adverbial, Bisats):
+                ord += self.bisats(adverbial)
             else:
                 # Sammandragningen de+le→du sköts av sandhi, precis som
                 # för genitivet — samma mekanism, annan preposition.
                 ord.append(self.u.form_för(adverbial.preposition, "inv"))
                 ord += self.nominalfras(adverbial.komplement)
+        if m.bisats is not None:
+            ord += self.bisats(m.bisats)
+        return ord
 
+    def bisats(self, b: Bisats) -> list[str]:
+        """Subjunktion plus sats.
+
+        KÄND GRÄNS: de subjunktioner som styr KONJUNKTIV vägras. Vilka de är
+        är en lexikal egenskap hos varje subjunktion och skiljer sig mellan
+        språken — fr "avant que" tar konjunktiv men "après que" indikativ,
+        es "aunque" tar BÅDA och betydelsen ändras med valet. Det är samma
+        sorts fakta som prepositionernas kasusrektion, och hör hemma på
+        subjunktionens eget Mönster, inte i en lista här. MönsterKrav saknar
+        en moduskolumn, så det kräver en schemaändring.
+
+        Konjunktivcellerna finns i datan och är det största onådda blocket i
+        fr/es/it efter det här. Att rendera dem i indikativ vore en tyst
+        felaktig mening, vilket är precis vad projektet inte ska producera.
+        """
+        if b.subjunktion in self.KONJUNKTIVSUBJUNKTIONER:
+            raise RenderingsFel(
+                f"{self.SPRÅK}: {b.subjunktion} styr konjunktiv, och "
+                f"modusrektionen finns inte i datan än — se bisats()")
+        return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(b.sats)]
+
+    def rendera(self, m: Mening) -> str:
+        ord = self.satsled(m)
         mening = " ".join(self.sandhi(ord))
         mening = mening[0].upper() + mening[1:]
         if m.fråga:

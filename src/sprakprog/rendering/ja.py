@@ -28,12 +28,15 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Diates, Grad, Mening, Nominalfras, RenderingsFel, Satsmodus,
+    Aspekt, Bisats, Diates, Grad, Mening, Nominalfras, RenderingsFel, Satsmodus,
     Tidsreferens, tilltal,
 )
 from .uppslag import Uppslag
 
-TOPIK, OBJEKT, DATIV = "は", "を", "に"
+# は markerar TEMA, が markerar subjekt. Skillnaden är
+# informationsstruktur i huvudsats — men i bisats är den
+# obligatorisk: en bisats har inget eget tema.
+TOPIK, OBJEKT, DATIV, SUBJEKT = "は", "を", "に", "が"
 
 
 class JapanskRenderare:
@@ -79,12 +82,24 @@ class JapanskRenderare:
 
         return ord + self.u.form(huvud, "jisho")
 
-    def verbform(self, m: Mening) -> str:
-        """Artig form. Register är renderarens val, inte en Former-axel."""
+    def verbform(self, m: Mening, enkel: bool = False) -> str:
+        """Artig form. Register är renderarens val, inte en Former-axel.
+
+        `enkel` ger den enkla formen i stället, och det är INTE ett
+        registerval: en japansk bisats står alltid i enkel form, hur artig
+        huvudsatsen än är. 彼が来たと言いました — 来た, aldrig 来ました.
+        Artigheten sitter på satsen som helhet och realiseras en enda gång,
+        på huvudverbet, sist.
+
+        Det är därför de enkla formerna — jisho, ta, nai — var onåbara ända
+        tills bisatsen byggdes, och det var fel att kalla dem register.
+        """
         lexem = self.u.lexem(m.verb)
         celler = self.u._celler(lexem)
         if m.modus is Satsmodus.IMPERATIV:
             return self._uppmaning(m, lexem)
+        if enkel:
+            return self._enkel_form(m, lexem, celler)
         # Läses genom VERB-paradigmet, så adjektivets ku-cell syns inte här.
         # Kännetecknet är i stället att ます saknas medan grundformen slutar
         # på い — det är ett i-adjektiv som råkat hamna under ett verbkoncept.
@@ -140,6 +155,45 @@ class JapanskRenderare:
         # Japanskan har inget futurum: icke-förfluten form täcker nutid och
         # framtid, och tidsadverbialet gör skillnaden.
         return masu
+
+    def _enkel_form(self, m: Mening, lexem, celler: dict[str, str]) -> str:
+        """Enkel form: 読む / 読んだ / 読まない / 読まなかった.
+
+        Tre av fyra ligger som egna celler. Den fjärde — enkelt förflutet
+        NEKANDE — komponeras ur ない genom att byta ut ändelsen mot なかった,
+        på samma sätt som ません komponeras ur ます-stammen. ない böjs som ett
+        i-adjektiv, vilket är precis varför bytet är regelbundet.
+        """
+        förfluten = (m.tid is Tidsreferens.FÖRFLUTEN
+                     or m.aspekt is Aspekt.PERFEKT)
+        if m.diates is not Diates.AKTIV:
+            # 読まれる är redan enkel form — det är den ARTIGA som måste
+            # komponeras. Här räcker cellen, plus た-böjning för dåtid.
+            ukemi = self.u.form(lexem, "ukemi")
+            if not ukemi.endswith("る"):
+                raise RenderingsFel(
+                    f"ja: ukemi-formen {ukemi!r} slutar inte på る")
+            if m.negerad:
+                grund = ukemi[:-1] + "ない"
+                return self._nekat_förflutet(grund) if förfluten else grund
+            return ukemi[:-1] + "た" if förfluten else ukemi
+        if m.negerad:
+            nai = self.u.form(lexem, "nai")
+            return self._nekat_förflutet(nai) if förfluten else nai
+        if förfluten:
+            return self.u.form(lexem, "ta")
+        # i-adjektiv under ett verbkoncept (恋しい) har jisho men ingen masu;
+        # jisho är rätt form för dem också, och utan です i bisats.
+        return self.u.form(lexem, "jisho")
+
+    @staticmethod
+    def _nekat_förflutet(nai: str) -> str:
+        """読まない → 読まなかった. ない böjs som i-adjektiv: い → かった."""
+        if not nai.endswith("ない"):
+            raise RenderingsFel(
+                f"ja: ない-formen {nai!r} slutar inte på ない — enkelt nekat "
+                f"förflutet kan inte komponeras")
+        return nai[:-1] + "かった"
 
     def _uppmaning(self, m: Mening, lexem) -> str:
         """Uppmaning som て-form plus ください: 読んでください.
@@ -225,8 +279,14 @@ class JapanskRenderare:
         raise RenderingsFel(
             f"ja/{adjektiv['lemma']}: ja_adjektiv_typ saknas")
 
-    def rendera(self, m: Mening) -> str:
-        """SOV: ämne, adverbial, indirekt objekt, objekt, verb."""
+    def satsled(self, m: Mening, bisats: bool = False) -> list[str]:
+        """SOV: ämne, adverbial, indirekt objekt, objekt, verb.
+
+        `bisats` ändrar två saker, och båda är grammatik och inte stil:
+        verbet står i ENKEL form, och subjektet tar が i stället för は.
+        は markerar satsens tema, och en bisats har inget eget tema — den
+        ligger inuti huvudsatsens.
+        """
         if m.komplement is not None:
             raise RenderingsFel(
                 "ja: infinitivkomplement finns inte i japanskan. Modalitet "
@@ -238,15 +298,23 @@ class JapanskRenderare:
         # inte あなたは本を読んでください. Att sätta ut あなた är
         # dessutom påfallande i japanskan, inte bara överflödigt.
         delar = ([] if m.modus is Satsmodus.IMPERATIV
-                 else [self.nominalfras(m.subjekt) + TOPIK])
+                 else [self.nominalfras(m.subjekt) + (SUBJEKT if bisats else TOPIK)])
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
                 delar.append(self.u.form_för(adverbial, "inv") + "、")
+            elif isinstance(adverbial, Bisats):
+                delar.append(self.bisats(adverbial) + "、")
             else:
                 # Japanskan har POSTpositioner: 学校で, inte で学校.
                 # Ordningen är alltså omvänd mot alla sex andra språken.
                 delar.append(self.nominalfras(adverbial.komplement)
                              + self.u.form_för(adverbial.preposition, "inv"))
+        if m.bisats is not None:
+            # ということ nominaliserar satsen. Resultatet ÄR en nominalfras
+            # och tar objektspartikeln を som vilket objekt som helst —
+            # ingen egen mekanism behövs, vilket är hela poängen med att
+            # subjunktionen ligger i databasen som ett vanligt lemma.
+            delar.append(self.bisats(m.bisats) + OBJEKT)
         if m.io is not None:
             delar.append(self.nominalfras(m.io) + DATIV)
         if m.objekt is not None:
@@ -257,7 +325,20 @@ class JapanskRenderare:
             # inte med なる — där är det verbet som böjs (嬉しくなりました).
             if (m.verb == "verb_vara" and isinstance(m.predikativ, str)
                     and self.u.lexem(m.predikativ)["ja_adjektiv_typ"] == "i"):
-                delar.append(self.u.form_för(m.verb, "masu"))
-                return "".join(delar) + ("か。" if m.fråga else "。")
-        delar.append(self.verbform(m))
-        return "".join(delar) + ("か。" if m.fråga else "。")
+                # です faller bort i bisats: 嬉しいとき, inte 嬉しいですとき.
+                if not bisats:
+                    delar.append(self.u.form_för(m.verb, "masu"))
+                return delar
+        delar.append(self.verbform(m, enkel=bisats))
+        return delar
+
+    def bisats(self, b: Bisats) -> str:
+        """Satsen först, subjunktionen sist — japanskan har POSTpositioner.
+
+        Omvänt mot alla sex andra språken, precis som med prepositionerna.
+        """
+        return ("".join(self.satsled(b.sats, bisats=True))
+                + self.u.form_för(b.subjunktion, "inv"))
+
+    def rendera(self, m: Mening) -> str:
+        return "".join(self.satsled(m)) + ("か。" if m.fråga else "。")

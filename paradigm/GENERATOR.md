@@ -260,7 +260,7 @@ utökningarna flyttar bara taket.
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
 19  läs boken!                      + imperativ        ✅ 2026-08-14
-20  hon vet att han kom             + bisatser         ✗
+20  hon vet att han kom             + bisatser         ✅ 2026-08-14
 21  vem läser boken?                + wh-frågor        ✗
 ```
 
@@ -336,6 +336,14 @@ Engelskan vinner noll: `inf_imp` ÄR imperativcellen, och den var redan nådd
 som infinitiv. Att en utökning ger noll former i ett språk och 1 388 i ett
 annat är regel, inte undantag — vilket är skälet att mäta per språk.
 
+**Bisatserna är det tydligaste fallet.** Sex av sju språk vinner NOLL
+former: en bisats använder samma celler som en huvudsats, bara i annan
+ordning. Japanskan vinner 343 (45 → 58 %), därför att den byter FORM och
+inte bara ordföljd — bisatsen står alltid i enkel form. De cellerna stod
+tidigare bokförda som "register, utanför scope". Det var fel: plain/polite
+är register i huvudsats men grammatik i bisats, och en mätning som bara
+räknar former hade aldrig avslöjat skillnaden.
+
 **Negation och frågor låser upp noll former** — negationsadverben har redan
 sin `inv`-form. Men de mångdubblar antalet *meningar* som går att bygga av
 samma ord. "Antal former" kan alltså inte vara enda måttet på en utökning.
@@ -346,7 +354,7 @@ imperativ, resten.
 
 ## Det som blockerar
 
-Mätt om 2026-08-14 efter de nio utökningarna, nu på alla sju språk och med
+Mätt om 2026-08-14 efter de tio utökningarna, nu på alla sju språk och med
 ett verktyg i stället för för hand: `ordbok/verktyg/nåbarhet.py`. Det
 instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
@@ -354,8 +362,8 @@ kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 ```
 sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
 en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
-                              es  6 045 / 10 596   57 %
-ja  1 116 / 2 498   45 %      de  8 508 / 23 494   36 %
+ja  1 459 / 2 498   58 %      es  6 045 / 10 596   57 %
+                              de  8 508 / 23 494   36 %
 ```
 
 Svenskan gick 37 % → 45 % → 71 % → **78 %**. Men de sju språken skiljer sig
@@ -365,9 +373,9 @@ block**:
 | Språk | Största onådda block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv (resten) + konditionalis (6 celler) | bisatser respektive villkorssatser |
+| fr/es/it | konjunktiv + konditionalis (6 celler) | modusrektion i datan, respektive villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
-| ja | jisho/ta/nai — de enkla formerna | register, utanför scope |
+| ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
 **Tyskans siffra är låg av en enda anledning.** 16 121 av 23 494 tyska
 former är adjektivformer, och två tredjedelar av adjektivparadigmet är

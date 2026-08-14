@@ -190,6 +190,34 @@ class Prepositionsfras:
 
 
 @dataclass(frozen=True, slots=True)
+class Bisats:
+    """Subjunktion plus en hel sats: "att han kom", "när hon läste boken".
+
+    Den första konstruktionen där `Mening` innehåller en `Mening`. Allt som
+    går att säga i en huvudsats går därmed att säga i en bisats — tempus,
+    negation, passiv, perfekt — utan att något behöver läggas till.
+
+    Bisatsen fyller två helt olika roller, och skillnaden ligger i
+    subjunktionen, inte i strukturen:
+
+      ARGUMENT    "hon vet ATT han kom" — satsen ÄR objektet. Bara de 22
+                  verb vars MönsterKrav har frastyp & 32 tar en sådan.
+
+      ADVERBIAL   "hon läste NÄR han kom" — satsen är en omständighet, och
+                  vilket verb som helst tar den. Ligger därför i
+                  `adverbial` bredvid Prepositionsfras, inte i `bisats`.
+
+    Ordföljden i bisatsen är INTE densamma som i huvudsatsen i två av sju
+    språk: tyskan flyttar det finita verbet sist, svenskan flyttar
+    satsadverbialet före det. Japanskan byter dessutom register — bisatsen
+    står alltid i enkel form, aldrig artig, och det är grammatik och inte
+    stil.
+    """
+    subjunktion: str
+    sats: "Mening"
+
+
+@dataclass(frozen=True, slots=True)
 class Mening:
     """En hel sats. Slotnamnen matchar MönsterKrav.slot."""
     verb: str
@@ -210,7 +238,7 @@ class Mening:
     Ett predikativt substantiv står utan artikel i sv/de/fr/es/it — "hon är
     läkare", inte "hon är en läkare" — men med artikel i engelskan.
     """
-    adverbial: "tuple[str | Prepositionsfras, ...]" = field(default=())
+    adverbial: "tuple[str | Prepositionsfras | Bisats, ...]" = field(default=())
     komplement: str | None = None
     """Infinitivkomplement: "hon vill läsa", "hon börjar att läsa".
 
@@ -247,6 +275,13 @@ class Mening:
     """
     tid: Tidsreferens = Tidsreferens.NUTID
     aspekt: Aspekt = Aspekt.PERFEKTIV
+    bisats: "Bisats | None" = None
+    """Argumentbisats: "hon vet att han kom".
+
+    Satsen fyller verbets objekt- eller kommunikatslot — vilken av dem
+    avgörs av verbets MönsterKrav och spelar ingen roll för ordföljden, så
+    renderaren behöver inte veta vilken. Validatorn gör det.
+    """
     modus: Satsmodus = Satsmodus.INDIKATIV
     """Satsmodus. IMPERATIV gör meningen till en uppmaning: "läs boken!".
 

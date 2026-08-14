@@ -26,7 +26,7 @@ from collections import defaultdict
 from sprakprog.generering.granskning import _former_per_cell
 from sprakprog.rendering import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus,
-    Prepositionsfras, RenderingsFel, Satsmodus, Tidsreferens, Uppslag,
+    Bisats, Prepositionsfras, RenderingsFel, Satsmodus, Tidsreferens, Uppslag,
 )
 from sprakprog.rendering import (
     EngelskRenderare, FranskRenderare, ItalienskRenderare, JapanskRenderare,
@@ -137,6 +137,19 @@ def specar():
             for negerad in (False, True):
                 yield Mening(verb, Nominalfras(tilltalad), objekt=objekt,
                              modus=Satsmodus.IMPERATIV, negerad=negerad)
+    # bisatser: allt en huvudsats kan uttrycka går att uttrycka i bisats,
+    # och i två språk med annan ordföljd. Japanskans enkla former (jisho,
+    # ta, nai) är onåbara utan den här slingan.
+    for verb in VERB_TRANS + VERB_INTRANS:
+        objekt = Nominalfras(OBJ) if verb in VERB_TRANS else None
+        for tid in Tidsreferens:
+            for negerad in (False, True):
+                for diates in Diates:
+                    inre = Mening(verb, SUBJ, objekt=objekt, tid=tid,
+                                  negerad=negerad, diates=diates)
+                    yield Mening("kog_veta", SUBJ, bisats=Bisats("subj_att", inre))
+                    yield Mening("krop_v_sova", SUBJ,
+                                 adverbial=(Bisats("subj_när", inre),))
     # adverb
     yield Mening("fys_ge", SUBJ, objekt=Nominalfras(OBJ), adverbial=("adv_igår",),
                  tid=Tidsreferens.FÖRFLUTEN)

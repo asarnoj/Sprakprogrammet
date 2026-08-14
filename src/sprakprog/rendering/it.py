@@ -49,6 +49,12 @@ class ItalienskRenderare(RomanskRenderare):
     # leggere!", aldrig "non leggi!". Bara den formen — "non leggete!" är
     # imperativ som vanligt. Ett av språkets egendomligaste undantag.
     NEKAD_IMPERATIVCELL = {"2sg": "inf"}
+    # "benché venga", "prima che venga", "affinché venga". Italienskan är
+    # den av de tre som kräver konjunktiv i flest lägen — även efter
+    # trosverb (penso che venga), vilket den här listan inte fångar
+    # eftersom den bara ser subjunktionen.
+    KONJUNKTIVSUBJUNKTIONER = frozenset({
+        "subj_trots_att", "subj_innan", "subj_för_att", "subj_ifall"})
     # Italienskan smälter ihop preposition och bestämd artikel obligatoriskt.
     # Sex prepositioner × sju artikelformer; de vanligaste tas här.
     SAMMANDRAG = {("a", "il"): "al", ("a", "lo"): "allo", ("a", "la"): "alla",

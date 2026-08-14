@@ -30,7 +30,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-from .spec import Diates, Mening, Nominalfras, Tidsreferens
+from .spec import Bisats, Diates, Mening, Nominalfras, Tidsreferens
 
 # docs/BITMASK.md §11. Bara för läsbara felmeddelanden.
 BITNAMN = {
@@ -67,6 +67,9 @@ TIDSBIT = {
 }
 TIDSNAMN = {2: "nutid", 4: "förfluten", 64: "framtid"}
 
+# MönsterKrav.frastyp, docs/BITMASK.md: Bisatsfras är bit 32.
+BISATSFRAS = 32
+
 
 @dataclass(frozen=True, slots=True)
 class Brott:
@@ -77,6 +80,9 @@ class Brott:
     faktisk: int | None
 
     def __str__(self) -> str:
+        if self.slot == "bisats":
+            return (f"verb={self.koncept}: tar ingen bisats — inget av "
+                    f"verbets mönsterkrav har frastyp Bisatsfras")
         if self.slot == "tempus":
             tillåtna = "/".join(n for b, n in TIDSNAMN.items() if self.krav & b)
             return (f"adverbial={self.koncept}: kräver {tillåtna}, "
@@ -97,6 +103,7 @@ class Validator:
         self._semantik: dict[str, int | None] = {}
         self._attributkrav: dict[str, list[int]] = {}
         self._tempuskrav: dict[str, int | None] = {}
+        self._bisatsverb: dict[str, bool] = {}
 
     def krav_för(self, verb: str) -> dict[str, list[int]]:
         """Slot → lista av alternativa bitmasker. Flera = ELLER."""
@@ -191,13 +198,56 @@ class Validator:
                 brott += self._attributbrott(slot, nf)
 
         # Adverbial mot meningens tidsreferens. Medlemskap, inte OCH.
+        # Bara ADVERB har tempuskrav — "igår" kräver förfluten tid. En
+        # prepositionsfras eller bisats har inget, och slås inte upp: att
+        # skicka dataklassen till uppslaget kraschade tyst i valideringen
+        # ända sedan prepositionsfraserna byggdes, eftersom ingen validerade
+        # en mening som hade en.
         tidsbit = TIDSBIT[m.tid]
         for adverbial in m.adverbial:
+            if isinstance(adverbial, Bisats):
+                brott += self._bisatsbrott(m, adverbial, argument=False)
+                continue
+            if not isinstance(adverbial, str):
+                continue
             tillåtna = self.tempuskrav(adverbial)
             if tillåtna is not None and not tillåtna & tidsbit:
                 brott.append(Brott("tempus", adverbial, tillåtna, tidsbit))
 
+        if m.bisats is not None:
+            brott += self._bisatsbrott(m, m.bisats, argument=True)
+
         return brott
+
+    def _bisatsbrott(self, m: Mening, b: Bisats, argument: bool) -> list[Brott]:
+        """Bisatsen prövas som en egen mening — den ÄR en.
+
+        En argumentbisats kräver dessutom att verbet öppnar en plats för
+        den: `MönsterKrav.frastyp & 32`. En adverbialbisats gör inte det,
+        eftersom vilket verb som helst kan ha en omständighet.
+        """
+        brott: list[Brott] = []
+        if argument and not self.tillåter_bisats(m.verb):
+            brott.append(Brott("bisats", m.verb, BISATSFRAS, None))
+        return brott + self.validera(b.sats)
+
+    def tillåter_bisats(self, verb: str) -> bool:
+        """Har verbet en slot som accepterar en hel sats?
+
+        22 verb har det, fördelade på objekt, kommunikat och komplement.
+        Vilken slot spelar ingen roll för ordföljden i något av de sju
+        språken, så renderaren behöver inte veta — bara att den finns.
+        """
+        if verb not in self._bisatsverb:
+            rad = self.conn.execute(
+                """SELECT 1 FROM Mönster m
+                   JOIN Koncept k ON k.id = m.koncept_id
+                   JOIN MönsterKrav mk ON mk.mönster_id = m.id
+                   WHERE k.nyckel = ? AND m.språk IS NULL
+                     AND (mk.frastyp & ?) = ?""",
+                (verb, BISATSFRAS, BISATSFRAS)).fetchone()
+            self._bisatsverb[verb] = rad is not None
+        return self._bisatsverb[verb]
 
     def duger(self, m: Mening) -> bool:
         return not self.validera(m)

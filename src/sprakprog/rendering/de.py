@@ -29,7 +29,7 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
     Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -290,15 +290,19 @@ class TyskRenderare:
         huvud = self.u.lexem(m.predikativ.koncept)
         return [self.u.form(huvud, _substantivcell(1, m.predikativ.numerus))]
 
-    def rendera(self, m: Mening) -> str:
-        """Tysk huvudsats med V2 och satsklammer.
-
-        Vorfeld | finit verb | Mittelfeld | infinita verbdelar
+    def satsled(self, m: Mening, bisats: bool = False) -> list[str]:
+        """Tysk sats. Vorfeld | finit verb | Mittelfeld | infinita verbdelar.
 
         I Mittelfeld står dativobjektet före ackusativobjektet när båda är
         substantiv, och tidsadverbialet mellan dem. Ordningen är hårdkodad
         precis som svenskans — men uppdelningen i fält är det inte, och det
         är den som en riktig ordföljdsmodell kommer att behöva.
+
+        `bisats` vänder satsklammern ut och in. I huvudsats står det finita
+        verbet på plats två och de infinita sist; i bisats står ALLIHOP
+        sist, med det finita allra sist: "dass er das Buch gelesen hat".
+        Uppdelningen i finit och infinit — som fanns för satsklammerns
+        skull — är precis vad som behövs, så bisatsen kostade en rad.
         """
         finit, infinit = self.verbdelar(m)
 
@@ -320,8 +324,15 @@ class TyskRenderare:
             mittelfeld = []
         if m.io is not None:
             mittelfeld += self.nominalfras(m.io, self.kasus_för(m.verb, "io"))
+        # Bisatser hör inte hemma i Mittelfeld. De står i Nachfeld, alltså
+        # UTANFÖR satsklammern: "sie las das Buch, als er kam" — aldrig
+        # "sie las, als er kam, das Buch". Därför samlas de för sig.
+        efterfält: list[str] = []
         for adverbial in m.adverbial:
-            mittelfeld += self.adverbial(adverbial)
+            if isinstance(adverbial, Bisats):
+                efterfält += [",", *self.bisats(adverbial)]
+            else:
+                mittelfeld += self.adverbial(adverbial)
         if m.objekt is not None:
             mittelfeld += self.nominalfras(
                 m.objekt, self.kasus_för(m.verb, "objekt"), negerad=kein_objekt)
@@ -346,8 +357,36 @@ class TyskRenderare:
         # Tyskan har V2 i påstående men V1 i ja/nej-fråga: det finita
         # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.
         # Satsklammern består — infinita delar hamnar sist ändå.
-        ord = ([finit, *vorfeld, *mittelfeld, *infinit]
-               if m.fråga or m.modus is Satsmodus.IMPERATIV
-               else [*vorfeld, finit, *mittelfeld, *infinit])
-        mening = " ".join(ord)
+        if m.bisats is not None:
+            efterfält += [",", *self.bisats(m.bisats)]
+        if bisats:
+            return [*vorfeld, *mittelfeld, *infinit, finit, *efterfält]
+        return ([finit, *vorfeld, *mittelfeld, *infinit, *efterfält]
+                if m.fråga or m.modus is Satsmodus.IMPERATIV
+                else [*vorfeld, finit, *mittelfeld, *infinit, *efterfält])
+
+    def bisats(self, b: Bisats) -> list[str]:
+        """Subjunktion plus sats med verbet sist."""
+        return [self.u.form_för(b.subjunktion, "inv", self._subjunktionsvariant(b)),
+                *self.satsled(b.sats, bisats=True)]
+
+    @staticmethod
+    def _subjunktionsvariant(b: Bisats) -> str | None:
+        """als eller wenn — tyskan skiljer där de sex andra inte gör det.
+
+        "Als er kam" om en engångshändelse i dåtid, "wenn er kommt" om något
+        upprepat eller icke-förflutet. Skillnaden ligger i BISATSENS tempus
+        och aspekt, som specen redan bär, så valet går att läsa ur meningen
+        i stället för att behöva ett eget fält. Det är samma sorts beslut som
+        hjälpverbsvalet: en språkspecifik konsekvens av något specen redan
+        säger.
+        """
+        if b.subjunktion != "subj_när":
+            return None
+        engångs = (b.sats.tid is Tidsreferens.FÖRFLUTEN
+                   and b.sats.aspekt is not Aspekt.IMPERFEKTIV)
+        return "engångs_dåtid" if engångs else "upprepad"
+
+    def rendera(self, m: Mening) -> str:
+        mening = " ".join(self.satsled(m)).replace(" ,", ",")
         return mening[0].upper() + mening[1:] + slutar(m)
