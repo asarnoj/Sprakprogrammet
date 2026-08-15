@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import collections
 import random
+from dataclasses import replace
 import sqlite3
 
 from ..rendering import (
@@ -51,6 +52,14 @@ NIVÅ = {
 }
 
 TILLTALADE = ("pronomen_2sg", "pronomen_2pl", "pronomen_1pl")
+
+#: Subjunktioner som inleder en ARGUMENTBISATS — satsen som ÄR verbets objekt.
+#: De adverbiella (när, eftersom, medan, tills, trots att) inleder en
+#: omständighet och hör hemma i `adverbial`, inte i `bisats`. Skillnaden är
+#: spec.Bisats egen: "hon vet ATT han kom" mot "hon läste NÄR han kom".
+#: Utan listan valde samplaren fritt och byggde "han menade INTE, NÄR hennes
+#: mus öppnade" — grammatiskt men inte en argumentbisats.
+ARGUMENTSUBJUNKTIONER = ("subj_att", "subj_om_huruvida")
 
 
 def upplåst(nivå: int) -> set[str]:
@@ -104,6 +113,20 @@ class Ordförråd:
                 else:
                     slotkrav.setdefault(r["slot"], [])
 
+        # Verb som tar en ARGUMENTBISATS. Kravet står som en bit i
+        # MönsterKrav.frastyp (Bisatsfras = 32) och inte som en egen slot, så
+        # det syns inte i `self.verb` ovan. Utan den här frågan kan samplaren
+        # inte bygga nivå 20 alls — vilket den inte kunde förrän 2026-08-15.
+        self.bisatsverb: dict[str, str] = {}
+        for r in conn.execute(
+                """SELECT k.nyckel, mk.slot FROM Mönster m
+                   JOIN Koncept k ON k.id = m.koncept_id
+                   JOIN MönsterKrav mk ON mk.mönster_id = m.id
+                   WHERE mk.frastyp & 32 AND k.ordklass = 'Verb'
+                     AND (m.språk IS NULL OR m.språk = ?)""", (språk,)):
+            if r["nyckel"] in self.ordklass:
+                self.bisatsverb[r["nyckel"]] = r["slot"]
+
         self._cache: dict[tuple, list[str]] = {}
 
     #: Ordklasser som kan fylla en nominalfrasslot. Pronomen hör hit — utan
@@ -151,7 +174,18 @@ class Samplare:
         self.tillåtet = upplåst(nivå)
         self.rng = rng or random.Random()
 
-    def _nf(self, koncept: str, *, attributkandidater: list[str]) -> Nominalfras:
+    #: Hur ofta samplaren FÖRSÖKER med en konstruktion. Det här är inga
+    #: inställningar och inga trösklar: sökningen tar bästa av tusen
+    #: kandidater, så en frekvens behöver bara vara stor nog att
+    #: konstruktionen dyker upp bland kandidaterna. Poängfunktionen avgör
+    #: sedan vad som faktiskt visas. Att sätta någon av dem till noll är
+    #: däremot att stänga av en hel nivå — vilket var precis vad som hade
+    #: hänt för possessiv, adverbial, genitiv, prepositionsfras och bisats.
+    FÖRSÖK = {"possessiv": 0.15, "genitiv": 0.10, "adverbial": 0.15,
+              "prepositionsfras": 0.20, "bisats": 0.25}
+
+    def _nf(self, koncept: str, *, attributkandidater: list[str],
+            djup: int = 0) -> Nominalfras:
         r = self.rng
         # Ett pronomen ÄR hela frasen — det tar varken artikel, numerus
         # eller attribut, och renderarna vägrar om man försöker.
@@ -171,7 +205,29 @@ class Samplare:
             if grad is Grad.SUPERLATIV and best is not Bestämdhet.BESTÄMD:
                 grad = Grad.KOMPARATIV
             attribut = (Attribut(r.choice(attributkandidater), grad),)
-        return Nominalfras(koncept, best, num, attribut)
+
+        # Possessiv och genitivägare tar ARTIKELNS plats — "mitt hus", inte
+        # "det mitt hus". Frasen är bestämd ändå (spec.bestämd_fras), så
+        # bestämdheten sätts tillbaka till obestämd för att inte be
+        # renderaren om både artikel och ägare.
+        possessiv = ägare = None
+        possessiva = self.o.per_ordklass.get("Possessiv", [])
+        if ("possessiv" in self.tillåtet and possessiva
+                and r.random() < self.FÖRSÖK["possessiv"]):
+            possessiv, best = r.choice(possessiva), Bestämdhet.OBESTÄMD
+        elif ("genitiv" in self.tillåtet and djup == 0
+                and r.random() < self.FÖRSÖK["genitiv"]):
+            # Ägaren är en egen nominalfras, och den byggs på DJUP 1 så att
+            # den inte i sin tur får en ägare. "Kattens hunds ben" är
+            # grammatiskt men ingen övningsmening.
+            möjliga = self.o.uppfyller([], "Substantiv")
+            if möjliga:
+                ägare = self._nf(r.choice(möjliga), attributkandidater=[],
+                                 djup=1)
+                ägare = replace(ägare, bestämdhet=Bestämdhet.BESTÄMD)
+                best = Bestämdhet.OBESTÄMD
+        return Nominalfras(koncept, best, num, attribut,
+                           possessiv=possessiv, ägare=ägare)
 
     def kandidat(self, *, kring: str | None = None) -> Mening | None:
         """En kandidatmening, byggd runt `kring` om det går."""
@@ -257,6 +313,49 @@ class Samplare:
                 and not m.fråga and m.modus is Satsmodus.INDIKATIV
                 and r.random() < 0.1):
             m = _med(m, fråga_om=r.choice(["subjekt", "objekt"]))
+
+        # ── adverbial: nakna adverb och prepositionsfraser ────────────
+        # De ligger i samma tuple men är två olika nivåer, och den ena får
+        # inte smyga in den andra: ett naket adverb är nivå 8, en
+        # prepositionsfras nivå 15.
+        adverbial: list = []
+        adverb = self.o.per_ordklass.get("Adverb", [])
+        if ("adverbial" in self.tillåtet and adverb
+                and r.random() < self.FÖRSÖK["adverbial"]):
+            adverbial.append(r.choice(adverb))
+        prepositioner = self.o.per_ordklass.get("Preposition", [])
+        if ("prepositionsfras" in self.tillåtet and prepositioner
+                and r.random() < self.FÖRSÖK["prepositionsfras"]):
+            möjliga = self.o.uppfyller([], "Substantiv")
+            if möjliga:
+                adverbial.append(Prepositionsfras(
+                    r.choice(prepositioner),
+                    self._nf(r.choice(möjliga), attributkandidater=[], djup=1)))
+        if adverbial:
+            m = _med(m, adverbial=tuple(adverbial))
+
+        # ── argumentbisats ────────────────────────────────────────────
+        # Bara de verb vars mönster har Bisatsfras i frastypen. Bisatsen
+        # byggs som en egen enkel sats — utan bisats i sin tur, och utan
+        # fråga eller imperativ, som inte är argument.
+        if ("bisats" in self.tillåtet and m.verb in self.o.bisatsverb
+                and not m.fråga and m.modus is Satsmodus.INDIKATIV
+                and m.fråga_om is None
+                and r.random() < self.FÖRSÖK["bisats"]):
+            inre_verb = r.choice(list(self.o.verb))
+            inre_krav = self.o.verb[inre_verb]
+            if "komplement" not in inre_krav and "predikativ" not in inre_krav:
+                inre_subjekt = None
+                val = self.o.uppfyller(inre_krav.get("subjekt", []))
+                if val:
+                    inre_subjekt = self._nf(r.choice(val),
+                                            attributkandidater=[], djup=1)
+                if inre_subjekt is not None:
+                    inre = Mening(inre_verb, inre_subjekt)
+                    if "tempus" in self.tillåtet:
+                        inre = _med(inre, tid=r.choice(list(Tidsreferens)))
+                    m = _med(m, bisats=Bisats(r.choice(ARGUMENTSUBJUNKTIONER),
+                                              inre))
         return m
 
 
