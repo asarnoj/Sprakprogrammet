@@ -4,20 +4,27 @@ Exempel:
   ordbok granska-former --språk de --ordklass Adjektiv --verbose
   ordbok granska-former --alla-språk --rapport ordbok/granskning.tsv --fortsätt
   ordbok granska-former --språk es --ordklass Verb --modell claude-sonnet-5
+  ordbok granska-former --endast-struktur      # utan modell, se nedan
 
 Granskningen ändrar aldrig databasen — den skriver en TSV med förslag.
 Att tillämpa dem är ett separat beslut (KONVENTIONER.md §9).
+
+`--endast-struktur` kör de kontroller som klarar sig utan modell. Den
+returnerar 1 när den hittar något, så att den går att köra som ett
+regressionstest efter varje ändring i Former.
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import sys
 from pathlib import Path
 
 from ..db import STANDARD_DB, anslut
 from ..generering.granskning import (
-    STANDARD_GRANSKNINGSMODELL, granska_former,
+    RAPPORT_KOLUMNER, STANDARD_GRANSKNINGSMODELL, granska_former,
+    granska_inf_mot_lemma,
 )
 from ..modeller import ORDKLASSER, SPRÅK
 from .generera import ALLA_ORDKLASSER_MED_MORFOLOGI
@@ -48,8 +55,39 @@ def lägg_till_argument(p: argparse.ArgumentParser) -> None:
                         f"claude-sonnet-5 är ett billigare alternativ.")
     p.add_argument("--fortsätt", action="store_true",
                    help="Hoppa över lexem som redan står i rapporten")
+    p.add_argument("--endast-struktur", action="store_true",
+                   dest="endast_struktur",
+                   help="Kör bara strukturkontrollerna — inga LLM-anrop, "
+                        "ingen kvot, går att köra inifrån Claude Code")
     p.add_argument("--verbose", action="store_true",
                    help="Skriv ut batch-progress")
+
+
+def _kör_struktur(args: argparse.Namespace) -> int:
+    """Strukturkontrollerna, utan modell. Skriver samma rapportformat."""
+    conn = anslut()
+    avvikelser = granska_inf_mot_lemma(conn)
+    conn.close()
+
+    print(f"\n{'─' * 50}")
+    print("Strukturgranskning: sv/Verb, inf-cell mot lemma")
+    for a in avvikelser:
+        print(f"  {a.lemma:12} {a.cell:4} {a.nuvarande!r} → {a.förslag!r}")
+    print(f"\nAvvikelser: {len(avvikelser)}")
+    if not avvikelser:
+        return 0
+
+    rapport = Path(args.rapport)
+    rapport.parent.mkdir(parents=True, exist_ok=True)
+    ny_fil = not rapport.exists()
+    with rapport.open("a", encoding="utf-8", newline="") as fh:
+        skrivare = csv.writer(fh, delimiter="\t", lineterminator="\n")
+        if ny_fil:
+            skrivare.writerow(RAPPORT_KOLUMNER)
+        for a in avvikelser:
+            skrivare.writerow([getattr(a, k) for k in RAPPORT_KOLUMNER])
+    print(f"Rapport   : {rapport}")
+    return 1
 
 
 def kör(args: argparse.Namespace) -> int:
@@ -57,6 +95,9 @@ def kör(args: argparse.Namespace) -> int:
         print(f"FEL: {STANDARD_DB.name} finns inte. Kör 'ordbok import' först.",
               file=sys.stderr)
         return 1
+
+    if args.endast_struktur:
+        return _kör_struktur(args)
 
     if args.alla_språk:
         språk_lista = sorted(SPRÅK)
