@@ -667,6 +667,56 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Ordboksvyn: paradigmet med kunskapen i sig
+
+*Byggt 2026-08-15.* Svarar mot det Julius sa om kortövning: "när det är flera
+liknande kort fastnar jag på de i evigheter … sedan tar jag en stund att kolla
+på de utanför och faktiskt lära mig och få en överblick."
+
+**LAYOUTEN HÄRLEDS UR AXLARNA, INTE UR ORDKLASSEN.** Varje cell i slot-filen
+bär sina koordinater. Kongruensaxlarna — kasus, person, numerus, genus — blir
+tabellens rader och kolumner; de kategoriala — grad, species, tempus, diates —
+delar upp i flera tabeller. Skillnaden är grammatisk: kongruens är vad ordet
+rättar sig EFTER något annat, det kategoriala är en egenskap hos formen själv.
+Varje grammatikbok gör samma uppdelning.
+
+Två axlar slås ihop när den enas DEFINIERADHET är en funktion av den andras
+värde. Tyskans genus är satt i singular och osatt i plural, alltså m/f/n/pl som
+fyra kolumner — inte 3 × 2. Utan hopslagningen blev tyska adjektiv 39 tabeller;
+med den blir de tolv, vilket är hur boken skriver dem.
+
+Ingen rad kod känner till vilket språk den ritar. Verifierat på de/sv/fr/es/ja.
+
+```
+[Pos · Strong]      Sg Masc.   Sg Fem.   Sg Neut.        Pl
+        Nom           netter     nette      nettes     nette
+        Ack           netten     nette      nettes     nette
+        Dat           nettem    netter      nettem    netten
+        Gen           netten    netter      netten    netter
+```
+
+**STYRKAN PER CELL ÄR DET SVAGASTE KORTET, OCH ETT OMÖTT KORT ÄR SVAGAST.**
+Första versionen tog minimum över de MÖTTA korten, vilket lät en cell se stark
+ut fastän en av dess delar aldrig prövats. Rättat, och då blir vyn sann:
+
+```
+spricht    stam sprich ✓  +  ändelse t  ✓     stark
+sprichst   stam sprich ✓  +  ändelse st ✗     delvis
+sprecht    stam sprech ✗  +  ändelse t  ✓     delvis
+spreche    stam sprech ✗  +  ändelse e  ✗     omött
+```
+
+DELVIS är ett eget läge och inte en nyans: "du kan stammen men inte ändelsen"
+är något annat att göra än "du kan ingenting här". Det är precis den skillnaden
+kortmodellen finns för att kunna se, och ordboken är där den blir synlig.
+
+**Genusetiketterna är språkberoende.** Legendens namn är språkoberoende bitar
+med språkberoende betydelse — genus=3 heter "Alla" och är tyskans NEUTRUM. Att
+visa dem råa vore vilseledande, så namnen är avlästa ur datan per språk
+(de 1/2/3 = netter/nette/nettes, sv = snäll/snällt/snälla, fr = gentil/gentille).
+
+---
+
 ## Hemvyn, passet och passkön
 
 *Byggt 2026-08-15.*

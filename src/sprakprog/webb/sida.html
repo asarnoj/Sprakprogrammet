@@ -104,6 +104,55 @@
         border-bottom-width:2px; border-radius:4px; padding:.05rem .35rem;
         background:var(--panel); }
   .mitten { text-align:center; color:var(--svag); }
+
+  /* ── ordboken ────────────────────────────────────────────────── */
+  .filter { display:flex; gap:.6rem; margin-bottom:1.1rem; flex-wrap:wrap; }
+  .filter input, .filter select { font:inherit; font-size:.9rem; padding:.45rem .6rem;
+      border:1px solid var(--linje); border-radius:7px;
+      background:var(--panel); color:var(--text); }
+  .filter input { flex:1; min-width:9rem; }
+  ul.ordlista { list-style:none; padding:0; margin:0; }
+  ul.ordlista li { display:flex; gap:.8rem; align-items:center; padding:.5rem .3rem;
+      border-bottom:1px solid var(--linje); cursor:pointer; }
+  ul.ordlista li:hover { background:var(--spår); }
+  ul.ordlista .lem { font-weight:600; flex:1; }
+  ul.ordlista .kl { font-size:.78rem; color:var(--svag); }
+  ul.ordlista .mini { width:64px; height:6px; background:var(--spår);
+      border-radius:99px; overflow:hidden; }
+  ul.ordlista .mini i { display:block; height:100%; background:var(--rätt); }
+
+  .ordrubrik { display:flex; align-items:baseline; gap:.7rem; margin-bottom:1.2rem; }
+  .ordrubrik h2 { margin:0; font-size:1.6rem; }
+  .ordrubrik .kl { color:var(--svag); font-size:.9rem; }
+  .paradigm { margin-bottom:1.6rem; }
+  .paradigm h3 { font-size:.74rem; letter-spacing:.09em; text-transform:uppercase;
+      color:var(--svag); margin:0 0 .45rem; font-weight:600; }
+  table.para { border-collapse:separate; border-spacing:3px; font-size:.9rem; }
+  table.para th { font-size:.7rem; letter-spacing:.05em; color:var(--svag);
+      font-weight:600; padding:.1rem .4rem; text-align:center; white-space:nowrap; }
+  table.para th.rad { text-align:right; }
+  /* Modifierarna kvalificeras med table.para — annars vinner basregeln på
+     specificitet (0,1,2 mot 0,1,1) och alla rutor blir lika. */
+  table.para td { padding:.35rem .6rem; border-radius:6px; text-align:center;
+      white-space:nowrap; background:var(--spår); cursor:default;
+      border:1px solid transparent; }
+  table.para td.utanför { background:none; border-color:transparent;
+      color:var(--svag); opacity:.45; }
+  table.para td.oöppnad { background:none; border:1px dashed var(--linje);
+      color:var(--text); }
+  table.para td.delvis { background:linear-gradient(135deg,
+      color-mix(in srgb, var(--rätt) 26%, transparent) 50%, transparent 50%);
+      border:1px dashed var(--linje); }
+  table.para td.stark { background:color-mix(in srgb, var(--rätt) 30%, transparent); }
+  table.para td.medel { background:color-mix(in srgb, var(--varm) 32%, transparent); }
+  table.para td.svag  { background:color-mix(in srgb, var(--fel) 28%, transparent); }
+  .delar { font-size:.82rem; color:var(--svag); min-height:1.4rem;
+      border-top:1px solid var(--linje); padding-top:.7rem; margin-top:.4rem; }
+  .delar b { color:var(--text); }
+  .legend { display:flex; gap:.9rem; font-size:.76rem; color:var(--svag);
+      margin:.2rem 0 1.3rem; flex-wrap:wrap; align-items:center; }
+  .legend i { display:inline-block; width:.85rem; height:.85rem; border-radius:3px;
+      vertical-align:-2px; margin-right:.25rem; }
 </style>
 </head>
 <body>
@@ -140,6 +189,37 @@
       <button class="stor" id="starta">Start today's practice</button>
       <button class="andra" id="extra">Extra practice</button>
       <small id="hemhjälp"></small>
+    </div>
+  </section>
+
+  <section id="vy-ord" hidden>
+    <div id="ordlistan">
+      <div class="filter">
+        <input type="search" id="sök" placeholder="Search words…">
+        <select id="ordklass"><option value="">All word classes</option></select>
+        <select id="tillstånd">
+          <option value="">All</option>
+          <option value="påbörjad">Started</option>
+          <option value="ny">Not started</option>
+        </select>
+      </div>
+      <ul class="ordlista" id="orden"></ul>
+    </div>
+    <div id="ordet" hidden>
+      <div class="ordrubrik">
+        <h2 id="o-lemma"></h2><span class="kl" id="o-klass"></span>
+        <button class="andra" id="o-tillbaka" style="margin-left:auto">Back</button>
+      </div>
+      <div class="legend">
+        <span><i style="background:color-mix(in srgb,var(--rätt) 26%,transparent)"></i>strong</span>
+        <span><i style="background:color-mix(in srgb,var(--varm) 26%,transparent)"></i>shaky</span>
+        <span><i style="background:color-mix(in srgb,var(--fel) 24%,transparent)"></i>weak</span>
+        <span><i style="background:linear-gradient(135deg,color-mix(in srgb,var(--rätt) 26%,transparent) 50%,transparent 50%);border:1px dashed var(--linje)"></i>partly known</span>
+        <span><i style="border:1px dashed var(--linje)"></i>not met yet</span>
+        <span><i style="border:1px solid var(--linje);opacity:.4"></i>not in your course yet</span>
+      </div>
+      <div id="paradigm"></div>
+      <p class="delar" id="delar">Hover a form to see which cards carry it.</p>
     </div>
   </section>
 
@@ -199,7 +279,9 @@ async function hämta(v, i) {
   return r.json();
 }
 const visa = (...vyer) => {
-  for (const v of ["hem", "öva"]) $("vy-" + v).hidden = !vyer.includes(v);
+  for (const v of ["hem", "ord", "öva"]) $("vy-" + v).hidden = !vyer.includes(v);
+  for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"]])
+    $(id).setAttribute("aria-current", vyer.includes(v) ? "page" : "false");
   $("laddar").hidden = true;
 };
 
@@ -237,6 +319,95 @@ async function hem() {
   $("hemhjälp").textContent = attGöra || h.summa.nya
     ? T.redo(h.summa.förfallna + h.summa.igen, h.summa.nya) : T.inget_att_gora;
   visa("hem");
+}
+
+// ── ordboken ──────────────────────────────────────────────────────
+let ordlista = null;
+
+async function ordbok() {
+  if (!ordlista) ordlista = await hämta(`/api/ordlista/${kurs.id}`);
+  const klasser = [...new Set(ordlista.map(o => o.ordklass))].sort();
+  const sel = $("ordklass");
+  if (sel.options.length === 1)
+    for (const k of klasser) sel.add(new Option(k, k));
+  $("ordet").hidden = true; $("ordlistan").hidden = false;
+  ritaLista();
+  visa("ord");
+}
+
+function ritaLista() {
+  const q = $("sök").value.trim().toLowerCase();
+  const kl = $("ordklass").value, till = $("tillstånd").value;
+  const ul = $("orden");
+  ul.innerHTML = "";
+  const träffar = ordlista.filter(o =>
+    (!q || o.lemma.toLowerCase().includes(q) || o.koncept.includes(q)) &&
+    (!kl || o.ordklass === kl) &&
+    (!till || (till === "påbörjad" ? o.sedda > 0 : o.sedda === 0)));
+  for (const o of träffar.slice(0, 400)) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="lem"></span><span class="kl"></span>
+      <span class="mini"><i style="width:${Math.round(o.andel*100)}%"></i></span>`;
+    li.querySelector(".lem").textContent = o.lemma;
+    li.querySelector(".kl").textContent = o.ordklass;
+    li.addEventListener("click", () => ordet(o.koncept));
+    ul.append(li);
+  }
+  if (!träffar.length) ul.innerHTML = "<li style=\"color:var(--svag)\">No matches</li>";
+}
+
+async function ordet(koncept) {
+  const d = await hämta(`/api/ord/${kurs.id}/${encodeURIComponent(koncept)}`);
+  $("o-lemma").textContent = d.lemma;
+  $("o-klass").textContent = d.ordklass;
+  const rot = $("paradigm");
+  rot.innerHTML = "";
+  for (const t of d.tabeller) {
+    const box = document.createElement("div");
+    box.className = "paradigm";
+    if (t.rubrik) { const h = document.createElement("h3");
+                    h.textContent = t.rubrik; box.append(h); }
+    const tab = document.createElement("table");
+    tab.className = "para";
+    if (t.kolumner.some(k => k)) {
+      const tr = document.createElement("tr");
+      tr.append(document.createElement("th"));
+      for (const k of t.kolumner) {
+        const th = document.createElement("th"); th.textContent = k; tr.append(th); }
+      tab.append(tr);
+    }
+    for (const r of t.rader) {
+      const tr = document.createElement("tr");
+      const th = document.createElement("th");
+      th.className = "rad"; th.textContent = r.etikett; tr.append(th);
+      for (const ruta of r.rutor) {
+        const td = document.createElement("td");
+        if (!ruta) { td.className = "utanför"; td.textContent = ""; }
+        else {
+          td.textContent = ruta.form || "—";
+          td.className = ruta.styrka === null ? "utanför"
+            : ruta.delvis ? "delvis"
+            : ruta.outforskad ? "oöppnad"
+            : ruta.styrka >= 0.9 ? "stark" : ruta.styrka >= 0.7 ? "medel" : "svag";
+          td.addEventListener("mouseenter", () => beskriv(ruta));
+        }
+        tr.append(td);
+      }
+      tab.append(tr);
+    }
+    box.append(tab); rot.append(box);
+  }
+  $("ordlistan").hidden = true; $("ordet").hidden = false;
+}
+
+function beskriv(ruta) {
+  const d = $("delar");
+  if (!ruta.delar.length) {
+    d.textContent = `${ruta.form} — not part of your course yet.`; return; }
+  const bit = x => `${x.typ} <b>${x.facit}</b>` +
+    (x.sedd ? ` ${Math.round(x.r*100)}%` : " not met");
+  d.innerHTML = `<b>${ruta.form}</b> — ` + ruta.delar.map(bit).join(" + ")
+    + (ruta.not ? `<br>${ruta.not}` : "");
 }
 
 // ── övning ────────────────────────────────────────────────────────
@@ -312,6 +483,12 @@ $("starta").addEventListener("click", () => startaPass(false));
 $("extra").addEventListener("click", () => startaPass(true));
 $("tillbaka").addEventListener("click", () => hem());
 $("nav-hem").addEventListener("click", () => hem());
+$("nav-ord").addEventListener("click", () => ordbok());
+$("nav-ord").disabled = false;
+$("o-tillbaka").addEventListener("click", () => {
+  $("ordet").hidden = true; $("ordlistan").hidden = false; });
+for (const id of ["sök", "ordklass", "tillstånd"])
+  $(id).addEventListener("input", ritaLista);
 
 (async () => {
   const kurser = await hämta("/api/kurser");
