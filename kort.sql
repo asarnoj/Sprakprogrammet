@@ -227,6 +227,9 @@ CREATE TABLE Kurs (
     budget    REAL    NOT NULL DEFAULT 1.5,
     meningar_per_dag INTEGER NOT NULL DEFAULT 20,
     startad   TEXT    NOT NULL,
+    /* När kursen senast öppnades. Programmet startar i den som användes
+       sist — en kurs man höll på med igår är den man vill fortsätta med. */
+    senast_öppnad TEXT,
     UNIQUE (källspråk, målspråk),
     CHECK (källspråk <> målspråk)
 );

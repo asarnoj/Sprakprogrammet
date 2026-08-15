@@ -26,6 +26,7 @@ TILLÄGG = (
     ("Mening", "sedda", "INTEGER"),
     ("Mening", "nya", "INTEGER"),
     ("Kurs", "cefr", "TEXT NOT NULL DEFAULT 'C2'"),
+    ("Kurs", "senast_öppnad", "TEXT"),
 )
 
 

@@ -36,7 +36,7 @@ from urllib.parse import unquote
 
 from ..db import anslut
 from ..generator import Generator
-from ..kort import anslut_kort, upplåsningsläge
+from ..kort import anslut_kort, befolka, upplåsningsläge
 from ..kort.db import STANDARD_KORT_DB
 from .lektion import Lektioner
 from .ordbok import Ordbok
@@ -59,9 +59,113 @@ class Övningstjänst:
         self.ordbok = Ordbok(språk_db, kort_db)
         self.lektioner = Lektioner(språk_db, kort_db)
 
+    #: Språknamn i gränssnittet. Programmets språk är inte kursens — en
+    #: svensk som lär sig tyska kan vilja ha engelskt gränssnitt.
+    SPRÅKNAMN = {"sv": "Swedish", "en": "English", "de": "German",
+                 "fr": "French", "es": "Spanish", "it": "Italian",
+                 "ja": "Japanese"}
+
+    #: Kurspar som mätts som svaga, med skälet. Italienskan misslyckas på
+    #: 32 % av alla meningar, nästan alla på obestämd artikel i plural som
+    #: språket inte har (mätt 2026-08-15, se uppgiften om partitiven).
+    #: Varningen gäller italienskan som käll- ELLER målspråk och försvinner
+    #: när den är löst.
+    SVAGA = {"it": "Italian is missing indefinite plurals — about a third of "
+                   "sentences cannot be built yet."}
+
+    def språk(self) -> list[dict]:
+        return [{"kod": k, "namn": n, "varning": self.SVAGA.get(k)}
+                for k, n in self.SPRÅKNAMN.items()]
+
     def kurser(self) -> list[dict]:
-        return [dict(r) for r in self.kort_db.execute(
-            "SELECT * FROM Kurs ORDER BY målspråk")]
+        """Kurserna, den senast öppnade först."""
+        return [dict(r) | {"källnamn": self.SPRÅKNAMN.get(r["källspråk"], ""),
+                           "målnamn": self.SPRÅKNAMN.get(r["målspråk"], "")}
+                for r in self.kort_db.execute(
+                    """SELECT * FROM Kurs
+                       ORDER BY senast_öppnad IS NULL, senast_öppnad DESC,
+                                målspråk""")]
+
+    def ny_kurs(self, källspråk: str, målspråk: str, nivå: int = 1,
+                cefr: str = "A1") -> dict | None:
+        if källspråk == målspråk or källspråk not in self.SPRÅKNAMN \
+                or målspråk not in self.SPRÅKNAMN:
+            return None
+        with self.lås:
+            nu = datetime.now(UTC).isoformat()
+            self.kort_db.execute(
+                """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
+                                     meningar_per_dag, startad, senast_öppnad)
+                   VALUES (?,?,?,?,1.5,20,?,?)
+                   ON CONFLICT (källspråk, målspråk) DO UPDATE SET
+                       senast_öppnad = excluded.senast_öppnad""",
+                (källspråk, målspråk, nivå, cefr, nu, nu))
+            self.kort_db.commit()
+            befolka(self.kort_db, self.språk_db, {målspråk},
+                    nivå=nivå, cefr=cefr)
+            rad = self.kort_db.execute(
+                "SELECT * FROM Kurs WHERE källspråk=? AND målspråk=?",
+                (källspråk, målspråk)).fetchone()
+            return dict(rad)
+
+    def välj(self, kurs_id: int) -> dict | None:
+        with self.lås:
+            self.kort_db.execute(
+                "UPDATE Kurs SET senast_öppnad = ? WHERE id = ?",
+                (datetime.now(UTC).isoformat(), kurs_id))
+            self.kort_db.commit()
+            rad = self._kurs(kurs_id)
+            return dict(rad) if rad else None
+
+    def lås_upp(self, kurs_id: int) -> dict | None:
+        """Öppna nästa steg. ANVÄNDAREN klickar; systemet säger bara när det
+        finns plats (schemalaggning.upplåsningsläge)."""
+        with self.lås:
+            kurs = self._kurs(kurs_id)
+            if kurs is None or kurs["nivå"] >= 21:
+                return None
+            ny = kurs["nivå"] + 1
+            self.kort_db.execute("UPDATE Kurs SET nivå = ? WHERE id = ?",
+                                 (ny, kurs_id))
+            self.kort_db.commit()
+            r = befolka(self.kort_db, self.språk_db, {kurs["målspråk"]},
+                        nivå=ny, cefr=kurs["cefr"])
+            # Generatorn cachas per (källa, mål, nivå, budget) — den gamla
+            # är låst vid förra nivån och måste kastas.
+            self._generatorer.clear()
+            return {"nivå": ny, "nya_kort": r["nya"]}
+
+    def nollställ(self, kurs_id: int, bekräftelse: str) -> dict | None:
+        """Radera kursens historik. DEN ENDA OÅTERKALLELIGA KNAPPEN.
+
+        Allt annat i systemet går att bygga om ur former.tsv; repetitions-
+        historiken gör det inte. Därför krävs ett skrivet ord och inte ett
+        klick — samma spärr som `ordbok kort --återinitiera` har.
+        """
+        if bekräftelse != "RESET":
+            return None
+        with self.lås:
+            kurs = self._kurs(kurs_id)
+            if kurs is None:
+                return None
+            språk = kurs["målspråk"]
+            self.kort_db.execute(
+                """DELETE FROM Repetition WHERE kort_id IN
+                   (SELECT id FROM Kort WHERE språk = ?)""", (språk,))
+            self.kort_db.execute("DELETE FROM Mening WHERE språk = ?", (språk,))
+            # Korten tas BORT och byggs om, inte bara nollställs. En kurs som
+            # stod på nivå 21 har kort som inte går att möta på nivå 1, och
+            # att lämna kvar dem vore att återskapa precis de spökkort
+            # nivåspärren finns för att förhindra. Här är det tryggt: all
+            # historik för språket är just raderad, så inget går förlorat.
+            self.kort_db.execute("DELETE FROM Kort WHERE språk = ?", (språk,))
+            self.kort_db.execute("UPDATE Kurs SET nivå = 1 WHERE id = ?",
+                                 (kurs_id,))
+            self.kort_db.commit()
+            befolka(self.kort_db, self.språk_db, {språk},
+                    nivå=1, cefr=kurs["cefr"])
+            self._generatorer.clear()
+            return {"nollställd": språk}
 
     def _generator(self, kurs: sqlite3.Row) -> Generator:
         nyckel = (kurs["källspråk"], kurs["målspråk"], kurs["nivå"], kurs["budget"])
@@ -249,6 +353,8 @@ class Hanterare(BaseHTTPRequestHandler):
             return self._svara(SIDA.read_text(encoding="utf-8"), "text/html")
         if väg == "/api/kurser":
             return self._svara(self.tjänst.kurser())
+        if väg == "/api/språk":
+            return self._svara(self.tjänst.språk())
         if väg.startswith("/api/lektioner/"):
             l = self.tjänst.lektionslista(int(väg.rsplit("/", 1)[1]))
             return self._svara(l if l is not None else {"fel": "okänd kurs"},
@@ -282,17 +388,37 @@ class Hanterare(BaseHTTPRequestHandler):
         self._svara({"fel": "okänd väg"}, kod=404)
 
     def do_POST(self) -> None:
-        if self.path != "/api/svar":
-            return self._svara({"fel": "okänd väg"}, kod=404)
+        väg = unquote(self.path.split("?")[0])
         n = int(self.headers.get("Content-Length", 0))
         data = json.loads(self.rfile.read(n) or b"{}")
-        r = self.tjänst.svara(int(data.get("id", 0)), data.get("svar", ""))
-        self._svara(r or {"fel": "uppgiften finns inte"}, kod=200 if r else 410)
+        if väg == "/api/svar":
+            r = self.tjänst.svara(int(data.get("id", 0)), data.get("svar", ""))
+            return self._svara(r or {"fel": "uppgiften finns inte"},
+                               kod=200 if r else 410)
+        if väg == "/api/kurs":
+            r = self.tjänst.ny_kurs(data.get("källspråk", ""),
+                                    data.get("målspråk", ""))
+            return self._svara(r or {"fel": "ogiltigt språkpar"},
+                               kod=200 if r else 400)
+        if väg.startswith("/api/välj/"):
+            r = self.tjänst.välj(int(väg.rsplit("/", 1)[1]))
+            return self._svara(r or {"fel": "okänd kurs"}, kod=200 if r else 404)
+        if väg.startswith("/api/lås-upp/"):
+            r = self.tjänst.lås_upp(int(väg.rsplit("/", 1)[1]))
+            return self._svara(r or {"fel": "kan inte låsa upp"},
+                               kod=200 if r else 400)
+        if väg.startswith("/api/nollställ/"):
+            r = self.tjänst.nollställ(int(väg.rsplit("/", 1)[1]),
+                                      data.get("bekräftelse", ""))
+            return self._svara(r or {"fel": "bekräftelsen saknas"},
+                               kod=200 if r else 400)
+        self._svara({"fel": "okänd väg"}, kod=404)
 
 
-def starta(port: int = 8765, *, kandidater: int = 800) -> None:
+def starta(port: int = 8765, *, kandidater: int = 800,
+           kort_sökväg=None) -> None:
     # Anslutningarna delas mellan trådar och serialiseras av tjänstens lås.
-    kort_db = anslut_kort(delad_mellan_trådar=True)
+    kort_db = anslut_kort(kort_sökväg, delad_mellan_trådar=True)
     språk_db = anslut(delad_mellan_trådar=True)
     språk_db.row_factory = sqlite3.Row
     Hanterare.tjänst = Övningstjänst(kort_db, språk_db, kandidater=kandidater)
