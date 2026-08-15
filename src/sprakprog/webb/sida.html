@@ -1,208 +1,328 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Språkprogrammet</title>
 <style>
   :root {
-    --bg: #fbfaf8; --panel: #ffffff; --text: #1c1a17; --svag: #6b655c;
-    --linje: #e4dfd6; --rätt: #1f7a4d; --fel: #b03a30; --accent: #3c4f76;
-    --stretch: #a8681f;
+    --bg:#fbfaf8; --panel:#fff; --text:#1c1a17; --svag:#6b655c; --linje:#e4dfd6;
+    --rätt:#1f7a4d; --fel:#b03a30; --accent:#3c4f76; --varm:#a8681f;
+    --spår:#ebe6dc;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #16151300; --bg: #161513; --panel: #1e1c1a; --text: #ece7df;
-      --svag: #989084; --linje: #2f2c28; --rätt: #5fbe8b; --fel: #e08b80;
-      --accent: #97aad6; --stretch: #d6a05c;
+      --bg:#161513; --panel:#1e1c1a; --text:#ece7df; --svag:#989084;
+      --linje:#2f2c28; --rätt:#5fbe8b; --fel:#e08b80; --accent:#97aad6;
+      --varm:#d6a05c; --spår:#2a2724;
     }
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    display: flex; flex-direction: column; min-height: 100vh;
-  }
-  header {
-    border-bottom: 1px solid var(--linje); padding: .7rem 1.2rem;
-    display: flex; gap: 1.4rem; align-items: baseline; flex-wrap: wrap;
-    font-size: .82rem; color: var(--svag);
-  }
-  header b { color: var(--text); font-weight: 600; }
-  header .kurs { font-size: 1rem; color: var(--text); font-weight: 600;
-                 margin-right: auto; letter-spacing: .01em; }
-  main {
-    flex: 1; display: flex; flex-direction: column; justify-content: center;
-    align-items: center; padding: 2rem 1.2rem 4rem;
-  }
-  .kort { width: 100%; max-width: 40rem; }
-  .riktning { font-size: .74rem; letter-spacing: .11em; text-transform: uppercase;
-              color: var(--svag); margin-bottom: .5rem; }
-  .uppgift { font-size: 1.75rem; line-height: 1.3; margin: 0 0 1.6rem;
-             font-weight: 500; }
-  input[type=text] {
-    width: 100%; padding: .8rem .9rem; font-size: 1.2rem; font-family: inherit;
-    color: var(--text); background: var(--panel);
-    border: 1px solid var(--linje); border-radius: 8px;
-  }
-  input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-  input[type=text]:disabled { opacity: .65; }
-  .utfall { margin-top: 1.4rem; }
-  .dom { font-size: 1.15rem; font-weight: 600; display: flex;
-         align-items: baseline; gap: .6rem; }
-  .dom.ja { color: var(--rätt); } .dom.nej { color: var(--fel); }
-  .facit { font-size: 1.3rem; margin: .5rem 0 0; }
-  .facit s { color: var(--svag); text-decoration-color: var(--fel); }
-  ul.anm { list-style: none; padding: 0; margin: 1rem 0 0;
-           border-top: 1px solid var(--linje); }
-  ul.anm li { padding: .55rem 0; border-bottom: 1px solid var(--linje);
-              font-size: .9rem; display: flex; gap: .55rem; flex-wrap: wrap;
-              align-items: baseline; }
-  .ord { font-weight: 600; }
-  .ord.skrev { color: var(--fel); text-decoration: line-through; }
-  .ord.väntat { color: var(--rätt); }
-  .varför { color: var(--svag); }
-  .osäker { font-size: .72rem; border: 1px solid var(--linje); border-radius: 99px;
-            padding: .05rem .5rem; color: var(--stretch); }
-  .nästa { margin-top: 1.5rem; font-size: .85rem; color: var(--svag); }
-  kbd { font: inherit; font-size: .8rem; border: 1px solid var(--linje);
-        border-bottom-width: 2px; border-radius: 4px; padding: .05rem .35rem;
-        background: var(--panel); }
-  .tomt { color: var(--svag); text-align: center; }
-  button.vidare {
-    margin-top: .2rem; font: inherit; font-size: .95rem; font-weight: 500;
-    color: var(--bg); background: var(--accent); border: none;
-    border-radius: 7px; padding: .55rem 1.1rem; cursor: pointer;
-  }
-  button.vidare:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); min-height:100vh;
+         font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+         display:flex; flex-direction:column; }
+  header { border-bottom:1px solid var(--linje); padding:.6rem 1.2rem;
+           display:flex; gap:.3rem; align-items:center; }
+  header .titel { font-weight:600; margin-right:auto; letter-spacing:.01em; }
+  nav button { font:inherit; font-size:.88rem; color:var(--svag);
+               background:none; border:none; padding:.35rem .7rem;
+               border-radius:6px; cursor:pointer; }
+  nav button[aria-current="page"] { color:var(--text); background:var(--spår);
+                                    font-weight:600; }
+  nav button:disabled { opacity:.4; cursor:default; }
+  main { flex:1; display:flex; justify-content:center; padding:2rem 1.2rem 4rem; }
+  .kort { width:100%; max-width:42rem; }
+
+  /* ── hem ─────────────────────────────────────────────────────── */
+  .rubrik { font-size:.74rem; letter-spacing:.11em; text-transform:uppercase;
+            color:var(--svag); margin:0 0 .7rem; }
+  .nivåkort { border:1px solid var(--linje); background:var(--panel);
+              border-radius:12px; padding:1.1rem 1.3rem; margin-bottom:1.4rem; }
+  .nivårad { display:flex; align-items:baseline; gap:.6rem; margin-bottom:.7rem; }
+  .nivånr { font-size:1.5rem; font-weight:600; }
+  .spår { height:7px; background:var(--spår); border-radius:99px;
+          overflow:hidden; display:flex; }
+  .spår i { background:var(--accent); display:block; }
+  .spårtext { font-size:.83rem; color:var(--svag); margin-top:.55rem; }
+  .spårtext b { color:var(--text); font-weight:600; }
+  .klar { color:var(--rätt); font-weight:600; }
+
+  table { width:100%; border-collapse:collapse; font-size:.92rem;
+          margin-bottom:1.5rem; }
+  th, td { text-align:right; padding:.42rem .3rem; }
+  th:first-child, td:first-child { text-align:left; }
+  thead th { font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+             color:var(--svag); font-weight:600;
+             border-bottom:1px solid var(--linje); }
+  tbody tr:last-child td { border-top:1px solid var(--linje); font-weight:600;
+                           padding-top:.55rem; }
+  td.noll { color:var(--svag); }
+  .ny { color:var(--accent); } .förf { color:var(--varm); }
+  .igen { color:var(--fel); }
+
+  button.stor { font:inherit; font-size:1.02rem; font-weight:600;
+                color:var(--bg); background:var(--accent); border:none;
+                border-radius:9px; padding:.75rem 1.5rem; cursor:pointer; }
+  button.stor.tom { background:var(--spår); color:var(--svag); }
+  button.andra { font:inherit; font-size:.9rem; color:var(--accent);
+                 background:none; border:1px solid var(--linje);
+                 border-radius:9px; padding:.7rem 1.1rem; cursor:pointer; }
+  .knappar { display:flex; gap:.7rem; align-items:center; flex-wrap:wrap; }
+  .knappar small { color:var(--svag); font-size:.83rem; }
+
+  /* ── övning ──────────────────────────────────────────────────── */
+  .status { display:flex; gap:1.1rem; font-size:.8rem; color:var(--svag);
+            margin-bottom:1.6rem; }
+  .status b { color:var(--text); }
+  .riktning { font-size:.74rem; letter-spacing:.11em; text-transform:uppercase;
+              color:var(--svag); margin-bottom:.5rem; }
+  .uppgift { font-size:1.75rem; line-height:1.3; margin:0 0 1.5rem;
+             font-weight:500; }
+  input[type=text] { width:100%; padding:.8rem .9rem; font-size:1.2rem;
+                     font-family:inherit; color:var(--text);
+                     background:var(--panel); border:1px solid var(--linje);
+                     border-radius:8px; }
+  input[type=text]:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  input[type=text]:disabled { opacity:.65; }
+  .utfall { margin-top:1.3rem; }
+  .dom { font-size:1.1rem; font-weight:600; }
+  .dom.ja { color:var(--rätt); } .dom.nej { color:var(--fel); }
+  .facit { font-size:1.3rem; margin:.45rem 0 0; }
+  ul.anm { list-style:none; padding:0; margin:.9rem 0 0;
+           border-top:1px solid var(--linje); }
+  ul.anm li { padding:.5rem 0; border-bottom:1px solid var(--linje);
+              font-size:.9rem; display:flex; gap:.5rem; flex-wrap:wrap;
+              align-items:baseline; }
+  .ord { font-weight:600; }
+  .ord.skrev { color:var(--fel); text-decoration:line-through; }
+  .ord.väntat { color:var(--rätt); }
+  .varför { color:var(--svag); }
+  .osäker { font-size:.72rem; border:1px solid var(--linje); border-radius:99px;
+            padding:.05rem .5rem; color:var(--varm); }
+  .hjälp { margin-top:1.3rem; font-size:.85rem; color:var(--svag); }
+  kbd { font:inherit; font-size:.8rem; border:1px solid var(--linje);
+        border-bottom-width:2px; border-radius:4px; padding:.05rem .35rem;
+        background:var(--panel); }
+  .mitten { text-align:center; color:var(--svag); }
 </style>
 </head>
 <body>
 <header>
-  <span class="kurs" id="kurs">…</span>
-  <span>idag <b id="idag">0</b>/<span id="mål">0</span></span>
-  <span>fel <b id="fel">0</b> mot <b id="väntat">0</b> väntade</span>
-  <span>nivå <b id="nivå">–</b></span>
-  <span id="plats"></span>
+  <span class="titel" id="titel">…</span>
+  <nav>
+    <button id="nav-hem" aria-current="page">Home</button>
+    <button id="nav-ord" disabled>Dictionary</button>
+    <button id="nav-stat" disabled>Progress</button>
+    <button id="nav-lekt" disabled>Lessons</button>
+  </nav>
 </header>
 
-<main>
-  <div class="kort" id="kort">
-    <p class="tomt" id="tomt">Laddar …</p>
+<main><div class="kort">
 
+  <section id="vy-hem" hidden>
+    <div class="nivåkort">
+      <div class="nivårad">
+        <span class="rubrik" style="margin:0">Level</span>
+        <span class="nivånr" id="nivå">–</span>
+        <span style="color:var(--svag)">of <span id="nivåer">21</span></span>
+      </div>
+      <div class="spår"><i id="stapel" style="width:0"></i></div>
+      <p class="spårtext" id="spårtext"></p>
+    </div>
+
+    <p class="rubrik">Today</p>
+    <table>
+      <thead><tr><th>Card type</th><th>New</th><th>Due</th><th>Retry</th></tr></thead>
+      <tbody id="räknare"></tbody>
+    </table>
+
+    <div class="knappar">
+      <button class="stor" id="starta">Start today's practice</button>
+      <button class="andra" id="extra">Extra practice</button>
+      <small id="hemhjälp"></small>
+    </div>
+  </section>
+
+  <section id="vy-öva" hidden>
+    <div class="status">
+      <span>done <b id="s-gjort">0</b></span>
+      <span>due <b id="s-förf">0</b></span>
+      <span>retry <b id="s-igen">0</b></span>
+      <span id="s-extra"></span>
+    </div>
     <div id="fråga" hidden>
       <div class="riktning" id="riktning"></div>
       <p class="uppgift" id="uppgift"></p>
       <form id="frm" autocomplete="off">
         <input type="text" id="svar" autocomplete="off" autocapitalize="off"
-               autocorrect="off" spellcheck="false" placeholder="Skriv meningen …">
+               autocorrect="off" spellcheck="false" placeholder="Type the sentence…">
       </form>
-
       <div class="utfall" id="utfall" hidden>
         <div class="dom" id="dom"></div>
         <p class="facit" id="facitrad"></p>
         <ul class="anm" id="anm"></ul>
       </div>
-
-      <p class="nästa" id="hjälp"><kbd>Enter</kbd> för att svara</p>
-      <button id="vidare" class="vidare" hidden>Nästa mening</button>
+      <p class="hjälp" id="hjälp"><kbd>Enter</kbd> to answer</p>
+      <button class="stor" id="vidare" hidden>Next sentence</button>
     </div>
-  </div>
-</main>
+    <div id="klart" hidden>
+      <p class="dom ja" style="font-size:1.3rem">✓ Session complete</p>
+      <p id="klarttext" style="color:var(--svag)"></p>
+      <button class="stor" id="tillbaka">Back to home</button>
+    </div>
+  </section>
+
+  <p class="mitten" id="laddar">Loading…</p>
+</div></main>
 
 <script>
+// All gränssnittstext samlad. Programspråket är INTE kursens källspråk —
+// en svensk som lär sig tyska kan vilja ha engelskt gränssnitt. När fler
+// språk läggs till blir det här en kolumn per språk, inget annat ändras.
+const T = {
+  klart_alla:   n => `${n} sentences. Everything due today is done.`,
+  klart_extra:  n => `${n} sentences of extra practice.`,
+  inget_att_gora: "Nothing due — come back tomorrow, or do extra practice.",
+  redo:         (f, n) => `${f} due, ${n} new`,
+  plats:        (k, c) => `Ready for the next level — ${k} of ${c} sentences a day`,
+  belastning:   (k, c) => `${k} of ${c} sentences a day at this pace`,
+  oövad:        "Practise a little and the pace shows up here",
+  totalt:       "All types",
+};
+
 const $ = id => document.getElementById(id);
-let kurs = null, uppgift = null;
+let kurs = null, uppgift = null, gjort = 0, extraläge = false;
 
-const text = (el, v) => { el.textContent = v; };
-
-async function hämta(väg, init) {
-  const r = await fetch(väg, init);
-  if (!r.ok && r.status !== 503 && r.status !== 410) throw new Error(r.status);
+async function hämta(v, i) {
+  const r = await fetch(v, i);
+  if (!r.ok && ![404, 410, 503].includes(r.status)) throw new Error(r.status);
   return r.json();
 }
+const visa = (...vyer) => {
+  for (const v of ["hem", "öva"]) $("vy-" + v).hidden = !vyer.includes(v);
+  $("laddar").hidden = true;
+};
 
-async function start() {
-  const kurser = await hämta('/api/kurser');
-  if (!kurser.length) {
-    text($('tomt'), 'Ingen kurs finns. Skapa en med `ordbok kurs --ny sv de`.');
-    return;
-  }
-  kurs = kurser[0];
-  text($('kurs'), `${kurs.källspråk} → ${kurs.målspråk}`);
-  await läge();
+// ── hem ───────────────────────────────────────────────────────────
+async function hem() {
+  const h = await hämta(`/api/hem/${kurs.id}`);
+  $("nivå").textContent = h.nivå;
+  $("nivåer").textContent = h.nivåer;
+  $("stapel").style.width = `${h.nivå / h.nivåer * 100}%`;
+  $("spårtext").innerHTML = h.krävs === null ? T.oövad
+    : h.plats ? `<span class="klar">${T.plats(h.krävs.toFixed(0), h.kapacitet)}</span>`
+              : T.belastning(`<b>${h.krävs.toFixed(0)}</b>`, h.kapacitet);
+
+  const kropp = $("räknare");
+  kropp.innerHTML = "";
+  const rad = (namn, r, fet) => {
+    const tr = document.createElement("tr");
+    for (const [text, kl] of [[namn, ""], [r.nya, "ny"], [r.förfallna, "förf"],
+                              [r.igen, "igen"]]) {
+      const td = document.createElement("td");
+      td.textContent = text;
+      if (kl) td.className = text === 0 ? "noll" : kl;
+      tr.append(td);
+    }
+    kropp.append(tr);
+  };
+  for (const r of h.rader) rad(r.namn, r);
+  rad(T.totalt, h.summa, true);
+
+  const attGöra = h.summa.förfallna + h.summa.igen;
+  const s = $("starta");
+  s.textContent = attGöra || h.summa.nya ? "Start today's practice" : "Nothing due";
+  s.disabled = !(attGöra || h.summa.nya);
+  s.classList.toggle("tom", s.disabled);
+  $("hemhjälp").textContent = attGöra || h.summa.nya
+    ? T.redo(h.summa.förfallna + h.summa.igen, h.summa.nya) : T.inget_att_gora;
+  visa("hem");
+}
+
+// ── övning ────────────────────────────────────────────────────────
+async function startaPass(extra) {
+  extraläge = extra;
+  gjort = 0;
+  if (!extra) await hämta(`/api/nytt-pass/${kurs.id}`);
+  $("s-extra").textContent = extra ? "extra practice" : "";
+  $("klart").hidden = true;
+  visa("öva");
   await nästa();
 }
 
-async function läge() {
-  const l = await hämta(`/api/läge/${kurs.id}`);
-  text($('idag'), l.idag); text($('mål'), l.mål);
-  text($('fel'), l.fel); text($('väntat'), l.förväntat);
-  text($('nivå'), l.nivå);
-  text($('plats'), l.krävs === null ? 'oövad'
-    : l.plats ? `✓ plats för nästa nivå (${l.krävs.toFixed(0)} av ${l.kapacitet}/dag)`
-              : `belastning ${l.krävs.toFixed(0)} av ${l.kapacitet} meningar/dag`);
-}
-
 async function nästa() {
-  $('utfall').hidden = true;
-  $('anm').innerHTML = '';
+  $("utfall").hidden = true;
+  $("anm").innerHTML = "";
+  const h = await hämta(`/api/hem/${kurs.id}`);
+  $("s-gjort").textContent = gjort;
+  $("s-förf").textContent = h.summa.förfallna;
+  $("s-igen").textContent = h.summa.igen;
+  // Passet är slut när det förfallna OCH passkön är tomma. Nya kort
+  // hindrar inte slutet — de möts inuti meningar, inte som en egen kö.
+  if (!extraläge && !h.summa.förfallna && !h.summa.igen && gjort > 0) {
+    $("fråga").hidden = true; $("klart").hidden = false;
+    $("klarttext").textContent = T.klart_alla(gjort);
+    return;
+  }
   const u = await hämta(`/api/uppgift/${kurs.id}`);
-  if (u.fel) { text($('tomt'), u.fel); $('fråga').hidden = true; return; }
+  if (u.fel) { $("fråga").hidden = true; $("klart").hidden = false;
+               $("klarttext").textContent = u.fel; return; }
   uppgift = u;
-  $('tomt').hidden = true; $('fråga').hidden = false;
-  text($('riktning'), `${u.källspråk} → ${u.målspråk}`);
-  text($('uppgift'), u.uppgift ?? '(kursen saknar källspråk)');
-  const f = $('svar');
-  f.value = ''; f.disabled = false; f.focus();
-  $('hjälp').hidden = false;
-  $('vidare').hidden = true;
+  $("fråga").hidden = false;
+  $("riktning").textContent = `${u.källspråk} → ${u.målspråk}`;
+  $("uppgift").textContent = u.uppgift ?? "(course has no source language)";
+  const f = $("svar");
+  f.value = ""; f.disabled = false; f.focus();
+  $("hjälp").hidden = false; $("vidare").hidden = true;
 }
 
 async function svara() {
-  const f = $('svar');
+  const f = $("svar");
   if (!f.value.trim()) return;
   f.disabled = true;
-  const r = await hämta('/api/svar', {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id: uppgift.id, svar: f.value})
-  });
-  visa(r);
-  await läge();
-  // Fokus flyttas till knappen, så Enter går vidare utan att musen behövs.
-  $('hjälp').hidden = true;
-  $('vidare').hidden = false;
-  $('vidare').focus();
-}
-
-function visa(r) {
-  $('utfall').hidden = false;
-  const d = $('dom');
-  d.className = 'dom ' + (r.korrekt ? 'ja' : 'nej');
-  text(d, r.korrekt ? '✓ Rätt' : '✗ Fel');
-  $('facitrad').textContent = r.korrekt ? '' : r.facit;
+  const r = await hämta("/api/svar", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: uppgift.id, svar: f.value})});
+  gjort++;
+  $("utfall").hidden = false;
+  const d = $("dom");
+  d.className = "dom " + (r.korrekt ? "ja" : "nej");
+  d.textContent = r.korrekt ? "✓ Correct" : "✗ Not quite";
+  $("facitrad").textContent = r.korrekt ? "" : r.facit;
   for (const a of r.anmärkningar) {
-    const li = document.createElement('li');
-    if (a.skrev) {
-      const s = document.createElement('span');
-      s.className = 'ord skrev'; s.textContent = a.skrev; li.append(s);
-    }
-    const v = document.createElement('span');
-    v.className = 'ord väntat'; v.textContent = a.väntat; li.append(v);
-    const w = document.createElement('span');
-    w.className = 'varför'; w.textContent = a.slutsats; li.append(w);
-    if (a.osäker) {
-      const o = document.createElement('span');
-      o.className = 'osäker'; o.textContent = 'osäker'; li.append(o);
-    }
-    $('anm').append(li);
+    const li = document.createElement("li");
+    const del = (kl, txt) => { if (!txt) return;
+      const e = document.createElement("span"); e.className = kl;
+      e.textContent = txt; li.append(e); };
+    del("ord skrev", a.skrev); del("ord väntat", a.väntat);
+    del("varför", a.slutsats); if (a.osäker) del("osäker", "uncertain");
+    $("anm").append(li);
   }
+  $("s-gjort").textContent = gjort;
+  $("s-igen").textContent = r.igen;
+  $("hjälp").hidden = true;
+  $("vidare").hidden = false;
+  $("vidare").focus();
 }
 
-$('frm').addEventListener('submit', e => { e.preventDefault(); svara(); });
-$('vidare').addEventListener('click', () => nästa());
+// ── start ─────────────────────────────────────────────────────────
+$("frm").addEventListener("submit", e => { e.preventDefault(); svara(); });
+$("vidare").addEventListener("click", () => nästa());
+$("starta").addEventListener("click", () => startaPass(false));
+$("extra").addEventListener("click", () => startaPass(true));
+$("tillbaka").addEventListener("click", () => hem());
+$("nav-hem").addEventListener("click", () => hem());
 
-start().catch(e => text($('tomt'), 'Servern svarade inte: ' + e.message));
+(async () => {
+  const kurser = await hämta("/api/kurser");
+  if (!kurser.length) {
+    $("laddar").textContent = "No course yet. Create one with `ordbok kurs --ny sv de`.";
+    return;
+  }
+  kurs = kurser[0];
+  $("titel").textContent = `${kurs.källspråk} → ${kurs.målspråk}`;
+  await hem();
+})().catch(e => { $("laddar").textContent = "Server error: " + e.message; });
 </script>
 </body>
 </html>

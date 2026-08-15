@@ -10,9 +10,17 @@ ur GENERATOR.md som alla syns i koden nedan.
 
 INGA INLÄRNINGSSTEG. `Scheduler` startar normalt varje kort i en kedja om
 en och tio minuter, och lägger tillbaka fallerade kort i en tiominutersloop.
-Vi kör med tomma steglistor. Ett kort som fallerat får hög prioritet i nästa
-generering och dyker upp igen inom några meningar — i en ANNAN mening, vilket
-är bättre än att se samma kort igen. Genereringen ersätter mekaniken.
+Vi kör med tomma steglistor: att se SAMMA kort om och om igen är precis det
+som gör att man fastnar, och genereringen kan i stället ge kortet i en ny
+mening med andra ord runt sig.
+
+Men den ersättningen sker INTE här, och det påstod den här texten tidigare
+att den gjorde. FSRS minsta intervall är ett dygn, så ett fallerat kort
+schemaläggs i morgon och kan inte komma tillbaka i dagens kö hur kön än
+sorteras. Återförsöket ligger i generatorns PASSKÖ (`generator/__init__.py`),
+som är per pass och lever i minnet. Schemaläggningen här rörs inte av den —
+återförsöket blir en tidig repetition, med den mindre stabilitetsökning
+FSRS ger sådana.
 
 OAVSIKTLIGA REPETITIONER RÄKNAS. En mening rör sju till tio kort men valdes
 för ett av dem. Alla får betyg. FSRS räknar på faktisk förfluten tid och ger

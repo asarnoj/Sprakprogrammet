@@ -99,10 +99,60 @@ class Övningstjänst:
                 "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
             g = self._generator(kurs)
             r = g.svara(f, svar)
-            return {"korrekt": r.korrekt, "facit": f.text,
+            return {"korrekt": r.korrekt, "facit": f.text, "igen": g.passkö(),
                     "anmärkningar": [{"skrev": a.skrev, "väntat": a.väntat,
                                       "slutsats": a.slutsats, "osäker": a.osäker}
                                      for a in r.anmärkningar]}
+
+    #: Korttyperna som de heter för en inlärare. Ordningen är den kort
+    #: introduceras i (Schemaläggare.INTRODUKTIONSORDNING) — den är
+    #: pedagogisk och inte alfabetisk: ordet först, ändelsen sedan.
+    TYPNAMN = (("ord", "Words"), ("egenskap", "Properties"), ("stam", "Stems"),
+               ("form", "Irregular forms"), ("system", "Endings"),
+               ("rektion", "Government"), ("ordföljd", "Word order"))
+
+    def hem(self, kurs_id: int) -> dict | None:
+        """Allt hemvyn behöver: räknarna per korttyp, nivån, kapaciteten."""
+        with self.lås:
+            kurs = self.kort_db.execute(
+                "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
+            if kurs is None:
+                return None
+            språk, nu = kurs["målspråk"], datetime.now(UTC).isoformat()
+            # Passkön ligger i generatorn och bara om ett pass har börjat.
+            g = self._generatorer.get(
+                (kurs["källspråk"], språk, kurs["nivå"], kurs["budget"]))
+            igen = set(g._passkö) if g else set()
+            per_typ = {t: {"nya": 0, "förfallna": 0, "igen": 0}
+                       for t, _ in self.TYPNAMN}
+            for r in self.kort_db.execute(
+                    """SELECT id, typ, sedd, förfaller FROM Kort
+                       WHERE språk = ? AND schemalagt = 1""", (språk,)):
+                rad = per_typ.get(r["typ"])
+                if rad is None:
+                    continue
+                if r["id"] in igen:
+                    rad["igen"] += 1
+                elif r["sedd"] is None:
+                    rad["nya"] += 1
+                elif r["förfaller"] and r["förfaller"] <= nu:
+                    rad["förfallna"] += 1
+            rader = [{"typ": t, "namn": namn, **per_typ[t]}
+                     for t, namn in self.TYPNAMN if any(per_typ[t].values())]
+            summa = {k: sum(r[k] for r in rader)
+                     for k in ("nya", "förfallna", "igen")}
+            u = upplåsningsläge(self.kort_db, språk, kurs["meningar_per_dag"])
+            return {"kurs": dict(kurs), "rader": rader, "summa": summa,
+                    "nivå": kurs["nivå"], "nivåer": 21,
+                    "krävs": u["krävs"], "kapacitet": u["kapacitet"],
+                    "plats": u["klar"], "kort": u["totalt"]}
+
+    def nytt_pass(self, kurs_id: int) -> None:
+        with self.lås:
+            kurs = self.kort_db.execute(
+                "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
+            if kurs:
+                self._generator(kurs).nytt_pass()
 
     def läge(self, kurs_id: int) -> dict:
         with self.lås:
@@ -165,6 +215,13 @@ class Hanterare(BaseHTTPRequestHandler):
             return self._svara(SIDA.read_text(encoding="utf-8"), "text/html")
         if väg == "/api/kurser":
             return self._svara(self.tjänst.kurser())
+        if väg.startswith("/api/hem/"):
+            h = self.tjänst.hem(int(väg.rsplit("/", 1)[1]))
+            return self._svara(h or {"fel": "kursen finns inte"},
+                               kod=200 if h else 404)
+        if väg.startswith("/api/nytt-pass/"):
+            self.tjänst.nytt_pass(int(väg.rsplit("/", 1)[1]))
+            return self._svara({"ok": True})
         if väg.startswith("/api/läge/"):
             return self._svara(self.tjänst.läge(int(väg.rsplit("/", 1)[1])))
         if väg.startswith("/api/uppgift/"):

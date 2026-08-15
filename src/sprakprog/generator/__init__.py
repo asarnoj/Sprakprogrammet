@@ -82,6 +82,22 @@ class Generator:
         self.poängsättare = Poängsättare(kort_db, self.schemaläggare, budget)
         self.samplare = Samplare(
             Ordförråd(språk_db, språk, cefr), nivå, self.rng)
+        # PASSKÖN — kort som fallerat under det HÄR passet och ännu inte
+        # tagits igen. Den finns för att FSRS inte kan ge återförsök samma
+        # dag: minsta intervall är ett dygn, och utan relearning-steg
+        # schemaläggs ett fallerat kort i morgon. Att gå ifrån ett fel utan
+        # att någon gång ha fått rätt är dålig pedagogik, och det var aldrig
+        # meningen — designen säger att kortet ska komma tillbaka "i en
+        # ANNAN mening", vilket är precis vad den här kön åstadkommer.
+        #
+        # Den rör INTE schemaläggningen. FSRS behåller sin bedömning; kortet
+        # är förfallet i morgon oavsett. Återförsöket blir en tidig
+        # repetition, vilket FSRS hanterar med en mindre stabilitetsökning —
+        # samma spacing-regel som gäller alla oavsiktliga repetitioner.
+        #
+        # Den är per PASS och inte per dag, och lever därför i minnet. Ett
+        # avbrutet pass ska inte lämna en skuld i databasen.
+        self._passkö: set[int] = set()
         self._karta = self._läs_karta()
         self._kort = {r["id"]: r for r in kort_db.execute(
             "SELECT * FROM Kort WHERE språk = ?", (språk,))}
@@ -145,6 +161,10 @@ class Generator:
         kö = self.schemaläggare.förfallna(self.språk, kölängd, nu)
         if not kö:
             kö = self.schemaläggare.osedda(self.språk, kölängd)
+        # Passkön läggs FÖRST och räknas som täckt, så att poängfunktionen
+        # aktivt bygger meningen runt det som nyss gick fel.
+        igen = [self._kort[i] for i in self._passkö if i in self._kort]
+        kö = igen + [k for k in kö if k["id"] not in self._passkö]
         förfallna = {k["id"] for k in kö}
         mål = [k["koncept"] for k in kö if k["koncept"]] or [None]
 
@@ -188,6 +208,14 @@ class Generator:
         except (RenderingsFel, KeyError, ValueError):
             return None
 
+    def passkö(self) -> int:
+        """Hur många kort som väntar på att tas igen i det här passet."""
+        return len(self._passkö)
+
+    def nytt_pass(self) -> None:
+        """Töm passkön. Ett avbrutet pass ska inte följa med till nästa."""
+        self._passkö.clear()
+
     def rätta(self, förslag: Förslag, svar: str) -> Rättning:
         """Användarens text → ett betyg per kort."""
         return self.rättare.rätta(svar, förslag.text, förslag.uppslag or [],
@@ -197,6 +225,11 @@ class Generator:
               nu=None) -> Rättning:
         """Rätta OCH registrera — hela slingan i ett anrop."""
         rättning = self.rätta(förslag, svar)
+        # Fallerade kort in i passkön, klarade ut ur den. Ett kort som gick
+        # fel och sedan rätt i samma pass är avklarat: poängen med kön är
+        # att inte lämna passet på ett fel, inte att kräva flera rätta svar.
+        for kid, klarade in rättning.utfall.items():
+            (self._passkö.discard if klarade else self._passkö.add)(kid)
         self.registrera(förslag, rättning.utfall,
                         källspråk=källspråk or self.källspråk, nu=nu)
         return rättning
