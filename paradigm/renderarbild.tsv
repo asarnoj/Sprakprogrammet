@@ -152,17 +152,17 @@ infinitiv-futurum	de	Sie wird anfangen zu machen.
 imperativ	de	Schließ den Hund!
 imperativ-plural	de	Helft dem Hunde!
 modal-ren-infinitiv	de	Sie kann arbeiten.
-modal-futurum	de	Sie wird sollen spielen.
-modal-perfekt	de	Sie hat gekonnt arbeiten.
-modal-negerad-futurum	de	Sie wird nicht dürfen geben.
+modal-futurum	de	Sie wird spielen sollen.
+modal-perfekt	de	Sie hat arbeiten können.
+modal-negerad-futurum	de	Sie wird nicht geben dürfen.
 zu-infinitiv	de	Sie versucht zu arbeiten.
 zu-infinitiv-futurum	de	Sie wird versuchen zu spielen.
 zu-infinitiv-perfekt	de	Sie hat versucht zu arbeiten.
 modal-i-bisats	de	Sie versteht, dass wir arbeiten können.
-modal-i-bisats-futurum	de	Sie versteht, dass wir sollen spielen werden.
-modal-i-bisats-perfekt	de	Sie erinnert, dass wir gekonnt arbeiten haben.
+modal-i-bisats-futurum	de	Sie versteht, dass wir werden spielen sollen.
+modal-i-bisats-perfekt	de	Sie erinnert, dass wir haben arbeiten können.
 zu-infinitiv-i-bisats	de	Sie versteht, dass wir zu arbeiten versuchen.
-zu-infinitiv-i-bisats-futurum	de	Sie versteht, dass wir versuchen zu spielen werden.
+zu-infinitiv-i-bisats-futurum	de	Sie versteht, dass wir zu spielen versuchen werden.
 bisats	de	Sie versteht, dass wir arbeiten.
 bisats-preteritum	de	Sie erinnert, dass wir eine Katze kauften.
 bisats-negerad	de	Sie findet, dass wir nicht spielen.
