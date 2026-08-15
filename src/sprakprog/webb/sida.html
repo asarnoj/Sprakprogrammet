@@ -105,6 +105,26 @@
         background:var(--panel); }
   .mitten { text-align:center; color:var(--svag); }
 
+  /* ── lektionerna ─────────────────────────────────────────────── */
+  ol.steglista { list-style:none; padding:0; margin:0; counter-reset:steg; }
+  ol.steglista li { display:flex; gap:.9rem; align-items:baseline;
+      padding:.55rem .3rem; border-bottom:1px solid var(--linje); }
+  ol.steglista li.upplåst { cursor:pointer; }
+  ol.steglista li.upplåst:hover { background:var(--spår); }
+  ol.steglista li.låst { opacity:.4; }
+  ol.steglista .nr { font-variant-numeric:tabular-nums; color:var(--svag);
+      font-size:.85rem; min-width:1.6rem; text-align:right; }
+  ol.steglista .ti { font-weight:600; flex:1; }
+  ol.steglista .lås { font-size:.78rem; color:var(--svag); }
+  .lead { font-size:1.12rem; line-height:1.5; margin:0 0 1rem; }
+  .spana { font-size:.95rem; color:var(--svag); background:var(--panel);
+      border:1px solid var(--linje); border-left:3px solid var(--varm);
+      border-radius:0 8px 8px 0; padding:.8rem 1rem; margin:0; }
+  .spana b { color:var(--text); }
+  .exempelpar { border-bottom:1px solid var(--linje); padding:.6rem 0; }
+  .exempelpar .källa { color:var(--svag); font-size:.92rem; }
+  .exempelpar .mål { font-size:1.12rem; font-weight:500; }
+
   /* ── ordboken ────────────────────────────────────────────────── */
   .filter { display:flex; gap:.6rem; margin-bottom:1.1rem; flex-wrap:wrap; }
   .filter input, .filter select { font:inherit; font-size:.9rem; padding:.45rem .6rem;
@@ -223,6 +243,25 @@
     </div>
   </section>
 
+  <section id="vy-lekt" hidden>
+    <div id="lektlistan">
+      <p class="rubrik">The course, step by step</p>
+      <ol class="steglista" id="stegen"></ol>
+    </div>
+    <div id="lektionen" hidden>
+      <div class="ordrubrik">
+        <h2 id="l-titel"></h2><span class="kl" id="l-nr"></span>
+        <button class="andra" id="l-tillbaka" style="margin-left:auto">Back</button>
+      </div>
+      <p class="lead" id="l-vad"></p>
+      <p class="spana"><b>What to watch for.</b> <span id="l-spana"></span></p>
+      <p class="rubrik" style="margin-top:1.6rem">Examples</p>
+      <div id="l-exempel"></div>
+      <p class="rubrik" style="margin-top:1.6rem">What this step unlocks</p>
+      <p id="l-nytt" class="delar" style="border:none;padding:0"></p>
+    </div>
+  </section>
+
   <section id="vy-öva" hidden>
     <div class="status">
       <span>done <b id="s-gjort">0</b></span>
@@ -279,8 +318,9 @@ async function hämta(v, i) {
   return r.json();
 }
 const visa = (...vyer) => {
-  for (const v of ["hem", "ord", "öva"]) $("vy-" + v).hidden = !vyer.includes(v);
-  for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"]])
+  for (const v of ["hem", "ord", "lekt", "öva"])
+    $("vy-" + v).hidden = !vyer.includes(v);
+  for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"], ["nav-lekt","lekt"]])
     $(id).setAttribute("aria-current", vyer.includes(v) ? "page" : "false");
   $("laddar").hidden = true;
 };
@@ -319,6 +359,50 @@ async function hem() {
   $("hemhjälp").textContent = attGöra || h.summa.nya
     ? T.redo(h.summa.förfallna + h.summa.igen, h.summa.nya) : T.inget_att_gora;
   visa("hem");
+}
+
+// ── lektionerna ───────────────────────────────────────────────────
+async function lektioner() {
+  const steg = await hämta(`/api/lektioner/${kurs.id}`);
+  const ol = $("stegen");
+  ol.innerHTML = "";
+  for (const s of steg) {
+    const li = document.createElement("li");
+    li.className = s.upplåst ? "upplåst" : "låst";
+    li.innerHTML = `<span class="nr"></span><span class="ti"></span>
+                    <span class="lås"></span>`;
+    li.querySelector(".nr").textContent = s.nivå;
+    li.querySelector(".ti").textContent = s.titel;
+    li.querySelector(".lås").textContent = s.upplåst ? "" : "locked";
+    if (s.upplåst) li.addEventListener("click", () => lektion(s.nivå));
+    ol.append(li);
+  }
+  $("lektionen").hidden = true; $("lektlistan").hidden = false;
+  visa("lekt");
+}
+
+async function lektion(nivå) {
+  const d = await hämta(`/api/lektion/${kurs.id}/${nivå}`);
+  $("l-titel").textContent = d.titel;
+  $("l-nr").textContent = `step ${d.nivå} of 21`;
+  $("l-vad").textContent = d.vad;
+  $("l-spana").textContent = d.spana;
+  const ex = $("l-exempel");
+  ex.innerHTML = "";
+  for (const e of d.exempel) {
+    const div = document.createElement("div");
+    div.className = "exempelpar";
+    div.innerHTML = `<div class="källa"></div><div class="mål"></div>`;
+    div.querySelector(".källa").textContent = e.uppgift ?? "";
+    div.querySelector(".mål").textContent = e.text;
+    ex.append(div);
+  }
+  if (!d.exempel.length) ex.textContent = "No example could be built here yet.";
+  $("l-nytt").textContent = d.nya_kort
+    ? `${d.nya_kort} new cards: ` + d.nytt.map(x => `${x.antal} ${x.typ}`).join(", ")
+    : "No new word forms — this step is about structure.";
+  $("lektlistan").hidden = true; $("lektionen").hidden = false;
+  visa("lekt");
 }
 
 // ── ordboken ──────────────────────────────────────────────────────
@@ -485,6 +569,10 @@ $("tillbaka").addEventListener("click", () => hem());
 $("nav-hem").addEventListener("click", () => hem());
 $("nav-ord").addEventListener("click", () => ordbok());
 $("nav-ord").disabled = false;
+$("nav-lekt").addEventListener("click", () => lektioner());
+$("nav-lekt").disabled = false;
+$("l-tillbaka").addEventListener("click", () => {
+  $("lektionen").hidden = true; $("lektlistan").hidden = false; });
 $("o-tillbaka").addEventListener("click", () => {
   $("ordet").hidden = true; $("ordlistan").hidden = false; });
 for (const id of ["sök", "ordklass", "tillstånd"])

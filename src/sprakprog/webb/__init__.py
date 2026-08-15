@@ -38,6 +38,7 @@ from ..db import anslut
 from ..generator import Generator
 from ..kort import anslut_kort, upplåsningsläge
 from ..kort.db import STANDARD_KORT_DB
+from .lektion import Lektioner
 from .ordbok import Ordbok
 
 SIDA = Path(__file__).parent / "sida.html"
@@ -56,6 +57,7 @@ class Övningstjänst:
         self._öppna: dict[int, tuple] = {}
         self._nästa = 1
         self.ordbok = Ordbok(språk_db, kort_db)
+        self.lektioner = Lektioner(språk_db, kort_db)
 
     def kurser(self) -> list[dict]:
         return [dict(r) for r in self.kort_db.execute(
@@ -161,6 +163,24 @@ class Övningstjänst:
                 "SELECT målspråk FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
             return self.ordbok.ord(k["målspråk"], koncept) if k else None
 
+    def _kurs(self, kurs_id: int):
+        return self.kort_db.execute(
+            "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
+
+    def lektionslista(self, kurs_id: int) -> list | None:
+        with self.lås:
+            k = self._kurs(kurs_id)
+            return (self.lektioner.lista(k["målspråk"], k["nivå"], k["cefr"])
+                    if k else None)
+
+    def lektionen(self, kurs_id: int, nivå: int) -> dict | None:
+        with self.lås:
+            k = self._kurs(kurs_id)
+            if k is None or not 1 <= nivå <= 21:
+                return None
+            return self.lektioner.lektion(k["målspråk"], k["källspråk"],
+                                          nivå, k["cefr"])
+
     def nytt_pass(self, kurs_id: int) -> None:
         with self.lås:
             kurs = self.kort_db.execute(
@@ -229,6 +249,14 @@ class Hanterare(BaseHTTPRequestHandler):
             return self._svara(SIDA.read_text(encoding="utf-8"), "text/html")
         if väg == "/api/kurser":
             return self._svara(self.tjänst.kurser())
+        if väg.startswith("/api/lektioner/"):
+            l = self.tjänst.lektionslista(int(väg.rsplit("/", 1)[1]))
+            return self._svara(l if l is not None else {"fel": "okänd kurs"},
+                               kod=200 if l is not None else 404)
+        if väg.startswith("/api/lektion/"):
+            kurs_id, _, nivå = väg[len("/api/lektion/"):].partition("/")
+            d = self.tjänst.lektionen(int(kurs_id), int(nivå))
+            return self._svara(d or {"fel": "okänd lektion"}, kod=200 if d else 404)
         if väg.startswith("/api/ordlista/"):
             l = self.tjänst.ordlista(int(väg.rsplit("/", 1)[1]))
             return self._svara(l if l is not None else {"fel": "okänd kurs"},

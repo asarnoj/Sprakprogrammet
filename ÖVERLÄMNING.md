@@ -667,6 +667,35 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Lektionsvyn — och fem döda steg den avslöjade
+
+*Byggt 2026-08-15.* Tre delar med helt olika kostnad, vilket är hela skälet
+till formen: **prosan** skrivs (21 texter, inte 21 × 7 — konstruktionen är
+språkoberoende och bara realiseringen skiljer), **exemplen** genereras av
+generatorn på rätt nivå med användarens egna ord, och vad steget låser upp
+**mäts** genom att befolka på N och N−1 och ta skillnaden.
+
+Exemplen prövas mot ett villkor per konstruktion. Utan det visar lektionen om
+passiv en mening i aktiv form, eftersom samplaren bara bygger konstruktionen
+ibland.
+
+**Fem steg införde noll nya kort**, och mätningen av vad samplaren faktiskt
+bygger sa varför: possessiv, adverbial, genitiv, prepositionsfras och bisats
+byggdes ALDRIG. Konstruktionerna finns i alla sju renderarna, är validerade,
+står i stegen och renderas rätt i regressionsnätet — `_nf()` satte bara
+bestämdhet, numerus, attribut och komparation, och `kandidat()` satte elva
+konstruktioner men aldrig adverbial eller bisats.
+
+Nåbarhetsmätningen kunde inte se det: den mäter vad samplaren NÅR, inte vad
+specen KAN UTTRYCKA. Efter rättelsen tillkom 774 kort som aldrig gick att nå.
+
+Två fel som föll ut under bygget och rättades: argumentbisatser tog vilken
+subjunktion som helst ("hat gemeint, ALS ihre Maus öffnete"), och satsen stod
+BREDVID objektet i stället för att vara det ("wissen einen Typ, dass …").
+Satsen ÄR objektet — utom för verb med egen kommunikatslot, där båda är rätt.
+
+---
+
 ## Ordboksvyn: paradigmet med kunskapen i sig
 
 *Byggt 2026-08-15.* Svarar mot det Julius sa om kortövning: "när det är flera
