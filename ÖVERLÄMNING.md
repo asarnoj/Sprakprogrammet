@@ -667,6 +667,52 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Tre parallella rättelser, landade 2026-08-15
+
+Tre sessioner arbetade samtidigt i egna worktrees. Ingen av dem committade;
+allt låg ocommitterat och main var orörd. Regressionsnätet granskade var och en
+med `--src` innan de landades.
+
+**Tyskans verbalkomplex.** Ren infinitiv bildar ett koherent komplex med det
+styrande verbet, och där står den styrande formen SIST — omvänt mot satsen i
+övrigt. Därav Ersatzinfinitiv (`hat arbeiten können`, aldrig `hat gekonnt`) och
+Oberfeld (`dass wir haben arbeiten können` — det enda stället i tyskan där
+bisatsens finita verb inte står sist).
+
+**Zu-frasen i bisats.** En zu-infinitiv är ingen del av verbalkomplexet utan en
+egen fras: sist i huvudsats, före verbkedjan i bisats. Den gamla ordningen
+delade klustret mitt itu.
+
+De två gick INTE att kombinera mekaniskt — båda redigerade samma if/else i
+`satsled()`. De var däremot komplementära, den ena i grenen `markör is None`
+och den andra i `markör is not None`. Sammansatta för hand, verifierade mot
+nätet: exakt 5 + 1 = 6 rader, ingenting annat i något av de sju språken.
+
+**Inf-cellen.** Nio svenska verb hade sin IMPERATIV i inf-cellen, och futurum
+renderas därifrån: "han ska försök att erbjuda". Felet var osynligt i raden —
+inf och imp hade kollapsat till en rad med tempus=17, vilket är RÄTT för alla
+-ar-verb. Först jämförelsen mot LEMMAT skiljer den riktiga kollapsen från den
+felaktiga, och det är den kontrollen `--endast-struktur` nu gör utan modell.
+
+### Kort.db städad, inte ombyggd
+
+262 kort fanns kvar från en befolkning gjord före nivåspärren. Ombyggnad var
+planen tills kontrollen före raderingen visade **10 repetitioner och 2 meningar
+från verklig användning**. Spökkorten togs bort ett för ett i stället, efter en
+spärr som vägrar om något av dem har historik (noll hade det). 1 374 → 1 112,
+historiken orörd.
+
+Regeln som gällde: titta på målet innan du raderar. Den var värd något här.
+
+### Iakttagelse från första körningen
+
+"Han springer" kom tre gånger på fem meningar. Upprepningstermen straffar bara
+det som stod i FÖREGÅENDE mening, och vid kallstart med kort kö vinner samma
+mål om och om igen. Det är en viktfråga och den ska mätas, inte gissas — men
+den är noterad.
+
+---
+
 ## Två skyddsnät, och varför de behövdes
 
 *Byggt 2026-08-15, när flera renderarändringar pågick samtidigt.*
