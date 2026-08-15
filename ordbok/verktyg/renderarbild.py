@@ -29,13 +29,20 @@ inte längre finns. Ser en diff omöjlig ut: `find src -name __pycache__ -exec r
 
 Kör:  python ordbok/verktyg/renderarbild.py            jämför mot filen
       python ordbok/verktyg/renderarbild.py --skriv    skriv om den
+      python ordbok/verktyg/renderarbild.py --src X    jämför ett ANNAT träds
+                                                       renderare mot bilden
 """
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+# --src pekar ut ETT ANNAT renderarbibliotek än det här trädets. Det är så
+# man jämför en gren mot basbilden utan att checka ut den: worktreen har sin
+# egen `src`, och `sprak.db` och bilden ligger kvar här.
+_SRC = (sys.argv[sys.argv.index("--src") + 1] if "--src" in sys.argv
+        else str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(_SRC).resolve()))
 
 import sqlite3
 
@@ -151,6 +158,37 @@ KORPUS: tuple[tuple[str, Mening], ...] = (
                      modus=Satsmodus.IMPERATIV)),
     ("imperativ-plural", _m(verb="arb_hjälpa", subjekt=Nominalfras("pronomen_2pl"),
                             objekt=HUND, modus=Satsmodus.IMPERATIV)),
+    # Verbalkomplexet: ren infinitiv mot zu-infinitiv, i huvudsats och bisats,
+    # med och utan hjälpverb i slutfältet. Tillagda 2026-08-15 därför att den
+    # första korpusen INTE täckte dem — tre parallella rättelser arbetade i
+    # precis den luckan och nätet såg inget. Ett regressionsnät är bara så bra
+    # som sin korpus, och den växer när man upptäcker var den är tunn.
+    ("modal-ren-infinitiv", _m(verb="modal_kan", komplement="arb_arbeta")),
+    ("modal-futurum", _m(verb="modal_bör", komplement="arb_leka",
+                         tid=Tidsreferens.FRAMTID)),
+    ("modal-perfekt", _m(verb="modal_kan", komplement="arb_arbeta",
+                         aspekt=Aspekt.PERFEKT)),
+    ("modal-negerad-futurum", _m(verb="modal_får", komplement="fys_ge",
+                                 negerad=True, tid=Tidsreferens.FRAMTID)),
+    ("zu-infinitiv", _m(verb="gen_försöka", komplement="arb_arbeta")),
+    ("zu-infinitiv-futurum", _m(verb="gen_försöka", komplement="arb_leka",
+                                tid=Tidsreferens.FRAMTID)),
+    ("zu-infinitiv-perfekt", _m(verb="gen_försöka", komplement="arb_arbeta",
+                                aspekt=Aspekt.PERFEKT)),
+    ("modal-i-bisats", _m(verb="kog_förstå", bisats=Bisats("subj_att",
+        Mening(verb="modal_kan", subjekt=VI, komplement="arb_arbeta")))),
+    ("modal-i-bisats-futurum", _m(verb="kog_förstå", bisats=Bisats("subj_att",
+        Mening(verb="modal_bör", subjekt=VI, komplement="arb_leka",
+               tid=Tidsreferens.FRAMTID)))),
+    ("modal-i-bisats-perfekt", _m(verb="kog_minnas", bisats=Bisats("subj_att",
+        Mening(verb="modal_kan", subjekt=VI, komplement="arb_arbeta",
+               aspekt=Aspekt.PERFEKT)))),
+    ("zu-infinitiv-i-bisats", _m(verb="kog_förstå", bisats=Bisats("subj_att",
+        Mening(verb="gen_försöka", subjekt=VI, komplement="arb_arbeta")))),
+    ("zu-infinitiv-i-bisats-futurum", _m(verb="kog_förstå", bisats=Bisats("subj_att",
+        Mening(verb="gen_försöka", subjekt=VI, komplement="arb_leka",
+               tid=Tidsreferens.FRAMTID)))),
+
     ("bisats", _m(verb="kog_förstå",
                   bisats=Bisats("subj_att", Mening(verb="arb_arbeta", subjekt=VI)))),
     ("bisats-preteritum", _m(verb="kog_minnas",
@@ -201,7 +239,13 @@ def main() -> int:
     print(f"{len(KORPUS)} konstruktioner × 7 språk = {len(nu)} rader, "
           f"{fel} utan resultat")
 
+    if "--src" in sys.argv:
+        print(f"renderare ur {_SRC}")
     if "--skriv" in sys.argv:
+        if "--src" in sys.argv:
+            print("Vägrar skriva bilden från ett annat träd — bilden hör till "
+                  "det här trädets kod.")
+            return 1
         BILD.write_text("konstruktion\tspråk\tutfall\n" + "".join(
             f"{n}\t{s}\t{t}\n" for n, s, t in nu), encoding="utf-8")
         print(f"→ {BILD.relative_to(BILD.parents[1])}")

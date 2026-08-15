@@ -37,6 +37,18 @@ infinitiv-negerad	sv	Hon slutar inte att leka.
 infinitiv-futurum	sv	Hon ska börja att göra.
 imperativ	sv	Stäng hunden!
 imperativ-plural	sv	Hjälp hunden!
+modal-ren-infinitiv	sv	Hon kan arbeta.
+modal-futurum	sv	Hon ska böra leka.
+modal-perfekt	sv	Hon har kunnat arbeta.
+modal-negerad-futurum	sv	Hon ska inte få ge.
+zu-infinitiv	sv	Hon försöker att arbeta.
+zu-infinitiv-futurum	sv	Hon ska försöka att leka.
+zu-infinitiv-perfekt	sv	Hon har försökt att arbeta.
+modal-i-bisats	sv	Hon förstår att vi kan arbeta.
+modal-i-bisats-futurum	sv	Hon förstår att vi ska böra leka.
+modal-i-bisats-perfekt	sv	Hon minns att vi har kunnat arbeta.
+zu-infinitiv-i-bisats	sv	Hon förstår att vi försöker att arbeta.
+zu-infinitiv-i-bisats-futurum	sv	Hon förstår att vi ska försöka att leka.
 bisats	sv	Hon förstår att vi arbetar.
 bisats-preteritum	sv	Hon minns att vi köpte en katt.
 bisats-negerad	sv	Hon tycker att vi inte leker.
@@ -82,6 +94,18 @@ infinitiv-negerad	en	She does not stop playing.
 infinitiv-futurum	en	She will start to do.
 imperativ	en	Close the dog!
 imperativ-plural	en	Help the dog!
+modal-ren-infinitiv	en	She can work.
+modal-futurum	en	FEL en/should: cellen 'inf_imp' är tom — formen saknas i databasen
+modal-perfekt	en	FEL en/can: cellen 'sup' är tom — formen saknas i databasen
+modal-negerad-futurum	en	FEL en/may: cellen 'inf_imp' är tom — formen saknas i databasen
+zu-infinitiv	en	She tries to work.
+zu-infinitiv-futurum	en	She will try to play.
+zu-infinitiv-perfekt	en	She has tried to work.
+modal-i-bisats	en	FEL en/can: ingen presensform
+modal-i-bisats-futurum	en	FEL en/should: cellen 'inf_imp' är tom — formen saknas i databasen
+modal-i-bisats-perfekt	en	FEL en/can: cellen 'sup' är tom — formen saknas i databasen
+zu-infinitiv-i-bisats	en	She understands that we try to work.
+zu-infinitiv-i-bisats-futurum	en	She understands that we will try to play.
 bisats	en	She understands that we work.
 bisats-preteritum	en	She remembers that we bought a cat.
 bisats-negerad	en	She thinks that we do not play.
@@ -127,6 +151,18 @@ infinitiv-negerad	de	Sie hört nicht zu spielen auf.
 infinitiv-futurum	de	Sie wird anfangen zu machen.
 imperativ	de	Schließ den Hund!
 imperativ-plural	de	Helft dem Hunde!
+modal-ren-infinitiv	de	Sie kann arbeiten.
+modal-futurum	de	Sie wird sollen spielen.
+modal-perfekt	de	Sie hat gekonnt arbeiten.
+modal-negerad-futurum	de	Sie wird nicht dürfen geben.
+zu-infinitiv	de	Sie versucht zu arbeiten.
+zu-infinitiv-futurum	de	Sie wird versuchen zu spielen.
+zu-infinitiv-perfekt	de	Sie hat versucht zu arbeiten.
+modal-i-bisats	de	Sie versteht, dass wir arbeiten können.
+modal-i-bisats-futurum	de	Sie versteht, dass wir sollen spielen werden.
+modal-i-bisats-perfekt	de	Sie erinnert, dass wir gekonnt arbeiten haben.
+zu-infinitiv-i-bisats	de	Sie versteht, dass wir zu arbeiten versuchen.
+zu-infinitiv-i-bisats-futurum	de	Sie versteht, dass wir versuchen zu spielen werden.
 bisats	de	Sie versteht, dass wir arbeiten.
 bisats-preteritum	de	Sie erinnert, dass wir eine Katze kauften.
 bisats-negerad	de	Sie findet, dass wir nicht spielen.
@@ -172,6 +208,18 @@ infinitiv-negerad	fr	Elle n'arrête pas de jouer.
 infinitiv-futurum	fr	Elle commencera à faire.
 imperativ	fr	Ferme le chien!
 imperativ-plural	fr	Aidez le chien!
+modal-ren-infinitiv	fr	Elle peut travailler.
+modal-futurum	fr	Elle devra jouer.
+modal-perfekt	fr	Elle a pu travailler.
+modal-negerad-futurum	fr	Elle ne pourra pas donner.
+zu-infinitiv	fr	Elle essaie de travailler.
+zu-infinitiv-futurum	fr	Elle essayera de jouer.
+zu-infinitiv-perfekt	fr	Elle a essayé de travailler.
+modal-i-bisats	fr	Elle comprend que nous pouvons travailler.
+modal-i-bisats-futurum	fr	Elle comprend que nous devrons jouer.
+modal-i-bisats-perfekt	fr	Elle souvient que nous avons pu travailler.
+zu-infinitiv-i-bisats	fr	Elle comprend que nous essayons de travailler.
+zu-infinitiv-i-bisats-futurum	fr	Elle comprend que nous essayerons de jouer.
 bisats	fr	Elle comprend que nous travaillons.
 bisats-preteritum	fr	Elle souvient que nous avons acheté un chat.
 bisats-negerad	fr	Elle trouve que nous ne jouons pas.
@@ -217,6 +265,18 @@ infinitiv-negerad	es	Ella no deja de jugar.
 infinitiv-futurum	es	Ella empezará a hacer.
 imperativ	es	¡Cierra el perro!
 imperativ-plural	es	¡Ayudad el perro!
+modal-ren-infinitiv	es	Ella puede trabajar.
+modal-futurum	es	Ella deberá jugar.
+modal-perfekt	es	Ella ha podido trabajar.
+modal-negerad-futurum	es	Ella no podrá dar.
+zu-infinitiv	es	Ella intenta trabajar.
+zu-infinitiv-futurum	es	Ella intentará jugar.
+zu-infinitiv-perfekt	es	Ella ha intentado trabajar.
+modal-i-bisats	es	Ella entiende que nosotros podemos trabajar.
+modal-i-bisats-futurum	es	Ella entiende que nosotros deberemos jugar.
+modal-i-bisats-perfekt	es	Ella recuerda que nosotros hemos podido trabajar.
+zu-infinitiv-i-bisats	es	Ella entiende que nosotros intentamos trabajar.
+zu-infinitiv-i-bisats-futurum	es	Ella entiende que nosotros intentaremos jugar.
 bisats	es	Ella entiende que nosotros trabajamos.
 bisats-preteritum	es	Ella recuerda que nosotros compramos un gato.
 bisats-negerad	es	Ella opina que nosotros no jugamos.
@@ -262,6 +322,18 @@ infinitiv-negerad	it	Lei non smette di giocare.
 infinitiv-futurum	it	Lei inizierà a fare.
 imperativ	it	Chiudi il cane!
 imperativ-plural	it	Aiutate il cane!
+modal-ren-infinitiv	it	Lei può lavorare.
+modal-futurum	it	Lei dovrà giocare.
+modal-perfekt	it	Lei è potuta lavorare.
+modal-negerad-futurum	it	Lei non potrà dare.
+zu-infinitiv	it	Lei prova a lavorare.
+zu-infinitiv-futurum	it	Lei proverà a giocare.
+zu-infinitiv-perfekt	it	Lei ha provato a lavorare.
+modal-i-bisats	it	Lei capisce che noi possiamo lavorare.
+modal-i-bisats-futurum	it	Lei capisce che noi dovremo giocare.
+modal-i-bisats-perfekt	it	Lei ricorda che noi siamo potuti lavorare.
+zu-infinitiv-i-bisats	it	Lei capisce che noi proviamo a lavorare.
+zu-infinitiv-i-bisats-futurum	it	Lei capisce che noi proveremo a giocare.
 bisats	it	Lei capisce che noi lavoriamo.
 bisats-preteritum	it	Lei ricorda che noi abbiamo comprato un gatto.
 bisats-negerad	it	Lei trova che noi non giochiamo.
@@ -307,6 +379,18 @@ infinitiv-negerad	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalit
 infinitiv-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
 imperativ	ja	犬を閉めてください。
 imperativ-plural	ja	犬を手伝ってください。
+modal-ren-infinitiv	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-perfekt	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-negerad-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+zu-infinitiv	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+zu-infinitiv-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+zu-infinitiv-perfekt	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-i-bisats	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-i-bisats-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+modal-i-bisats-perfekt	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+zu-infinitiv-i-bisats	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+zu-infinitiv-i-bisats-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
 bisats	ja	彼女は私たちが働くということをわかります。
 bisats-preteritum	ja	彼女は私たちが猫を買ったということを思い出します。
 bisats-negerad	ja	彼女は私たちが遊ばないということを思います。

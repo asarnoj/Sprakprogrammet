@@ -667,6 +667,38 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Två skyddsnät, och varför de behövdes
+
+*Byggt 2026-08-15, när flera renderarändringar pågick samtidigt.*
+
+**`renderarbild.py` — 57 konstruktioner × 7 språk, fryst i en fil.** Det fanns
+`ögonblicksbild.py` för datalagret och `rendera_prov.py` som skriver ut
+meningar för en människa att läsa ("inte något som kan verifieras
+automatiskt", dess egna ord). Mellan dem fanns ett hål precis där renderarna
+bor.
+
+Filen säger vad systemet GÖR, inte vad som är rätt. Kända fel står i den —
+en rättelse SKA ge en diff, och diffen ska läsas: den visar vad som ändrades
+UTÖVER det man tänkte ändra. `--src X` jämför ett annat träds renderare mot
+bilden, vilket är hur en gren granskas utan att checkas ut.
+
+Nätet provades genom att ändra ett tecken i franskans negation; det fångade
+alla fyra elisionsställen. Men den första korpusen missade helt de
+konstruktioner tre pågående rättelser gällde — **ett regressionsnät är bara
+så bra som sin korpus**, och den ska växa när man upptäcker var den är tunn.
+
+**`synk.py` — säger `sprak.db` och `former.tsv` samma sak?** Filen är
+sanningen och databasen ska kunna byggas om ur den. Men rättelser landar i
+DATABASEN, och exporten tillbaka är ett eget steg som går att glömma. Glöms
+den lever rättelsen bara i en fil git inte ser.
+
+Det HADE hänt: nio svenska verb hade fått imperativen åtskild från infinitiven
+i databasen (`äg` tempus=16, `äga` tempus=1) medan filen hade en enda rad som
+påstod sig vara båda (`äg` tempus=17). Arton rader bara i databasen, nio bara
+i filen, i veckor, utan att något sa ifrån.
+
+---
+
 ## Appen: uppgiften, servern och sidan
 
 *Byggt 2026-08-15.*
