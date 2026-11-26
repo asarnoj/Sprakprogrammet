@@ -761,6 +761,97 @@ aldrig prövar. Eller så ska ändelserna kardas, och då är steget riktigt arb
 
 ---
 
+### Förslag efter Julius svar på 1–4 (omgång 1)
+
+*Skrivet 2026-09-09. Inte beslutat — Julius reagerar på det här.*
+
+**Punkt 2 löser sig först, och den låser upp de andra.** Julius: *«Här kan vi
+se tydligt att det alltid finns endast ett ord per cell.»* Han har rätt, och
+missförståndet var mitt: **cellen är gränssnittet, korten är modellen.** En
+ruta i tabellen har alltid ett ord. Att systemet bakom rutan bokför ett eller
+två kort är intern bokföring om vad som ska prövas och vad som ska få skulden
+— användaren ser det aldrig. «Ett kort per övning» ska alltså läsas «en ruta
+per övning», och det kan modellen alltid uppfylla.
+
+**Punkt 3 är bekräftad, och skarpare än den formulerades.** Julius invände att
+stammen inte gäller för alla böjningar och tog `avoir` som exempel. Mätt över
+franskans 174 verb, efter att konjunktivens `que`-partikel räknats bort:
+
+    61 %   stammen bär ordet (≥60 % av lemmat)
+    21 %   stammen bär hälften
+    18 %   stammen kollapsar        aller avoir être faire dire
+                                    pouvoir vouloir boire lire mourir
+
+Och de 18 % är inte vilka verb som helst:
+
+    de kollapsade    90 % på A1,  33 % i bas_kärna
+    alla verb        36 % på A1,   6 % i bas_kärna
+
+**Modellen fungerar för de verb man sällan använder och brister för dem man
+använder mest.** Det är fel håll.
+
+Täckningen visar samma sak från andra sidan: franska verb har i snitt 33,3
+distinkta former men 19,9 celler i beroendekartan, och bara 44 av 174 verb är
+helt täckta. `être d'accord` och `vouloir dire` har **noll kort** — stammen
+går inte att härleda ur ett flerordigt lexem där det böjda ledet står först,
+så kortbyggaren gav upp tyst.
+
+**Punkt 1 och 4 — förslaget är att modellen följer språket i stället för en
+regel.** Julius beskrev båda kunskapsmomenten själv, och de är olika:
+
+| | Kunskapsmomentet | Kort |
+|---|---|---|
+| regelbundna verb | *«nous, alltså -ons»* — regeln | stam + ändelse |
+| oregelbundna | *«man är osäker på exakt vilken variant som gäller»* | en form = ett kort |
+
+Vilket fall ett ord tillhör **är inte ett kort** utan en egenskap hos datan som
+avgör *vilka kort som finns*. Det svarar på Julius oro i punkt 1: man behöver
+aldrig ett kort som frågar «vilken klass tillhör det här ordet», eftersom
+användaren aldrig får den frågan — de får former, och vilka former de får
+skiljer sig åt beroende på klassen.
+
+Och hans FSRS-argument bär den oregelbundna halvan: *«ifall man lär sig
+regelbundenheten kommer man att lära sig kortet snabbt och det kommer inte ta
+mer plats»* — ett kort man alltid klarar får långa intervall omedelbart.
+
+**Infinitivfrågan har redan ett svar i instrumenteringen.** Julius: *«i vissa
+former såsom infinitiv spelar inte pronomenets böjning roll… vi måste ha ett
+robust system för att veta när en böjning faktiskt har en påverkan.»*
+Renderaren *slår upp* de celler den behöver — `Uppslag.form(lexem, cell)` är
+instrumenterad. Slog den aldrig upp en personböjd cell skedde ingen
+kongruens, och då finns ingenting att pröva. Det är samma instrumentering som
+gör renderarens beslut till nivåer.
+
+**Vad som återstår att bestämma** är var gränsen går för de 21 % där stammen
+bär hälften, och den nya punkt 12 nedan.
+
+---
+
+### 12 · Är `que` en del av konjunktivformen?
+
+*Ny, upptäckt när punkt 1–4 mättes.*
+
+**Idag.** Konjunktivformerna lagras med partikeln: `que je travaille`,
+`que nous travaillions`. Det syns i paradigmtabellen på grammatiksajterna
+också, under «Vol». Det gjorde att min första stammätning kollapsade för varje
+regelbundet verb — prefixet mellan `travaille` och `que je travaille` är tomt.
+
+**Luckan.** Om formen är `que je travaille` är kortets facit det, alltså
+inklusive både partikeln och pronomenet. Då är det inte längre en böjningscell
+utan en fras. Och en mening som använder konjunktiv renderar bara verbet —
+`que` kommer från konstruktionen, inte från böjningen.
+
+**Alternativ.**
+
+- **a)** `que` och pronomenet skalas av i datan; cellen är `travaille` och
+  partikeln hör till konstruktionen som kräver konjunktiv.
+- **b)** Formen står som den är, och konjunktivcellerna är fraser snarare än
+  böjningar — vilket gör dem till en egen sorts kort.
+- **c)** Formen står som den är i ordboken men skalas vid kortbygget, så att
+  visningen behåller `que` medan kortet bär `travaille`.
+
+---
+
 ### 5 · Extraövning saknas helt
 
 **Idag.** Det gamla systemet hade «keep practising»: när dagen var klar kunde
