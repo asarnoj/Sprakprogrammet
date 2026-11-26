@@ -413,7 +413,9 @@ class Schemaläggare:
                           nu: datetime | None = None,
                           självrättade: set[int] | None = None,
                           rörda: set[int] | None = None,
-                          millisekunder: int | None = None) -> int:
+                          millisekunder: int | None = None,
+                          svar: str | None = None,
+                          anmärkningar: list | None = None) -> int:
         """Logga en hel mening och betygsätt varje kort den rörde.
 
         `utfall` är kort_id → klarade det. Ett fallerat ORDKORT skyddar sina
@@ -448,12 +450,19 @@ class Schemaläggare:
         skyddade = self._skyddade(utfall)
         graderade, fällda = self._redan_idag(utfall, nu)
 
+        # VARJE KORTS LÄGE SKRIVS NER, inte bara de som får en dom. Ett kort
+        # utan `Repetition`-rad kan ha hamnat där på fem sätt med helt olika
+        # innebörd, och skillnaden var omöjlig att härleda i efterhand. Se
+        # migrationen `spar.sql`.
+        lägen: list[dict] = []
+
         # UNDANHÅLLNA KORT. Rättningen tog dem ur `utfall` därför att felet
         # inte gick att knyta till ett kort. De stod tidigare kvar som
         # förfallna och plockades gärna till nästa mening — efter att facit
         # visats. Nu skjuts de upp i stället.
         for kort_id in set(rörda_idn) - set(utfall):
             self.skjut_upp(kort_id, "undanhållen", mening_id=mening_id, nu=nu)
+            lägen.append({"kort": kort_id, "läge": "undanhållen", "rätt": None})
 
         for kort_id, rätt in utfall.items():
             if kort_id in skyddade:
@@ -461,16 +470,57 @@ class Schemaläggare:
                 # ingen mätning, alltså ingen bedömning — och kortet får inte
                 # prövas igen idag, eftersom ordet just visades.
                 self.skjut_upp(kort_id, "skyddad", mening_id=mening_id, nu=nu)
+                lägen.append({"kort": kort_id, "läge": "skyddad", "rätt": rätt})
                 continue
             # EN BEDÖMNING PER KORT OCH DYGN. Se `_redan_idag`.
             if rätt and kort_id in graderade:
+                lägen.append({"kort": kort_id, "läge": "redan_bedömd",
+                              "rätt": True})
                 continue
             if not rätt and kort_id in fällda:
+                # DEN HÄR GRENEN ÄR SVÅRAST ATT SE UTIFRÅN, och den är skälet
+                # till att `again` kan stå stilla medan användaren gör fel:
+                # kortet ligger redan i Again sedan tidigare idag, så felet är
+                # sant och bokföringen ändå tom.
+                lägen.append({"kort": kort_id, "läge": "redan_fälld",
+                              "rätt": False})
                 continue
             self.repetera(kort_id, rätt, mening_id=mening_id, nu=nu,
                           självrättad=kort_id in (självrättade or ()))
+            lägen.append({"kort": kort_id, "läge": "bedömd", "rätt": rätt})
+        self._logga_spår(mening_id, svar, anmärkningar, lägen)
         self.db.commit()
         return mening_id
+
+    def _logga_spår(self, mening_id: int, svar: str | None,
+                    anmärkningar: list | None, lägen: list[dict]) -> None:
+        """Bevara HUR domen kom till, vid sidan av vad den blev.
+
+        Spåret läses aldrig av schemaläggningen. Skulle det göra det vore det
+        inte längre ett spår utan en del av modellen, och då måste det
+        provas som en. Se `spar.sql`.
+
+        Korten berikas med typ och facit här och inte vid läsningen, därför
+        att ett kort kan hinna raderas — en nollställning river hela
+        kortleken — och ett spår som pekar på ett kort som inte finns kan
+        inte längre läsas. Spåret ska överleva det det beskriver.
+        """
+        if lägen:
+            rader = {r["id"]: r for r in self.db.execute(
+                "SELECT id, typ, koncept, facit FROM Kort WHERE id IN "
+                f"({','.join('?' * len(lägen))})",
+                [l["kort"] for l in lägen])}
+            for l in lägen:
+                k = rader.get(l["kort"])
+                if k is not None:
+                    l["typ"], l["koncept"] = k["typ"], k["koncept"]
+                    l["facit"] = k["facit"]
+        self.db.execute(
+            """INSERT INTO Spår (mening_id, svar, anmärkningar, kortlägen)
+               VALUES (?,?,?,?)""",
+            (mening_id, svar,
+             json.dumps([a for a in (anmärkningar or [])], ensure_ascii=False),
+             json.dumps(lägen, ensure_ascii=False)))
 
     def _redan_idag(self, utfall: dict[int, bool],
                     nu: datetime | None = None) -> tuple[set[int], set[int]]:

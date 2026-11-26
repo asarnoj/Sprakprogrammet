@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import random
 import sqlite3
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 
 from ..kort import Schemaläggare, spec_json
 from ..rendering import RENDERARE, Mening, RenderingsFel, Uppslag, Validator
@@ -690,7 +690,8 @@ class Generator:
         for kid, klarade in rättning.utfall.items():
             (self._passkö.discard if klarade else self._passkö.add)(kid)
         self.registrera(förslag, rättning.utfall,
-                        källspråk=källspråk or self.källspråk, nu=nu)
+                        källspråk=källspråk or self.källspråk, nu=nu,
+                        svar=svar, anmärkningar=rättning.anmärkningar)
         return rättning
 
     def nåbara_kort(self, *, kandidater: int = 400,
@@ -836,7 +837,9 @@ class Generator:
     def registrera(self, förslag: Förslag, utfall: dict[int, bool],
                    *, källspråk: str | None = None, nu=None,
                    självrättade: set[int] | None = None,
-                   millisekunder: int | None = None) -> int:
+                   millisekunder: int | None = None,
+                   svar: str | None = None,
+                   anmärkningar: list | None = None) -> int:
         return self.schemaläggare.registrera_mening(
             self.språk, spec_json(förslag.mening), förslag.text, utfall,
             källspråk=källspråk or self.källspråk,
@@ -846,7 +849,11 @@ class Generator:
             # Skillnaden är de undanhållna, och utan den kan schemaläggaren
             # inte skjuta upp dem.
             rörda={k["id"] for k in förslag.kort},
-            millisekunder=millisekunder)
+            millisekunder=millisekunder,
+            # SPÅRET: vad användaren skrev och vad diffen såg. Går bara in i
+            # `Spår` och rör ingen bedömning — se `_logga_spår`.
+            svar=svar,
+            anmärkningar=[asdict(a) for a in (anmärkningar or [])])
 
     def uppdatera_passkö(self, utfall: dict[int, bool]) -> None:
         """Fallerade kort in i passkön, klarade ut ur den.

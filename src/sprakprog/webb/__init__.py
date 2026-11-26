@@ -393,7 +393,12 @@ class Övningstjänst:
                 "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
             g = self._generator(kurs)
             r = g.rätta(f, svar)
-            self._obokförda[id_] = (kurs_id, f, dict(r.utfall), set(), start)
+            # SVARET OCH ANMÄRKNINGARNA BÄRS MED till bokföringen. De fanns
+            # bara i den här metodens minne förut och kastades när svaret
+            # skickats till skärmen — vilket gjorde varje fråga om HUR en dom
+            # kom till obesvarbar i efterhand. Se `spar.sql`.
+            self._obokförda[id_] = (kurs_id, f, dict(r.utfall), set(), start,
+                                    svar, list(r.anmärkningar))
             namn = dict(self.TYPNAMN)
             # SKYDDADE KORT FÅR INGET BETYG, och listan ska säga det. Faller
             # ordkortet testades formen aldrig — kan man inte hämta fram ordet
@@ -479,7 +484,7 @@ class Övningstjänst:
             post = self._obokförda.get(id_)
             if post is None:
                 return None
-            kurs_id, f, utfall, rättade, _ = post
+            kurs_id, f, utfall, rättade = post[:4]
             if hela:
                 for kid in utfall:
                     if utfall[kid] is not True:
@@ -497,7 +502,7 @@ class Övningstjänst:
             post = self._obokförda.pop(id_, None)
             if post is None:
                 return None
-            kurs_id, f, utfall, rättade, start = post
+            kurs_id, f, utfall, rättade, start, svar, anmärkningar = post
             kurs = self.kort_db.execute(
                 "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
             g = self._generator(kurs)
@@ -520,7 +525,8 @@ class Övningstjänst:
             # kapningen är ett analysval (`AVBROTTSGRÄNS_MS`) och görs när
             # talet används, annars går den verkliga fördelningen förlorad.
             g.registrera(f, utfall, självrättade=rättade,
-                         millisekunder=int((time.monotonic() - start) * 1000))
+                         millisekunder=int((time.monotonic() - start) * 1000),
+                         svar=svar, anmärkningar=anmärkningar)
             return {"bokförd": True, "självrättade": len(rättade),
                     "igen": self._dagsplan(
                         self.kort_db.execute("SELECT * FROM Kurs WHERE id = ?",

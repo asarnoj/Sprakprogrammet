@@ -3710,6 +3710,56 @@ mätas mot den loggen är fortfarande omätt**, eftersom mätningen börjar om
 från noll. Det är därför så många poster i det här dokumentet är `~` och inte
 `✓` — de vilar inte på fel antaganden, de vilar på oprövade.
 
+#### VAD LOGGEN INTE BEVARADE ALLS (2026-08-27)
+
+Julius mätte symptomet: *"jag gjorde jättejättemånga olika typer av fel men
+ändå så växte inte again. Vissa gånger krympte till och med new/due."*
+
+Frågan gick inte att svara på ur `Mening` och `Repetition`, därför att de
+bara bevarar UTFALLET. **Tre saker fanns i minnet en kort stund och
+kastades:** vad användaren skrev, vad diffen såg, och varför varje kort fick
+eller inte fick en dom. Den sista är den avgörande — ett kort utan
+`Repetition`-rad kan ha hamnat där på fem sätt med helt olika innebörd.
+
+`Spår` bevarar alla tre. Den läses aldrig av schemaläggningen; skulle den
+göra det vore den inte ett spår utan en del av modellen.
+
+**Diagnosen på Julius egen kurs, ur de rader som ändå fanns.** Tretton
+franska meningar, 26 augusti:
+
+    #132  Tu existes.   fel=2   →  tu: Again   es: Again   ∅: undanhållen
+    #133  Tu coûtes.    fel=2   →  ETT kort, och det var undanhållet
+    #140  Tu existes.   fel=1   →  NOLL rader
+    #141  Tu coûtes.    fel=0   →  NOLL rader
+    #142  Tu as.        fel=0   →  NOLL rader
+
+**Fyra av tretton meningar var upprepningar av en tidigare mening i samma
+pass** — `J'ai`, `Tu as`, `Tu coûtes`, `Tu existes` ställdes två gånger var.
+Andra gången bokförde de ingenting, och på #140 gjorde Julius fel utan att en
+enda rad skrevs.
+
+Det är INTE en bugg utan två medvetna regler som möts:
+
+    rätt + redan bedömt idag   →  hoppas över (E2, en dom per kort och dygn)
+    fel  + redan fällt idag    →  hoppas över (felet är redan bokfört)
+
+Kortet låg alltså redan i Again, felet var sant, och räknaren stod stilla —
+korrekt i varje enskilt steg och obegripligt som helhet. **Och det är precis
+vad "new/due krympte" var**: ett kort som bedömdes i mening 3 kan inte
+bedömas igen i mening 7, så senare meningar ser tomma ut fast de gjort sitt.
+
+Den verkliga frågan reglerna blottar är alltså inte bokföringen utan
+GENERATORN: varför ställdes samma mening två gånger i ett pass om tretton?
+Meningsrummet på nivå 1 med franskans ordförråd är litet, och det är samma
+gräns som B8 mätte. Den frågan står öppen.
+
+**Ett andra fynd föll ut direkt när spåret fanns.** På svaret `Tu blabla.`
+mot facit `Je m'ai.` fick båda `ordföljd`-korten betyget RÄTT — "subjekt före
+verb" och "objektspronomen före verbet" bedömdes som klarade, på ett svar
+utan igenkännbar struktur. Ordföljdskort får rätt så snart diffen inte kan
+visa att ordningen bröts, och ett svar som inte går att analysera bryter
+ingenting. Det höjer deras stabilitet på ingenting alls. Står som `?`.
+
 ### G4 ~ — Skyddsnät mot tysta fel
 
 Regressionsnätet fryser 490 renderade meningar som förväntad utdata. Varje

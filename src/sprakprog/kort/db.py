@@ -114,7 +114,7 @@ def säkerhetskopiera(conn: sqlite3.Connection, *, katalog: Path | None = None,
 #: Tabeller som skapas om de saknas. Skilt från `TILLÄGG`, som lägger till
 #: KOLUMNER: en ny tabell kan skrivas som ren SQL och behöver ingen
 #: kolumninspektion. `CREATE TABLE IF NOT EXISTS` gör steget idempotent.
-NYA_TABELLER = ("pass.sql",)
+NYA_TABELLER = ("pass.sql", "spar.sql")
 
 #: Tabellombyggnader — SQL som bara ska köras EN gång, och som därför måste
 #: kunna se om den redan är gjord. SQLite kan inte ändra en främmandenyckel
