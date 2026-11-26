@@ -13,6 +13,7 @@ sätter det indirekta objektet först, utan preposition, precis som svenskan.
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
@@ -113,12 +114,16 @@ class EngelskRenderare:
 
     def verbdelar(self, m: Mening) -> list[str]:
         if m.diates is not Diates.AKTIV:
-            # "the book is read" / "was read". Engelskan har bara en passiv,
-            # så båda specvärdena ger samma konstruktion.
-            hjälp = (self.preteritum("verb_vara", m.subjekt)
-                     if m.tid is Tidsreferens.FÖRFLUTEN
-                     else self.presens("verb_vara", m.subjekt))
-            return [hjälp, self.u.form_för(m.verb, "sup")]
+            # "the book is read". Engelskan har bara en passiv, så båda
+            # specvärdena ger samma konstruktion.
+            #
+            # BE bär hela apparaten — tempus, aspekt och negation: "will be
+            # read", "has been read", "is not read". Kopulan går därför
+            # genom den aktiva grenen i stället för att få egna fall här.
+            # Passiven behöver aldrig do-omskrivning: hjälpverbet finns
+            # alltid, så "not" har något att fästa vid.
+            kopula = replace(m, verb="verb_vara", diates=Diates.AKTIV)
+            return [*self.verbdelar(kopula), self.u.form_för(m.verb, "sup")]
         if m.negerad:
             return self._negerat_verb(m)
         if m.aspekt is Aspekt.PERFEKT:
@@ -136,9 +141,14 @@ class EngelskRenderare:
         return [self.presens(m.verb, m.subjekt)]
 
     def _negerat_verb(self, m: Mening) -> list[str]:
-        """Engelsk negation kräver do-omskrivning — utom med be och modaler.
+        """Engelsk negation fäster på hjälpverbet — do-omskrivning bara annars.
 
-        "she does not read" men "she is not happy" och "she will not read".
+        "she will not read", "she has not read", "she is not happy" — men
+        "she does not read", eftersom en enkel presens eller preteritum inte
+        HAR något hjälpverb att fästa vid. Det är hela skälet till att
+        do-omskrivningen finns, och därför står den sist: de fall som redan
+        har ett hjälpverb ska aldrig nå den.
+
         Hjälpverbet do lånar sina former från fys_göra: auxiliärt och
         lexikalt do är samma ord, så formerna finns redan och behöver inte
         uppfinnas. Att de betyder olika saker spelar ingen roll här,
@@ -155,6 +165,9 @@ class EngelskRenderare:
                 return self.preteritum(koncept, m.subjekt)
             return self.presens(koncept, m.subjekt)
 
+        if m.aspekt is Aspekt.PERFEKT:
+            # "she has not read" — have är hjälpverbet och bär negationen.
+            return [böjt("verb_ha"), inte, self.u.form_för(m.verb, "sup")]
         if m.verb == "verb_vara":
             # Kopulan negeras direkt: "she is not happy", inte "does not be".
             return [böjt(m.verb), inte]

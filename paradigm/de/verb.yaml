@@ -217,3 +217,8 @@ celler:
     tempus: [Sup]
     diates: Aktiv
     not: "'gekommen', 'gelesen', 'gewesen'. Invariant i predikatisk användning. Predikatisk form: 'Er ist gekommen' / 'Das Buch wurde gelesen'."
+
+  - id: part2_passiv
+    tempus: [Sup]
+    diates: Passiv
+    not: "BARA werden: 'worden', inte 'geworden'. Perfekt passiv heter 'ist gelesen worden'; ge-lösa formen finns bara som passivhjälpverb. Tom för alla andra verb — tyskan har ingen syntetisk passiv, precis som engelskans nio be-celler bara gäller be."

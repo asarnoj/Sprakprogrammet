@@ -26,6 +26,7 @@ personer, tyska "gab/gabst/gabt" är det inte.
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
@@ -189,9 +190,20 @@ class TyskRenderare:
             # "das Buch wird gelesen" — werden, inte sein. Tyskan har bara
             # en passiv, och den delar hjälpverb med futurum: skillnaden är
             # att futurum tar infinitiv och passiven particip.
-            return (self.u.form_för("verb_bli", f"{TEMPUSSTAM[m.tid]}_{person}{numerus}"
-                                    if m.tid in TEMPUSSTAM else f"pres_{person}{numerus}"),
-                    [self.u.form_för(m.verb, "part2")])
+            #
+            # WERDEN bär tempus och aspekt och böjs som vilket verb som
+            # helst: "wird gelesen werden", "ist gelesen worden". Det går
+            # därför genom den aktiva grenen, och huvudverbets particip
+            # läggs först i slutfältet — före werdens egen infinita form.
+            finit, infinita = self.verbdelar(
+                replace(m, verb="verb_bli", diates=Diates.AKTIV))
+            if m.aspekt is Aspekt.PERFEKT:
+                # "ist gelesen worden", inte "geworden". Werden har ett eget
+                # particip som passivhjälpverb, och det ligger som egen cell
+                # (Sup + Passiv) — samma lösning som svenskans s-passiv, och
+                # tom för alla andra tyska verb.
+                infinita = [self.u.form_för("verb_bli", "part2_passiv")]
+            return finit, [self.u.form_för(m.verb, "part2"), *infinita]
         if m.aspekt is Aspekt.PERFEKT:
             # "sie hat gelesen" mot "sie ist gegangen" — hjälpverbet väljs
             # per verb ur Lexem.hjälpverb, kolumnen som fylldes långt innan

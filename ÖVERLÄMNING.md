@@ -139,32 +139,56 @@ alla åtta gjorda utökningar tillsammans på det språket.
 
 ---
 
-## Öppna fel
+## Passivbuggen — lagad 2026-08-14
 
-**Passiv i futurum och perfekt renderas som presens i fem språk.** Hittat av
-nåbarhetssvepet, inte av regressionssvepen — de sveper inte
+Nåbarhetssvepet hittade att passiv i futurum och perfekt renderades som
+presens i fem språk, och att `PASSIV_HÄNDELSE` + `FRAMTID` kastade
+`KeyError` i svenskan. Regressionssvepen såg det aldrig: de sveper inte
 diates × tempus × aspekt.
 
+**Orsaken var densamma i alla fem.** Passivgrenen låg först i `verbdelar`
+och returnerade innan tempus- och aspektlogiken — den byggde hjälpverbet
+med en egen liten tempusmappning som bara kände presens och preteritum.
+
+**Rättelsen tar bort de mappningarna i stället för att fylla på dem.**
+Passiven är hjälpverb + particip, och hjälpverbet är ett verb: det böjs som
+alla andra. Grenen bygger nu om meningen med `replace(m, verb=<hjälpverbet>,
+diates=AKTIV)` och skickar den genom den aktiva grenen. Varje framtida
+tempusutökning når därmed passiven gratis, i stället för att behöva skrivas
+in på två ställen.
+
 ```
-              nutid            förfluten          framtid
-sv   passiv   Boken läses.     Boken lästes.      Boken ska läsas.      ✅
-sv   bli      Boken blir läst. Boken blev läst.   ✋ KeyError
-de            wird gelesen     wurde gelesen      wird gelesen          ✗
-en            is read          was read           is read               ✗
-fr/es/it      est lu           était lu           est lu                ✗
-ja            読まれます        読まれました        読まれます             ✅ (inget futurum)
+              nutid          förfluten        framtid              perfekt
+sv   passiv   läses          lästes           ska läsas            har lästs
+sv   bli      blir läst      blev läst        ska bli läst         har blivit läst
+en            is read        was read         will be read         has been read
+de            wird gelesen   wurde gelesen    wird gelesen werden  ist gelesen worden
+fr            est lu         était lu         sera lu              a été lu
+es            es leído       era leído        será leído           ha sido leído
+it            è letto        era letto        sarà letto           è stato letto
+ja            読まれます      読まれました      読まれます            読まれました
 ```
 
-Perfekt + passiv har samma brist: `sv` ger rätt "Boken har lästs" (s-passiven
-är egna celler), de fem andra ger presens. **Aktiv futurum fungerar överallt**
-— det är passivgrenen som returnerar innan tempus- och aspektlogiken.
+Tre saker föll ut på köpet:
 
-Kombinationen `PASSIV_HÄNDELSE` + `FRAMTID` kastar `KeyError` i `sv.py:259`:
-`TEMPUSCELL` har ingen futurumnyckel, och bli-grenen går inte via
-`modal_ska`-vägen som aktivgrenen gör.
+- **Den sammansatta perfektiva passiven** ("a été lu", "è stato letto",
+  "ha sido leído") stod som känd gräns och krävde tre verbdelar. Den byggs
+  nu av sig själv, och kongruensen blir rätt utan en rad kod om den: `stato`
+  böjs i italienskan men `été` inte i franskan, därför att essere tar
+  essere och être tar avoir — och hjälpverbsvalet stod redan i datan.
+- **Engelskan tappade negationen i passiv** ("The book is read" med
+  `negerad=True`) och byggde "does not read" i stället för "has not read".
+  Do-omskrivningen finns bara därför att en enkel presens saknar hjälpverb
+  att fästa negationen på; den ligger nu sist, dit bara de fallen når.
+- **Spanskans sammansatta gren slog upp `verb_vara` utan variant**, vilket
+  gav RenderingsFel på "ha sido" eftersom ser och estar är två lexem. Den
+  enkla grenen skickade varianten, den sammansatta inte.
 
-Inte lagat. Det är ett verkligt hål och ska gås igenom metodiskt, inte
-lappas.
+**Ett datahål:** tyskt perfekt passiv heter "ist gelesen **worden**", inte
+"geworden". Den ge-lösa formen finns bara som passivhjälpverb och låg inte i
+databasen. Den ligger nu som en egen cell `part2_passiv` (Sup + Passiv) i
+`paradigm/de/verb.yaml`, tom för alla verb utom `werden` — samma lösning som
+svenskans s-passivceller, och samma mönster som engelskans nio be-celler.
 
 **Kända täckningsgränser** (inga fel, men bra att veta):
 
@@ -172,8 +196,6 @@ lappas.
   som styrande ord (`rädd för`, `intresserad av`) — inte taggat.
 - Ett mönster per verb. `äta` har ett transitivt mönster, men "hon äter"
   utan objekt är också korrekt. Additivt att lägga till.
-- Sammansatt perfektiv passiv i fr/it ("a été lu", "è stato letto") kräver
-  tre verbdelar; renderaren bygger två.
 - Japanskan saknar infinitivkomplement (modaliteten är suffixal) och skiljer
   inte perfekt från preteritum (た täcker båda).
 - Tyska Wechselpräpositionen defaultar till dativ. Riktning kräver en
@@ -264,6 +286,13 @@ python ordbok/verktyg/ögonblicksbild.py efter.json && diff före.json efter.jso
 renderarna matchade inte och gjorde alltså ingenting, utan att något
 felmeddelande uppstod. De hittades bara genom genomläsning. Ett svep som
 räknar krascher hittar dem aldrig.
+
+**En gren som returnerar tidigt ser aldrig logiken under sig.** Det var
+hela passivbuggen — och samma sak gjorde att engelsk negation aldrig nådde
+perfektgrenen. Bygger du en konstruktion som lägger sig först i en
+verbfunktion: fråga vad den skär bort, och delegera hellre till den
+befintliga grenen än att bygga en egen liten kopia av tempuslogiken. Den
+lilla kopian blir efter vid nästa utökning, och ingen räknare visar det.
 
 **`bash -n` räcker inte** för att validera ett skript. `FÖRSÖK="${FÖRSÖK:-4}"`
 passerade syntaxkontrollen men kraschar — bash tillåter inte å/ä/ö i

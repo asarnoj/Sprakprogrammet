@@ -30,6 +30,7 @@ följande ordet men är lexikaliserad nog att vara en riktig form.
 from __future__ import annotations
 
 import sqlite3
+from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Referentgenus,
@@ -172,20 +173,18 @@ class RomanskRenderare:
             # "le livre est lu", "el libro es leído" — vara plus particip
             # som kongruerar med subjektet, precis som être-participen i
             # sammansatt dåtid. Spanskan använder ser, inte estar.
-            person, numerus, genus = self._subjektsform(m.subjekt)
-            # Dåtida passiv skiljer sig: spanskan tar indefinido ("fue
-            # leído"), franskan och italienskan imperfekt ("était lu", "era
-            # letto") eftersom deras pret är passé simple respektive passato
-            # remoto — litterära tempus som ingen inlärare behöver.
             #
-            # KÄND GRÄNS: den sammansatta perfektiva passiven ("a été lu",
-            # "è stato letto") är inte byggd. Den kräver tre verbdelar.
-            if m.tid is not Tidsreferens.FÖRFLUTEN:
-                stam = "pres"
-            else:
-                stam = "imperf" if self.SAMMANSATT_DÅTID else "pret"
-            return [self.u.form_för("verb_vara", f"{stam}_{person}{numerus}",
-                                    "permanent"),
+            # KOPULAN bär hela tempus- och aspektapparaten och böjs som
+            # vilket verb som helst. Den går därför genom den aktiva grenen,
+            # och därmed faller de sammansatta passiverna ut gratis: "a été
+            # lu", "è stato letto", "ha sido leído". Att stato kongruerar i
+            # italienskan men été inte gör det i franskan följer av
+            # hjälpverbsvalet, som redan står i datan — essere tar essere,
+            # être tar avoir.
+            _, numerus, genus = self._subjektsform(m.subjekt)
+            kopula = replace(m, verb="verb_vara", diates=Diates.AKTIV,
+                             objekt=None, predikativ=None)
+            return [*self.verbdelar(kopula),
                     self.u.form_för(m.verb, f"pp_{_kön(genus)}_{numerus}")]
         """`föregående_objekt` är (genus, numerus) för ett objektsklitikum.
 
@@ -204,7 +203,10 @@ class RomanskRenderare:
             self.SAMMANSATT_DÅTID and m.tid is Tidsreferens.FÖRFLUTEN
             and m.aspekt is Aspekt.PERFEKTIV)
         if sammansatt:
-            verb = self.u.lexem(m.verb)
+            # Varianten måste följa med: es verb_vara är två lexem (ser och
+            # estar) och uppslaget vägrar gissa. Utan den gick den enkla
+            # grenen rätt medan den sammansatta kastade fel på samma verb.
+            verb = self.u.lexem(m.verb, variant)
             hjälp = self.HJÄLPVERB_FAST or verb["hjälpverb"]
             if hjälp == "båda":
                 # 'båda' betyder att valet inte kan avgöras på lexemet utan
