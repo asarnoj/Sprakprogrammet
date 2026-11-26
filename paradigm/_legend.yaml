@@ -1,0 +1,68 @@
+# Auktoritativ YAML-encoding av docs/BITMASK.md för axlar i Former-tabellen.
+# Paradigm-filer (paradigm/{språk}/*.yaml) använder enbart dessa
+# namnkonstanter i sina cellaxlar — aldrig nakna heltal.
+#
+# Ändringar här KRÄVER motsvarande uppdatering av docs/BITMASK.md.
+# Pipelinen vägrar läsa paradigm-filer som refererar till en konstant
+# som saknas här.
+#
+# IntFlag-axlar (tempus, kasus): cellfältet är en LISTA av namn;
+#   pipelinen OR:ar bitarna till ett heltal som lagras i Former.
+# IntEnum-axlar (numerus, species, genus, grad, person): cellfältet är
+#   EN namnkonstant (sträng) eller utelämnas (NULL i Former).
+
+version: 1
+
+
+# ── IntFlag — bitmask, kombinerbar via OR ─────────────────────────────
+
+tempus:
+  Inf:     1     # Infinitiv / Grundform / 辞書形
+  Pres:    2     # Presens / Nutid / ます形
+  Pret:    4     # Preteritum / Imperfekt / た形
+  Sup:     8     # Supinum / Perfektparticip / た形 (verb)
+  Imp:     16    # Imperativ / 命令形
+  PresPer: 32    # Preteritum perfekt (analytisk: passé composé etc.)
+  Fut:     64    # Futurum
+  Te:      128   # Te-form / Gerundium
+  Neg:     256   # Negationsstam / ない形
+  Pot:     512   # Potentialisform / 可能形
+  Vol:     1024  # Volitiv / Konjunktiv / 意志形
+  Kond:    2048  # Konditionalis
+
+kasus:
+  Nom: 1
+  Ack: 2
+  Dat: 4
+  Gen: 8
+
+
+# ── IntEnum — exklusiva, ett värde i taget ────────────────────────────
+
+numerus:
+  Sg: 1
+  Pl: 2
+
+species:
+  Obest: 1   # Indefinit
+  Best:  2   # Definit
+  Bland: 3   # Tyskt exklusivt: blandad adjektivböjning
+
+genus:
+  UtrMask: 1   # sv: utrum  /  fr/de/es/it: maskulin
+  NeuFem:  2   # sv: neutrum  /  fr/es/it: feminin  /  de: feminin
+  Alla:    3   # sv: gäller alla genus (pl/best)  /  de: neutrum
+
+grad:
+  Pos:    1
+  Komp:   2
+  Superl: 3
+
+person:
+  P1: 1
+  P2: 2
+  P3: 3
+
+diates:
+  Aktiv:  1   # default — vanlig morfologisk form
+  Passiv: 2   # synthetisk passiv-/deponens-form (sv -s, ja -(r)areru)

@@ -27,6 +27,7 @@ på en dimension (t.ex. samma adjektivform för alla kasus utom genitiv).
 | tempus    | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  |
 | grad      | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | △  |
 | person    | —  | —  | ✓  | ✓  | ✓  | ✓  | —  |
+| diates    | ✓  | △  | △  | △  | △  | △  | ✓  |
 
 △ = delvis / begränsat.  sv kasus: bara Genitiv (8) används.
 ja numerus: bara för pronomen och kvantifierade fraser, annars implicit.
@@ -240,6 +241,35 @@ Används av: fr, de, es, it (fullständig personböjning).
 Ej used av: sv (ingen personböjning på verb), en (bara 3p sg: eats vs eat), ja (ingen).
 
 Svenska och engelska verb har person=NULL i Former utom eventuellt 3p sg engelska.
+
+---
+
+## 7.5. Diates (IntEnum — exklusiv)
+
+Lagras i `Former.diates`. Anger om en form är aktiv eller passiv.
+
+```
+1 = Aktiv   (default — vanlig morfologisk form)
+2 = Passiv  (synthetisk passiv-/deponens-form)
+```
+
+| Språk | Distinktion                              | Användning                                    |
+|-------|------------------------------------------|-----------------------------------------------|
+| sv    | -s-suffix på verbets stam                | talas, talades, talats — synthetisk           |
+| ja    | -(r)areru-suffix                         | 食べられる — synthetisk                       |
+| en    | analytisk: be + perfektparticip          | diates=NULL i Former; renderaren bygger       |
+| fr    | analytisk: être + perfektparticip        | diates=NULL i Former                          |
+| de    | analytisk: werden + perfektparticip      | diates=NULL i Former                          |
+| es    | analytisk: ser + perfektparticip         | diates=NULL i Former                          |
+| it    | analytisk: essere/venire + perfektparticip | diates=NULL i Former                        |
+
+### Deponens (sv)
+
+Svenska deponensverb (hoppas, finnas, trivas, minnas, andas) har bara
+s-former trots att betydelsen är aktiv. De lagras med `diates=Passiv`
+i Former; en lexem-modifierare markerar att verbet är deponens — vilket
+upplyser renderaren om att inte tolka formerna passivt och att inte
+försöka bilda aktiva former.
 
 ---
 

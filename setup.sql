@@ -120,6 +120,10 @@ CREATE INDEX idx_lexem_lemma   ON Lexem(lemma);
    tempus   : bitflagga — se §1 (bitar 1–2048, inkl. japanska former)
    grad     : 1=Positiv  2=Komparativ  3=Superlativ          — se §6
    person   : 1=Första  2=Andra  3=Tredje                    — se §7
+   diates   : 1=Aktiv  2=Passiv                              — se §7.5
+              Synthetisk passiv (sv -s, ja -(r)areru). Deponensverb
+              (hoppas, finnas) lagras med diates=Passiv och markeras
+              separat på lexem-nivå. Analytiska språk har diates=NULL.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Former (
     id       INTEGER PRIMARY KEY,
@@ -131,7 +135,8 @@ CREATE TABLE Former (
     genus    INTEGER,
     tempus   INTEGER,
     grad     INTEGER CHECK (grad IN (1, 2, 3)),
-    person   INTEGER CHECK (person IN (1, 2, 3))
+    person   INTEGER CHECK (person IN (1, 2, 3)),
+    diates   INTEGER CHECK (diates IN (1, 2))
 );
 
 /* Sammansatta index optimerade för de vanligaste renderar-frågorna. */

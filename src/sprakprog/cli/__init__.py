@@ -5,6 +5,7 @@ Användning:
     ordbok lista [--språk sv]
     ordbok visa <koncept>
     ordbok lägg-till
+    ordbok mappa-kaikki --språk sv --ordklass Verb --lemma tala
 """
 
 from __future__ import annotations
@@ -42,6 +43,16 @@ def main(argv: list[str] | None = None) -> int:
     # ── lägg-till ────────────────────────────────────────────────────────
     sub.add_parser("lägg-till", help="Interaktivt lägga till nytt koncept")
 
+    # ── mappa-kaikki ─────────────────────────────────────────────────────
+    p_mappa = sub.add_parser(
+        "mappa-kaikki",
+        help="Slå upp ett lemma i kaikki-dumpen och matcha mot slot-filen",
+    )
+    p_mappa.add_argument("--språk",    required=True, help="sv (övriga ej implementerade)")
+    p_mappa.add_argument("--ordklass", required=True, help="Verb / Substantiv / ...")
+    p_mappa.add_argument("--lemma",    required=True, help="lemmaformen, t.ex. 'tala'")
+    p_mappa.add_argument("--json",     action="store_true", help="JSON-output istället för text")
+
     args = parser.parse_args(argv)
 
     # Lazy import för snabb startup på enskilda kommandon
@@ -57,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "lägg-till":
         from .lägg_till import kör as kör_lägg_till
         return kör_lägg_till(args)
+    if args.kommando == "mappa-kaikki":
+        from .mappa_kaikki import kör as kör_mappa_kaikki
+        return kör_mappa_kaikki(args)
 
     parser.error(f"okänt kommando: {args.kommando}")
     return 2

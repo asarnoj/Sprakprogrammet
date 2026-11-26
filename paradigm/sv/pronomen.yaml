@@ -1,0 +1,53 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Pronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska pronomen (ordklass Pronomen
+    enligt Koncept-schemat — exkluderar Frågepronomen, Relativpronomen,
+    Demonstrativ, Artikel, Kvantifikator, vilka är egna ordklasser med
+    egna slot-filer).
+
+    Pronomen är heterogent — olika subtyper fyller olika delmängder
+    av cellrummet:
+      • Personliga pronomen (jag, du, han, hon, det, den, vi, ni, de)
+        — fyller nom + ack_dat. Person, numerus och genus är inneboende
+        på Lexem-raden; de varierar inte inom det enskilda lexemets
+        former.
+      • Reflexivt pronomen (sig) — invariant; fyller bara en form.
+      • Possessiva pronomen (min, din, vår, er, sin) — fyller m_sg,
+        f_sg, a_pl (kongruens med huvudord).
+      • Invariata possessiver (hans, hennes, dess, deras) — har bara
+        lemmaformen, inga Former-rader.
+
+    Slot-filen listar unionen av alla möjliga celler. Vilka som fylls
+    per lexem styrs av kaikki/LLM reaktivt.
+
+    Aktiva axlar: kasus, genus, numerus.
+
+celler:
+  # ── Personliga pronomen — kasusvariation ──
+  - id: nom
+    kasus: [Nom]
+    not: "Subjektsform: jag, du, han, hon, vi, ni, de."
+
+  - id: ack_dat
+    kasus: [Ack, Dat]
+    not: "Objektsform: mig, dig, honom, henne, oss, er, dem."
+
+  # ── Possessiva pronomen — genus-/numeruskongruens ──
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    not: "Utrum singular: min, din, vår, er, sin."
+
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+    not: "Neutrum singular: mitt, ditt, vårt, ert, sitt."
+
+  - id: a_pl
+    genus: Alla
+    numerus: Pl
+    not: "Plural alla genus: mina, dina, våra, era, sina."

@@ -1,0 +1,54 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Räkneord
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska räkneord (kardinaler och
+    ordinaltal under en gemensam ordklass per Koncept-schemat).
+
+    Heterogent:
+      • Kardinaltalet 1 ("en/ett") böjs efter genus —
+        utr "en", neu "ett". Fyller m_sg och f_sg.
+      • Övriga kardinaltal (två, tre, fyra, fem, ...) är invarianta —
+        fyller bara inv-cellen.
+      • Ordinaltal (första, andra, tredje, ...) böjs som adjektiv:
+        attributiv bestämd ("den första bollen") är vanligaste; även
+        plural ("de första") och predikativ obestämd ("hon kom först")
+        förekommer.
+
+    Aktiva axlar: genus, numerus, species.
+
+celler:
+  # ── Invariant form (cardinals 2+) ──
+  - id: inv
+    not: "Invariant lemmaform — 'två', 'tre', 'fyra', osv."
+
+  # ── Genus-böjt cardinal "en/ett" ──
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    not: "Utrum singular: 'en'."
+
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+    not: "Neutrum singular: 'ett'."
+
+  # ── Ordinaltal — adjektivlik kongruens ──
+  - id: obest_a_sg
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    not: "Predikativ obest: 'hon kom först'."
+
+  - id: best_a_sg
+    species: Best
+    genus: Alla
+    numerus: Sg
+    not: "Attributiv bestämd: 'den första bollen'."
+
+  - id: a_pl
+    genus: Alla
+    numerus: Pl
+    not: "Plural: 'de första'."

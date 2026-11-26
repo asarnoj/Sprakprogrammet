@@ -1,0 +1,66 @@
+---
+meta:
+  version: 2
+  språk: sv
+  ordklass: Verb
+  beskrivning: >
+    Fullständigt inflektionsrum för svenska verb. Modern svenska böjer
+    verb endast efter tempus och diates; person och numerus är
+    reducerade och spelar ingen roll i Former.
+
+    Aktiv: inf, pres, pret, sup, imp.
+    Passiv (synthetisk -s-suffix): inf, pres, pret, sup. Ingen produktiv
+    passiv imperativ.
+
+    Cellerna delar id mellan aktiv- och passiv-paren (t.ex. id=pres
+    förekommer två gånger). Unikheten av en cell bestäms av hela
+    axeltupeln inkl. diates, inte av id ensam — pipelinen indexerar
+    på axelvärden. id är en mänskligt läsbar etikett.
+
+    Defektiva paradigm hanteras via lexem-modifierare:
+      • Modalverb (kunna, vilja, skola, må, böra) — markeras "ingen_imp";
+        pipelinen hoppar över imp-cellen för dessa lexem.
+      • Deponensverb (hoppas, finnas, trivas, minnas, andas) — markeras
+        "deponens"; pipelinen fyller bara passiv-cellerna och lagrar
+        dem med diates=Passiv.
+
+    Aktiva axlar: tempus, diates.
+
+celler:
+  # ── Aktiv ──
+  - id: inf
+    tempus: [Inf]
+    diates: Aktiv
+
+  - id: pres
+    tempus: [Pres]
+    diates: Aktiv
+
+  - id: pret
+    tempus: [Pret]
+    diates: Aktiv
+
+  - id: sup
+    tempus: [Sup]
+    diates: Aktiv
+
+  - id: imp
+    tempus: [Imp]
+    diates: Aktiv
+
+  # ── Passiv (synthetiskt -s-suffix) ──
+  - id: inf
+    tempus: [Inf]
+    diates: Passiv
+
+  - id: pres
+    tempus: [Pres]
+    diates: Passiv
+
+  - id: pret
+    tempus: [Pret]
+    diates: Passiv
+
+  - id: sup
+    tempus: [Sup]
+    diates: Passiv
