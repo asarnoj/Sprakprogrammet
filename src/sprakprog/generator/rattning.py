@@ -599,6 +599,11 @@ class Rättare:
                 # nedan: ett kort utan historik är ärligt osäkert, ett kort
                 # med falsk historik är värre än tomt.
                 #
+                # OCH SAMMA SAK NÄR GENUSET FALLER. Genuset väljer formen,
+                # så ett fel genus betyder att den rätta formen aldrig
+                # skrevs: `die Bruder` för `Der Bruder` lämnade `form:der`
+                # stående som rätt fast strängen inte fanns i svaret.
+                #
                 # SAMMA SAK NÄR STAMMEN FALLER. Är det STAMMEN som brast var
                 # hela formen fel, och ändelsen för den cellen visades inte
                 # heller: `Männern` för `Mann` är stam `Männ` plus ändelse
@@ -610,7 +615,8 @@ class Rättare:
                 # stammen per definition visats — det är så `_skyll` kom
                 # fram till att det var ändelsen — och att undanhålla den
                 # vore att kasta bevis man har.
-                if self._är_ordkort(a.kort_id) or self._är_stamkort(a.kort_id):
+                if (self._är_ordkort(a.kort_id)
+                        or self._valde_hela_formen(a.kort_id)):
                     for kid in self._kan_ha_burit(a.väntat, uppslag):
                         if kid != a.kort_id:
                             utfall.pop(kid, None)
@@ -759,11 +765,25 @@ class Rättare:
             "SELECT typ FROM Kort WHERE id = ?", (kort_id,)).fetchone()
         return rad is not None and rad["typ"] == "ord"
 
-    def _är_stamkort(self, kort_id: int) -> bool:
-        """Var det STAMMEN som fälldes? Då var hela formen fel."""
+    def _valde_hela_formen(self, kort_id: int) -> bool:
+        """Fälldes något som avgör VILKEN FORM som skulle skrivas?
+
+        Då skrevs formen aldrig, och ingenting bakom den har visats.
+
+        `stam` och `form` bär formen direkt. `egenskap` — genus — gör det
+        indirekt men lika hårt: genuset VÄLJER formen, så ett fel genus
+        betyder att den rätta formen aldrig producerades.
+
+        Mätt fall, tyskan: facit `Der Bruder weiß ihre Nachmittage.`,
+        användaren skrev `die Bruder`. Genuskortet föll, som det ska — och
+        `form:der` fick GOOD, trots att strängen `der` inte fanns i svaret.
+        Två sådana på 280 tyska prövningar; noll efter rättelsen, och utan
+        att tystnaden ökade med en enda (96 före, 96 efter). Det är ovanligt
+        för den här modulen — varje tidigare skärpning har kostat mätningar.
+        """
         rad = self.kort_db.execute(
             "SELECT typ FROM Kort WHERE id = ?", (kort_id,)).fetchone()
-        return rad is not None and rad["typ"] in ("stam", "form")
+        return rad is not None and rad["typ"] in ("stam", "form", "egenskap")
 
     def _kan_ha_burit(self, väntat: str,
                       uppslag: list[tuple[str, str | None, str]]) -> set[int]:

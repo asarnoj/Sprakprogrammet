@@ -44,7 +44,7 @@ sys.path.insert(0, str(ROT / "src"))
 from sprakprog.db import anslut                          # noqa: E402
 from sprakprog.generator import Förslag, Generator       # noqa: E402
 from sprakprog.generator.rattning import (               # noqa: E402
-    ORDMELLANRUM, _normalisera,
+    ORDMELLANRUM, Rättare, _normalisera,
 )
 
 #: Hur många meningar per språk. Varje mening muteras på varje tillämpligt
@@ -293,6 +293,9 @@ def main() -> int:
     if "--meningar" in argv:
         antal = int(argv[argv.index("--meningar") + 1])
     språken = [a for a in argv if a in ORDMELLANRUM] or ["fr", "de", "en", "sv"]
+    # Falsifieringen kostar ett svep per sabotage. `--utan-sabotage` finns
+    # för handkörningar där man bara vill se talen.
+    inga_sabotage = "--utan-sabotage" in argv
 
     with tempfile.TemporaryDirectory() as tmp:
         kopia = Path(tmp) / "k.db"
@@ -311,6 +314,7 @@ def main() -> int:
                 (s,))
         kort.commit()
 
+        summa = 0
         allt: dict[str, Counter] = {}
         for s in språken:
             # SPRÅK UTAN KORT HOPPAS ÖVER. Svenskan är källspråk och har
@@ -341,7 +345,74 @@ def main() -> int:
             felt = sum(v for k, v in r.items() if k.endswith("|fel typ"))
             print(f"  {s}: {n:4d} prövningar   falska betyg {falskt:3d}   "
                   f"fel skuld {felt:3d}   tysta {tyst:3d}")
-    return 0
+            summa += falskt
+
+        if inga_sabotage:
+            return 1 if summa else 0
+
+        # ── falsifiering ──────────────────────────────────────────────
+        #
+        # NÄTET KUNDE INTE FALLA. `main` returnerade alltid 0, så svepet
+        # skrev ut tyskans två falska godkännanden och räknades ändå som ett
+        # grönt nät i sviten. Rubriken ovan sa "det enda talet som får vara
+        # noll" och ingenting höll den.
+        #
+        # Och ett prov som faller måste kunna fällas: utan det här blocket
+        # vore skillnaden bara att raden bytt färg.
+        print(f"\n{'═' * 72}\nfalsifiering — varje regel mot sitt eget "
+              f"sabotage\n{'═' * 72}")
+        stumma = 0
+        for sabotera in SABOTAGE:
+            ångra = sabotera()
+            try:
+                falskt = sum(
+                    v for s in språken
+                    if kort.execute("SELECT 1 FROM Kort WHERE språk = ? LIMIT 1",
+                                    (s,)).fetchone()
+                    for k, v in svep(kort, s, antal, False).items()
+                    if "FALSKT" in k)
+            finally:
+                ångra()
+            stumma += not falskt
+            print(f"  {'✓ föll' if falskt else '✗ STUMT'}  "
+                  f"{sabotera.__doc__.splitlines()[0][:60]}  "
+                  f"({falskt} falska betyg)")
+        if stumma:
+            print(f"\n{stumma} sabotage gav inga falska betyg — regeln de "
+                  f"skulle vakta är inte den som håller talet på noll.")
+        return 1 if (summa or stumma) else 0
+
+
+def _sabotage_utan_genusavdrag():
+    """Före rättelsen: bara stam och form drog undan det bakom formen.
+
+    Ett fällt GENUSKORT lämnade formkortet stående som rätt — `die Bruder`
+    för `Der Bruder` gav `form:der` ett Good fast strängen aldrig skrevs.
+    """
+    äkta = Rättare._valde_hela_formen
+    def utan(self, kort_id):
+        rad = self.kort_db.execute(
+            "SELECT typ FROM Kort WHERE id = ?", (kort_id,)).fetchone()
+        return rad is not None and rad["typ"] in ("stam", "form")
+    Rättare._valde_hela_formen = utan
+    return lambda: setattr(Rättare, "_valde_hela_formen", äkta)
+
+
+def _sabotage_utan_ordavdrag():
+    """Motsatt hörn: ett fällt ORDKORT drar inte undan sin böjning.
+
+    Det var det ursprungliga felet — `nous coüter` för `Vous coûtez` fällde
+    ordkortet och gav ändelsen `ez` ett Good, i ett svar där bokstäverna
+    inte förekom.
+    """
+    äkta = Rättare._är_ordkort
+    Rättare._är_ordkort = lambda self, kort_id: False
+    return lambda: setattr(Rättare, "_är_ordkort", äkta)
+
+
+#: Varje sabotage återinför ett läge där rättningen ljög, och ska ge minst
+#: ett falskt betyg. Ger det noll vaktar regeln inte det man trodde.
+SABOTAGE = [_sabotage_utan_genusavdrag, _sabotage_utan_ordavdrag]
 
 
 if __name__ == "__main__":

@@ -2535,28 +2535,51 @@ sabotage. Den första läser `härled` och inte det befolkade beståndet — lä
 den beståndet blev den stum, eftersom migrationen städar bort just de kort som
 sabotaget återinför.
 
-#### FELSVEPET KAN INTE FALLA
+#### FELSVEPET KUNDE INTE FALLA
 
-Upptäckt när stamarbetet gjordes 2026-08-29. `felsvep.py` skriver rubriken
-*"SAMMANLAGT — det enda talet som får vara noll"*, rapporterar tyskans två
-falska betyg, och `main()` returnerar ändå alltid `0`. Sviten räknar det som
-ett grönt nät.
+Upptäckt när stamarbetet gjordes 2026-08-29. `felsvep.py` skrev rubriken
+*"SAMMANLAGT — det enda talet som får vara noll"*, rapporterade tyskans två
+falska godkännanden, och `main()` returnerade ändå alltid `0`. Sviten räknade
+det som ett grönt nät.
 
-Det är samma fel som de stumma proven, en nivå upp: nätet mäter men kan inte
-fälla, och "14 nät, alla håller" blir därmed ett svagare besked än det låter.
+Det var samma fel som de stumma proven, en nivå upp: nätet mätte men kunde
+inte fälla, och "14 nät, alla håller" var därmed ett svagare besked än det
+lät.
 
-De två fallen är kända och konkreta:
+**✓ ÅTGÄRDAT 2026-08-29.** Både felet och nätet.
 
-    'Das kalte Mädchen trinkt die schwarze Milch.'
-        → 'das schwarze Milch'      godkänt
-    'Sie trinkt das große Wasser.'
-        → 'den große Wasser'        godkänt
+**Felet.** Diagnosen visade en tredje väg in för samma sorts lögn som resten
+av C9 handlar om. Mätt fall:
 
-Båda är bestämd artikel med fel genus respektive kasus. Ett kort fick Good
-utan att kunskapen visats — precis det avsnitten ovan handlar om, i en tredje
-korttyp. Två åtgärder som hör ihop men inte är samma: låta nätet returnera
-skilt från noll, och rätta artikelattributionen. Den första gör den andra
-synlig i sviten.
+    facit   'Der Bruder weiß ihre Nachmittage.'
+    svar    'die Bruder weiß ihre Nachmittage.'
+
+    ✗ egenskap  '1'        genuset föll — riktigt
+    ✓ form      'der'      FICK GOOD, och strängen fanns inte i svaret
+
+När ett ord- eller stamkort faller dras allt bakom formen ur betygsättningen:
+brast ordet prövades böjningen aldrig. Regeln omfattade `stam` och `form` men
+inte `egenskap`. Genuset VÄLJER formen — ett fel genus betyder att den rätta
+formen aldrig producerades — så avdraget gäller där också.
+
+Rättelsen kostade ingenting, vilket är ovanligt för den här modulen: varje
+tidigare skärpning har betalats i tystnad. Tyskans falska betyg gick 2 → 0
+medan tystnaden stod stilla på 96, och franskan och engelskan rörde sig inte
+alls.
+
+**Nätet.** `main()` returnerar nu skilt från noll när något falskt betyg
+finns, och har ett eget falsifieringsblock — annars vore skillnaden bara att
+raden bytt färg. Två sabotage, ett i vardera hörnet av samma regel:
+
+    utan genusavdrag   ett fällt genuskort lämnar formen stående      2 falska
+    utan ordavdrag     ett fällt ordkort lämnar ändelsen stående     91 falska
+
+Det andra är det ursprungliga felet modulen byggdes för: `nous coüter` för
+`Vous coûtez` fällde ordkortet och gav ändelsen `ez` ett Good i ett svar där
+bokstäverna inte förekom.
+
+Falsifieringen kostar ett svep per sabotage; hela nätet tar 4,4 s i stället
+för 2,3. `--utan-sabotage` finns för handkörningar där man bara vill se talen.
 
 #### RÄKNAREN OCH LISTAN MENAR OLIKA SAKER MED "NEW"
 
