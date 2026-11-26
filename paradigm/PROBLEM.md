@@ -4324,6 +4324,46 @@ gränssnittet visar 22 för franskan och 24 för japanskan i stället för allti
 bygger om kortleken med den nya grinden. Skulle en riktig kurs finnas när
 det här läses är en migration det första som måste göras.
 
+#### LEKTIONERNA VAR OTÄCKTA — OCH DÄRFÖR TRASIGA (2026-08-28)
+
+Julius kunde inte starta servern med det kommando jag gav (`python -m
+sprakprog.webb` finns inte; det heter `ordbok webb`), och när han väl kom in
+stod det fortfarande "21 nivåer". Felet visade sig sitta på TRE ställen, och
+bara ett av dem hade jag rättat:
+
+**Ytan.** `sida.html` hade sitt eget hårdkodade `of 21` i markupen, oberoende
+av `n.av` som backend redan skickade. Talet lästes aldrig.
+
+**Djupet.** `Lektioner` slog upp texten på nivåTALET — `LEKTIONER[nivå]` med
+en heltalsnycklad tabell 1–21. Efter flätningen betyder franskans nivå 21
+`inf`-böjningen, så lektionen visade rubriken **"Wh-questions"** för ett steg
+om infinitiv. Och `LEKTIONER[22]` fanns inte: franskans faktiska sista steg
+hade kastat `KeyError` vid ett klick.
+
+**Taket.** `lektionen()` avvisade allt över nivå 21 med ett hårdkodat
+villkor.
+
+**INGET NÄT RÖRDE LEKTIONSKODEN.** Ordet "lektion" förekom i två provfiler,
+båda gånger i en kommentar. Tretton nät var gröna medan en hel vy var trasig
+— och det är den egentliga lärdomen här, inte de tre rättelserna.
+
+`LEKTIONER` nycklas numera på KONSTRUKTIONSNAMN (`"objekt"`, `"bisats"` …)
+plus två fasta: `"grund"` för steg 1 och `"böjning"` — en delad text för de
+fria böjningsstegen. `_nyckel_för` frågar `nivåns_krav` vad steget faktiskt
+är, så rubriken kan inte gå isär från innehållet igen. `exempel()` filtrerar
+dessutom på rätt sak per stegsort: konstruktioner prövas på specen,
+böjningssteg på UPPSLAGEN — samma uppdelning som `byggbarhet`.
+
+Verifierat: franskans nivå 21 ger `Des avions froids doivent aimer` —
+infinitiven syns — och nivå 22 ger `Qu'est-ce que…`-frågor i stället för att
+krascha.
+
+`lektionsprov` är nu nät nummer fjorton, med fyra invarianter och ett
+sabotage var. Två av sabotagen var först otrogna mot felet och gav stumma
+prov: det ena föll tillbaka på `"grund"` i stället för att SAKNA nyckel, som
+den heltalsnycklade tabellen gjorde, och det andra bröt listans längd i
+stället för upplåstheten det skulle pröva.
+
 ### F3 ? — Två oberoende tak, och ett tredje som inte styrs
 
 **Komplexitetsstegen** (21 nivåer) styr konstruktioner: objekt, bisatser,

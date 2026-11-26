@@ -267,13 +267,19 @@
         <p class="under" id="n-under"></p>
         <dl class="delar">
           <!-- `aria-label` och inte synlig text: knappens tillgängliga namn
-               var "of 21", eftersom nivåtalet ligger i ett span som fylls i
+               var "of N", eftersom nivåtalet ligger i ett span som fylls i
                efteråt. Att skriva ut "Level" i knappen i stället gav
-               "Level / Level 4 of 21" — etiketten två gånger. -->
+               "Level / Level 4 of N" — etiketten två gånger.
+
+               TOTALEN VAR HÅRDKODAD TILL 21 HÄR, oberoende av `n.av` som
+               backend redan skickade. Stegen är olika lång per språk sedan
+               böjningsnivåerna flätades in — 22 i svenskan, 24 i japanskan —
+               så "of 21" stod kvar och stämde inte i något språk. Se
+               `sätt("n-av", …)` nedan. -->
           <div><dt>Level</dt>
                <dd><button class="lank" id="n-lankka"
                    aria-label="Open this level's lesson"><span
-                   id="n-nivå">–</span> of 21</button></dd></div>
+                   id="n-nivå">–</span> of <span id="n-av">–</span></button></dd></div>
           <!-- ORD, inte kort. Raden visade `osedda`, alltså osedda KORT av
                alla sju typer för hela språket — 1 058 på tyskan, där antalet
                ord var 205 och kursvyn samtidigt sa 217. Talet kommer nu ur
@@ -732,6 +738,7 @@ async function hem() {
        : `${d.inflödestak} new card${d.inflödestak === 1 ? "" : "s"} a day `
          + `at ${d.minuter} min`);
   sätt("n-nivå", n.nu);
+  sätt("n-av", n.av);
   // ORD SOM ÅTERSTÅR, ur samma räkning som kursvyn. None när takten inte är
   // mätt — en gissning presenterad som ett faktum är värre än ett tomt fält.
   sätt("n-ordkvar", n.ord_kvar == null ? "–" : `${n.ord_kvar} words`);

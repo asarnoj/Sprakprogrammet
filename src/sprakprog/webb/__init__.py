@@ -1220,7 +1220,10 @@ class Övningstjänst:
     def lektionen(self, kurs_id: int, nivå: int) -> dict | None:
         with self.lås:
             k = self._kurs(kurs_id)
-            if k is None or not 1 <= nivå <= 21:
+            # TAKET ÄR PER SPRÅK. Var hårdkodat till 21 — antalet
+            # konstruktioner — och stämde inte längre sedan stegen flätar in
+            # böjningsdimensionerna: 22 steg i svenskan, 24 i japanskan.
+            if k is None or not 1 <= nivå <= toppnivå(k["målspråk"]):
                 return None
             return self.lektioner.lektion(k["målspråk"], k["källspråk"],
                                           nivå, k["cefr"])

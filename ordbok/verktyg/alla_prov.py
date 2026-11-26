@@ -52,6 +52,7 @@ NÄT = [
     ("samplarprov.py",       False),
     ("strukturprov.py",      False),
     ("dimensionsprov.py",    False),
+    ("lektionsprov.py",      False),
     ("ordföljdsprov.py",     True),
     ("renderarbild.py",      True),
     ("introduktionsprov.py", True),
