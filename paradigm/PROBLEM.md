@@ -3509,7 +3509,24 @@ och kursen låstes fast. Talet är nu detsamma som tröskeln härleds ur.
     dag 14 nivå 6 → 7
 
 Alltså en nivå per dag i början och sedan en verklig platå, i stället för
-allt på en gång. **Grinden mäter numera rätt sak; om den är strängt nog är
+allt på en gång.
+
+**OMMÄTT 2026-08-27, efter att nollställningen slutade ärva gårdagens tak
+(B4).** Takten är nu betydligt långsammare än ovan:
+
+    dag 1     nivå 1 → 2
+    dag 2–7   INGEN upplåsning — kursen står på nivå 2
+
+Talen ovan står kvar som det de var: en mätning på en kurs vars inflödestak
+satt fast på 7 kort. Med det riktiga taket (51) hämtar dagen in mer material,
+och `byggbarhet` mot nivå 3 räcker ändå inte — så platån kommer direkt efter
+den första upplåsningen i stället för efter den femte.
+
+**Att nivå 2 öppnas efter dag ett är alltså det mätta beteendet och inte ett
+fel.** Grinden frågar om SÖKNINGEN kan bygga meningar med den nya
+konstruktionen, och efter arton inlärda ord kan den det. Den frågar
+fortfarande ingenting om huruvida INLÄRAREN är redo — se den öppna frågan
+nedan. **Grinden mäter numera rätt sak; om den är strängt nog är
 en annan fråga** — den släpper fortfarande igenom en nivå per dag så länge
 konstruktionen går att bygga, och postens ursprungliga öppna fråga om
 förkunskaper står kvar.
