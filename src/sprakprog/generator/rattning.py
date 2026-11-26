@@ -333,6 +333,33 @@ class Rättare:
                 träffande.append((koncept, slot))
         return träffande[0] if len(träffande) == 1 else None
 
+    def _genuskandidater(self, cell: str, träffar: list,
+                         egenskaper: list) -> list[str]:
+        """Alla substantiv vars genus kan förklara den skrivna formen.
+
+        `_genusgivaren` returnerar bara när svaret är ENTYDIGT, och det är
+        rätt för att SKYLLA. Men när den tiger får genuskortet i stället ett
+        GOOD, och det är värre än att inte mäta: användaren skrev `un sœur`
+        och systemet bokförde "hen vet att sœur är feminint".
+
+        Den här listan finns för att kunna UNDANHÅLLA i stället. Se
+        `rätta`.
+        """
+        ut = []
+        for koncept, namn in egenskaper:
+            if namn != "genus":
+                continue
+            rad = self._genuskort(koncept)
+            if rad is None or rad["facit"] is None:
+                continue
+            try:
+                genus = int(rad["facit"])
+            except (TypeError, ValueError):
+                continue
+            if self._genusbytet(cell, träffar, genus):
+                ut.append(koncept)
+        return ut
+
     def _genusgivaren(self, cell: str, träffar: list[str],
                       egenskaper: list) -> str | None:
         """Vilket substantiv styrde cellen — och brister dess genus?
@@ -518,6 +545,7 @@ class Rättare:
         instrumentering generatorn redan använder.
         """
         utfall = {k["id"]: True for k in kort}
+        self._genus_i_fråga: set[str] = set()
         if _normalisera(svar) == _normalisera(facit):
             return Rättning(True, utfall, [])
 
@@ -669,6 +697,23 @@ class Rättare:
             # ljuger vidare i veckor.
             utfall.clear()
             break
+        # ETT GENUSKORT FÅR INTE FÅ GOOD NÄR ETT GENUSFEL SKEDDE.
+        #
+        # `_genusgivaren` skyller bara när svaret är ENTYDIGT — passar två
+        # substantiv säger den ingenting hellre än gissar, och det är rätt
+        # för skulden. Men tystnaden lämnade kortet kvar som RÄTT, och då
+        # bokfördes motsatsen till vad användaren visade: han skrev `un
+        # sœur` och `egenskap:2` för `fam_storasyster` fick Good med S
+        # 2,31 → 7,32 (mätt 2026-09-04).
+        #
+        # Samma regel som överallt annars i modulen: hellre ingen mätning än
+        # en felaktig. De genuskort som KAN ha orsakat felet och inte själva
+        # fälldes tas därför ur betygsättningen.
+        for koncept in getattr(self, "_genus_i_fråga", ()):
+            rad = self._genuskort(koncept)
+            if rad is not None and utfall.get(rad["id"]) is True:
+                utfall.pop(rad["id"], None)
+
         return Rättning(False, utfall, anmärkningar)
 
     def _smälter_ihop(self, osammansmält: list[str]) -> bool:
@@ -1064,6 +1109,14 @@ class Rättare:
                                          nyckel="inget_kort"))
                     continue
                 koncept, variant, cell = träff
+                # GENUSKORT SOM KAN HA ORSAKAT FELET samlas upp, oavsett vad
+                # skulden till slut landar på. Se `rätta`.
+                _celler = self._celler_för(koncept, variant)
+                self._genus_i_fråga.update(self._genuskandidater(
+                    cell,
+                    [c for c, f in _celler.items()
+                     if _normalisera(f) == _normalisera(skrev)],
+                    egenskaper or []))
                 kid, förklaring, osäker, nyckel, arg = self._skyll(
                     skrev, väntat, koncept, variant, cell, egenskaper,
                     rektioner)

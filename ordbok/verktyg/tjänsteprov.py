@@ -657,6 +657,51 @@ def prov_dagboken_fångar_övergången(tj, kurs) -> list[str]:
         pass
 
 
+def prov_nödutgången_frågar_om_sökningen(tj, kurs) -> list[str]:
+    """Nödutgången får bara lösa ut när INGEN kandidat täckte något.
+
+    B8 skriver av hela dagens återstående kort som onåbara, och det är ett
+    hårt beslut: ett `igen`-kort som skrivs av bryter B7 — felet skulle tas
+    igen och läggs i stället undan utan att användaren får veta.
+
+    Villkoret läste VINNARENS täckning. Men vinnaren kan ha noll fast
+    sökningen hittade hundratals som täckte: de täckande kan ha fallit på
+    okändgränsen (C5) eller på upprepningsspärren, och då vinner en reserv
+    som inte täcker något.
+
+    Mätt när nödutgången löste ut i en simulerad dag: **698 av 1 030
+    kandidater täckte ett köat kort**. På Julius kurs 2026-09-04 kostade det
+    tre kort — `ord:se` och två `igen`-kort han just fällt. `fam_pappa` gick
+    att bygga en mening kring i 1 719 försök av 2 000.
+
+    Provet prövar BESLUTET och inte en dag, därför att det avgörande läget är
+    sällsynt: det uppstod en gång på fyra simulerade dagar. Ett prov som
+    behöver tur för att mäta mäter inte.
+    """
+    from dataclasses import replace as _replace
+    from sprakprog.generator import Förslag
+    from sprakprog.generator.poang import Poäng
+
+    def förslag(täckta, fanns):
+        p = Poäng(0.0, {}, 0.0, 0, täckta, 0)
+        return Förslag(None, "x", None, [], p, täckning_fanns=fanns)
+
+    fall = [
+        (0, True,  False, "vinnaren täckte inget MEN sökningen hittade "
+                          "täckande kandidater"),
+        (0, False, True,  "ingen kandidat täckte något — då är dagen slut"),
+        (2, False, False, "vinnaren täcker något"),
+    ]
+    fel = []
+    for täckta, fanns, väntat, namn in fall:
+        fick = tj._onåbar(förslag(täckta, fanns), {})
+        if fick != väntat:
+            fel.append(f"[{kurs['målspråk']}] {namn}: nödutgången "
+                       f"{'löste ut' if fick else 'löste inte ut'}, väntat "
+                       f"{'utlösning' if väntat else 'ingen utlösning'}")
+    return fel
+
+
 PROV = [
     ("en kurs per målspråk", prov_en_kurs_per_målspråk),
     ("inget redan bedömt väntar", prov_inget_redan_bedömt_väntar),
@@ -674,6 +719,8 @@ PROV = [
      lambda tj, k, kurs: prov_ingen_tom_mening(tj, kurs)),
     ("dagboken fångar övergången",
      lambda tj, k, kurs: prov_dagboken_fångar_övergången(tj, kurs)),
+    ("nödutgången frågar om sökningen, inte om vinnaren",
+     lambda tj, k, kurs: prov_nödutgången_frågar_om_sökningen(tj, kurs)),
 ]
 
 
@@ -714,6 +761,13 @@ def _sabotera(namn: str):
         äkta = passlager._stäng_redan_bedömda
         passlager._stäng_redan_bedömda = lambda *a, **kw: 0
         return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
+
+    if namn == "nödutgången frågar om sökningen, inte om vinnaren":
+        # Före rättelsen: villkoret läste bara vinnarens täckning.
+        äkta = Övningstjänst.__dict__["_onåbar"]
+        Övningstjänst._onåbar = staticmethod(
+            lambda f, p: f.poäng is not None and f.poäng.täckta == 0)
+        return lambda: setattr(Övningstjänst, "_onåbar", äkta)
 
     if namn == "dagboken fångar övergången":
         # Före rättelsen: ögonblicksbilden togs EFTER mutationerna, så

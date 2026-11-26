@@ -448,11 +448,27 @@ class Övningstjänst:
     def _onåbar(f, p: dict) -> bool:
         """Går det inte att komma längre? Passets nödutgång, som en egen regel.
 
+        TVÅ VILLKOR, OCH DET ANDRA SAKNADES. Att den VALDA meningen inte
+        täcker något är inte samma sak som att ingenting går att täcka:
+        de täckande kandidaterna kan ha fallit på okändgränsen (C5) eller på
+        upprepningsspärren, och då vinner en reserv med noll täckning.
+
+        Mätt när nödutgången löste ut i en simulerad dag: **698 av 1 030
+        kandidater täckte ett köat kort**, och dagen skrevs av ändå. På
+        Julius kurs 2026-09-04 kostade det tre kort — `ord:se`, och två
+        `igen`-kort han just fällt, `père` och `frère aîné`. Alla tre var
+        triviala att bygga en mening kring: 1 719 av 2 000 försök lyckades
+        för `fam_pappa`. Passet sa "klart" medan skärmen visade due 1.
+
+        Att skriva av ett `igen`-kort är dessutom att bryta B7 — felet skulle
+        tas igen, och i stället lades det undan utan att användaren fick veta.
+
         Villkoret bor i en metod för att gå att SABOTERA i `tjänsteprov` utan
         att skriva i källfilen — den vägen är en fälla, se
         `Generator._duglig`.
         """
-        return f.poäng is not None and f.poäng.täckta == 0
+        return (f.poäng is not None and f.poäng.täckta == 0
+                and not getattr(f, "täckning_fanns", False))
 
     def _uppgiftssvar(self, id_: int, kurs: sqlite3.Row, f) -> dict:
         return {"id": id_, "uppgift": f.uppgift, "källspråk": kurs["källspråk"],

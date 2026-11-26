@@ -72,6 +72,19 @@ class Förslag:
     #: alls (C5:s reservutgång). Ett ord meningen inför kommer då därifrån och
     #: inte ur en läcka — och utan flaggan går de två inte att skilja åt.
     reserv_släppt: bool = False
+    #: Fanns det NÅGON kandidat i sökningen som täckte ett köat kort? Skilt
+    #: från `poäng.täckta`, som bara säger vad den VALDA meningen täcker.
+    #:
+    #: B8:s nödutgång byggde på den skillnaden utan att ha den: den frågade
+    #: om vinnaren täckte noll och skrev då av hela dagen som onåbar. Men
+    #: vinnaren kan ha noll täckning fast sökningen hittade hundratals som
+    #: täckte — de täckande kan ha fallit på okändgränsen (C5) eller på
+    #: upprepningsspärren, och då vinner en reserv som inte täcker något.
+    #:
+    #: Mätt när nödutgången löste ut: **698 av 1 030 kandidater täckte ett
+    #: köat kort.** B8:s docstring säger att den är till för när sökningen
+    #: "inte hittat en enda mening som rör något av det som väntar".
+    täckning_fanns: bool = False
     #: Renderarens ord FÖRE sandhi. Rättningen diffar mot dem, så att en
     #: sammansmältning inte döljer en tokengräns — `je` + `existe` blir
     #: `j'existe`, och utan listan gick böjningsfelet i `exister` inte att se.
@@ -469,7 +482,7 @@ class Generator:
         # gav den `None` med jämna mellanrum: engelskan tog slut efter en
         # mening när ingen av 200 kandidater råkade hålla sig under gränsen.
         redan_klara = self._redan_klara(nu)
-        bäst, reserv, nödfall = self._sök(
+        bäst, reserv, nödfall, täckte = self._sök(
             kandidater, mål, förfallna, sedda, nu, redan_klara)
 
         # RESERVUTGÅNGEN, på hela sökningens nivå. Gick ingen mening att bygga
@@ -493,8 +506,9 @@ class Generator:
         släppt = False
         if bäst is None and reserv is None and nödfall is None:
             self.samplare.begränsa(None)
-            bäst, reserv, nödfall = self._sök(
+            bäst, reserv, nödfall, täckte2 = self._sök(
                 kandidater, mål, förfallna, sedda, nu, redan_klara)
+            täckte = täckte or täckte2
             # OCH DET SYNS ATT DEN TOGS. C5 kallar reserven "ett UNDANTAG som
             # syns, inte den vanliga vägen" — men den syntes ingenstans, och
             # då går den inte att skilja från en läcka.
@@ -519,8 +533,9 @@ class Generator:
             övriga = [k["koncept"] for k in kö if k["koncept"]
                       and k["koncept"] not in igen_mål]
             if övriga:
-                bäst, reserv2, nöd2 = self._sök(
+                bäst, reserv2, nöd2, täckte3 = self._sök(
                     kandidater, övriga, förfallna, sedda, nu, redan_klara)
+                täckte = täckte or täckte3
                 reserv = reserv or reserv2
                 nödfall = nödfall or nöd2
 
@@ -536,7 +551,8 @@ class Generator:
         var_nödfall = bäst is None and reserv is None and nödfall is not None
         bäst = bäst or reserv or nödfall
         if bäst is not None:
-            bäst = replace(bäst, nödfall=var_nödfall, reserv_släppt=släppt)
+            bäst = replace(bäst, nödfall=var_nödfall, reserv_släppt=släppt,
+                           täckning_fanns=täckte)
             self.poängsättare.minns(
                 {k["koncept"] for k in bäst.kort if k["koncept"]})
             # Bara de tre senaste: längre minne skulle strypa en liten
@@ -666,6 +682,8 @@ class Generator:
         bäst: Förslag | None = None
         reserv: Förslag | None = None
         nödfall: Förslag | None = None
+        # Täckte NÅGON kandidat något? Se `Förslag.täckning_fanns`.
+        täckte = False
         # MÅLORDEN VARVAS, DE LOTTAS INTE. `rng.choice` gav varje mål samma
         # FÖRVÄNTADE antal försök, vilket är något annat än samma antal: med
         # trettio mål och tusen kandidater är spridningen stor nog att ett mål
@@ -713,6 +731,7 @@ class Generator:
                          if k["typ"] == "ord" and k["sedd"] is None
                          and k["koncept"] not in sedda)
             p = self.poängsättare.sätt(kort, förfallna, nu)
+            täckte = täckte or p.täckta > 0
             # EN ORDAGRANT UPPREPAD MENING FÅR INTE VINNA. Den flyttas till
             # reservtiern, alltså tas den bara om ingenting annat finns.
             # `upprepning`-vikten räcker inte: den straffar återanvända
@@ -758,7 +777,7 @@ class Generator:
                 nödfall = förslag
             else:
                 reserv = förslag
-        return bäst, reserv, nödfall
+        return bäst, reserv, nödfall, täckte
 
     def _rendera_källa(self, m: Mening) -> str | None:
         """Meningen på källspråket, eller None om det språket inte når den.

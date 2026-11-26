@@ -85,7 +85,24 @@ def main() -> int:
         källa.append(f"{len(ställda)} ställda meningar")
         kort_db.close()
 
+    # SVEPET FÄLLER, LOGGEN UPPLYSER — och skillnaden är inte kosmetisk.
+    #
+    # Svepkorpusen byggs om ur NUVARANDE kod vid varje körning, så ett fynd
+    # där är ett fel som finns NU. Loggen är ett facit över det förflutna:
+    # en mening som redan ställts går inte att göra ogjord, så ett historiskt
+    # fynd rödmarkerar sviten för alltid — även efter att felet är lagat.
+    #
+    # Det hände 2026-09-04. Strukturkontrollen fann att `Tu nous as.` byggts
+    # ur två olika specar, orsaken rättades (franskans `on` fick sin
+    # felaktiga objektsform borttagen), och nätet var rött ändå eftersom
+    # raderna låg kvar i loggen. Ett nät som inte kan bli grönt igen slutar
+    # läsas.
+    #
+    # Loggfynden skrivs därför ut men fäller inte. De är en ARBETSLISTA över
+    # vad som redan hänt; svepet är regressionsspärren.
     fynd = strukturkontroller(poster)
+    fällande = [f for f in fynd if not str(f.get("källa", "")).startswith("logg:")]
+    historiska = [f for f in fynd if f not in fällande]
     print(f"  {len(poster)} meningar ({', '.join(källa)})")
     if fynd:
         for typ, n in Counter(f["feltyp"] for f in fynd).most_common():
@@ -104,8 +121,12 @@ def main() -> int:
     if not stumma:
         print("    ✓ alla fyra kontrollerna fäller sitt sabotage")
 
-    print(f"\n{len(fynd)} strukturfynd, {len(stumma)} stumma kontroller.")
-    return 1 if fynd or stumma else 0
+    if historiska:
+        print(f"\n  {len(historiska)} av fynden kommer ur LOGGEN och fäller "
+              f"inte — de har redan hänt. Se kommentaren i `main`.")
+    print(f"\n{len(fynd)} strukturfynd ({len(fällande)} i svepet), "
+          f"{len(stumma)} stumma kontroller.")
+    return 1 if fällande or stumma else 0
 
 
 if __name__ == "__main__":

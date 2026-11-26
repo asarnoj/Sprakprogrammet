@@ -259,6 +259,28 @@ def svep(kort, språk: str, antal: int, visa: bool) -> Counter:
                     # alla var korrekta bedömningar.
                     bakom -= {k["id"] for k in
                               rt._kort_för(koncept, variant, brutet[3])}
+                    # OCH GENUSKORTEN, som hör till ett ANNAT KONCEPT.
+                    #
+                    # Det var hålet som gjorde felet osynligt. `bakom`
+                    # räknade bara kort som hör till det muterade
+                    # konceptet, men artikelns cell VÄLJS av substantivets
+                    # genus: byter man `une` mot `un` är det `sœur`s
+                    # genuskort som inte längre är visat, och det hör till
+                    # `fam_storasyster`. Svepet rapporterade noll falska
+                    # godkännanden medan Julius fick ett bokfört med
+                    # S 2,31 → 7,32 (2026-09-04).
+                    celler = rt._celler_för(koncept, variant)
+                    träffar = [c for c, f in celler.items()
+                               if _normalisera(f)
+                               == _normalisera(celler.get(brutet[3]) or "")]
+                    for kand in rt._genuskandidater(cell, träffar, eg):
+                        # INTE `g` — generatorn heter så i den här slingan,
+                        # och att skugga den gav `sqlite3.Row har ingen
+                        # rätta`. Ett fel som bara syns när mutationen råkar
+                        # träffa ett genusord.
+                        gk = rt._genuskort(kand)
+                        if gk is not None:
+                            bakom.add(gk["id"])
                 else:
                     ordkort = rt._ordkort(koncept, variant)
                     if ordkort:

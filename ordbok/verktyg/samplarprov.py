@@ -255,10 +255,16 @@ def prov_samma_form_två_gånger(kort, språk_db) -> list[str]:
             verb="verb_ha",
             subjekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD),
             objekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD))),
+        # `pronomen_3sg_fem` OCH INTE `pronomen_impersonal`. Fallet var först
+        # `On nous a`, och det slutade gå att rendera när franskans `on` fick
+        # sin felaktiga objektsform borttagen (2026-09-04) — `on` är ett
+        # subjektsklitikon utan objektsform. Provet fällde då sig självt,
+        # vilket var rätt: fixturen vilade på en konstruktion som blev
+        # olaglig. `elle`/`la` bär samma poäng utan att vila på ett fel.
         ("fr", False, "samma koncept, olika form", lambda: Mening(
-            verb="verb_ha",
-            subjekt=Nominalfras("pronomen_impersonal"),
-            objekt=Nominalfras("pronomen_impersonal"))),
+            verb="arb_hjälpa",
+            subjekt=Nominalfras("pronomen_3sg_fem"),
+            objekt=Nominalfras("pronomen_3sg_fem"))),
         ("de", False, "kasus skiljer formerna", lambda: Mening(
             verb="verb_ha",
             subjekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD),

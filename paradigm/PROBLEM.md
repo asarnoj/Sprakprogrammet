@@ -2191,6 +2191,38 @@ står kvar. Dagen svälter inte — 19 meningar mot 21 utan regeln, inom bruset.
 och regeln på KONCEPT i stället för form. Det andra är den verkliga risken —
 att avvisa för mycket — och tyskans fall är det som fäller det.
 
+#### NÖDUTGÅNGEN FRÅGADE OM VINNAREN, INTE OM SÖKNINGEN (2026-09-04)
+
+Julius: *"passet blev klart trots att det stod att det var kort kvar att göra
+i due"*. Dagboken visade läget efter hans sista mening: `att_göra 3`,
+`förfallna 1`, `igen 2`, `klar=False`. Dagen var alltså inte slut — och tog
+ändå slut.
+
+B8:s nödutgång hade löst ut och skrivit av tre kort som **onåbara**:
+
+    förfallen   ord:se          förfallet sedan 1 september
+    igen        ord:père        han fällde det i mening 7
+    igen        ord:frère aîné  han fällde det i mening 9
+
+Att skriva av ett `igen`-kort bryter B7: felet skulle tas igen, och lades i
+stället undan utan att han fick veta. Och korten var inte onåbara —
+`fam_pappa` gick att bygga en mening kring i **1 719 försök av 2 000**.
+
+**Villkoret läste fel storhet.** `_onåbar` frågade om den VALDA meningen
+täckte noll köade kort. Men vinnaren kan täcka noll fast sökningen hittade
+hundratals som täckte: de täckande kan ha fallit på okändgränsen (C5) eller
+på upprepningsspärren, och då vinner en reserv utan täckning. Mätt när
+nödutgången löste ut i en simulerad dag: **698 av 1 030 kandidater täckte ett
+köat kort.**
+
+B8:s egen docstring säger att den är till för när sökningen *"inte hittat en
+enda mening som rör något av det som väntar"*. Generatorn rapporterar numera
+`täckning_fanns`, och nödutgången kräver båda villkoren.
+
+Efter rättelsen: 0 utlösningar på 255 prövningar över fyra simulerade dagar.
+Provet prövar BESLUTET och inte en dag, eftersom läget uppstod en gång på
+fyra dagar — ett prov som behöver tur för att mäta mäter inte.
+
 #### VERKTYGET BYGGT 2026-08-24 — `ordbok granska-meningar`
 
 Gemensamt för C3, C7 och G4, eftersom de tre är samma arbete sett från olika
@@ -2805,6 +2837,40 @@ om tio minuter". Ankis motsvarighet är `relearning_steps`, ett lager utanför
 minnesmodellen.
 
 #### DE REFLEXIVA VERBEN — LÖST I FEM SPRÅK 2026-08-26
+
+### D8 ✓ — Genuskortet fick Good när genuset brast (ny 2026-09-04)
+
+Julius övade tre dagar och rapporterade *"fel bedömningar"*. Dagboken pekade
+ut ett exakt fall.
+
+Facit `Une sœur aînée a un homme.`, han skrev `Un sœur cadétte a un homme`.
+Artikeln blev maskulin på ett feminint substantiv — ett genusfel. Utfallet:
+
+    form:une        ✗  bedömd        skulden hamnade här
+    egenskap:2      ✓  bedömd        S 2,31 → 7,32   ← genus för sœur
+
+**Systemet bokförde alltså "han vet att sœur är feminint" i samma stund som
+han visade motsatsen.** Det är ett falskt godkännande, den feltyp som
+fördärvar data i stället för att sakna den.
+
+`_genusgivaren` finns och gör rätt sak: den skyller på genuskortet när formen
+stämmer för ett annat genus. Men den svarar bara när kandidaten är ENTYDIG —
+passar två substantiv säger den ingenting hellre än gissar. Tystnaden är
+riktig för SKULDEN och fel för BETYGET: kortet låg kvar som `True` och fick
+Good.
+
+**Rättelsen är modulens egen regel, tillämpad åt andra hållet.** När ett
+`egenskap`-kort faller dras allt bakom formen undan (`_valde_hela_formen`,
+2026-08-29). Nu gäller spegelbilden: faller formen, får de genuskort som KAN
+ha orsakat felet inte krediteras — de tas ur betygsättningen. Hellre ingen
+mätning än en felaktig.
+
+**FELSVEPET MISSADE DET, och hålet är lärorikt.** Mutationen fanns —
+`_annan_cell` byter `une` mot `un`. Men kontrollen `bakom` räknade bara kort
+som hör till det MUTERADE konceptet, och artikelns cell väljs av
+substantivets genus: kortet hör till `fam_storasyster`, inte till
+`artikel_obestamd`. Ett falskt godkännande på ett annat koncepts kort var
+osynligt för svepet. `bakom` tar nu med genuskandidaterna.
 
 ### C7 ! — Producerar renderarna korrekt språk?
 
