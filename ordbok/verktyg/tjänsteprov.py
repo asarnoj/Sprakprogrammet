@@ -406,10 +406,28 @@ def _sabotera(namn: str):
             and bool(p["förfallna"]))
         äkta_sil = Generator.övningsbara
         Generator.övningsbara = lambda själv, koncept: list(koncept)
+        # OCH DEN DISJUNKTA KÖN, som är det tredje sättet dagen kunde fastna.
+        #
+        # Sabotaget ovan slutade fälla provet 2026-08-26, och det var ett gott
+        # tecken: sedan generatorn tar dagens nya kort UR PASSET behöver dagen
+        # inte längre nödutgången för att ta slut, så att slå av den ändrar
+        # ingenting. Men ett prov som inte kan falla bevisar ingenting, och
+        # invarianten "passet tar slut" ska skydda mot ALLA sätt det kan
+        # brytas — inte bara det som var akut när den skrevs.
+        #
+        # Före rättelsen frågade `föreslå` `osedda` på nytt i stället för att
+        # använda passets rader, och de två mängderna var helt disjunkta:
+        # passet väntade på nio kort, generatorn köade nio andra, noll
+        # gemensamma. Att slänga `nya` återskapar precis det.
+        äkta_föreslå = Generator.föreslå
+        Generator.föreslå = (
+            lambda själv, **kw: äkta_föreslå(
+                själv, **{**kw, "nya": None}))
 
         def ångra():
             Övningstjänst._onåbar = äkta
             Generator.övningsbara = äkta_sil
+            Generator.föreslå = äkta_föreslå
         return ångra
 
 

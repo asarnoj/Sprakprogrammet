@@ -67,6 +67,10 @@ class Förslag:
     #: en upprepning som var enda utvägen är något helt annat än en som
     #: slapp igenom, och utan flaggan går de inte att skilja på i efterhand.
     nödfall: bool = False
+    #: Sökningen fick SLÄPPA begränsningen till kända ord för att hitta något
+    #: alls (C5:s reservutgång). Ett ord meningen inför kommer då därifrån och
+    #: inte ur en läcka — och utan flaggan går de två inte att skilja åt.
+    reserv_släppt: bool = False
     #: Renderarens ord FÖRE sandhi. Rättningen diffar mot dem, så att en
     #: sammansmältning inte döljer en tokengräns — `je` + `existe` blir
     #: `j'existe`, och utan listan gick böjningsfelet i `exister` inte att se.
@@ -275,6 +279,7 @@ class Generator:
                 nya_tillåtna: int | None = None, extra: bool = False,
                 oövade: list | None = None,
                 passkö: set[int] | None = None,
+                nya: set[int] | None = None,
                 nu=None) -> Förslag | None:
         """Bästa meningen av `kandidater` försök.
 
@@ -316,7 +321,42 @@ class Generator:
             # glosläget (`Övningstjänst.glosor`) och kommer hit först när de
             # är sedda. Böjningskorten — stam, ändelse, genus — hör däremot
             # hemma i en mening och introduceras som förut.
-            kö += self.schemaläggare.osedda(self.språk, plats, uteslut=("ord",))
+            #
+            # PASSETS EGNA NYA KORT GÅR FÖRE, när anroparen har ett pass.
+            #
+            # DE TVÅ KÖERNA VAR HELT DISJUNKTA, och det var det allvarligaste
+            # felet i den här kedjan. Passet väljer dagens nya kort och silar
+            # dem genom `nåbara_kort` — bara kort någon byggbar mening kan
+            # röra kommer med (`pass_._rader`). Generatorn frågade i stället
+            # `osedda` på nytt, som svarar med de HÖGST RANKADE osedda korten
+            # oavsett nåbarhet. Mätt på en färsk franskkurs, varv för varv:
+            #
+            #     passet väntar på 9 nya kort, generatorn köar 9
+            #     gemensamma 0 · bara i passet 9 · bara i generatorn 9
+            #
+            # Noll överlapp, varje varv. Generatorn byggde alltså meningar
+            # mot kort som per konstruktion INTE gick att nå, medan de kort
+            # dagen faktiskt planerat aldrig blev målord. När de oövade orden
+            # tagit slut föll `täckta` till noll, nödutgången löste ut, och
+            # passets kort skrevs av som "onåbara" — trots att meningarna som
+            # når dem aldrig hade ställts:
+            #
+            #     K0 pres_1pl  `Nous existons.`   (visad var `Nous avons.`)
+            #     K1 pres_2sg  `Tu as.`           (visad var `Tu existes.`)
+            #
+            # Det är G6:s felklass: `dagsplan`/`Pass` är auktoriteten på vad
+            # dagen innehåller, och en ändpunkt räknade fram sitt eget svar.
+            # Passets rader går före; `osedda` fyller bara på om det behövs,
+            # och det behövs bara för anropare UTAN pass — proven och
+            # mätverktygen.
+            if nya is not None:
+                planerade = [self._kort[i] for i in nya if i in self._kort]
+                kö += planerade[:plats]
+                plats -= len(planerade[:plats])
+            if plats > 0:
+                kö += [k for k in self.schemaläggare.osedda(
+                           self.språk, plats, uteslut=("ord",))
+                       if k["id"] not in {x["id"] for x in kö}]
         # Passkön läggs FÖRST och räknas som täckt, så att poängfunktionen
         # aktivt bygger meningen runt det som nyss gick fel.
         # PASSKÖN KOMMER UTIFRÅN när anroparen har ett PASS. Kön är ett
@@ -381,6 +421,19 @@ class Generator:
         # Silen gör inte att ordet aldrig övas — `un` kommer med i varje
         # nominalfras som tar obestämd artikel. Den säger bara att det inte
         # går att STYRA mot, och därför inte får hålla styrningen gisslan.
+        # ETT ÄNDELSEKORT KAN INTE BLI MÅLORD, och det är en känd gräns och
+        # inte en glömska. `koncept` är NULL på `system`- och `ordföljd`-kort
+        # — ändelsen delas av en hel böjningsklass — så det finns inget ord
+        # att bygga KRING. De hittas i stället av poängfunktionen, som räknar
+        # dem som täckta när en mening råkar röra dem.
+        #
+        # En omväg via `Cellkort` (som vet vilka ord som rör en viss ändelse)
+        # byggdes och MÄTTES 2026-08-26: noll skillnad i avskrivna kort och
+        # noll skillnad i antal meningar per dag, på franska nivå 1, tyska
+        # nivå 4 och engelska nivå 1. Den togs bort igen — en mekanism som
+        # inte går att visa någon verkan av är en skuld och inte en tillgång.
+        # Se A7 i PROBLEM.md.
+        sedda = self._sedda_koncept()
         nivåer = [igen_mål, list(oövade or []),
                   [k["koncept"] for k in kö if k["koncept"]]]
         mål = next((d for d in ([k for k in n if self.samplare.duger_som_mål(k)]
@@ -404,7 +457,8 @@ class Generator:
         # RESERVEN ÄR KVAR. Går ingen mening att bygga ur det kända vinner
         # reservkandidaten ändå, för sökningen får aldrig misslyckas. Men det
         # är då ett UNDANTAG som syns, inte den vanliga vägen.
-        sedda = self._sedda_koncept()
+        #
+        # (`sedda` räknades fram redan ovan, för målstyrningen.)
         self.samplare.begränsa(sedda)
 
         # TVÅ BÄSTA: den som klarar okändgränsen, och den bästa oavsett.
@@ -433,10 +487,24 @@ class Generator:
         # ger dessutom en uppgift som inte går att lösa. Upprepningen vinner
         # alltså över undantaget, och undantaget är kvar för det läge det
         # byggdes för: när ingenting alls gick att bygga.
+        släppt = False
         if bäst is None and reserv is None and nödfall is None:
             self.samplare.begränsa(None)
             bäst, reserv, nödfall = self._sök(
                 kandidater, mål, förfallna, sedda, nu)
+            # OCH DET SYNS ATT DEN TOGS. C5 kallar reserven "ett UNDANTAG som
+            # syns, inte den vanliga vägen" — men den syntes ingenstans, och
+            # då går den inte att skilja från en läcka.
+            #
+            # Skillnaden är inte akademisk. Ett ord som kommer in via reserven
+            # gör det för att INGEN mening kunde byggas ur det användaren
+            # mött; ett ord som kommer in på något annat sätt är en bugg av
+            # det slag C5 stängde tre gånger. `introduktionsprov` mätte de två
+            # som samma sak och rapporterade fel: när kortbeståndet råkade ge
+            # drillen tre modalverb — oanvändbara innan nivå 13 låser upp
+            # komplement — kunde ingen mening byggas, reserven löste ut, och
+            # provet kallade det en läcka.
+            släppt = True
 
         # FANNS INGEN ANNAN MENING MED MÅLORDET skjuts återförsöket upp i
         # stället för att upprepas. Kortet står kvar i passkön och kommer när
@@ -465,7 +533,7 @@ class Generator:
         var_nödfall = bäst is None and reserv is None and nödfall is not None
         bäst = bäst or reserv or nödfall
         if bäst is not None:
-            bäst = replace(bäst, nödfall=var_nödfall)
+            bäst = replace(bäst, nödfall=var_nödfall, reserv_släppt=släppt)
             self.poängsättare.minns(
                 {k["koncept"] for k in bäst.kort if k["koncept"]})
             # Bara de tre senaste: längre minne skulle strypa en liten

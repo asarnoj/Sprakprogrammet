@@ -283,6 +283,13 @@ class Övningstjänst:
                           nya_tillåtna=0 if extra else p["nya"],
                           passkö=passlager.väntande_ider(
                               self.kort_db, p["pass_id"], "igen"),
+                          # DAGENS NYA KORT KOMMER UR PASSET, inte ur en ny
+                          # fråga till `osedda`. Passet valde dem och silade
+                          # dem genom nåbarheten; generatorn räknade fram sin
+                          # egen lista och fick en HELT DISJUNKT mängd — mätt
+                          # noll gemensamma kort, varje varv. Se `föreslå`.
+                          nya=None if extra else passlager.väntande_ider(
+                              self.kort_db, p["pass_id"], "ny"),
                           oövade=None if extra else oövade_koncept(
                               self.kort_db, kurs["målspråk"]))
             if f is None:

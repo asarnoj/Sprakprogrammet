@@ -48,6 +48,7 @@ sys.path.insert(0, str(ROT / "src"))
 from sprakprog.db import anslut                      # noqa: E402
 from sprakprog.generator import Generator            # noqa: E402
 from sprakprog.kort import schemalaggning            # noqa: E402
+from sprakprog.kort.befolka import befolka           # noqa: E402
 from sprakprog.kort.schemalaggning import Schemaläggare  # noqa: E402
 from sprakprog.kort.db import anslut_kort           # noqa: E402
 from sprakprog.webb import Övningstjänst            # noqa: E402
@@ -65,6 +66,11 @@ MENINGAR = 12
 #: osedda kort och provet mäter ingenting.
 NYA_TILLÅTNA = 19
 
+#: NIVÅN OCH ORDFÖRRÅDET PROVET MÄTER PÅ. Posten handlar om kallstart, så
+#: nivå 1 och A1 är den regim frågan gäller. Talen är provets egna och tas
+#: INTE ur kursen — se `_kör`.
+NIVÅ_PROVAS, CEFR_PROVAS = 1, "A1"
+
 
 def _kopia(mål: Path) -> sqlite3.Connection:
     # Anslutningarna stängs — se `tjänsteprov.tjänst` för vad som händer
@@ -79,13 +85,55 @@ def _kopia(mål: Path) -> sqlite3.Connection:
     return anslut_kort(mål, delad_mellan_trådar=True)
 
 
-def _kallstart(kort: sqlite3.Connection, språk: str, n: int) -> set[str]:
+def _kallstart(kort: sqlite3.Connection, språk: str, n: int,
+               nivå: int | None = None, cefr: str = "A1") -> set[str]:
     """Nollställ språket och låt drillen införa `n` ord. Ger de sedda koncepten.
 
     Drillen simuleras med `oglosade`, alltså exakt den kö glosläget delar ut —
     inte en egen ordning. Ett prov som väljer sina egna ord skulle inte kunna
     upptäcka att drillen aldrig når fram till ett ord.
+
+    BESTÅNDET BYGGS OM FÖR NIVÅN, och det är inte en detalj utan skälet till
+    att provet går att lita på. `befolka` är ADDITIV — den lägger till kort
+    när en nivå öppnas och tar aldrig bort något — så kortbeståndet i den
+    kopierade databasen speglar den HÖGSTA nivå någon kurs mot språket nått,
+    oavsett vilken nivå provet vill mäta.
+
+    Mätt 2026-08-26, efter att en franskkurs nått nivå 21: rangordningen
+    började med tre MODALVERB och en subjunktion. Modalverb kräver
+    `komplement`, som låses upp först på nivå 13, så på en lägre nivå gick
+    ingen mening att bygga av de drillade orden — reservutgången löste ut för
+    varje mening och provet rapporterade tolv "läckta" ord som i själva verket
+    var C5:s avsiktliga undantag.
+
+    Provet ändrade sig alltså när Julius låste upp en nivå. Det är tredje
+    gången ett prov visar sig bero på vilket tillstånd databasen råkar ha
+    (jfr `passprov`s två), och lösningen är densamma varje gång: låt provet
+    ställa upp sin egen förutsättning i stället för att ärva en.
     """
+    if nivå is not None:
+        # RADERA OCH BYGG OM. `_kallstart` nollställer ändå all FSRS-historik
+        # för språket, så ingenting går förlorat som provet bryr sig om.
+        #
+        # UTOM `schemalagt`, som måste bäras över. Flaggan är MÄTNING och inte
+        # struktur — den säger att kortet möts oftare än spacing har någon
+        # spak för (E6) — och `befolka(mät=False)` lämnar varje nytt kort
+        # schemalagt. Utan överföringen blev alla kort `schemalagt = 1`, och
+        # då hade väg 3:s sabotage ingenting att grinda: det filtrerar på
+        # just den flaggan, så provet rapporterade STUMT fast felet var
+        # återinfört.
+        flaggor = {r["nyckel"]: r["schemalagt"] for r in kort.execute(
+            "SELECT nyckel, schemalagt FROM Kort WHERE språk = ?", (språk,))}
+        kort.execute("DELETE FROM Cellkort WHERE språk = ?", (språk,))
+        kort.execute("DELETE FROM Kort WHERE språk = ?", (språk,))
+        kort.commit()
+        with anslut() as språk_db:
+            språk_db.row_factory = sqlite3.Row
+            befolka(kort, språk_db, {språk}, nivå=nivå, cefr=cefr, mät=False)
+        kort.executemany(
+            "UPDATE Kort SET schemalagt = ? WHERE språk = ? AND nyckel = ?",
+            [(v, språk, k) for k, v in flaggor.items() if not v])
+        kort.commit()
     kort.execute("""UPDATE Kort SET sedd = NULL, förfaller = NULL, tillstånd = 1,
                         steg = NULL, stabilitet = NULL, svårighet = NULL,
                         antal = 0, fall = 0
@@ -119,7 +167,7 @@ def prov_kön(kort: sqlite3.Connection, kurs: sqlite3.Row, n: int) -> list[str]:
     byggde meningen kring det — förbi `begränsa`, som bara styr fyllnaden.
     """
     språk = kurs["målspråk"]
-    _kallstart(kort, språk, n)
+    _kallstart(kort, språk, n, kurs["nivå"], kurs["cefr"])
     osedda_ord = {r["koncept"] for r in kort.execute(
         """SELECT koncept FROM Kort WHERE språk = ? AND typ = 'ord'
            AND sedd IS NULL AND koncept IS NOT NULL""", (språk,))}
@@ -146,7 +194,7 @@ def prov_drillen(kort: sqlite3.Connection, kurs: sqlite3.Row, n: int) -> list[st
     if n != DRILLADE[0]:
         return []
     språk = kurs["målspråk"]
-    _kallstart(kort, språk, 0)
+    _kallstart(kort, språk, 0, kurs["nivå"], kurs["cefr"])
     s = Schemaläggare(kort)
     nådda: set[int] = set()
     while (parti := [r for r in s.oglosade(språk, 50) if r["id"] not in nådda]):
@@ -177,7 +225,7 @@ def prov_meningen(kort: sqlite3.Connection, kurs: sqlite3.Row,
     yttre annars hinner först.
     """
     språk = kurs["målspråk"]
-    sedda = _kallstart(kort, språk, n)
+    sedda = _kallstart(kort, språk, n, kurs["nivå"], kurs["cefr"])
     strukturord = {r["koncept"] for r in kort.execute(
         """SELECT DISTINCT koncept FROM Kort WHERE språk = ? AND typ = 'ord'
            AND ordklass = 'Artikel'""", (språk,))}
@@ -193,14 +241,38 @@ def prov_meningen(kort: sqlite3.Connection, kurs: sqlite3.Row,
                   nivå=kurs["nivå"], cefr=kurs["cefr"],
                   budget=kurs["budget"], frö=7)
     läckta: dict[str, str] = {}
+    via_reserv = 0
     for _ in range(MENINGAR):
         f = g.föreslå(kandidater=300, nya_tillåtna=NYA_TILLÅTNA, oövade=[])
         if f is None:
+            continue
+        # RESERVUTGÅNGEN ÄR INTE EN LÄCKA, och provet måste skilja dem åt.
+        #
+        # C5 säger uttryckligen att när INGEN mening går att bygga ur det
+        # användaren mött så släpps begränsningen och sökningen görs om — ett
+        # undantag för hela meningen i stället för ett ord som smyger in i en
+        # slot. Ett ord som kommer in den vägen är alltså designen och inte
+        # felet.
+        #
+        # Provet räknade dem som samma sak, och rapporterade därför ett brott
+        # den dag kortbeståndet råkade ge drillen tre MODALVERB: de kräver
+        # `komplement`, som låses upp först på nivå 13, så på en låg nivå gick
+        # ingen mening att bygga — reserven löste ut, och provet kallade det en
+        # läcka. Mätt: 12 "läckta" ord, alla ur en släppt sökning.
+        if f.reserv_släppt:
+            via_reserv += 1
             continue
         for k in f.kort:
             if (k["typ"] == "ord" and k["sedd"] is None
                     and k["koncept"] not in sedda):
                 läckta.setdefault(k["koncept"], f.text)
+    # ALLA MENINGAR VIA RESERVEN = provet mätte ingenting. Då är det
+    # uppsättningen som är otillräcklig och inte koden som är rätt, och det
+    # ska sägas i stället för att rapporteras som grönt.
+    if via_reserv == MENINGAR:
+        return [f"{n} drillade: samtliga {MENINGAR} meningar krävde "
+                f"reservutgången — de {n} orden räcker inte för en enda "
+                f"mening på nivån, så invarianten prövades aldrig"]
     return [f"{n} drillade: meningen införde {k!r} själv — {t!r}"
             for k, t in sorted(läckta.items())]
 
@@ -387,7 +459,30 @@ def _kör(kort, prov_f) -> list[str]:
     sabotage som fällde det direkt. Ett prov som tystnar när det skrivs i
     databasen är värre än inget.
     """
-    kurser = kort.execute("SELECT * FROM Kurs ORDER BY målspråk").fetchall()
+    # PROVET VÄLJER SIN EGEN NIVÅ, och det är hela skillnaden mot förut.
+    #
+    # Posten handlar om KALLSTART: ett nollställt språk, N drillade ord, och
+    # frågan om en mening kan införa ett ord på egen hand. Nivån är därför
+    # provets parameter och inte något som ska ärvas — men den ärvdes, ur
+    # `Kurs.nivå` i den kopierade databasen.
+    #
+    # Det gjorde provet beroende av hur långt Julius råkat spela. `befolka`
+    # är ADDITIV, så beståndet speglar den högsta nivå någon kurs nått: när
+    # en franskkurs nådde nivå 21 började rangordningen med tre MODALVERB och
+    # en subjunktion. Modalverb kräver `komplement`, som låses upp först på
+    # nivå 13 — på en lägre nivå gick ingen mening att bygga, reservutgången
+    # löste ut för varje mening, och provet rapporterade tolv "läckta" ord som
+    # i själva verket var C5:s avsiktliga undantag.
+    #
+    # `_kallstart` bygger nu om beståndet för NIVÅ_PROVAS, så uppsättningen är
+    # densamma i dag som om ett år. Kursen används bara för sitt KÄLLSPRÅK.
+    #
+    # Det är tredje gången ett prov visar sig bero på vilket tillstånd
+    # databasen råkar ha (jfr `passprov`s två), och svaret är detsamma varje
+    # gång: låt provet ställa upp sin egen förutsättning.
+    kurser = [dict(k) | {"nivå": NIVÅ_PROVAS, "cefr": CEFR_PROVAS}
+              for k in kort.execute(
+                  """SELECT * FROM Kurs GROUP BY målspråk ORDER BY målspråk""")]
     return [f"[{kurs['målspråk']}] {b}" for kurs in kurser
             for n in DRILLADE for b in prov_f(kort, kurs, n)]
 

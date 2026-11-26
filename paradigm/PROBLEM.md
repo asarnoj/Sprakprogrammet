@@ -675,6 +675,39 @@ bugg i attributionen, och står därför här.
 
 ---
 
+#### FÖRSLAG SOM FÖLL (2026-08-26) — ändelsekort som målord
+
+Målstyrningen är konceptbaserad: `föreslå` bygger sin målordslista ur
+`k["koncept"] for k in kö if k["koncept"]`. Två korttyper har `koncept =
+NULL` — `system` (ändelsen delas av en hel böjningsklass) och `ordföljd`
+(regeln hör till språket) — och kan därför aldrig bli målord. På en färsk
+franskdag var det hälften av de nya korten.
+
+Det såg ut som en strukturell lucka, och en lösning byggdes: `Cellkort` vet
+redan vilka ord som rör en viss ändelse, så ett ändelsekort i klass K1 kan
+styras genom att bygga kring ett K1-verb användaren kan.
+
+**Den mättes och gav noll.** Fyra frön per kurs, före och efter:
+
+    franska nivå 1    avskrivna 0 → 0    meningar 8,00 → 8,00
+    tyska nivå 4      avskrivna 0 → 0    meningar 4,00 → 4,00
+    engelska nivå 1   avskrivna 0 → 0    meningar 1,00 → 1,00
+
+Skälet är att poängfunktionen redan hittar dem: ett ändelsekort i kön räknas
+som TÄCKT när en mening råkar röra det, och `täckning` väger tio. Målordet
+styr vad sökningen bygger KRING; poängen avgör vad som vinner, och för kort
+som möts ofta räcker det senare.
+
+**Den togs bort igen**, tillsammans med en generaliserad reservsökning som
+byggdes samtidigt och som mättes till att aldrig lösa ut (8 meningar, 8 anrop
+till `_sök`, noll extra). Båda var lösningar på ett symptom vars verkliga
+orsak låg någon annanstans — se B8: passets och generatorns köer var
+disjunkta.
+
+*Gränsen står alltså kvar som en känd gräns och inte som en defekt.* Den
+skulle börja bita om kön blev lång nog att poängfunktionen inte hinner se
+varje ändelsekort, och då finns mätningen ovan att göra om.
+
 **VAD DET GER A3.** A3:s defekt är att `ordföljd`- och `rektion`-korten inte
 kan mötas av någon mening. Punkt 2 och 3 gör dem nåbara — rektionskorten via
 rektionsloggen, de lågfrekventa ordföljdskorten via regelloggen. De
@@ -1495,39 +1528,61 @@ från 12 + 9 = 21 kort till 9 + 9 = 18. Växelkursen står orörd — att räkna
 den mot NÅBARA kort på nivån är en riktigare mätning men ett eget beslut, och
 den står som öppen nedan.
 
-#### MENINGSRUMMET, SOM ÄR DEN VERKLIGA GRÄNSEN (mätt 2026-08-26)
+#### DAGEN SLUTADE I FÖRTID FÖR ATT DE TVÅ KÖERNA VAR DISJUNKTA (2026-08-26)
 
-Posten ovan skiljer tre orsaker till att ett köat kort inte går att nå.
-Mätningen lägger till en fjärde, och den är den vanligaste vid kallstart.
+Posten ovan skiljer tre orsaker till att ett köat kort inte går att nå. Den
+vanligaste var ingen av dem, och den var inte en egenskap hos språket utan ett
+fel: **passet och generatorn köade helt olika kort.**
 
-Dagen planeras mot vilka kort som är NÅBARA. `nåbara_kort` samplar meningar
-och svarar att 41 kort går att röra med dagens tolv ord. Men den frågar aldrig
-hur många OLIKA MENINGAR som finns att röra dem med:
+`pass_._rader` väljer dagens nya kort och silar dem genom `nåbara_kort` — bara
+kort som någon byggbar mening kan röra kommer med. `Generator.föreslå` frågade
+i stället `Schemaläggare.osedda` på nytt, som svarar med de HÖGST RANKADE
+osedda korten, oavsett nåbarhet. Mätt på en färsk franskkurs, varv för varv:
+
+    passet väntar på 9 nya kort, generatorn köar 9
+    gemensamma 0 · bara i passet 9 · bara i generatorn 9
+
+Noll överlapp, varje varv. Generatorn byggde alltså meningar mot kort som per
+konstruktion inte gick att nå, medan de kort dagen faktiskt planerat aldrig
+blev målord. När de oövade orden var slut föll `täckta` till noll, nödutgången
+löste ut, och passets kort skrevs av som "onåbara" — trots att meningarna som
+når dem aldrig hade ställts:
+
+    K0 pres_1pl   `Nous existons.`   (visad var `Nous avons.`)
+    K1 pres_1sg   `J'ai.`            (visad var `J'existe.`)
+    K1 pres_2pl   `Vous avez.`       (visad var `Vous coûtez.`)
+    K1 pres_2sg   `Tu as.`           (visad var `Tu existes.`)
+
+**Det är G6:s felklass en gång till.** `Pass` är auktoriteten på vad dagen
+innehåller, och en ändpunkt räknade fram sitt eget svar. Att felet såg ut som
+onåbarhet gjorde det svårt att se: nödutgången rapporterade sanningsenligt att
+den inte kom längre, men skälet var att den letade på fel ställe.
+
+*Rättat: `uppgift` skickar passets väntande `ny`-rader till `föreslå`, som
+använder dem i stället för att fråga om.* Mätt före och efter, fyra frön per
+kurs:
+
+    franska nivå 1    4 avskrivna  →  0     (8 meningar, dagen går i mål)
+    tyska nivå 4      0            →  0
+    engelska nivå 1   0            →  0
+    japanska nivå 1   0            →  0
+
+#### OCH MENINGSRUMMET ÄR LITET, MEN VAR INTE GRÄNSEN
+
+Mätningen som gjordes på vägen står kvar därför att den är sann och värd att
+veta, inte därför att den förklarade felet:
 
     12 kända ord, nivå 1, 6 000 kandidatförsök  →  24 olika meningar
 
-Tjugofyra. Och de kort som blev över när dagen tog slut i förtid nås av en
-eller två meningar var:
+Tjugofyra meningar är hela rummet dag ett. Det räcker — dagens nio ändelsekort
+täcks av åtta av dem — men marginalen är tunn, och den blir tunnare ju fler
+kort en dag planerar. **Öppet:** ska dagens storlek begränsas av meningsrummet
+och inte bara av nåbarheten? Talet går att mäta med samma sampling
+`byggbarhet` redan gör. Frågan är inte akut nu när köerna är samma, men den
+kommer tillbaka om taket höjs.
 
-    K0 pres_1pl   `Nous coûtons.` · `Nous existons.`
-    K0 pres_1sg   `Je coûte.` · `J'existe.`
-    K1 pres_2pl   `Vous avez.`
-    K1 pres_2sg   `Tu as.`
-
-De är alltså inte svåra att nå — de rördes 130–270 gånger av 3 000
-kandidater. De går bara inte att nå UTAN ATT UPPREPA en mening som redan
-ställts, och upprepningsspärren (C5) avvisar det med rätta.
-
-**Det är därför en dag kan sluta med "klart" medan kort står kvar som nya.**
-Inte för att något är trasigt, utan för att `nåbar` och `nåbar med en mening
-som inte redan ställts` är olika frågor, och dagen planeras mot den första.
-
-**Öppet, och det är en riktig fråga:** ska dagens storlek begränsas av
-meningsrummet? Talet går att mäta — det är samma sampling `byggbarhet` redan
-gör — men vad man ska göra med det är ett beslut. Att planera färre kort ger
-en ärligare dag; att planera som nu ger en dag som ibland tar slut i förtid
-och botas av att morgondagen kommer. Nödutgången (B8) gör i alla fall det
-andra alternativet SYNLIGT sedan 2026-08-26, vilket det inte var förut.
+*(En omväg prövades och förkastades på vägen: att göra ändelsekort till målord
+via `Cellkort`. Se A7 — den mättes till noll verkan och togs bort.)*
 
 **Provet:** `passet tar slut` i `ordbok/verktyg/tjänsteprov.py` — rätta svar
 hela vägen ska tömma dagen inom 120 steg. Det fällde engelskan direkt efter
@@ -3463,6 +3518,48 @@ tabell. Mätt 2026-08-26: elva nät, alla håller.
 
 **En gräns som står kvar:** listan i `alla_prov.py` är handskriven. Ett nytt
 prov som ingen lägger till körs lika lite som förut.
+
+#### DEN FARLIGASTE FELTYPEN I NÄTEN: EN ÄRVD FÖRUTSÄTTNING (2026-08-26)
+
+Fyra gånger på en dag visade sig ett prov bero på vilket tillstånd
+`kort.db` råkade ha, i stället för att ställa upp sitt eget. Fyra olika prov,
+fyra olika symptom, samma orsak:
+
+    passprov      "upplåsning utökar dagen" — uppsättningen nollställde
+                  kursen, vilket stänger dörren provet skulle gå igenom.
+                  Varje kurs föll ut genom `continue`. TOM.
+
+    passprov      "grannkursen överlever" — grannens dag var redan klar
+                  innan provet började, så det fanns inget att förlora. TOM.
+
+    introduktions "meningen införde ett ord själv" — 12 brott, och alla
+                  falska. Julius låste upp franskan till nivå 21; `befolka`
+                  är additiv, så beståndet fick modalverb med rang 0.
+                  Modalverb kräver `komplement` (nivå 13), så på en lägre
+                  nivå gick INGEN mening att bygga av de drillade orden,
+                  reservutgången löste ut, och provet kallade C5:s avsiktliga
+                  undantag för en läcka.
+
+    tjänsteprov   "passet tar slut" — sabotaget slutade bita när dagen inte
+                  längre behövde nödutgången. Gott tecken, stumt prov.
+
+**Det är samma sak som ett falsifieringspass finns till för**, en nivå upp:
+ett prov kan vara grönt av slump lika gärna som av riktighet, och
+falsifieringen fångar bara det andra fallet om uppsättningen håller.
+
+**Regeln som föll ut:** ett prov ska ställa upp sin egen förutsättning och
+SÄGA IFRÅN när den inte gick att etablera. `passprov` kräver numera att minst
+en kurs nådde en upplåsning mitt i en dag, och nollställer grannen först.
+`introduktionsprov` bygger om kortbeståndet för den nivå det mäter på —
+nivån är provets parameter och tas inte längre ur kursen — och skiljer en
+mening som krävde reservutgången från en läcka.
+
+**Och den skillnaden krävde en flagga i koden.** C5 kallar reserven "ett
+UNDANTAG som syns, inte den vanliga vägen", men den syntes ingenstans:
+`Förslag.reserv_släppt` finns nu och säger att sökningen fick släppa
+begränsningen till kända ord. Utan den går "meningen införde ett ord" inte
+att skilja från "ingen mening kunde byggas ur det användaren mött", och det
+är två helt olika påståenden.
 
 **`felsvep` är av ett annat slag än de andra.** Det svarar inte ja eller nej
 utan ger ett TAL. Attributionen hade lagats fem gånger, varje gång utifrån ett
