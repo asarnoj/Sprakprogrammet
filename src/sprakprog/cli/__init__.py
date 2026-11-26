@@ -116,13 +116,15 @@ def main(argv: list[str] | None = None) -> int:
     from .rendera import lägg_till_argument as _rendera_args
     _rendera_args(p_rendera)
 
-    # ── kort ─────────────────────────────────────────────────────────────
+    # ── kort och övning ──────────────────────────────────────────────────
     from .kort import lägg_till_parser as _kort_parser
+    from .ova import lägg_till_parser as _ova_parser
     _kort_parser(sub)
+    _ova_parser(sub)
 
     args = parser.parse_args(argv)
 
-    if args.kommando == "kort":
+    if args.kommando in ("kort", "öva"):
         return args.func(args)
 
 

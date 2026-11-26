@@ -701,22 +701,19 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ## Vad som återstår
 
-**Slingan är öppen på exakt ett ställe.** Generatorn bygger meningen och
-schemaläggaren tar emot utfallet — men ingenting däremellan jämför
-användarens svar med facit. `registrera_mening(utfall)` väntar sig
-`kort_id → klarade det`, och den ordboken finns det ingen som fyller i.
+**Slingan går runt.** `ordbok öva <språk>` genererar, tar emot ett svar,
+rättar och registrerar. Rättningen ligger i
+`src/sprakprog/generator/rattning.py`, och attributionen vilar på samma
+stamuppdelning som definierar korten: skiljer sig bara ÄNDELSEN fälls
+systemkortet, skiljer sig STAMMEN fälls ordets eget. Verifierat i sv och de
+mot fyra felsorter — fel stam, fel ändelse, fel ord, fel tempus — och alla
+fyra landar på rätt kort.
 
-1. **RÄTTNINGEN.** Fritext in, diff mot facit ut, och därifrån ett betyg per
-   kort. Besluten står redan i GENERATOR.md, "Attribution": mekanisk
-   rättning först eftersom databasen har alla former med koordinater, och
-   tre mekanismer i tur och ordning när datan inte räcker — meningen
-   vittnar, historiken avgör, självrättning erbjuds. Beroendekartan som
-   attributionen bygger på är byggd och testad (`Cellkort`, 124 191
-   kopplingar). Det som saknas är diffen och de tre mekanismerna.
+Kvar av de tre mekanismerna i GENERATOR.md: "meningen vittnar" (kongruens
+över flera ord) och "självrättning som möjlighet" kräver mer kontext
+respektive ett gränssnitt. Historikmekanismen finns.
 
-   Utan den kan systemet generera men inte lära sig något av svaret.
-
-2. **Tre språkfel som väntar, alla hittade under bygget:**
+1. **Tre språkfel som väntar, alla hittade under bygget:**
    - Italienska possessiver saknar artikel — "suo libro" ska vara "il suo
      libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
    - Spanskans *el agua* — feminina ord på betonat /a/ tar `el` i singular.
@@ -726,18 +723,19 @@ användarens svar med facit. `registrera_mening(utfall)` väntar sig
    - Och japanskan renderar enstaka verb som "たいです", där masu-formen
      saknas och adjektivgrenen tar över.
 
-3. **Nivåerna och lektionerna.** CEFR-nivån finns i `ordbok/nivålistor/*.csv`
+2. **Nivåerna och lektionerna.** CEFR-nivån finns i `ordbok/nivålistor/*.csv`
    (397 A1, 329 A2, 15 B1 för svenska) men importerades aldrig till
    `Koncept`. Generatorns `nivå`-parameter finns och fungerar, men ingenting
    fyller den med innehåll. Upplåsning och undervisning vid upplåsning är
    beslutade i GENERATOR.md men obyggda.
 
-4. **Vikterna i `poang.py`.** En första gissning, och det står i
+3. **Vikterna i `poang.py`.** En första gissning, och det står i
    modulhuvudet. De går bara att hitta genom att köra systemet — men allt
    loggas redan, budget och utfall per mening, så frågan är besvarbar när
    det finns användning att mäta mot.
 
-5. **Appen.** Desktop först, mobil senare.
+4. **Appen.** Desktop först, mobil senare. Terminalslingan (`ordbok öva`)
+   finns och kan användas för att trimma vikterna innan gränssnittet byggs.
 
 **Komplexitetsstegen är slut** — de 21 nivåerna är byggda i alla sju språk.
 Det som återstår är inte fler satstyper utan djup i dem som finns, och
@@ -844,6 +842,7 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `src/sprakprog/kort/schemalaggning.py` | FSRS-omslaget; modulhuvudet förklarar de tre besluten som är våra |
 | `src/sprakprog/generator/poang.py` | poängfunktionens sju termer, med vikterna samlade överst |
 | `src/sprakprog/generator/urval.py` | samplaren och nivåstegen |
+| `src/sprakprog/generator/rattning.py` | diff → betyg per kort; stamuppdelningen lokaliserar felet |
 | `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
