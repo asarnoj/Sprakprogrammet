@@ -1,0 +1,238 @@
+"""Dagspasset — steg 6 i kärnans byggordning (KÄRNAN 5.1–5.3, 6.2, 6.3).
+
+Passet har två faser (5.1). I INTROFASEN presenteras dagens nya kort, en övning i
+taget, och ingenting bokförs. I MENINGSFASEN översätts meningar, och varje möte
+bokförs (7.1). Ett nytt kort blir infört när det går rätt i en mening.
+
+DET SVAGA ÄR MÅLEN (6.2). Ett kort är svagt när det hör till dagens mål och inte
+klarats i dag: de förfallna korten, dagens nya och det som fallit i dag. Meningen
+byggs av så många svaga kort som budgeten tillåter.
+
+BUDGETEN (6.3): sannolikheten för två fel i samma mening är högst τ = 1 −
+retentionsmålet. Med ett fel syns det i diffen var det sitter, med två gör det
+inte.
+
+VAD SOM INTE ÄR BYGGT ÄN, och som därför är enkelt här:
+- Värdet per mening (6.6) väljer bland de meningar som ryms; version ett tar den
+  kortaste som ryms.
+- Tidsmodellen (5.5) säger hur många nya kort dagen ska ha; här väljer användaren
+  själv när ett nytt kort ska tas.
+- Reservstegen (6.3) — ensamövning och den minst riskabla meningen — saknas, så
+  ett kort som ingen mening inom budgeten når väntar till nästa dag.
+- Entydighetsfiltret (6.5) ger flera godtagna varianter; här är facit den mening
+  som ställdes.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime
+
+from ..fsrslager import Lager
+from ..kortmodell import Kort
+from ..kurs import Kursdata
+from ..rattning import FEL, RÄTT, Rättning, rätta
+from ..rendering import RenderingsFel, spåra
+from ..rendering.spår import Utskrift
+from ..sammansattning import Sammansättare, Träff
+
+#: Längsta mening sökningen letar efter, i ord. Följer av budgeten (6.3): taket
+#: är fem mål och fem övriga kort, och varje ord i en mening bär minst ett eget
+#: kort, så en mening som ryms har högst tio ord.
+LÄNGSTA = 10
+
+
+@dataclass(frozen=True, slots=True)
+class Uppgift:
+    """En ställd mening: källtexten, facit och vilka kort den prövar."""
+    träff: Träff
+    ut: Utskrift
+    källtext: str
+    mål: frozenset
+    övriga: frozenset
+    mening_id: int | None = None
+
+    @property
+    def facit(self) -> str:
+        return self.ut.text
+
+
+def _minst_ett_fel(p: list[float]) -> float:
+    """P(≥2 fel) för oberoende kort med sannolikheterna `p` att bli rätt (6.3)."""
+    inga = 1.0
+    for x in p:
+        inga *= x
+    ett = sum((1 - x) * inga / x if x else 0.0 for x in p)
+    return max(0.0, 1 - inga - ett)
+
+
+class Passet:
+    """Dagens pass för en kurs."""
+
+    def __init__(self, data: Kursdata, sammansättare: Sammansättare, lager: Lager,
+                 krav: dict[Kort, frozenset], nivåer: list[frozenset]) -> None:
+        self.data, self.s, self.lager = data, sammansättare, lager
+        self.krav, self.nivåer = krav, nivåer
+        self.τ = 1 - lager.retention
+        self._tillstånd: dict = {}
+        self._i_dag: dict = {}
+        self.uppdatera()
+
+    # ── läget ──
+
+    def uppdatera(self) -> None:
+        """Läs om det som mötena säger: tillstånden och dagens senaste betyg."""
+        self._tillstånd = self.lager.tillstånd()
+        dag = self.data.dag()
+        self._i_dag = {m.kort: m.betyg for m in self.data.möten()
+                       if self.data.dag(m.tid) == dag}
+
+    def tillåtna(self) -> set[Kort]:
+        """Vad en mening får använda: införda kort och dagens presenterade (5.2)."""
+        return self.data.tillåtna()
+
+    def p(self, kort: Kort) -> float:
+        """Sannolikheten att kortet blir rätt (6.2).
+
+        Direkt efter ett möte ger FSRS R ≈ 1 oavsett svar, och ett nytt kort har
+        inget tillstånd alls. För ett kort som presenterats i dag utan att ha
+        mötts, och för ett kort som fallit i dag, gäller därför retentionsmålet
+        tills andelarna är mätta ur loggen.
+        """
+        t = self._tillstånd.get(kort)
+        if t is None or self._i_dag.get(kort) == FEL:
+            return self.lager.retention
+        return self.lager.r(t)
+
+    def svaga(self) -> set[Kort]:
+        """Dagens mål som inte klarats i dag, plus det som fallit i dag: F i 6.2."""
+        införda = self.data.införda()
+        nya = {k for k in self.data.presenterade() if k not in införda}
+        klarade = {k for k, betyg in self._i_dag.items() if betyg == RÄTT}
+        fallna = {k for k, betyg in self._i_dag.items() if betyg == FEL}
+        return ((self.lager.förfallna() | nya) - klarade) | fallna
+
+    # ── meningsfasen ──
+
+    def ryms(self, mål: set, övriga: set) -> bool:
+        """Håller budgeten: P(≥2 fel) ≤ τ (6.3)?"""
+        return _minst_ett_fel([self.p(k) for k in mål | övriga]) <= self.τ
+
+    def _välj(self, kort: Kort, tillåten, mål_av) -> Uppgift | None:
+        """Den kortaste mening som prövar kortet och ryms i budgeten.
+
+        Ryms ingen tas den minst riskabla av dem — reservsteg 2 i 6.3. Det
+        behövs tidigt i kursen, när alla kort är nya och ingen mening kan vara
+        säker; budgeten släpps bara här, och bara för att det annars inte blir
+        någon övning alls. Bland de kortaste meningarna väljs den säkraste: en
+        längre mening bär fler kort och är därför inte säkrare.
+        """
+        bäst: tuple[float, Uppgift] | None = None
+        längd: int | None = None
+        for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA, per_mall=1):
+            if längd is None:
+                längd = träff.ord
+            elif träff.ord > längd:
+                break
+            risk = _minst_ett_fel([self.p(k) for k in träff.kort])
+            if bäst is not None and risk >= bäst[0] and risk > self.τ:
+                continue
+            mål = mål_av(träff)
+            try:
+                ut = spåra(self.s.renderare, träff.mening)
+                källtext = self.s.par.rendera(träff.mening)
+            except RenderingsFel:
+                continue
+            uppgift = Uppgift(träff, ut, källtext, frozenset(mål),
+                              frozenset(träff.kort - mål))
+            if risk <= self.τ:
+                return uppgift
+            bäst = (risk, uppgift)
+        return bäst[1] if bäst else None
+
+    def uppgift(self, kort: Kort) -> Uppgift | None:
+        """En mening som prövar kortet, byggd av tillåtna kort (R1).
+
+        Kortet självt är alltid ett mål, och övriga svaga kort i meningen blir
+        också mål (6.2).
+        """
+        tillåtna, svaga = self.tillåtna() | {kort}, self.svaga()
+        return self._välj(kort, lambda k: k in tillåtna,
+                          lambda träff: (träff.kort & svaga) | {kort})
+
+    def ställ(self, uppgift: Uppgift, fas: str = "mening") -> Uppgift:
+        """Skriv ner uppgiften som ställdes, och ge den med sitt id."""
+        mening_id = self.data.ny_mening(fas, repr(uppgift.träff.mening),
+                                        uppgift.källtext, [uppgift.facit])
+        return Uppgift(uppgift.träff, uppgift.ut, uppgift.källtext, uppgift.mål,
+                       uppgift.övriga, mening_id)
+
+    def rätta(self, uppgift: Uppgift, svar: str, sekunder: float) -> Rättning:
+        """Rätta svaret, bokför varje möte och inför de kort som gick rätt (5.1, 7.1)."""
+        rättning = rätta(self.s.tabell, uppgift.ut, svar)
+        if uppgift.mening_id is not None:
+            self.data.svara(uppgift.mening_id, svar, sekunder)
+        for kort, betyg in rättning.betyg.items():
+            self.data.bokför(kort, mål=kort in uppgift.mål, betyg_diff=betyg,
+                             betyg=betyg, mening_id=uppgift.mening_id)
+            if betyg == RÄTT:
+                self.data.inför(kort, uppgift.mening_id)
+        self.uppdatera()
+        return rättning
+
+    # ── introfasen ──
+
+    def nästa_nivå(self) -> frozenset:
+        """Den första nivå som inte är införd och vars krav är införda (4.4).
+
+        Korten i en nivå kräver varandra (4.1), så ett enskilt kort går inte att
+        införa först. Nivån öppnas i sin helhet, och dess kort införs sedan i
+        paket (3.10) — ett eller flera, allt efter vad budgeten rymmer.
+        """
+        införda = self.data.införda()
+        for nivå in self.nivåer:
+            if nivå <= införda:
+                continue
+            krav = frozenset().union(*(self.krav.get(k, frozenset()) for k in nivå))
+            if krav - nivå <= införda:
+                return nivå
+        return frozenset()
+
+    def kandidater(self) -> list[Kort]:
+        """Korten i nästa nivå som inte är införda (4.5)."""
+        return sorted(self.nästa_nivå() - self.data.införda(), key=str)
+
+    def paket(self, kort: Kort) -> tuple[Uppgift, frozenset] | None:
+        """Kortet och de andra oinförda korten i en minsta mening med det (3.10).
+
+        Ord får vara nya — de är upplåsta från början (3.1) — och de andra korten
+        i kortets egen nivå får vara med, eftersom de kräver varandra. Inget
+        mönsterkort ur en senare nivå tas med.
+        """
+        införda = self.data.införda()
+        nivå = self.nästa_nivå() if kort in self.nästa_nivå() else frozenset({kort})
+        uppgift = self._välj(kort, lambda k: k in införda or k in nivå or k.familj == "ord",
+                             lambda träff: träff.kort - införda)
+        return None if uppgift is None else (uppgift, uppgift.mål)
+
+    def presentera(self, kort: Kort) -> Uppgift | None:
+        """Introövningen: en mening med kortet som enda mål (5.4).
+
+        Bokför ingenting. Kortet räknas som presenterat, och får därför användas
+        i dagens meningar (5.1).
+        """
+        uppgift = self.uppgift(kort)
+        if uppgift is None:
+            return None
+        self.data.presentera(kort)
+        self.uppdatera()
+        return uppgift
+
+    # ── dagens läge, för gränssnittet ──
+
+    def läge(self) -> dict:
+        nu = datetime.now().astimezone()
+        return {"dag": self.data.dag(), "tid": nu.strftime("%H:%M"),
+                "införda": len(self.data.införda()),
+                "svaga": len(self.svaga()),
+                "kandidater": len(self.kandidater())}

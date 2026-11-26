@@ -9,6 +9,7 @@ Utan KORT räknas alla nivåkort i språket. Ett kort skrivs som i
 from __future__ import annotations
 
 import argparse
+import json
 import sqlite3
 import time
 from pathlib import Path
@@ -24,6 +25,8 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Räkna ut kraven och nivåerna.")
     p.add_argument("karta")
     p.add_argument("kort", nargs="*")
+    p.add_argument("--spara", metavar="FIL",
+                   help="skriv kraven och nivåerna som JSON, för dagspasset")
     p.add_argument("--krymp", action="store_true",
                    help="krymp varje krav till en bevisat minsta mängd (dyrt, 4.2)")
     p.add_argument("--kontroll", action="store_true",
@@ -53,6 +56,18 @@ def main() -> None:
     karta_ = rita_nivåer(krav, kort, rapport=lambda r: print(r, flush=True), krymp=a.krymp)
     print(f"\n{krav.frågor} frågor, {time.perf_counter() - t:.0f} s")
     print(f"förklaringar: {dict(sorted(s.statistik.items()))}")
+
+    if a.spara:
+        def rad(k) -> list:
+            return [k.språk, k.typ, list(k.nyckel)]
+        Path(a.spara).write_text(json.dumps({
+            "språk": språk,
+            "krav": [[rad(k), [rad(d) for d in sorted(m, key=str)]]
+                     for k, m in sorted(karta_.krav.items(), key=lambda x: str(x[0]))],
+            "nivåer": [[rad(k) for k in sorted(n, key=str)] for n in karta_.nivåer],
+            "oprövbara": [rad(k) for k in karta_.oprövbara],
+        }, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"sparat: {a.spara}")
 
     print(f"\n{len(karta_.nivåer)} nivåer:")
     for i, nivån in enumerate(karta_.nivåer, 1):
