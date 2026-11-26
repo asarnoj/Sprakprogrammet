@@ -27,7 +27,8 @@ class EngelskRenderare:
         self.u = Uppslag(conn, "en")
         self.conn = conn
 
-    def nominalfras(self, nf: Nominalfras, roll: str = "objekt") -> list[str]:
+    def nominalfras(self, nf: Nominalfras, roll: str = "objekt",
+                    genitiv: bool = False) -> list[str]:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
@@ -39,7 +40,10 @@ class EngelskRenderare:
             return [self.u.form(huvud, "nom" if roll == "subjekt" else "obl")]
 
         ord: list[str] = []
-        if nf.possessiv is not None:
+        if nf.ägare is not None:
+            # "the girl's book" — ägaren står först och tar artikelplatsen.
+            ord.extend(self.nominalfras(nf.ägare, genitiv=True))
+        elif nf.possessiv is not None:
             ord.append(self.u.form_för(nf.possessiv, "obest"))
         elif nf.bestämdhet is Bestämdhet.BESTÄMD:
             ord.append(self.u.form_för("artikel_bestamd", "inv"))
@@ -50,8 +54,9 @@ class EngelskRenderare:
         for attribut in nf.attribut:
             ord.append(self.u.form_för(attribut, "pos"))
         try:
-            ord.append(self.u.form(
-                huvud, "pl" if nf.numerus is Numerus.PL else "sg"))
+            ord.append(self.u.form(huvud, ("pl_gen" if genitiv else "pl")
+                                   if nf.numerus is Numerus.PL
+                                   else ("sg_gen" if genitiv else "sg")))
         except RenderingsFel:
             # Plurale tantum: "stairs", "scissors". Tomma singularceller ÄR
             # markeringen — samma sak som sv pengar, de Jeans.

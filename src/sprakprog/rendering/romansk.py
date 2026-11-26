@@ -139,6 +139,13 @@ class RomanskRenderare:
                 adjektiv, f"pos_{_kön(genus)}_{_tal(nf.numerus)}")
             (före if adjektiv["prenominal"] else efter).append(form)
 
+        # "le livre de la fille" — romanska språk uttrycker genitiv med
+        # preposition, inte med kasus, och attributet står efter huvudordet.
+        # Sammandragningen de+le→du och di+il→del sköts av sandhi().
+        if nf.ägare is not None:
+            efter.append(self.u.form_för("prep_av", "inv"))
+            efter.extend(self.nominalfras(nf.ägare))
+
         return [*före, huvudform, *efter]
 
     # ── verb ─────────────────────────────────────────────────────────

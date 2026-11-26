@@ -41,6 +41,11 @@ class JapanskRenderare:
         huvud = self.u.lexem(nf.koncept)
         ord = ""
 
+        if nf.ägare is not None:
+            # 女の子の本 — ägaren följd av partikeln の, före huvudordet.
+            # Samma partikel som possessivlemmana redan bär (彼女の).
+            ord += self.nominalfras(nf.ägare) + "の"
+
         if nf.possessiv is not None and not nf.possessiv_koreferent:
             # Japanska possessiver är redan の-fraser i lemmat (彼女の).
             #

@@ -144,6 +144,12 @@ class TyskRenderare:
                     f"de/{huvud['lemma']}: saknar singular helt (plurale tantum) "
                     f"— meningen kan inte be om sg") from None
             raise
+
+        # "das Buch des Mädchens" — tyskan sätter genitivattributet EFTER
+        # huvudordet, till skillnad från svenskan och engelskan. Ägaren är
+        # en egen nominalfras i genitiv, med egen artikel.
+        if nf.ägare is not None:
+            ord.extend(self.nominalfras(nf.ägare, 8))
         return ord
 
     # ── verb ─────────────────────────────────────────────────────────
