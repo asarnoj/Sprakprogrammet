@@ -82,6 +82,28 @@ FALL = [
     ("de", "dem", "den", "artikel_bestamd", "m_akk", "rektion",
      "åt andra hållet: fragen styr ackusativ, användaren skrev dativ",
      [("kom_fråga", "io", "kasus")]),
+
+    # ── genus: rätt artikelparadigm, fel genus på substantivet ────────
+    #
+    # `un mère` för `une mère` är ingen påhittad form — `un` är korrekt för
+    # maskulinum. Vad som avgör är SUBSTANTIVETS genus, och det är ett eget
+    # kort. Regeln fanns men kunde aldrig gripa: renderaren läser samma
+    # substantivs genus FLERA gånger per mening (artikeln, adjektivet), så
+    # `egenskaper` bär dubbletter, och `len(träffande) == 1` såg två uppslag
+    # av samma ord som två kandidater och teg.
+    #
+    # Priset stod i Julius kortlek: `form:une` hade fallerat fyra gånger av
+    # sex och stod på D = 9,85 — men alla fyra felen var `un` framför ett
+    # feminint substantiv. Ett kort bar straffet för fyra andra korts
+    # kunskap, och INGET genuskort hade ett enda fall.
+    ("fr", "un", "une", "artikel_obestamd", "f_sg", "egenskap",
+     "genuset styr artikelformen — och DUBBLETTEN i uppslaget får inte "
+     "räknas som två kandidater",
+     [], [("fam_mamma", "genus"), ("fam_mamma", "genus")]),
+    ("fr", "un", "une", "artikel_obestamd", "f_sg", "form",
+     "TVÅ olika substantiv kan förklara felet: vilket användaren tänkte på "
+     "går inte att veta, och då säger vi ingenting (D1)",
+     [], [("fam_mamma", "genus"), ("fam_storasyster", "genus")]),
 ]
 
 
@@ -90,6 +112,7 @@ def kör(r_per_språk) -> list[str]:
     for fall in FALL:
         språk, skrev, väntat, koncept, cell, vill, varför = fall[:7]
         rektioner = fall[7] if len(fall) > 7 else []
+        egenskaper = fall[8] if len(fall) > 8 else []
         r = r_per_språk(språk)
         # `_skyll` lämnar sedan 2026-08-26 också slutsatsen som NYCKEL, för
         # att gränssnittet ska kunna sätta text på den själv i stället för
@@ -97,7 +120,8 @@ def kör(r_per_språk) -> list[str]:
         # fortfarande `förklaring` — den svenska texten är kvar just för att
         # provutskrifter ska gå att läsa.
         kid, förklaring, _osäker, _nyckel, _arg = r._skyll(
-            skrev, väntat, koncept, None, cell, rektioner=rektioner)
+            skrev, väntat, koncept, None, cell, egenskaper=egenskaper,
+            rektioner=rektioner)
         rad = (r.kort_db.execute("SELECT typ FROM Kort WHERE id = ?",
                                  (kid,)).fetchone() if kid else None)
         typ = rad["typ"] if rad else "—"
@@ -275,6 +299,35 @@ def _sabotage_naken_prefix():
     return lambda: setattr(Rättare, "_bär_stammen", orig)
 
 
+def _sabotage_genus_räknar_uppslag():
+    """Före rättelsen: kandidaterna räknades per UPPSLAG, inte per koncept.
+
+    Renderaren läser samma substantivs genus flera gånger per mening, så
+    varje entydigt fall såg tvetydigt ut och regeln teg.
+    """
+    from sprakprog.generator.rattning import Rättare
+    äkta = Rättare._genusgivaren
+
+    def per_uppslag(själv, cell, träffar, egenskaper):
+        träffande = []
+        for koncept, namn in egenskaper:          # utan dict.fromkeys
+            if namn != "genus":
+                continue
+            rad = själv._genuskort(koncept)
+            if rad is None or rad["facit"] is None:
+                continue
+            try:
+                genus = int(rad["facit"])
+            except (TypeError, ValueError):
+                continue
+            if själv._genusbytet(cell, träffar, genus):
+                träffande.append(koncept)
+        return träffande[0] if len(träffande) == 1 else None
+
+    Rättare._genusgivaren = per_uppslag
+    return lambda: setattr(Rättare, "_genusgivaren", äkta)
+
+
 def _sabotage_utan_rektion():
     """Före A7 punkt 3: rektionen fanns inte i skuldstegen.
 
@@ -311,7 +364,9 @@ def _sabotage_rektion_utan_entydighet():
     return lambda: setattr(Rättare, "_rektionsgivaren", orig)
 
 
-SABOTAGE = [("utan stamprovet — allt blir 'fel ord'", _sabotage_utan_stamprov),
+SABOTAGE = [("genusgivaren räknar uppslag i stället för koncept",
+             _sabotage_genus_räknar_uppslag),
+            ("utan stamprovet — allt blir 'fel ord'", _sabotage_utan_stamprov),
             ("naken prefixregel — kort stam kapar ordet", _sabotage_naken_prefix),
             ("utan rektionssteget — kasusfel blir formfel", _sabotage_utan_rektion),
             ("rektion utan entydighetskrav — gissar bland flera",

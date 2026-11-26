@@ -371,7 +371,25 @@ class Rättare:
         äkta tolkningsfall, och att välja det första vore att gissa.
         """
         träffande = []
-        for koncept, namn in egenskaper:
+        # KONCEPT OCH INTE UPPSLAG. Renderaren läser samma substantivs genus
+        # FLERA GÅNGER i en vanlig mening — en gång för artikeln, en gång för
+        # adjektivet — så `egenskaper` bär dubbletter. Utan `dict.fromkeys`
+        # räknade `len(träffande) == 1` två uppslag av SAMMA ord som två
+        # kandidater, drog slutsatsen "tvetydigt" och teg.
+        #
+        # Följden var att genuskortet i praktiken ALDRIG kunde fällas. Mätt
+        # på `Une mère existe.`: `egenskaper` = [(fam_mamma, genus),
+        # (fam_mamma, genus)], kandidater = [fam_mamma, fam_mamma],
+        # `_genusgivaren` → None. Skulden gick i stället till artikelns
+        # formkort varje gång.
+        #
+        # Priset syntes i Julius kortlek: `form:une` hade fallerat fyra
+        # gånger av sex och stod på D = 9,85 med S = 0,31 — ett kort som
+        # kommer tillbaka varje dag i evighet. Men alla fyra felen var
+        # `un` framför ett FEMININT substantiv (famille, personne, sœur,
+        # mère). Han missade substantivens genus, inte artikelns form, och
+        # ett kort bar straffet för fyra andra korts kunskap.
+        for koncept, namn in dict.fromkeys(egenskaper):
             if namn != "genus":
                 continue
             rad = self._genuskort(koncept)

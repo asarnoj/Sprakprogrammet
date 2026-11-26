@@ -2912,6 +2912,48 @@ minnesmodellen.
 
 #### DE REFLEXIVA VERBEN — LÖST I FEM SPRÅK 2026-08-26
 
+### D9 ✓ — Genusregeln räknade uppslag i stället för koncept (ny 2026-09-04)
+
+Julius bad om leech-hantering. `form:une` hade fallerat **fyra gånger av
+sex** och stod på D = 9,85 med S = 0,31 — ett kort som kommer tillbaka varje
+dygn i evighet. Hans gissning var att det fastnat för att det förväxlas med
+`un`.
+
+**Dagboken sa nej.** Av de fyra fallen hade bara ETT syskonet `un` i
+meningen. Och när man läser vad han faktiskt skrev är alla fyra samma sak:
+
+    Une sœur cadette a une famille.   →  … a un famille
+    Une personne existe.              →  Un personne existe
+    Une sœur aînée a un homme.        →  Un sœur cadétte a un homme
+    Une mère existe.                  →  Un mère existe
+
+Han missade inte formen `une`. Han missade **substantivens genus** — famille,
+personne, sœur och mère är alla feminina. Kortet var inget leech-kort; det
+bar straffet för fyra andra korts kunskap.
+
+**Orsaken var en rad.** `_genusgivaren` skyller på genuskortet när formen
+stämmer för ett annat genus, men bara när kandidaten är ENTYDIG. Renderaren
+läser samma substantivs genus FLERA gånger per mening — en gång för artikeln,
+en gång för adjektivet — så `egenskaper` bär dubbletter:
+
+    egenskaper       [(fam_mamma, genus), (fam_mamma, genus)]
+    kandidater       [fam_mamma, fam_mamma]
+    len(...) == 1    falskt  →  "tvetydigt"  →  tyst
+
+Regeln räknade alltså UPPSLAG när den skulle räkna KONCEPT, och kunde i
+praktiken aldrig gripa. Kvittot står i kortleken: **inget genuskort i hela
+franskan har ett enda fall**, medan `form:une` har fyra.
+
+`dict.fromkeys` före slingan räcker. Efteråt: `Un mère existe.` fäller
+`egenskap:2` för `fam_mamma` med förklaringen *"formen stämmer för ett annat
+genus — fam_mamma styr f_sg"*, och `form:une` går fri.
+
+**Ingen leech-hantering byggdes**, och det är slutsatsen: det enda
+leech-fallet i datan var en artefakt av felattribution. Att bygga maskineri
+för att hantera symptomet hade dolt orsaken. Uppstår ett äkta fall — ett kort
+som fallerar trots att skulden är rätt placerad — får frågan ställas då, med
+data.
+
 ### D8 ✓ — Genuskortet fick Good när genuset brast (ny 2026-09-04)
 
 Julius övade tre dagar och rapporterade *"fel bedömningar"*. Dagboken pekade
