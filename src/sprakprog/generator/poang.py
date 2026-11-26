@@ -60,6 +60,8 @@ import math
 import sqlite3
 from dataclasses import dataclass
 
+from ..kort.schemalaggning import _skapa_schemaläggare
+
 VIKT = {
     "täckning": 10.0,
     "tomgång": -40.0,
@@ -76,9 +78,16 @@ VIKT = {
 #: användning, som alla vikter här.
 NYKVOT = 2
 
-#: Under det här R räknas kortet som ett stretchkort — utfallet är genuint
-#: osäkert. Över det är kortet stöd: det fyller meningen utan att pröva.
-STRETCHGRÄNS = 0.85
+#: Vid eller under det här R räknas kortet som ett stretchkort — utfallet är
+#: genuint osäkert. Över det är kortet stöd: det fyller meningen utan att pröva.
+#:
+#: Talet är INTE valt. Schemaläggaren definierar redan gränsen: förfallodagen
+#: är exakt den dag R når retentionsmålet, för varje stabilitet (mätt: 0,900
+#: på förfallodagen för S = 1, 3, 10, 40 och 200). Ett kort under målet är
+#: alltså försenat enligt FSRS egen räkning, och "försenat" och "genuint
+#: osäkert" är samma sak. Att sätta en egen gräns vore att ha två åsikter om
+#: när ett kort behöver prövas.
+STRETCHGRÄNS = _skapa_schemaläggare().desired_retention
 
 
 @dataclass(frozen=True, slots=True)
@@ -116,7 +125,7 @@ class Poängsättare:
         nya = len(kort) - len(sedda)
         r = [self.s.retention(k, nu) for k in sedda]
         förväntat = sum(1 - x for x in r)
-        stretch = [k for k, x in zip(sedda, r) if x < STRETCHGRÄNS]
+        stretch = [k for k, x in zip(sedda, r) if x <= STRETCHGRÄNS]
         täckta = sum(1 for k in kort if k["id"] in förfallna)
 
         delar = {}
