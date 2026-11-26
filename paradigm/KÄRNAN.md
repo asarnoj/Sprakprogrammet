@@ -605,203 +605,200 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-**Ordningen är byggordningen** — de översta blockerar närmast. Julius tar fyra
-i taget uppifrån. Löser ett svar en punkt stryks den; lämnar svaret något öppet
-blir resten en ny punkt sist i listan.
+**Ordningen är byggordningen.** Julius tar fyra i taget uppifrån. Löser ett
+svar en punkt stryks den; lämnar svaret något öppet blir resten en ny punkt.
 
-*Omgång 1 och 2 avklarade. Sex punkter har strukits, två nya har fötts.
-Besluten står i avsnitt 12.*
+*Omgång 1–3 avklarade. Nio punkter strukna, tre nya födda.*
 
 ---
 
-### 1 · Stamkortet: stryks eller behålls?
+### 1 · Meningsurvalet
 
-*Rekommendation finns. Väntar på Julius.*
+*Julius: «detta är exakt vad användaren ska göra, så det är nästan viktigast.
+Jag vill att denna del ska vara riktigt proffsigt och sofistikerat.»*
 
-**Frågan var:** fyller stamkortet ett distinkt syfte?
+**Idag.** Generatorn samplar några hundra kandidater, poängsätter dem på
+täckning och budget, och tar den bästa. Urvalet är alltså en sortering på ett
+tal.
 
-**Mätt svar: för 70 % av verben, nej.** Stryker man ändelsen ur lemmat med en
-enradig regel — `-er`, `-ir`, `-re`, `-oir` — får man en bas som täcker minst
-90 % av formerna för **121 av franskans 174 verb**. För dem är stamkortet
-härledbart ur ordkortet och bär alltså ingen egen information.
+**Luckan.** Specen säger att reglerna väljer formen, orden fyller den och
+budgeten sätter taket — men den säger ingenting om **hur man väljer när tusen
+kandidater är lämpliga**. Julius räknade upp vad som saknas:
 
-För de 53 andra bär det information, och de är återigen de vanliga:
+- variation i meningarnas **längd** och **typ**
+- kanske variation i **svårighetsgrad**, inte bara ett tak
+- hur en plats som inte är ett mål får sitt ord — substantiv eller pronomen?
+- **ska en mening ha ett förfallet kort eller flera?**
 
-    être      regeln ger 'êt'    täcker  6 %
-    avoir     regeln ger 'av'    täcker 21 %
-    pouvoir   regeln ger 'pouv'  täcker 25 %
-    aller     regeln ger 'all'   täcker 51 %
-    vouloir   regeln ger 'voul'  täcker 47 %
+Den sista är den bärande. Ett förfallet kort per mening ger många korta
+meningar och en ren attribution; flera ger färre meningar och tätare
+mätningar, men gör det svårare att veta vad som brast.
 
-**Och stammen faller på produktionstestet.** «Vad är stammen för *arbeta*?» är
-ingen fråga en människa besvarar. Det är samma invändning som fällde
-`böjningsklass` — ett kort som bär kunskap men inte går att producera.
-
-**Men kompressionen kan inte bara försvinna.** Införandekostnaden, räknad:
-
-    användare med         formkort per cell    ändelser + ordkort
-      20 verb, 4 tempus            480                    44
-      50 verb, 6 tempus          1 800                    86
-     100 verb, 6 tempus          3 600                   136
-
-**26 gånger.** Rena formkort betyder att varje cell av varje ord måste införas
-en gång, och vid hundra verb är det 3 600 införanden — år, i Julius takt.
-
-**Rekommendationen** är därför att flytta kompressionen dit den är ett
-kunskapsmoment. Julius formulerade det själv: *«det är ett naturligt
-läromoment att veta att nu är pronomenet nous och därmed böjs verbet efter
-det»*.
-
-| Korttyp | Vad det är | Antal, franskan |
-|---|---|---|
-| `ord` | lemmat | 227 |
-| `ändelse` | delad regel, `-ais` för alla `-er`-verb | ~189 |
-| `bas` | endast där den **inte** går att härleda ur lemmat | 53 verb, flera var |
-| `form` | suppletiva celler: `vais`, `ont`, `est` | ~210 |
-
-`stam` som korttyp försvinner. Det som ersätter den, `bas`, är samma sak men
-skapas bara där den bär information — i dag skapas den för alla 174 verben.
-
-**Kvar att bestämma:** om du godtar det här, eller vill ha en av de tre
-modellerna ur föregående omgång (en stam per tempusgrupp, hybrid, rena
-formkort).
+**Det här är inte en lucka som avgörs med ett alternativ, utan ett avsnitt som
+saknas i specen.** Nästa omgång bör ägnas åt att skriva det.
 
 ---
 
-### 2 · Hur väljs utfyllnadsorden?
+### 2 · Vad krävs för nästa nivå, och syns det?
 
-*Ny, ur Julius svar på gamla punkt 2.*
+*Ny, ur Julius svar på gamla punkt 4.*
 
-**Idag.** Generatorn väljer meningens ord ur kön av förfallna kort och fyller
-resten med vad samplaren råkar plocka.
+**Idag.** Grind 1 säger att materialet ska räcka: nivån går att öva. Vad som
+saknas räknas fram men visas inte.
 
-**Luckan.** Julius: *«vi behöver utfyllnadsord. Då ska det ibland bli
-substantiv och ibland pronomen och ibland de andra alternativ som kan fylla
-ett subjekt. En aspekt som bestämmer det är variation och att vi lyckas få
-fram en bra svårighetsgrad.»*
+**Luckan.** Julius: *«ifall systemet kräver specifika ordklasskort eller
+specifika böjningar är det väldigt frustrerande ifall användaren vill levla
+upp men tvingas lära sig nya kort som inte tar personen närmare nästa nivå.»*
 
-Specen säger att reglerna väljer formen, orden fyller den och budgeten sätter
-taket — men den säger ingenting om **hur en plats som inte är ett mål får sitt
-ord**. Budgeten begränsar svårigheten men väljer inte; variation nämns inte
-alls som kriterium.
+Införandeordningen är avgjord — frekvens inom ordklass — och den tar ingen
+hänsyn till vad nästa nivå kräver. En användare som vill öppna `objekt` kan
+alltså få tio ord i rad som inte hjälper.
 
 **Alternativ.**
 
-- **a)** Utfyllnad väljs slumpvis bland det införda som ryms i budgeten.
-  Enklast, och variationen kommer gratis ur slumpen.
-- **b)** Utfyllnad väljs för att **maximera variation** — det som setts minst
-  nyligen först. Ger jämnare exponering över ordförrådet.
-- **c)** Utfyllnad väljs för att fylla ut budgeten: är meningen för lätt tas
-  ett svagare kort, är den för svår ett starkare. Gör svårighetsgraden till en
-  ratt i stället för ett tak.
+- **a)** Ordningen är oförändrad, men gränssnittet **visar** vad som saknas
+  för nästa nivå. Användaren ser varför det dröjer.
+- **b)** Det som saknas för den närmaste låsta nivån **går före** i
+  införandeordningen. Snabbare upplåsning, men frekvensordningen bryts.
+- **c)** Användaren väljer: «sikta mot nästa nivå» eller «ge mig de vanligaste
+  orden». Två lägen, båda ärliga.
 
 ---
 
-### 3 · Skrivs dagens plan ner eller räknas den om?
+### 3 · Betygsskalan är inte omtagen
 
-**Idag.** Det gamla passlagret skrev ner den, av ett skäl som visade sig hårt:
-en plan som räknas om vid varje anrop **kan krympa under användaren mitt i ett
-pass**. Tre lager lappar låg ovanpå det innan uppdelningen, och alla tre kunde
-tas bort när passet fick vara tillstånd.
+**Idag.** `FEL, RÄTT = Rating.Again, Rating.Good` — två av FSRS fyra betyg,
+för att en diff bara ger två signaler.
 
-**Luckan.** Specen beskriver planen som ett mål men säger inte var det bor. Och
-det gamla passlagret raderas.
+**Luckan.** Resonemanget gäller fortfarande men står ingenstans i specen. En
+läsare ser fyra betyg och svarstid i loggen och drar slutsatsen att `Hard`
+borde härledas. E3 avvisade just det: svarstid mäter inte minnet.
 
 **Alternativ.**
 
-- **a)** Planen skrivs ner en gång per dygn, som passet gjorde.
-- **b)** Planen räknas om men ur ett fruset läge vid dygnets början.
-- **c)** Planen räknas om fritt. Enklast, och felet som fällde det förra
-  försöket kommer tillbaka.
+- **a)** Två betyg, och skälet skrivs in.
+- **b)** Fyra betyg där `Hard`/`Easy` härleds ur något som först mätts.
 
 ---
 
-### 4 · Ordningen mellan kort från flera upplåsta nivåer
+### 4 · Källspråkets rendering silar tyst
 
-**Idag.** Att låsa upp kostar ingenting; korten köas och införs under minuter
-per dag. Låser användaren upp tio nivåer ligger deras kort i kön tillsammans.
+**Idag.** Misslyckas källspråkets renderare hoppas kandidaten över. Mätt: **2
+av 505, 0,4 %.**
 
-**Luckan.** Ordförrådets ordning är avgjord — frekvens inom ordklass — men den
-säger inget om hur ett ordkort från nivå 3 rangordnas mot ett ändelsekort från
-nivå 7.
+**Luckan.** Mekanismen finns men står inte i specen, och den är en tyst sil.
 
 **Alternativ.**
 
-- **a)** Nivåordning går före: allt från den tidigast upplåsta nivån först.
-- **b)** Korttyp går före: ord före böjning före regler, oavsett nivå.
-- **c)** Frekvens går före, rakt över alla nivåer.
-
----
-
-### 5 · Betygsskalan är inte omtagen
-
-**Idag.** `FEL, RÄTT = Rating.Again, Rating.Good` — två av FSRS fyra betyg.
-Skälet står i koden: *«en diff mot facit ger bara två signaler: formen stod
-där eller inte.»*
-
-**Luckan.** Resonemanget gäller fortfarande, men det står ingenstans i specen.
-En läsare ser fyra betyg i FSRS, ser att svarstid finns i loggen, och drar
-slutsatsen att `Hard` borde härledas ur att det tog lång tid. E3 avvisade just
-det: svarstid mäter inte minnet.
-
-**Alternativ.**
-
-- **a)** Två betyg, och skälet skrivs in i specen.
-- **b)** Fyra betyg där `Hard`/`Easy` härleds ur något nytt — men då måste det
-  som härleder dem först mätas.
-
----
-
-### 6 · Källspråkets rendering silar tyst
-
-**Idag.** Uppgiften renderas av källspråkets renderare. Misslyckas den hoppas
-kandidaten över. Mätt på 505 renderade franska kandidater: **2 gick inte att
-rendera på svenska, 0,4 %.**
-
-**Luckan.** Mekanismen finns men står inte i specen. Andelen är liten; det som
-gör den värd att nämna är att den är en **tyst sil**.
-
-**Alternativ.**
-
-- **a)** Skriv in den i specen och mät den som ett acceptansmått.
+- **a)** Skriv in den och mät den som ett acceptansmått.
 - **b)** Låt byggbarheten räkna källspråket också.
 
 ---
 
-### 7 · Extraövning saknas helt
+### 5 · Extraövning saknas helt
 
 **Idag.** Det gamla systemet hade «keep practising»: kort som ännu inte
-förfallit, det som förfaller först först.
+förfallit, tidigast först.
 
 **Luckan.** Modellen nämner det inte. Svaret kan ha blivit enklare: massning
-ovanpå ett vilat schema kostar noll — 2 rätt med vila plus 49 massade gav
-`S = 11,29` mot 10,96 utan.
+ovanpå vila kostar noll — `S = 11,29` mot 10,96.
 
 **Alternativ.**
 
-- **a)** Extraövning finns inte. Dagen är slut när den är slut.
+- **a)** Extraövning finns inte.
 - **b)** Samma kö som förut, nu utan invändningen.
-- **c)** Extraövningen bygger meningar av allt infört utan att sikta på något.
+- **c)** Meningar av allt infört utan att sikta på något.
 
 ---
 
-### 8 · Korttabellen är franskspecifik
+### 6 · Korttabellen är franskspecifik
 
-**Idag.** `egenskap`-kort finns bara i tre språk: tyskan (genus 136, hjälpverb
-55), engelskan (inga efter att klasskorten stryks), franskan (162 · 55).
-Japanskan har inga alls.
+**Idag.** `egenskap`-kort finns bara i tre språk. Japanskan har inga alls.
 
 **Luckan.** Specen säger aldrig vilka korttyper som finns per språk.
 
 **Alternativ.**
 
 - **a)** Tabellen får en kolumn per språk.
-- **b)** Specen säger att korttyperna är en möjlig mängd som varje språk fyller
-  efter behov.
+- **b)** Korttyperna är en möjlig mängd som varje språk fyller efter behov.
 
 ---
 
 ## 12 · Beslut ur omgångarna
+
+### Omgång 3 (2026-09-10)
+
+#### Kortmodellen: tre läromoment, inte fem
+
+Julius ställde den avgörande frågan: *«fyller bas och stam något intuitivt
+naturligt läromoment? Är inte det typ samma sak som korttypen ord? Samma
+problem har jag gällande ändelse och form — besvarar de inte ungefär samma
+läromoment?»*
+
+Med hans egen princip — **ett kort ska representera ett naturligt läromoment,
+annars är datan meningslös och man kan inte veta när man lyckas** — prövas
+varje par genom att fråga: kan man klara det ena och misslyckas med det andra?
+
+    ord   mot bas     kan avoir, vet inte att futurum är aur-     DISTINKT
+    ord   mot ändelse kan travailler, vet inte att imperfekt är -ais  DISTINKT
+    ändelse mot bas   kan -ai, vet inte aur-; kan aur-, vet inte -ai  DISTINKT
+    bas   mot form    aur- och vais är BÅDA «detta ord bryter
+                      mönstret här»                              SAMMA
+
+**Julius hade rätt: `bas` och `form` är samma läromoment.** Skillnaden är bara
+om en regelbunden ändelse råkar fästa efteråt, vilket är en egenskap hos
+språket och inte hos inlärarens uppgift. De slås ihop till `oregelbunden`.
+
+| Kort | Läromomentet | Franskan |
+|---|---|---|
+| `ord` | ordet finns och betyder detta | 227 |
+| `ändelse` | mönstret för den här cellen | ~189 |
+| `oregelbunden` | **just detta ord** bryter mönstret här | 419 |
+
+**Regelbundenhet spåras inte — bara undantagen.** Mätt: av franskans 1 946
+(ord × tempus)-par följer **1 527 regeln** «stryk `-er/-ir/-re/-oir`» och 419
+bryter mot den. De 78 % som följer behöver inget kort alls; basen faller ur
+ordkortet. Det är också så en människa lär sig: mönstret först, sedan vilka ord
+som bryter det.
+
+`stam` och `form` försvinner som korttyper. Täckningen går samtidigt från 60 %
+av paradigmet till 100 %, eftersom undantagskortet inte kräver att det
+varierande ligger som ett suffix — vilket var buggen som gav `être d'accord`
+noll kort.
+
+#### Dagens plan är en fråga, inte en tabell
+
+Julius: *«dagens pass är inget komplicerat. Det är ju bara en lista på
+förfallna kort. Vi har ju all info från användarhistorik vad som har bedömts
+när. Att skriva ner det en gång per dygn känns meningslöst.»*
+
+Rätt. `Repetition` bär kort, tidpunkt och betyg, så **vilka kort som är
+förfallna är härledbart när som helst**. Ingen plantabell behövs.
+
+Det gamla passlagret skrevs ner av ett skäl som inte längre finns. Det som
+kunde krympa under användaren var tre saker — onåbara kort, silen på oövade
+ord, omräkningen av taket — och alla tre är borta: axiomet gör att byggbarheten
+inte kan sjunka under dagen, «oövade» finns inte som begrepp, och dagens tak
+fryses redan en gång per dygn av belastningsmodellen.
+
+**Kvar att lagra är bara det som redan lagras:** repetitionshistoriken, och
+dagens tilldelning av nya kort.
+
+#### Ett kort tillhör ingen nivå
+
+Julius: *«vad menas med ordkort från nivå 3? Kortet kanske låses upp vid nivå 3
+men efter det har det ingen anknytning till nivåer. Under själva lektionerna är
+ju kort alltid bara kort.»*
+
+Han har rätt, och frågan var min egen förvirring. En nivå **öppnar** ett kort;
+därefter är kortet ett kort. Införandeordningen är redan avgjord — frekvens
+inom ordklass — och den behöver ingen nivåkomponent.
+
+Det som var verkligt i frågan blev punkt 2 i listan: vad som krävs för nästa
+nivå, och om det syns.
+
+---
+
 
 ### Omgång 2 (2026-09-09)
 
