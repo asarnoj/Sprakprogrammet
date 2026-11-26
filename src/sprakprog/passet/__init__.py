@@ -102,6 +102,13 @@ class Dagsplan:
     introövningar: tuple[tuple[Kort, Uppgift], ...]
     meningsfasen: tuple[Uppgift, ...]
     karantän: tuple[tuple[Kort, str], ...]
+    #: Kort dagen LÄR UT men inte kunde ge en egen introövning (5.4). De står
+    #: i de andra kortens meningar, med facit intill, och presenteras därför
+    #: när introfasen visat dem — men de hör inte i karantänen (3.10), som
+    #: betyder «inget betyg, inte klarat». Skillnaden är inte akademisk: ett
+    #: sådant kort MÅSTE presenteras, för annars är varje mening som bär det
+    #: olaglig (villkor 1 i 6.1), och en körning gav noll införda kort just så.
+    utan_övning: tuple[Kort, ...] = ()
 
     @property
     def orden(self) -> frozenset:
@@ -114,8 +121,10 @@ class Dagsplan:
 
     @property
     def kort(self) -> frozenset:
-        """Allt dagen lär ut: mönsterkorten och orden de behöver."""
-        return frozenset(k for k, _ in self.introövningar) | self.orden
+        """Allt dagen lär ut: mönsterkorten, orden de behöver, och de kort som
+        inte fick en egen övning men ändå står i dagens meningar."""
+        return (frozenset(k for k, _ in self.introövningar) | self.orden
+                | frozenset(self.utan_övning))
 
 
 def _i_går() -> str:
@@ -1206,17 +1215,42 @@ class Passet:
                       orden=orden_i, vikt=self.lånevikt(per_text))
         intro = tuple((k, åt(par[k], k)) for k in korten if k in par)
         lektioner = {k: u for k, u in lektioner.items() if k in par}
-        karantän = tuple(
-            [(k, "ingen egen mening att öva på i dag")
-             for k in korten if k not in par]
-            + [(k, "ingen mening i huvuddelen för in kortet") for k in behövs])
+        # TVÅ OLIKA LÄGEN, och de blandades ihop. Ett kort utan egen övning
+        # står ändå i de andra kortens meningar och går att införa — det ska
+        # presenteras, inte sättas i karantän. Ett kort som ingen mening i
+        # huvuddelen bär går däremot inte att införa i dag, och det är 3.10:s
+        # karantän.
+        #
+        # Hopblandningen kostade en hel dag. `ändelse:Verb/regelbunden/pres_3sg`
+        # fick ingen egen övning, hamnade i karantän och presenterades därför
+        # aldrig — och eftersom VARJE engelsk presensmening bär den ändelsen
+        # förkastades alla fyra meningarna i huvuddelen av villkor 1 i 6.1.
+        # Dagen slutade med elva presenterade kort och NOLL införda.
+        # BARA DE MENINGAR SOM VISAS räknas, inte alla insamlade. Ett kort
+        # presenteras därför att användaren SER det med facit intill (R1), och
+        # ett kort ur en mening planen samlade in men aldrig använder har hen
+        # aldrig sett.
+        visade = {x for u in ([u for _, u in intro] + list(lektioner.values()))
+                  for x in u.träff.kort}
+        utan_övning = tuple(k for k in korten if k not in par and k in visade)
+        # ETT SKÄL PER KORT. Ett kort som varken har en egen övning eller en
+        # mening i huvuddelen stod förut två gånger i listan, med två skäl, och
+        # sattes i karantän två gånger.
+        skäl: dict[Kort, str] = {}
+        for k in korten:
+            if k not in par and k not in visade:
+                skäl[k] = "ingen egen mening att öva på i dag"
+        for k in behövs:
+            skäl.setdefault(k, "ingen mening i huvuddelen för in kortet")
+        karantän = tuple(sorted(skäl.items(), key=lambda x: str(x[0])))
 
         # Det som blir över följer med. Täckningen räcker för att INFÖRA varje
         # kort en gång, men varje fel ger mer arbete (5.3) och då behövs en
         # mening till. Det som blir över kostar ingenting att ha kvar, och
         # utan det står dagen still vid första felet.
         meningsfasen += [u for u in kvar if u.källtext not in set(par.values())]
-        return Dagsplan(lektioner, intro, tuple(meningsfasen), karantän)
+        return Dagsplan(lektioner, intro, tuple(meningsfasen), karantän,
+                        utan_övning)
 
     def att_presentera(self) -> list[Kort]:
         """Nästa nivås kort som inte är införda OCH inte presenterade i dag.

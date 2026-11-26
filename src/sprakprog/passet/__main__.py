@@ -399,6 +399,22 @@ def _introfas(passet: Passet, plan) -> None:
             print("  inget kort går rätt just nu — introfasen pausas.")
             return
 
+    # KORTEN UTAN EGEN ÖVNING PRESENTERAS HÄR, när fasen gått igenom. De stod i
+    # lektionernas och övningarnas meningar, med facit intill, så användaren har
+    # sett dem — och utan att de presenteras är varje mening som bär dem olaglig
+    # (villkor 1 i 6.1, R1). Pausas fasen presenteras ingenting extra, precis
+    # som ett kort vars egen övning inte gick rätt inte presenteras.
+    #
+    # DET ÄR SVAGARE ÄN 5.4, som ger varje nytt kort en egen övning, och det är
+    # en nödlösning. Rätt svar är att planen inte tar fler kort än dagens
+    # material räcker till: dag ett behövde tio källmeningar och hade nio, och
+    # kortet som blev utan var ändelsen varje engelsk presensmening kräver.
+    for kort in sorted(plan.utan_övning, key=str):
+        if kort in passet.data.presenterade() or kort in passet.data.införda():
+            continue
+        passet.data.presentera(kort)
+        print(f"  {kort} stod i meningarna du såg, men fick ingen egen "
+              f"övning i dag — det prövas i meningsfasen.")
     print("\n  nivån är presenterad. Korten prövas nu i meningar.")
 
 

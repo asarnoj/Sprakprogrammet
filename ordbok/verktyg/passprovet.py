@@ -48,12 +48,15 @@ sys.path.insert(0, str(ROT / "src"))
 from sprakprog.fsrslager import Lager                             # noqa: E402
 from sprakprog.kortmodell import Kort, meningens_kort             # noqa: E402
 from sprakprog.kurs import Kursdata                               # noqa: E402
-from sprakprog.passet import Passet                               # noqa: E402
+from sprakprog.passet import Dagsplan, Passet
+from sprakprog.passet.__main__ import (_kort_i_kursen,  # noqa: E402
+                                       _tidsmodell)                               # noqa: E402
 from sprakprog.rendering.karta import ladda                       # noqa: E402
 from sprakprog.sammansattning import Sammansättare                # noqa: E402
 
 KARTA = ROT / "kartor" / "en.pkl"
 NIVÅER = ROT / "kartor" / "nivaer_en.json"
+MENINGSTID = ROT / "ordbok" / "nivålistor" / "meningstid.csv"
 
 #: Taket för hur länge det får ta att VÄLJA en uppgift. Mätt i KÄRNAN 6.3:
 #: att svara på den kortaste meningen tar 16,2 s i median, och att välja den
@@ -62,21 +65,66 @@ NIVÅER = ROT / "kartor" / "nivaer_en.json"
 TAK_SEKUNDER = 16.2
 
 
-def _nivåfil() -> tuple[dict, list]:
+def _nivåfil() -> tuple[dict, list, dict]:
     data = json.loads(NIVÅER.read_text(encoding="utf-8"))
 
     def kort(rad) -> Kort:
         return Kort(rad[0], rad[1], tuple(rad[2]))
 
     return ({kort(k): frozenset(map(kort, m)) for k, m in data["krav"]},
-            [frozenset(map(kort, n)) for n in data["nivåer"]])
+            [frozenset(map(kort, n)) for n in data["nivåer"]],
+            {kort(k): frozenset(map(kort, m)) for k, m in data.get("bevis", [])})
+
+
+#: Minuterna per dag, som terminalpassets standardvärde. Budgeten är inte en
+#: detalj i uppsättningen: utan den tar dagen alla kort kön erbjuder, får ett
+#: större ordförråd och hamnar aldrig i bristläget.
+MINUTER = 20.0
 
 
 def _passet(fil: Path) -> tuple[Passet, Kursdata]:
+    """Passet som terminalpasset bygger det — tidsmodellen och bevisen med.
+
+    FÖRUT SAKNADES BÅDA, och nätet prövade då en generösare värld än den som
+    körs. Utan tidsmodellen svarar `tempo()` inte, budgeten blir None, och
+    `dagens_kort` tar allt kön erbjuder i stället för att stanna vid takten —
+    alltså fler kort, större ordförråd och fler källmeningar än en riktig dag
+    har. Det var den blindheten som släppte igenom ett pass där NOLL kort
+    infördes: dag ett hade nio källmeningar och behövde tio, ett mönsterkort
+    blev utan egen övning och därmed opresenterat, och eftersom varje engelsk
+    presensmening bär den ändelsen förkastades hela huvuddelen av villkor 1.
+    Nätet såg det inte, för utan budget uppstod bristen aldrig.
+    """
     s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), ladda(KARTA), "sv")
     data = Kursdata(sqlite3.connect(fil), "sv", "en")
-    krav, nivåer = _nivåfil()
-    return Passet(data, s, Lager(data), krav, nivåer), data
+    krav, nivåer, bevis = _nivåfil()
+    lager = Lager(data)
+    return Passet(data, s, lager, krav, nivåer,
+                  tidsmodell=_tidsmodell(data, lager.retention, MENINGSTID),
+                  kort_i_kursen=_kort_i_kursen(s, nivåer), bevis=bevis), data
+
+
+def _plan(p: Passet):
+    """Dagens plan med budgeten, som terminalpasset lägger den."""
+    svar = p.tempo(MINUTER)
+    return p.dagsplan(budget=svar[1] if svar else None)
+
+
+#: Den riktiga `dagsplan`, fångad före falsifieringen byter ut den.
+_DAGSPLAN = Passet.dagsplan
+
+
+def _plan_utan_presentation(self, rapport=None, budget=None):
+    """Det gamla läget: ett kort utan egen övning presenterades inte.
+
+    `Dagsplan.kort` räknade bara korten MED introövning plus orden, så ett
+    mönsterkort som matchningen inte kunde ge en egen mening föll ur dagen helt
+    — och eftersom varje engelsk presensmening bär `ändelse:Verb/regelbunden/
+    pres_3sg` gjorde det varje mening i huvuddelen olaglig (villkor 1 i 6.1).
+    """
+    plan = _DAGSPLAN(self, rapport=rapport, budget=budget)
+    return Dagsplan(plan.lektioner, plan.introövningar, plan.meningsfasen,
+                    plan.karantän, ())
 
 
 @contextmanager
@@ -123,7 +171,7 @@ def introövningen_har_ett_mål(p: Passet) -> list[str]:
         if uppgift.mål != frozenset({kort}):
             brister.append(f"{kort}: introövningen hade målen "
                            f"{sorted(map(str, uppgift.mål))}")
-    plan = p.dagsplan()
+    plan = _plan(p)
     for kort, uppgift in plan.introövningar:
         if uppgift.mål != frozenset({kort}):
             brister.append(f"{kort}: planens introövning «{uppgift.källtext}» "
@@ -226,7 +274,7 @@ def dag_ett_går_att_komma_igenom(p: Passet, data: Kursdata) -> list[str]:
     varje mening med flera mål ogiltig. Utan ensamövningen (reservsteg 1)
     fanns då ingen uppgift alls, och passet gick inte att komma igenom.
     """
-    plan = p.dagsplan()
+    plan = _plan(p)
     _introfasen(p, plan)
     utan = [k for k in sorted(p.svaga(), key=str) if p.uppgift(k, plan) is None]
     return ([f"{len(utan)} svaga kort utan uppgift efter introfasen: "
@@ -269,7 +317,7 @@ def korten_införs_när_de_går_rätt(p: Passet, data: Kursdata) -> list[str]:
     räknade oinförda kort. Provet går hela vägen: presentera, svara RÄTT,
     och kräv att korten är inne.
     """
-    plan = p.dagsplan()
+    plan = _plan(p)
     _introfasen(p, plan)
     if p.att_presentera():
         return [f"{len(p.att_presentera())} kort kvar att presentera efter "
@@ -307,7 +355,7 @@ def orden_lärs_ut_före_mönstret(p: Passet, data: Kursdata) -> list[str]:
     Prövas på den väg passet FAKTISKT går: dagsplanens lektion och övning,
     och `glosorna` som introfasen läser dem ur.
     """
-    plan = p.dagsplan()
+    plan = _plan(p)
     if not plan.introövningar:
         return ["dagsplanen är tom"]
     brister = []
@@ -350,7 +398,7 @@ def dagsplanen_är_genomförbar(p: Passet, data: Kursdata) -> list[str]:
     Planen ska därför ge varje kort sin EGEN introövning, reservera meningar
     åt huvuddelen, och inte använda samma källmening två gånger.
     """
-    plan = p.dagsplan()
+    plan = _plan(p)
     brister = []
     if not plan.introövningar:
         return ["dagsplanen är tom"]
@@ -419,7 +467,7 @@ def meningen_använder_bara_tillåtet(p: Passet, data: Kursdata) -> list[str]:
     Provet presenterar bara HALVA planen, som en pausad introfas, och kräver
     att ingen uppgift då använder resten.
     """
-    plan = p.dagsplan()
+    plan = _plan(p)
     if not plan.introövningar:
         return ["dagsplanen är tom"]
     halva = sorted(plan.kort, key=str)[:len(plan.kort) // 2]
@@ -546,7 +594,7 @@ def grinden_kräver_en_tidigare_dag(p, data) -> list[str]:
     nivå = p.nästa_nivå()
     if not nivå:
         return ["ingen nivå att börja med"]
-    plan = p.dagsplan()
+    plan = _plan(p)
     if not plan.introövningar:
         return ["dagsplanen är tom"]
     _introfasen(p, plan)
@@ -610,6 +658,12 @@ def _falsifiera(mapp: Path) -> list[str]:
         ("ensamövningen fanns inte",
          "dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True,
          (Passet, "ensamövning", lambda self, kort, plan=None: None)),
+        # Dagen gav NOLL införda kort, och det syntes bara som en rad om
+        # karantän. Felet går inte att se utan budgeten: utan den har dagen
+        # fler källmeningar än den behöver, och bristen uppstår aldrig.
+        ("kortet utan egen övning presenterades inte",
+         "dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True,
+         (Passet, "dagsplan", _plan_utan_presentation)),
         # Ordförrådet var paketets egna ord och inget mer. Då finns en enda
         # källmening — «Tid står.» — och fyra av fem nivåkort hamnade i
         # karantän redan dag ett.
