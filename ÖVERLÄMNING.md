@@ -667,6 +667,58 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Hemvyn, passet och passkön
+
+*Byggt 2026-08-15.*
+
+**Passet slutar när det förfallna och passkön är tomma.** Nya kort hindrar
+inte slutet — de möts INUTI meningar, inte som en egen kö, och det är den
+viktigaste skillnaden mot Anki i gränssnittet.
+
+**Passkön löser ett fel designen inte visste om.** `schemalaggning.py` påstod
+att ett fallerat kort "dyker upp igen inom några meningar". Det gjorde det
+inte: FSRS minsta intervall är ett dygn, så kortet schemaläggs i morgon och
+kan inte komma tillbaka i dagens kö hur den än sorteras. Kön ligger nu i
+generatorn, är per pass, lever i minnet och rör inte schemaläggningen —
+återförsöket blir en tidig repetition med den mindre stabilitetsökning FSRS
+ger sådana. Ett kort som gått fel och sedan rätt i samma pass är avklarat.
+
+**Längden behöver inte tvingas fram.** Mätt, tyska:
+
+```
+nivå 4, ny         median 2 ord    spann 2–3
+nivå 4, 120 dagar  median 4        spann 3–6
+nivå 9, 120 dagar  median 8        spann 6–10
+nivå 21, 120 dagar median 7        spann 5–11
+```
+
+Två oberoende effekter, båda följder och inte parametrar. Budgeten kopplar
+längd till KUNSKAP: ett svagt kort (R=0,5) fyller Σ(1−R)=1,5 på tre kort,
+starka kort (R=0,95) behöver trettio. Stegen kopplar längd till NIVÅ, men
+bara upp till en punkt — efter nivå 9 planar medianen ut och det är spannet
+som vidgas. Högre nivåer ger alltså variation i KONSTRUKTION, inte i längd.
+
+Det enda som rör längden direkt är vikten `längd = -0,15`, som trycker
+kortare för att felet ska gå att lokalisera. Ogissad i övrigt, och mätbar.
+
+**Passets längd i jämvikt**, tyska, allt inlärt och moget i ett halvår:
+
+```
+nivå 4, A1    1112 kort     7 rep/dag     4 meningar
+nivå 21, B2   3057 kort    18 rep/dag    11 meningar
+```
+
+Det finns inget enda jämviktstal: samma kurs gav 80 rep/dag efter 40 dagar och
+7 efter 180. Belastningen faller medan man håller på, och passet krymper av
+sig självt.
+
+**En mening retirerar 1,7 förfallna kort.** Sökningen TÄCKER 3 och planar ut
+där även vid 6 400 kandidater, men en ren slumpsvep hittade en mening med 5 —
+packningen begränsas av poängfunktionen och inte av språket. Täckning per
+mening ÄR passets längd, så det är den vikt som betyder mest för upplevelsen.
+
+---
+
 ## Tre parallella rättelser, landade 2026-08-15
 
 Tre sessioner arbetade samtidigt i egna worktrees. Ingen av dem committade;
