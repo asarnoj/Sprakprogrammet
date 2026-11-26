@@ -31,7 +31,8 @@ import sqlite3
 from dataclasses import dataclass
 
 from .spec import (
-    Bisats, Diates, Mening, Nominalfras, Tidsreferens, attribut_med_grad,
+    Bestämdhet, Bisats, Diates, Mening, Nominalfras, Numerus, Tidsreferens,
+    attribut_med_grad,
 )
 
 # docs/BITMASK.md §11. Bara för läsbara felmeddelanden.
@@ -93,6 +94,10 @@ class Brott:
                     f"{self.krav}:a person syftar på talsituationen, så de "
                     f"två leden kan inte vara olika — och koreferens kräver "
                     f"ett reflexivt verb som specen inte bad om")
+        if self.slot == "oräknebar":
+            return (f"oräknebar={self.koncept}: ordet räknas inte, så det tar "
+                    f"varken obestämd artikel, plural eller räkneord — «en "
+                    f"tid», «two airs» och «varje vin» finns inte")
         if self.slot == "självständig":
             return (f"självständig={self.koncept}: huvudordet skrivs inte ut "
                     f"och står ingen annanstans i satsen — «min» utan «min "
@@ -291,6 +296,39 @@ class Validator:
             if b is not None:
                 yield from Validator._nominalfraser(b.sats)
 
+    def räknebar(self, koncept: str) -> int | None:
+        if ("räknebar", koncept) not in self._semantik:
+            rad = self.conn.execute(
+                "SELECT räknebar FROM Koncept WHERE nyckel = ?",
+                (koncept,)).fetchone()
+            self._semantik[("räknebar", koncept)] = rad["räknebar"] if rad else None
+        return self._semantik[("räknebar", koncept)]
+
+    def _oräknebart_exemplar(self, m: Mening) -> list[Brott]:
+        """Ett oräknebart ord räknas inte: «en tid», «two airs», «varje vin».
+
+        `kontrollera_naken` i uppslaget prövar det omvända — att en NAKEN
+        singular kräver ett oräknebart ord — men ingenting hindrade att ett
+        oräknebart ord fick obestämd artikel, plural eller räkneord. «A time
+        stands.» kom ur introfasen så snart lånekorten började återanvändas,
+        och den är fel i båda språken.
+
+        Bestämd form går bra: «tiden», «the time» pekar ut en bestämd mängd
+        och räknar inte exemplar.
+        """
+        brott = []
+        for nf in self._nominalfraser(m):
+            if self.räknebar(nf.koncept) != 0:
+                continue
+            räknat = (nf.räkneord is not None
+                      or nf.numerus is not Numerus.SG
+                      or (nf.bestämdhet is Bestämdhet.OBESTÄMD
+                          and nf.possessiv is None and nf.demonstrativ is None
+                          and nf.kvantifikator is None and nf.ägare is None))
+            if räknat:
+                brott.append(Brott("oräknebar", nf.koncept, 0, None))
+        return brott
+
     def _utan_antecedent(self, m: Mening) -> list[Brott]:
         """En självständig possessiv måste ha sitt huvudord i samma sats.
 
@@ -347,6 +385,7 @@ class Validator:
                 brott += self._attributbrott(slot, nf)
 
         brott += self._utan_antecedent(m)
+        brott += self._oräknebart_exemplar(m)
 
         brott += self._deixisbrott(m)
 

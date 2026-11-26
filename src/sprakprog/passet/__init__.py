@@ -438,14 +438,25 @@ class Passet:
         övningen finns för att just det ska prövas. Samma bygge används av
         introfasen och av ensamövningen — «samma bygge tre gånger» (6.4).
         """
-        införda = self.data.införda()
-        presenterade = self.data.presenterade()
+        tillåtna = self.data.tillåtna() | paket | {kort}
 
-        def tillåten(k: Kort) -> bool:
-            return (k == kort or k in införda or k in presenterade
-                    or k in paket or k.familj == "ord")
+        # 5.4: «lånekorten väljs så att sannolikheten att alla blir rätt är så
+        # hög som möjligt — ett mönsterkort presenteras med ett ord användaren
+        # kan väl, så att bara mönstret är nytt».
+        #
+        # Första försöket bygger därför av KÄNDA kort: infört eller
+        # presenterat i dag, vilket också är det 6.1 punkt 1 kräver. Upplåst
+        # är inte samma sak som tillåtet — orden är upplåsta från början
+        # (3.1), men ett ord användaren aldrig sett gör övningen till ett prov
+        # på tre okända saker samtidigt.
+        uppgift = self._välj(kort, lambda k: k in tillåtna, lambda t: {kort})
+        if uppgift is not None:
+            return uppgift
 
-        return self._välj(kort, tillåten, lambda träff: {kort})
+        # Går det inte — och dag ett gör det aldrig, då inget är känt — får
+        # nya ord komma med. De lärs ut som glosor innan övningen (`introsteg`).
+        return self._välj(kort, lambda k: k in tillåtna or k.familj == "ord",
+                          lambda t: {kort})
 
     def ensamövning(self, kort: Kort) -> Uppgift | None:
         """Reservsteg 1 i 6.3: kortet prövas ensamt när ingen mening når det.
