@@ -1,5 +1,18 @@
 # Meningsgeneratorn och kortmodellen — beslut
 
+> **DET HÄR ÄR ETT HISTORISKT DOKUMENT, INTE SPEC:EN.**
+> Läs `paradigm/KÄRNAN.md` i stället, och `paradigm/ARBETE.md` för vad som är kvar.
+>
+> Filen bär besluten i den ordning de fattades, under augusti 2026, och är
+> skriven innan något byggdes. `PROBLEM.md`:s inledning säger varför den är
+> svår att använda som karta: «man ser svaren men inte frågorna, och därmed
+> inte heller vilka frågor som fortfarande är obesvarade.» Den rollen togs över
+> av `PROBLEM.md` 2026-08-19, och rollen som spec av `KÄRNAN.md` 2026-09-14.
+>
+> **Den står kvar för skälen.** Ett beslut som fattades här och inte ändrats
+> sedan har sin motivering här och ingen annanstans. Men där den säger något
+> annat än `KÄRNAN.md` är det `KÄRNAN.md` som gäller.
+
 *2026-08-13, utökad 2026-08-14. Framtagen i diskussion, med mätningar mot
 databasen efter hand. Skriven innan något byggdes.*
 

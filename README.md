@@ -22,11 +22,17 @@ eller register. Varför det är ett beslut och inte en brist står under
 
 | Fil | Vad den är |
 |---|---|
-| **`paradigm/PROBLEM.md`** | **Kartan.** Systemets 60 öppna och lösta frågor, var och en med status, mätning och lösning. Börja här. |
-| `paradigm/GENERATOR.md` | Besluten, i den ordning de fattades |
+| **`paradigm/KÄRNAN.md`** | **Spec:en.** Vad systemet ska vara — korten, nivåerna, dagspasset, meningsbygget, bedömningen — och byggordningen i §9. Den styr bygget. |
+| **`paradigm/ARBETE.md`** | **Arbetslistan.** Vad som är kvar, per byggsteg. Det enda stället som svarar på «vad jobbar vi på». |
+| **`paradigm/PROBLEM.md`** | **Frågorna.** Systemets 67 öppna och lösta frågor, var och en med status, mätning och lösning. Skälen bakom spec:en står här. |
 | `paradigm/SCHEMA.md` | Datamodellen |
 | `docs/BITMASK.md` | De numeriska koderna — auktoritativ |
 | `kort.sql` / `setup.sql` | Inlärardatabasens respektive språkdatabasens schema |
+| `paradigm/GENERATOR.md` | Historisk — besluten i den ordning de fattades, överspelad av `KÄRNAN.md` |
+| `ARBETSLOGG_till_2026-08-15.md` | Historisk — dagbok till och med 2026-08-15 |
+
+Läs dem i den ordningen: `KÄRNAN.md` säger vad som ska byggas, `ARBETE.md` vad
+som är kvar, `PROBLEM.md` varför det ser ut som det gör.
 
 `PROBLEM.md` är ordnad efter FRÅGOR systemet måste kunna svara på.
 Statusmarkören beskriver systemet, inte dokumentet:

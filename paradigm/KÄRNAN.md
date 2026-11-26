@@ -1961,21 +1961,38 @@ Repot behålls. **Den nya kärnan får inte importera något ur den gamla.** De 
 filerna raderas i stället för att anpassas, eftersom det är det enda som säkert
 hindrar att gammal kod lever kvar.
 
+Radtalen är mätta 2026-11-11; de som stod här förut var från 2026-09-14 och
+underskattade det som raderas med nästan hälften.
+
 | Del | Rader | Beslut |
 |---|---|---|
-| renderarna, sju språk (`rendering/`) | 4 400 | står kvar — utökas med redovisade beslut och delas i delar för kartan (6.7) |
+| renderarna, sju språk (`rendering/`) | 6 936 | står kvar — utökas med redovisade beslut och delas i delar för kartan (6.7) |
 | språkdatabasen och paradigmen | — | står kvar |
 | ordboksbygget | 2 200 | står kvar |
-| FSRS-integrationen | — | skrivs om, tunn (steg 3c) |
+| FSRS-integrationen (`fsrslager/`) | 131 | skriven, tunn (steg 3c) |
 | fönstret för övervakade kort | — | tas över som modell |
-| näten och mätkorpusen | — | blir acceptanskrav för det nya |
-| befolkning · schemaläggning · pass (`kort/`) | 3 800 | raderas |
-| generator · urval · poäng (`generator/`) | 1 800 | raderas |
-| rättningen | 1 200 | raderas |
-| gränssnittet — webben och kommandoraden | — | raderas med den gamla kärnan; ett nytt byggs i steg 9 |
+| näten och mätkorpusen | — | blir acceptanskrav för det nya; de fjorton nät som bara prövar den gamla kärnan ligger i `GAMLA_NÄT` (`alla_prov.py`) och raderas med den |
+| befolkning · schemaläggning · pass (`kort/`) | 4 875 | raderas |
+| generator · urval · poäng (`generator/` utom `rattning.py`) | 1 833 | raderas |
+| rättningen (`generator/rattning.py`) | 1 179 | raderas |
+| gränssnittet — webben (`webb/` 2 361) och kommandoraden (`cli/` 1 930) | 4 291 | raderas med den gamla kärnan; ett nytt byggs i steg 9 |
+| **summa som raderas i steg 9b** | **12 178** | |
 
-Utanför sig själv importerar `rendering/` bara `generering.granskning` och
-`kaikki_mappning.paradigm`. Ingen av dem raderas.
+**SKARVEN ÄR MÄTT, och den är två rader** (2026-11-11). Utanför sig själv
+importerar `rendering/` bara `generering.granskning` och
+`kaikki_mappning.paradigm`. Ingen av dem raderas. Och i andra riktningen går
+det bara en tråd:
+
+| Från | Till |
+|---|---|
+| `rendering/uppslag.py:38` | `generering.granskning._former_per_cell` — den enda symbol den nya kärnan hämtar ur `generering/` |
+| `generering/meningsgranskning.py:48` | `generator.rattning.ORDMELLANRUM` |
+| `generering/meningsgranskning.py:137` | `kort.schemalaggning.spec_json` |
+
+Ingen annan import går mellan kärnorna. Steg 9b är därför en radering plus två
+inlinade symboler i `meningsgranskning.py`, inte ett ingrepp med okänd
+omfattning. Det som håller kvar den gamla kärnan är inte beroenden utan att
+webben och kommandoraden är det enda sättet att köra programmet.
 
 ### 8.2 Vad som inte skrivs om
 

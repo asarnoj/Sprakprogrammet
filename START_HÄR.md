@@ -1,5 +1,8 @@
 # Start här
 
+> Den här filen handlar om **ordboksbygget** — att fylla `sprak.db` med böjda
+> former. Den beskriver inte kärnan: det gör `paradigm/KÄRNAN.md`.
+
 Databasen känner ordet `springa` men inte `sprang`. Ditt jobb är att fylla
 den luckan: 3 964 ord → ~65 000 böjda former, på sju språk. Det görs genom
 att fråga Claude ungefär 500 gånger, och det tar en förmiddag — nästan bara

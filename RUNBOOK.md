@@ -1,5 +1,8 @@
 # RUNBOOK — köra böjningsgenereringen
 
+> Den här filen handlar om **ordboksbygget** — att fylla `sprak.db` med böjda
+> former. Den beskriver inte kärnan: det gör `paradigm/KÄRNAN.md`.
+
 Engångsjobb: fylla `Former`-tabellen i `sprak.db` med böjda former för alla
 7 språk via Claude. Körs på **din egen maskin med din egen
 Claude-prenumeration** (Pro/Max) — inga API-credits behövs.
