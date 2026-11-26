@@ -65,6 +65,7 @@ def kör(args: argparse.Namespace) -> int:
     modell = getattr(args, "modell", STANDARD_MODELL)
     torkörning = getattr(args, "torkörning", False)
     verbose = getattr(args, "verbose", False)
+    fortsätt = getattr(args, "fortsätt", False)
 
     totalt_fel = 0
 
@@ -84,6 +85,7 @@ def kör(args: argparse.Namespace) -> int:
                 modell=modell,
                 torkörning=torkörning,
                 verbose=verbose,
+                fortsätt=fortsätt,
             )
 
             stat.skriv_ut()
@@ -116,5 +118,8 @@ def lägg_till_argument(p: argparse.ArgumentParser) -> None:
                    help=f"Claude-modell (default: {STANDARD_MODELL})")
     p.add_argument("--torkörning", action="store_true",
                    help="Anropa LLM men skriv inte till databasen")
+    p.add_argument("--fortsätt", action="store_true",
+                   help="Hoppa över lexem som redan har Former-rader "
+                        "(återuppta avbruten körning)")
     p.add_argument("--verbose", action="store_true",
                    help="Skriv ut batch-progress och råsvar vid fel")
