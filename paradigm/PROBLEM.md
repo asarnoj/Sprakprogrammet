@@ -1394,11 +1394,15 @@ kring (B8), så att knappen inte kan låsa sig för alltid.
 ### B6 ✓ — Vad gör den som vill öva mer?
 
 Tidiga repetitioner: kort som ännu inte förfallit, det som förfaller först
-först. Det flyttar fram förfallodagar, sänker Σ 1/I(S), och skapar därmed
-plats för nytt material utan att någonting behöver vänta.
+först.
 
-**Mätt, och det är värt att veta hur mycket det ger.** Ett kort med S = 10,96
-senast repeterat dag 0, förfallet dag 11:
+**Svaret, mätt: extraövning skapar inte plats åt nytt material — den flyttar
+arbete närmare.** Man byter till sig repetitioner, inte utrymme. Vägen till
+det svaret gick via två mätningar som var fel, och båda felen står nedan
+därför att de är metodologiska.
+
+**Vad en tidig repetition är värd.** Ett kort med S = 10,96, senast repeterat
+dag 0, förfallet dag 11:
 
 | Repeteras dag | R | ny S | nästa förfallodag |
 |---|---|---|---|
@@ -1407,85 +1411,42 @@ senast repeterat dag 0, förfallet dag 11:
 | 4 | 0,954 | 26,84 | 31 |
 | 11 (i tid) | 0,906 | 43,93 | 54 |
 
-Extraövning fungerar alltså — men avtagande. Att repetera sju dygn för tidigt
-ger 27 dygns intervall i stället för 44. Ingenting går sönder; det är
-effektivitet som betalas, inte riktighet.
+Avtagande, men ingenting går sönder: sju dygn för tidigt ger 27 dygns
+intervall i stället för 44. Det är effektivitet som betalas, inte riktighet.
 
-#### RÄTTELSE (2026-08-24) — den ger inte plats åt nytt, den flyttar arbete närmare
+#### VAD DEN FAKTISKT GÖR — OCH TVÅ MÄTNINGAR SOM VAR FEL
 
-Meningen "skapar därmed plats för nytt material utan att någonting behöver
-vänta" står kvar ovan därför att den var utgångspunkten, men den är MÄTT FEL.
-Tyskan, sex simulerade dygn, samma frö i båda grenarna:
+*Första mätningen (2026-08-24)* räknade `nya i morgon` på tyskan över sex
+dygn: belastningen sjönk 13,21 → 11,83, men morgondagens utrymme för nytt
+blev MINDRE — 13 → 11. Slutsatsen blev att extraövning inte ger något.
 
-| | belastning | inflödestak i morgon | nya i morgon |
-|---|---|---|---|
-| utan extrapass | 13,00 | 13 | 13 |
-| med extrapass (18 meningar) | 13,21 → 11,83 | 11 | 11 |
+*Julius invände, och invändningen höll:* **"Ifall man gör extrapass så kommer
+man göra kort en dag tidigt vilket gör att de skjuts upp lite kortare.
+Alltså förlorar man en dags lucka på de. Men samtidigt sparar man massa
+arbete imorgon."** Rummet uppstår inte i morgon utan OMEDELBART, så mätningen
+såg bara priset och aldrig varan. **Att mäta fel dygn är inte att räkna fel —
+aritmetiken var riktig hela tiden.**
 
-Belastningen sjunker precis som beskrivet — 13,21 → 11,83, alltså tio
-procent. Men morgondagens utrymme för nytt BLIR MINDRE, inte större.
-
-Skälet är vilket villkor som binder. `nya_idag` har två, och det som styr här
-är IDAG-villkoret: `prognos[0] + k × kurva[0] ≤ mål`. En tidig repetition ger
-en mindre stabilitetsökning, så kortet kommer tillbaka SNARARE än det annars
-skulle ha gjort — och landar därför oftare i morgon. `prognos[0]` stiger, och
-utrymmet för nya kort krymper med den. Antalet tidiga kort växte samtidigt
-från 44 till 95, av samma orsak.
-
-**Det motsäger inte B6:s syfte, men det ändrar vad extraövningen ÄR.** Den är
-inte en ventil som gör plats åt mer nytt material. Den är ett sätt att göra
-mer arbete idag mot att göra mer arbete även de närmaste dygnen — man byter
-till sig repetitioner, inte utrymme. Långtidsvillkoret (medelbelastningen)
-förbättras svagt, men det är inte det som binder.
-
-**Och på dag ett finns ingenting att ta av, med flit.** `kommande()` kräver
-`sedd < dygnets_början`: ett kort som införts idag kan inte betygsättas igen
-samma dygn (E2), så ett extrapass byggt på dem skulle bokföra noll. Mätt efter
-en nollställning var alla 14 kort i "early available" införda samma dag —
-hela högen var tom på verkan. "Nothing more ahead" är alltså rätt svar på dag
-ett och inte ett fel.
-
-**En bugg låg gömd bakom just den grinden.** `kommande()` hade fyra
-platshållare och tre bindningar, så varje anrop som nådde frågan kastade
-`ProgrammingError`. Det syntes aldrig, eftersom `finns_extra` var noll i varje
-kurs som testats för hand och knappen därför var låst. En trasig SQL-sats kan
-ligga tyst hur länge som helst bakom en grind som råkar vara stängd — och det
-är skälet till att `extraövningen går att köra` nu är en egen invariant.
-
-#### RÄTTELSEN MÄTTE FEL DYGN (2026-08-26)
-
-Julius invände mot slutsatsen ovan, och invändningen håller: *"Ifall man gör
-extrapass så kommer man göra kort en dag tidigt vilket gör att de skjuts upp
-lite kortare. Alltså förlorar man en dags lucka på de. Men samtidigt sparar
-man massa arbete imorgon."*
-
-RÄTTELSE ovan mätte `nya i morgon`. **Rummet uppstår inte i morgon utan
-omedelbart**, och därför såg mätningen bara priset och aldrig varan.
-
-Mätt på fransk kortlek, 740 sedda kort, FSRS-prognos över 30 dygn, samma frö
-i alla grenar. Belastning per dygn:
+Mätt om på fransk kortlek, 740 sedda kort, 30 dygn, samma frö:
 
     dygn            0    1    2    3    4    5    6    7    8 …
     ingen extra   136   51   87   28   17   20   18   26   81
     60 extra       76   54   90   29   19   23   20   42   88
     Δ             −60   +3   +3   +1   +2   +3   +2  +16   +7
 
-**Dag noll faller med exakt de sextio kort man gjorde.** Sedan ligger varje
-följande dygn någon repetition högre, eftersom en tidig repetition ger mindre
-stabilitetsökning och kortet återkommer snarare. Julius beskrivning är alltså
-bokstavligt riktig, mekanism för mekanism.
+Dag noll faller med exakt de sextio kort man gjorde; varje följande dygn
+ligger någon repetition högre, eftersom en tidig repetition ger mindre
+stabilitetsökning och kortet återkommer snarare. Nettot: kortlekens eget
+arbete faller 1101 → 1091, men man gjorde 60 repetitioner för att köpa
+minskningen. **Extraövning sparar inte arbete — den jämnar ut det till en
+premie på omkring fyra procent.**
 
-Nettot över horisonten: kortlekens egna arbete faller 1101 → 1091, men man
-gjorde 60 repetitioner för att köpa den minskningen. **Extraövning sparar inte
-arbete — den jämnar ut det till en premie på omkring fyra procent.**
+#### OCH DEN KÖPER NYA KORT, MEN TILL EN BRUTAL KURS
 
-#### OCH DEN KÖPER NYA KORT, MEN TILL EN BRUTAL KURS (2026-08-26)
-
-Julius andra fråga: *"Om man kopplar in en ärlig algoritm som kan uppskatta
-framtida arbete och som lägger till nya kort för att hålla en balans på x
-minuters arbete per dag känns det som att den hade föreslagit lite extra nya
-kort vid extraövningar."* Den algoritmen ÄR `nya_idag`, och den gör det —
-knappt. Mätt direkt efter extrapasset, mål 150 rep/dygn:
+Julius: *"Om man kopplar in en ärlig algoritm som kan uppskatta framtida
+arbete … känns det som att den hade föreslagit lite extra nya kort vid
+extraövningar."* Den algoritmen ÄR `nya_idag`, och den gör det — knappt.
+Mätt direkt efter extrapasset, mål 150 rep/dygn:
 
 | extra gjorda | belastning idag | tak idag | i längden | nya släpps in |
 |---|---|---|---|---|
@@ -1494,28 +1455,21 @@ knappt. Mätt direkt efter extrapasset, mål 150 rep/dygn:
 | 60 | 76 | 74 | 11 | **11** |
 | 150 | 40 | — | 12 | **12** |
 
-**IDAG-villkoret lossnar dramatiskt — taket går 14 → 74 — och ändå rör sig
-inte inflödet.** Skälet är att `nya_idag` tar `min(i_längden, idag)`, och det
-som binder är LÅNGTIDSVILLKORET. Extraövningen sänker fönstrets medel 56,1 →
-48,2, alltså fjorton procent, men ett nytt kort kostar 8,40 repetitioner över
-året, så `i_längden` går 11 → 12.
+IDAG-villkoret lossnar dramatiskt — taket går 14 → 74 — och ändå rör sig inte
+inflödet, eftersom `min(i_längden, idag)` binds av LÅNGTIDSVILLKORET.
+Fönstrets medel faller 56,1 → 48,2, men ett nytt kort kostar 8,40
+repetitioner över året, så `i_längden` går 11 → 12. **Växelkursen är omkring
+150 extra repetitioner per nytt kort**, mätt och inte antagen.
 
-**Växelkursen är alltså omkring 150 extra repetitioner per nytt kort**, och
-den är mätt och inte antagen.
+**Att det är så är rätt.** Ett extrapass är en engångshändelse; släppte det in
+nya kort i takt med hur mycket man gjorde skulle man låna mot en
+långtidsbudget man inte ändrat. Det tal som FÅR flytta inflödet är
+`minuter_per_dag`, därför att det är ett stående åtagande. Spaken är
+inställningen, inte extrapasset.
 
-**Att det är så är rätt, inte ett fel.** Ett extrapass är en engångshändelse.
-Släppte det in nya kort i takt med hur mycket man gjorde skulle man låna mot
-en långtidsbudget man inte har ändrat: korten kommer tillbaka i evighet, men
-extraövningen sker en gång. Det tal som FÅR flytta inflödet är
-`minuter_per_dag`, därför att det är ett stående åtagande. Skillnaden mellan
-en engångsinsats och ett åtagande är precis vad de två villkoren i `nya_idag`
-skiljer på, och att bara det ena biter är styrningen som fungerar.
+#### URVALSPOLICYN ÄR REDAN DEN RÄTTA
 
-**Vill man ha fler nya kort är spaken inställningen, inte extrapasset.**
-
-#### URVALSPOLICYN ÄR REDAN DEN RÄTTA (2026-08-26)
-
-Fyra policyer mätta på samma kortlek, 60 kort var, Δ mot ingen extra:
+Fyra policyer, 60 kort var, Δ mot ingen extra:
 
 | policy | Δ dag 0 | Δ arbete 30 d |
 |---|---|---|
@@ -1524,26 +1478,15 @@ Fyra policyer mätta på samma kortlek, 60 kort var, Δ mot ingen extra:
 | störst framflyttning | −57 | +29 |
 | bara inom två dygn | −60 | +50 |
 
-Att ta det som förfaller först är alltså den enda policy som faktiskt tömmer
-den närmaste dagen. `förfaller DESC` rör ingenting — de korten ligger 15–55
-dygn bort och lämnar fönstret oavsett. Policyn behöver inte ändras.
+Att ta det som förfaller först är den enda policy som tömmer den närmaste
+dagen. `förfaller DESC` rör ingenting — de korten ligger 15–55 dygn bort och
+lämnar fönstret oavsett.
 
-#### VÄRDET GÅR ATT VISA, OCH DET ÄR NU UTSKRIVET (2026-08-26)
+#### VÄRDET GÅR ATT VISA, OCH DET ÄR UTSKRIVET
 
 Julius: *"Det borde finnas ett sätt att indikera ungefär hur effektfullt det
-är att repetera. Detta kan man kanske approximera med FSRS-funktioner."*
-
-Det behöver inte approximeras — FSRS räknar det exakt, och tabellen överst i
-posten är redan svaret för ETT kort. `extranytta()` gör samma räkning för
-kön som faktiskt ligger där:
-
-    för varje kort i kommande():
-        vinst_nu  = S(betyg=Good, R vid dagens R) − S
-        vinst_sen = S(betyg=Good, R vid förfallodagen) − S
-        andel     = vinst_nu / vinst_sen
-
-och väger ihop dem. Talet är en andel av full nytta, alltså "hur mycket av
-det kortet vore värt vid förfallodagen får du om du gör det nu".
+är att repetera."* Det behöver inte approximeras — FSRS räknar det exakt.
+`extranytta()` väger `vinst_nu / vinst_sen` över kön:
 
 | hur tidigt | andel av full nytta |
 |---|---|
@@ -1554,68 +1497,50 @@ det kortet vore värt vid förfallodagen får du om du gör det nu".
 | 1 dygn | 93 % |
 | i tid | 100 % |
 
-Noll på dag ett är inte en avrundning utan FSRS korttidsformel: samma dygn
-är R = 1,000 och stabilitetsfaktorn klämmer till 1,0×. **Julius gissning att
-det "kanske inte händer något när man repeterar ord som man har gjort samma
-dag" är alltså bokstavligt riktig** — och det är därför knappen är låst just
-då, inte av försiktighet.
+Noll på dag ett är FSRS korttidsformel och ingen avrundning: samma dygn är
+R = 1,000 och stabilitetsfaktorn klämmer till 1,0×. **Julius gissning att det
+"kanske inte händer något när man repeterar ord som man har gjort samma dag"
+är alltså bokstavligt riktig** — och det är därför knappen är låst just då.
 
-Mätt på två verkliga lägen: den simulerade fjortondagarsleken gav **56 %**
-med hundra kort i kön, och ett läge där korten förfaller inom kort gav
-**98 %**. Måttet skiljer alltså på lägena i stället för att visa en konstant.
+Mätt på två verkliga lägen: 56 % med hundra kort i kön, 98 % när korten
+förfaller inom kort. Måttet skiljer på lägena i stället för att visa en
+konstant. Knappen säger vad den ger — *"X early available · about 56 % of the
+value of waiting"* — och lovar ingenting om nya kort.
 
-**Det som INTE går att lova är Julius andra hälft** — *"kanske till och med
-skapa tillräckligt med rum i kalendern så att det finns plats för ett nytt
-kort"*. Det är precis vad RÄTTELSE ovan mätte och fann omvänt: extrapasset
-sänkte belastningen 13,21 → 11,83 men minskade morgondagens utrymme för nya
-kort från 13 till 11. Extraövning köper repetitioner, inte rum. Knappen
-säger därför vad den ger — "X early available · about 56 % of the value of
-waiting" — och lovar ingenting om nya kort.
+**En bugg låg gömd bakom grinden.** `kommande()` hade fyra platshållare och
+tre bindningar, så varje anrop kastade `ProgrammingError`. Det syntes aldrig,
+eftersom `finns_extra` var noll i varje kurs som testats för hand och knappen
+därför var låst. **En trasig SQL-sats kan ligga tyst hur länge som helst
+bakom en grind som råkar vara stängd** — därav invarianten `extraövningen går
+att köra`.
+
+Och på dag ett finns ingenting att ta av, med flit: `kommande()` kräver
+`sedd < dygnets_början`, så ett kort infört idag kan inte betygsättas igen
+samma dygn (E2). "Nothing more ahead" är rätt svar på dag ett.
 
 #### PASSET RÄKNADE PÅ ETT ORDFÖRRÅD SOM INTE FANNS ÄN (2026-08-29)
 
-Julius: *"Om det endast var 3 kort, hur kan ditt resultat blivit 4 av 6 och
-3 av 7? … En grundprincip är att alla nyintroducerade kort ska testas. Därför
-ifall det vore 7 nya böjningskort borde det stå new: 7 och inte new: 3."*
-
-Han hade rätt, och talet ljög av en precis orsak.
+Julius: *"Ifall det vore 7 nya böjningskort borde det stå new: 7 och inte
+new: 3."* Han hade rätt, och talet ljög av en precis orsak.
 
 `osedda` släpper igenom ett böjningskort först när dess ord är SETT — regeln
-"inget böjningskort före sitt ord", som `introduktionsprov` vaktar. Men
-passet byggs INNAN dagens glosor är gjorda, så nästan ingenting kvalificerar.
-Mätt på en ny fransk kurs:
+"inget böjningskort före sitt ord". Men passet byggs INNAN dagens glosor är
+gjorda, så nästan ingenting kvalificerade:
 
     före glosorna    11 kandidater  →  varav 3 nåbara  →  passet planerar 3
     efter glosorna   27 kandidater  →  varav 15 nåbara
 
-**Passets två halvor sa alltså emot varandra.** `nåbara_kort(plus=dagens_ord)`
-räknar dagens ord som kända och svarade FEMTON; `osedda` krävde att de redan
-var sedda och lämnade TRE. Dagen planerade tre, skärmen sa "new: 3", och
-meningarna införde sju — för när de kom var orden sedda.
-
-`osedda` tar numera samma `plus`. Ordningsregeln bryts inte: ordet delas
-fortfarande ut i glosläget före meningen som prövar dess böjning, samma dag.
-Det som ändras är när passet får VETA det.
-
-**Dag ett på franska, före och efter:**
+Passets två halvor sa emot varandra: `nåbara_kort(plus=dagens_ord)` räknade
+dagens ord som kända och svarade FEMTON, `osedda` krävde att de redan var
+sedda och lämnade TRE. `osedda` tar numera samma `plus`. Dag ett på franska:
 
     före    att_göra 12   (9 glosor + 3 nya)    2 meningar    16 kort införda
     efter   att_göra 25   (12 glosor + 13 nya)  9 meningar    34 kort införda
 
-**OCH DET BYTTE ETT FEL MOT ETT ANNAT, som ska stå skrivet.** Budgeten är 25
-nya kort per dygn. Förut infördes 16 — under. Nu införs 34 — över. Nio kort
-kommer in utan passrad, dragna av meningar som byggdes för andra kort.
-
-Skälet är strukturellt: `nya_tillåtna` grindar KÖN, alltså målkorten, och
-inte vad en mening råkar röra. En mening måste vara grammatisk, och det
-kräver kort. `_kort_per_koncept` räknar den dragningen för ORD men det finns
-ingen motsvarighet för kort som drar kort.
-
-Julius princip är alltså uppfylld till hälften: talet är inte längre grovt
-fel (3 mot 7), men det är fortfarande för lågt (13 mot 22). Att stänga
-resten kräver antingen att taket räknas på FAKTISKT införda kort i stället
-för på köade, eller att dragningen mäts och dras av i förväg. Frågan står
-öppen.
+Det bytte ett fel mot ett annat — budgeten är 25 och dagen införde 34 — och
+den halvan är avgjord i C9: `infört_idag` räknar numera varje kort som setts
+oavsett `schemalagt`, och de kort som meningar drar in utan att stå i passet
+är MEDFÖLJANDE enligt Julius regel (gratis vid rätt, dagens arbete vid fel).
 
 ### B7 ✓ — Ett fel får inte lämnas ofixat
 
@@ -2615,267 +2540,140 @@ upplåsningen — se A3, samma fråga).
 ### C9 ✓ — Prövar korten det de utger sig för att pröva?
 
 Julius granskade en hel dag skärmbild för skärmbild och ställde tre frågor
-som alla visade sig ha samma svar: nej, inte alltid.
+som alla hade samma svar: nej, inte alltid. Fem defekter, alla mätta, alla
+åtgärdade 2026-08-29.
 
-**Status 2026-08-29:** alla fem fynden nedan är stängda och mätta. Beviset
-som håller markören är felsvepet: 280 prövningar per språk över åtta
-feltyper, **noll falska betyg** i franska, tyska och engelska — och nätet kan
-numera falla, med två sabotage som fäller det. Markören står så länge det
-talet gör det.
+**Det som håller markören** är felsvepet: 280 prövningar per språk över åtta
+feltyper, **noll falska betyg** i franska, tyskan och engelskan — och nätet
+kan numera falla.
 
-#### ÄNDELSEKORT KRÄNGS PÅ FORMER SOM SAKNAR ÄNDELSEN
+#### ÄNDELSEKORT KRÄNGDES PÅ FORMER SOM SAKNADE ÄNDELSEN
 
 Julius om `J'ai.`: *"vad är ens s för ändelsekort? Prövades det verkligen?"*
+Nej. K1:s `pres_1sg` är `s`, men `ai` är suppletiv och innehåller inget `s`.
+Kortet fick ändå ✓ och steg i stabilitet på bevis som aldrig fanns — **den
+enda feltypen som FÖRDÄRVAR data i stället för att sakna den** (D3).
 
-`avoir` i presens är `ai, as, a, avons, avez, ont`. K1:s `pres_1sg`-ändelse
-är `s`. Men `j'ai` innehåller inget `s` — formen är suppletiv och går inte
-att dela i stam plus ändelse. Ändelsekortet fick ändå ett ✓.
+Regeln fanns redan, på fel ställe. `dela_upp` lägger en cell bland RESTERNA
+just när formen inte slutar på klassens ändelse, och resten får ett eget
+formkort. `_cellkort` körde ändelseslingan för BÅDA radtyperna och kopplade
+in resterna igen — kunskapen kastades bort ett steg senare.
 
-Orsaken är att `Cellkort` mappar VARJE cell till sin klass ändelsekort, utan
-att fråga om formen faktiskt uppvisar ändelsen. Mätt över franskans hela
-verblexikon: **152 av 2 363 (verb, cell)-par tillskriver en ändelse som inte
-finns i formen.**
+    ja 8,9 %   fr 6,2 %   en 5,8 %   it 5,4 %   es 3,5 %   sv 1,7 %
 
-    vivre   pret_1sg   form 'vécus'    ändelsekort 'is'
-    tenir   pret_1sg   form 'tins'     ändelsekort 'is'
-    avoir   pres_1sg   form 'ai'       ändelsekort 's'
+Franskans 6,2 % är 550 kopplingar. Den första mätningen såg bara verben —
+152 av 2 363 (verb, cell)-par — och underskattade därför felet:
 
-Sex procent av all ändelseattribution är alltså påhittad. Kortet stiger i
-stabilitet på bevis som aldrig fanns — och det är den enda feltypen som
-FÖRDÄRVAR data i stället för att bara sakna den (D3).
+        was → 'ed'      です → 'ます'      mannen → 'et'      être → 'er'
 
-Mekanismen för det rätta finns redan: `form`-kort lagrar hela ordformen när
-den inte går att bygga. `avoir` har ett för `pres_3sg` men inte för
-`pres_1sg`. Regeln som saknas är att en cell vars form inte slutar på
-klassens ändelse ska ha ett formkort i stället för en cellkoppling till
-ändelsen.
+Ändelseslingan gäller nu bara stamrader. Kontrollerat i alla sju språken:
+noll ändelsekort utan koppling, noll celler utan kort. Invarianten läser
+FORMEN och inte bara radtypen — resten bär hela ordformen i `stammar.tsv`,
+så både premissen (ändelsen är inte ett suffix av formen) och slutsatsen
+(ingen systemkoppling utgår från raden) prövas mot strängen.
 
-**✓ ÅTGÄRDAT 2026-08-29.** Regeln fanns redan — på fel ställe. `dela_upp` i
-stamanalysen lägger en cell bland RESTERNA just när formen inte slutar på
-klassens ändelse, och resten får sitt eget formkort. `_cellkort` körde sedan
-ändelseslingan för BÅDA radtyperna och kopplade in resterna igen.
-
-Felet var alltså inte att kunskapen saknades utan att den kastades bort ett
-steg senare. Mätt över alla sju språken, andel av cellkopplingarna:
-
-    ja  8,9 %      fr  6,2 %      en  5,8 %      it  5,4 %
-    es  3,5 %      sv  1,7 %
-
-        was     → ändelsekort 'ed'
-        です     → ändelsekort 'ます'
-        mannen  → ändelsekort 'et'
-        être    → ändelsekort 'er'
-
-Den franska mätningen ovan (152 av 2 363) gällde bara verben; över hela
-franskan är det 550 kopplingar.
-
-Ändelseslingan gäller nu bara stamrader. Ingen ändelse blev onåbar och ingen
-cell naken — kontrollerat i alla sju språken: noll ändelsekort utan koppling,
-noll celler utan kort. Formkortet äger hela strängen, och där finns ingen
-ändelse att pröva separat.
-
-Invarianten i nät 13 läser FORMEN och inte bara radtypen: resten bär hela
-ordformen i `stammar.tsv`, så både premissen (ändelsen är inte ett suffix av
-formen) och slutsatsen (ingen systemkoppling utgår från raden) går att pröva
-mot strängen.
-
-Det som INTE går att rätta är historiken. Ändelsekort som redan stigit i
-stabilitet på de här bevisen bär kvar den — det finns ingen ärlig väg att
-räkna om ett betyg som byggde på en mening som aldrig prövade kortet.
-
-#### TVÅ TREDJEDELAR AV STAMKORTEN ÄR SITT EGET ORD
+#### TVÅ TREDJEDELAR AV STAMKORTEN VAR SITT EGET ORD
 
 Julius: *"Vi gjorde il i ordglosdelen redan. Är det problematiskt att il är
-identisk som ord och som stem?"* — och senare: *"Jag är generellt sätt lite
-skeptisk till stems."*
-
-Mätt på franskan:
+identisk som ord och som stem?"* Ja. Mätt på franskan:
 
     ordklass      stamkort   identiska med ordkortet
     Substantiv         136                       133
     Pronomen            10                         8
     Verb                70                         0
 
-**141 av 216 stamkort har exakt samma facit som sitt ordkort.** `mère` =
-`mère`, `enfant` = `enfant`, `il` = `il`. De frågar samma sak två gånger.
+**141 av 216.** Verben är undantaget, och det är just där stammen bär
+betydelse: `exist` mot `exister`. Samma tomma läromoment som ändelserna hade
+före hopslagningen (F5b, 52 %), i en annan korttyp.
 
-Verben är undantaget, och det är just där stammen bär betydelse: `exist` mot
-`exister`. För ett oböjt substantiv eller pronomen finns ingen stam att
-skilja från ordet.
-
-Det är samma tomma läromoment som ändelserna hade före hopslagningen (F5b,
-52 %), i en annan korttyp. Åtgärden är densamma: ett stamkort ska bara finnas
-när stammen skiljer sig från ordet.
-
-**✓ ÅTGÄRDAT 2026-08-29.** `härled` skapar inte längre stamkortet när stammen
-är lemmat. Efter villkoret finns noll identiska stamkort i något språk, och
-franskans bestånd gick från 216 stamkort till 75 — de 141 som återstod är
-verbens, alltså de som faktiskt bär en stam.
-
-Två saker gjorde åtgärden större än ett `continue`:
+`härled` skapar inte längre kortet när stammen är lemmat: franskan gick 216 →
+75, noll identiska kvar i något språk. Två följder gjorde åtgärden större än
+ett `continue`:
 
 **Cellen måste peka någonstans.** `_cellkort` emitterade fortfarande
-stamnyckeln, och raden föll bort tyst vid insättningen (`if n in idn`). Kvar i
-cellen blev bara ÄNDELSEN:
+stamnyckeln och raden föll bort tyst vid insättningen (`if n in idn`) — kvar
+i cellen blev bara ÄNDELSEN, i 811 franska och 13 177 tyska celler. Ett
+felstavat `mère` hade bokförts på ändelsen `s`, alltså feltypen ovan
+återinförd av rättningen till den. Mätningen visade också varför stamkortet
+stod där: **ordkort hade noll rader i `Cellkort` i samtliga sju språk.** Det
+höll ordets plats i beroendekartan. Cellen pekar nu på ordkortet.
 
-    fr     811 av  8 874 celler utan annat kort än ändelsen
-    de  13 177 av 23 109
-    sv   2 366 av  4 791
-    en   1 593 av  2 054
-
-Ett felstavat `mère` hade alltså bokförts som att ändelsen `s` brast — samma
-feltyp som avsnittet ovan beskriver, återinförd av rättningen till det här.
-Mätningen visade också varför stamkortet stod där: **ordkort hade noll rader i
-`Cellkort` i samtliga sju språk.** Stamkortet höll ordets plats i
-beroendekartan, och ett felstavat ord kunde aldrig bokföras på ordet självt.
-Cellen pekar nu på ordkortet — samma kort som förr, med sitt riktiga namn.
-
-**Historiken måste följa med.** `_slå_ihop_stam_med_ord` flyttar repetitioner
-från stamkortet till ordkortet och låter den svagaste evidensen vinna, precis
-som `_slå_ihop_gamla_ändelsekort`. Utan den blir de gamla korten inte fel utan
-OSYNLIGA: kvar med historik, utan cellkoppling, omöjliga att nå (A3).
-
-Tre invarianter i nät 13 vaktar de tre delarna, var och en med sitt eget
-sabotage. Den första läser `härled` och inte det befolkade beståndet — läste
-den beståndet blev den stum, eftersom migrationen städar bort just de kort som
-sabotaget återinför.
+**Historiken måste följa med.** `_slå_ihop_stam_med_ord` flyttar
+repetitionerna till ordkortet med svagaste evidensen vinnande. Utan den blir
+korten inte fel utan OSYNLIGA: kvar med historik, utan cellkoppling, onåbara
+(A3).
 
 #### FELSVEPET KUNDE INTE FALLA
 
-Upptäckt när stamarbetet gjordes 2026-08-29. `felsvep.py` skrev rubriken
-*"SAMMANLAGT — det enda talet som får vara noll"*, rapporterade tyskans två
-falska godkännanden, och `main()` returnerade ändå alltid `0`. Sviten räknade
-det som ett grönt nät.
+`felsvep.py` skrev rubriken *"det enda talet som får vara noll"*, rapporterade
+tyskans två falska godkännanden, och `main()` returnerade ändå alltid `0`.
+Sviten räknade det som ett grönt nät — samma fel som ett stumt prov, en nivå
+upp.
 
-Det var samma fel som de stumma proven, en nivå upp: nätet mätte men kunde
-inte fälla, och "14 nät, alla håller" var därmed ett svagare besked än det
-lät.
+Diagnosen gav en tredje väg in för samma lögn:
 
-**✓ ÅTGÄRDAT 2026-08-29.** Både felet och nätet.
+    facit  'Der Bruder weiß ihre Nachmittage.'
+    svar   'die Bruder weiß ihre Nachmittage.'
 
-**Felet.** Diagnosen visade en tredje väg in för samma sorts lögn som resten
-av C9 handlar om. Mätt fall:
+    ✗ egenskap '1'      genuset föll — riktigt
+    ✓ form     'der'    FICK GOOD, och strängen fanns inte i svaret
 
-    facit   'Der Bruder weiß ihre Nachmittage.'
-    svar    'die Bruder weiß ihre Nachmittage.'
+När ett ord- eller stamkort faller dras allt bakom formen ur betygsättningen.
+Regeln omfattade `stam` och `form` men inte `egenskap`. **Genuset VÄLJER
+formen** — fel genus betyder att den rätta formen aldrig producerades — så
+avdraget gäller där också. Rättelsen kostade ingenting, vilket är ovanligt
+för den modulen: tyskan gick 2 → 0 falska betyg med tystnaden stilla på 96,
+och franskan och engelskan rörde sig inte alls.
 
-    ✗ egenskap  '1'        genuset föll — riktigt
-    ✓ form      'der'      FICK GOOD, och strängen fanns inte i svaret
+`main()` returnerar nu skilt från noll, och nätet har ett eget
+falsifieringsblock — annars hade skillnaden bara varit att raden bytt färg.
+Två sabotage i vardera hörnet av samma regel: utan genusavdrag 2 falska
+betyg, utan ordavdrag 91. Det andra är det ursprungliga felet modulen byggdes
+för — `nous coüter` för `Vous coûtez` gav ändelsen `ez` ett Good i ett svar
+utan de bokstäverna.
 
-När ett ord- eller stamkort faller dras allt bakom formen ur betygsättningen:
-brast ordet prövades böjningen aldrig. Regeln omfattade `stam` och `form` men
-inte `egenskap`. Genuset VÄLJER formen — ett fel genus betyder att den rätta
-formen aldrig producerades — så avdraget gäller där också.
-
-Rättelsen kostade ingenting, vilket är ovanligt för den här modulen: varje
-tidigare skärpning har betalats i tystnad. Tyskans falska betyg gick 2 → 0
-medan tystnaden stod stilla på 96, och franskan och engelskan rörde sig inte
-alls.
-
-**Nätet.** `main()` returnerar nu skilt från noll när något falskt betyg
-finns, och har ett eget falsifieringsblock — annars vore skillnaden bara att
-raden bytt färg. Två sabotage, ett i vardera hörnet av samma regel:
-
-    utan genusavdrag   ett fällt genuskort lämnar formen stående      2 falska
-    utan ordavdrag     ett fällt ordkort lämnar ändelsen stående     91 falska
-
-Det andra är det ursprungliga felet modulen byggdes för: `nous coüter` för
-`Vous coûtez` fällde ordkortet och gav ändelsen `ez` ett Good i ett svar där
-bokstäverna inte förekom.
-
-Falsifieringen kostar ett svep per sabotage; hela nätet tar 4,4 s i stället
-för 2,3. `--utan-sabotage` finns för handkörningar där man bara vill se talen.
-
-#### RÄKNAREN OCH LISTAN MENAR OLIKA SAKER MED "NEW"
+#### RÄKNAREN OCH LISTAN MENADE OLIKA SAKER MED "NEW"
 
 Julius: *"Bild 3 borde ha hoppat ner från 7 till 1 eftersom 6 kort provades
-men den hoppade endast ner till 5."*
+men den hoppade endast ner till 5."* `new` i räknaren var PASSRADER med
+rollen `ny`; `new` på ett kort i listan betydde att kortet aldrig setts.
 
-Reproducerat med hans egna tal:
-
-    Tu existes.        listan: 5 nya    räknaren −4    1 utan passrad
-    Un enfant coûte.   listan: 6 nya    räknaren −2    4 utan passrad
-                                                       (coût, un, ∅, e)
-
-`new` i dagens räknare är PASSRADER med rollen `ny`. `new` på ett kort i
-listan betyder att kortet aldrig setts. Ett kort som införs utan att ha
-planerats är nytt i listans mening men rör inte räknaren.
-
-**Och det betyder att inflödestaket inte håller.** Mätt på en nollställd
-dag: taket var 25 kort, dagen införde **34**. Nio över den takt FSRS säger
-är hållbar — och räknaren visade aldrig det.
-
-**Mätt igen 2026-08-29, på appens egen dygnsgräns.** Första mätningen
-jämförde mot UTC-midnatt medan koden räknar dygnet från 22:00 UTC; talen höll
-ändå. Franskans dag:
+Mätt på franskans dag, på appens egen dygnsgräns:
 
     taket                     25
     faktiskt infört           34
-    räknat av taket           29
-    osynligt för taket         5   (schemalagt = 0)
+    räknat av taket           29        ← två skilda läckor
 
-Uppdelat på hur korten kom in:
-
-    roll `ny`                 13      ← det ENDA räknaren visar
-    roll `glosa`              12      ← nya ORD, lika nyintroducerade
+    roll `ny`                 13        ← det ENDA räknaren visade
+    roll `glosa`              12        ← nya ORD, lika nyintroducerade
     roll `igen`                1
-    ingen passrad alls         9      ← infördes av meningarna
+    ingen passrad alls         9        ← infördes av meningarna
 
-Det ger TVÅ skilda läckor, och de kräver olika svar:
+**Läcka 1 var en bugg.** `INFÖRBAR = (schemalagt = 1 OR typ = 'ord')` satt på
+två frågor som är olika: vad som får PLANERAS ska filtreras, vad som
+FÖRBRUKATS ska inte. De fem osynliga var `system` 2, `form` 1, `ordföljd` 1,
+`stam` 1. `infört_idag` räknar nu varje kort som setts idag.
 
-1. **`INFÖRBAR = (schemalagt = 1 OR typ = 'ord')`.** Ett kort som tagits ur
-   kön för att det är allestädes närvarande räknas varken som osett eller som
-   infört — men det blir bedömt så fort en mening råkar innehålla det. Fem
-   kort idag: `system` 2, `form` 1, `ordföljd` 1, `stam` 1.
+**Läcka 2 var en oklar regel, och Julius avgjorde den:**
 
-2. **Taket styr PLANERINGEN, inte införandet.** `nya = min(osedda, tak −
-   infört_idag)` avgör hur många passrader med rollen `ny` som läggs. En
-   mening vald för ett kort rör 7–10 (E4), och de övriga införs utan att ha
-   planerats. Nio kort idag kom in den vägen.
+> *"De nyinförda korten som egentligen inte tillhör passet ska inte läggas
+> till i due eller new. De är osynliga hittills… Ifall de blir passade så
+> händer ingenting. Och ifall de failar så borde due date flyttas till idag."*
 
-Julius princip — *"man ska aldrig få kort som ännu inte är introducerade, alla
-nyintroducerade kort ska testas"* — är alltså uppfylld åt ena hållet och inte
-åt det andra: korten testas, men de räknas inte.
+Regeln är ASYMMETRISK: ett medföljande kort är gratis när det går rätt och
+blir dagens arbete när det går fel. Beteendet fanns i `pass_.registrera`
+sedan hans beslut 2026-08-27, men ingenting vaktade det och skärmen sa emot
+det — listan visade kortet odämpat med märket `new` fast räknaren stod still.
+Svaret bär nu `planerad`, och kortet märks som inlånat.
 
-**✓ AVGJORT 2026-08-29, av Julius.** Läcka 1 var en bugg och är rättad:
-`infört_idag` räknar numera varje kort som setts idag, oavsett `schemalagt`.
-Vad som får PLANERAS och vad som FÖRBRUKATS är olika frågor och ska ha olika
-filter.
+**Förfallodagen flyttas inte till idag**, och det är inget avsteg: FSRS har
+ingen tidsupplösning under ett dygn, `_next_interval` klämmer till
+`max(intervall, 1)`. Effekten levereras av `igen`-raden (B7) — kortet kommer
+tillbaka i en ANNAN mening samma pass, vilket är bättre än Ankis "samma kort
+om tio minuter". Ankis motsvarighet är `relearning_steps`, ett lager utanför
+minnesmodellen.
 
-Läcka 2 var ingen bugg utan en oklar regel, och Julius avgjorde den:
-
-> *"Säg att vi tränar på 13 kort men vid en mening införs extra kort för att
-> kunna konstruera meningen på rätt nivå (detta är helt rätt beteende eftersom
-> vi inte vill att alla kort i en mening ska vara utmanande). De nyinförda
-> korten som egentligen inte tillhör passet ska inte läggas till i due eller
-> new. De är osynliga hittills. Ifall vi klarar de så förs den datan in… Ifall
-> de blir passade så händer ingenting. Och ifall de failar så borde due date
-> flyttas till idag."*
-
-Regeln är alltså ASYMMETRISK: ett medföljande kort är gratis när det går rätt
-och blir dagens arbete när det går fel. Beteendet fanns redan i
-`pass_.registrera` sedan hans beslut 2026-08-27, men ingenting vaktade det —
-och skärmen sa emot det.
-
-**Vad som ändrades.** Utfallslistan visade ett medföljande kort odämpat med
-märket `new`, eftersom dess `läge` blir `bedömd` så snart det bokförs. Nio av
-franskans 34 införda kort kom in den vägen, och de förklarar hela avvikelsen
-mellan listan och räknaren som avsnittet ovan beskriver. Kortet märks nu som
-inlånat, med `planerad: false` i svaret och en egen förklaring.
-
-**Vad som INTE ändrades, och varför.** Förfallodagen flyttas inte till idag.
-FSRS har ingen tidsupplösning under ett dygn — `_next_interval` klämmer till
-`max(intervall, 1)` — så ett fallerat kort schemaläggs alltid till i morgon.
-Effekten Julius vill ha levereras i stället av `igen`-raden (B7): kortet
-kommer tillbaka i en ANNAN mening samma pass, vilket är bättre än Ankis
-"samma kort om tio minuter". Det är inget avsteg från FSRS; Ankis egen
-motsvarighet är `relearning_steps`, ett lager UTANFÖR minnesmodellen.
-
-**Nätet.** `passprov` har nu `medföljande kort: gratis rätt, ditt vid fel`,
-med ett sabotage per halva. Det andra sabotaget — "köa allting" — var först
-STUMT, och det var beskedet: `elif rätt: continue` såg ut att bära regeln men
-var död kod, eftersom insättningen redan grindades av `not rätt`. Beslutet
-fattas nu på ett ställe, `_ska_tas_igen`, och båda sabotagen fäller provet.
+#### DE REFLEXIVA VERBEN — LÖST I FEM SPRÅK 2026-08-26
 
 ### C7 ! — Producerar renderarna korrekt språk?
 
