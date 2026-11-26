@@ -15,8 +15,6 @@ import sys
 from ..db import STANDARD_DB, anslut
 from ..modeller import ORDKLASSER, SPRÅK
 
-from ..generering.pipeline import STANDARD_BATCH  # noqa: E402
-
 STANDARD_MODELL = "claude-haiku-4-5"
 ALLA_ORDKLASSER_MED_MORFOLOGI = [
     "Verb", "Substantiv", "Adjektiv", "Pronomen", "Possessiv", "Frågepronomen",
@@ -66,7 +64,7 @@ def kör(args: argparse.Namespace) -> int:
 
     from ..generering.pipeline import generera_former
 
-    batch_storlek = getattr(args, "batch_storlek", STANDARD_BATCH)
+    batch_storlek = getattr(args, "batch_storlek", None)
     modell = getattr(args, "modell", STANDARD_MODELL)
     torkörning = getattr(args, "torkörning", False)
     verbose = getattr(args, "verbose", False)
@@ -116,9 +114,11 @@ def lägg_till_argument(p: argparse.ArgumentParser) -> None:
                         f"Giltiga: {', '.join(ALLA_ORDKLASSER_MED_MORFOLOGI)}")
     p.add_argument("--lemma", default=None,
                    help="Kommaseparerad lista av lemman (default: alla i DB)")
-    p.add_argument("--batch-storlek", type=int, default=STANDARD_BATCH,
+    p.add_argument("--batch-storlek", type=int, default=None,
                    dest="batch_storlek",
-                   help=f"Antal lemman per LLM-anrop (default: {STANDARD_BATCH})")
+                   help="Antal lemman per LLM-anrop. Default: räknas ut från "
+                        "antalet celler i slot-filen (144-cellers tyska "
+                        "adjektiv får 2, tvåcellers substantiv får 10).")
     p.add_argument("--modell", default=STANDARD_MODELL,
                    help=f"Claude-modell (default: {STANDARD_MODELL})")
     p.add_argument("--torkörning", action="store_true",
