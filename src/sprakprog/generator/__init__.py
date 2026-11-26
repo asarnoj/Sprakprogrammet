@@ -31,6 +31,7 @@ import sqlite3
 from dataclasses import asdict, dataclass, replace
 
 from ..kort import Schemaläggare, spec_json
+from ..kort.schemalaggning import FEL, dygnets_början
 from ..rendering import RENDERARE, Mening, RenderingsFel, Uppslag, Validator
 from .poang import Poäng, Poängsättare
 from .rattning import Anmärkning, Rättare, Rättning
@@ -467,7 +468,9 @@ class Generator:
         # reserv — inte ett villkor som kan tömma sökningen. Som hårt filter
         # gav den `None` med jämna mellanrum: engelskan tog slut efter en
         # mening när ingen av 200 kandidater råkade hålla sig under gränsen.
-        bäst, reserv, nödfall = self._sök(kandidater, mål, förfallna, sedda, nu)
+        redan_klara = self._redan_klara(nu)
+        bäst, reserv, nödfall = self._sök(
+            kandidater, mål, förfallna, sedda, nu, redan_klara)
 
         # RESERVUTGÅNGEN, på hela sökningens nivå. Gick ingen mening att bygga
         # ur det användaren mött släpps begränsningen och sökningen görs om.
@@ -491,7 +494,7 @@ class Generator:
         if bäst is None and reserv is None and nödfall is None:
             self.samplare.begränsa(None)
             bäst, reserv, nödfall = self._sök(
-                kandidater, mål, förfallna, sedda, nu)
+                kandidater, mål, förfallna, sedda, nu, redan_klara)
             # OCH DET SYNS ATT DEN TOGS. C5 kallar reserven "ett UNDANTAG som
             # syns, inte den vanliga vägen" — men den syntes ingenstans, och
             # då går den inte att skilja från en läcka.
@@ -516,8 +519,8 @@ class Generator:
             övriga = [k["koncept"] for k in kö if k["koncept"]
                       and k["koncept"] not in igen_mål]
             if övriga:
-                bäst, reserv2, nöd2 = self._sök(kandidater, övriga, förfallna,
-                                                sedda, nu)
+                bäst, reserv2, nöd2 = self._sök(
+                    kandidater, övriga, förfallna, sedda, nu, redan_klara)
                 reserv = reserv or reserv2
                 nödfall = nödfall or nöd2
 
@@ -540,6 +543,19 @@ class Generator:
             # kortlek helt, kortare fångar inte en tvåtakt (A, B, A, B).
             self._förra_texter = ([bäst.text] + self._förra_texter)[:3]
         return bäst
+
+    def _redan_klara(self, nu) -> set[int]:
+        """Kort som redan bedömts RÄTT idag, för hela språket.
+
+        Hämtas EN gång per sökning och inte per kandidat: sökningen prövar
+        upp till tusen kandidater, och ett uppslag var hade gjort regeln
+        dyrare än den är värd.
+        """
+        return {r["kort_id"] for r in self.kort_db.execute(
+            """SELECT DISTINCT r.kort_id FROM Repetition r
+               JOIN Kort k ON k.id = r.kort_id
+               WHERE k.språk = ? AND r.tidpunkt >= ? AND r.betyg <> ?""",
+            (self.språk, dygnets_början(nu), int(FEL)))}
 
     def _duglig(self, okända: int, text: str) -> bool:
         """Får kandidaten vinna, eller hör den hemma i reservtiern?
@@ -567,7 +583,8 @@ class Generator:
         return okända == 0 and text not in self._förra_texter
 
     def _sök(self, kandidater: int, mål: list, förfallna: set,
-             sedda: set, nu) -> tuple["Förslag | None", "Förslag | None"]:
+             sedda: set, nu,
+             redan_klara: set[int] | None = None) -> tuple["Förslag | None", "Förslag | None"]:
         """Bästa kandidaten kring `mål`, och bästa oavsett. Se `föreslå`.
 
         Två tiers, och skälet till att sökningen aldrig får misslyckas står i
@@ -598,6 +615,25 @@ class Generator:
                 continue
             (text, kort, uppslag, egenskaper, rektioner, ordföljder,
              osammansmält) = resultat
+            # EN MENING SOM INTE KAN BOKFÖRA NÅGOT FÅR INTE VINNA — inte
+            # ens som nödfall. Ett rätt svar bokför varje kort utom de som
+            # redan bedömts rätt idag (E2), så är ALLA korten avklarade gör
+            # meningen ingenting hur användaren än svarar rätt.
+            #
+            # Villkoret sitter i sökslingan och inte på vinnaren, och det är
+            # skillnaden mellan att laga och att stympa: prövade jag bara den
+            # bästa kandidaten föll hela dagen så snart den råkade vara tom,
+            # och meningar som FAKTISKT bokförde något gick förlorade med
+            # den. Mätt: dagen gick från elva meningar till fem, varav flera
+            # av de förlorade bokförde ett kort.
+            #
+            # Här faller bara den tomma kandidaten, och en bokförande vinner
+            # när en sådan finns. Finns ingen alls returnerar `föreslå` None,
+            # och `uppgift` svarar med B8:s nödutgång — vilket är rätt
+            # besked: de kvarvarande korten går inte att nå idag.
+            if redan_klara is not None and not (
+                    {k["id"] for k in kort} - redan_klara):
+                continue
             okända = sum(1 for k in kort
                          if k["typ"] == "ord" and k["sedd"] is None
                          and k["koncept"] not in sedda)

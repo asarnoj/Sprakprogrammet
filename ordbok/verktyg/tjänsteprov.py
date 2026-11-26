@@ -487,6 +487,51 @@ def prov_sista_nivån_går_att_nå(tj, kort, kurs) -> list[str]:
     return fel
 
 
+def prov_ingen_tom_mening(tj, kurs) -> list[str]:
+    """Ingen mening får ställas som inte kan bokföra ett enda kort.
+
+    Julius: *"Den gav en mening som inte testar ett enda kort."* Spåret gav
+    honom rätt: fem av sex kort hade `läge: redan_bedömd` — rätt bedömda
+    tidigare samma dag, och en andra rätt samma dygn är noll i FSRS (E2) —
+    och det sjätte stod inte i passet.
+
+    OCH DET VAR INTE EN OLYCKA. Mätt på en nollställd fransk kurs, hela
+    dagen i rätt form med glosdelen först:
+
+         7  Elle existe.   bokförs 0   kvar 2
+         8  J'ai.          bokförs 0   kvar 2
+         9  Il coûte.      bokförs 0   kvar 2
+
+    Tre i rad, 3 av 11 meningar. De sista väntande korten gick inte att
+    bygga kring, och då vann den minst dåliga kandidaten — vars kort alla
+    redan var avklarade. Nödutgången (B8) fanns men prövade fel sak: om kön
+    var BYGGBAR, inte om meningen BOKFÖR något. Den löste ut tre meningar
+    för sent.
+
+    Provet spelar igenom en dag med bara rätta svar och kräver att varje
+    ställd mening bokför minst ett kort. Efter rättelsen: 11 meningar, noll
+    tomma — dagen blev alltså inte kortare, bara ärligare.
+    """
+    fel = []
+    for i in range(120):
+        h = tj._dagsplan(kurs)
+        if h["klar"]:
+            break
+        if h["nya_ord"]:
+            for o in tj.glosor(kurs["id"])["ord"]:
+                tj.glossvar(kurs["id"], o["kort_id"], True)
+            continue
+        u = tj.uppgift(kurs["id"])
+        if u is None or u.get("tomt"):
+            break
+        sv = tj.svara(u["id"], tj._öppna[u["id"]][1].text)
+        tj.bokför(u["id"])
+        if sv is not None and sv["bokförs"] == 0:
+            fel.append(f"[{kurs['målspråk']}] mening {i + 1} bokförde noll "
+                       f"kort: {sv['facit'][:40]!r}")
+    return fel[:4]
+
+
 PROV = [
     ("en kurs per målspråk", prov_en_kurs_per_målspråk),
     ("inget redan bedömt väntar", prov_inget_redan_bedömt_väntar),
@@ -500,6 +545,8 @@ PROV = [
     ("ingen upprepad mening", lambda tj, k, kurs: prov_ingen_upprepad_mening(tj, kurs)),
     ("räknaren i takt med bokföringen", lambda tj, k, kurs: prov_räknaren_är_i_takt(tj, kurs)),
     ("sista nivån går att nå", prov_sista_nivån_går_att_nå),
+    ("ingen tom mening ställs",
+     lambda tj, k, kurs: prov_ingen_tom_mening(tj, kurs)),
 ]
 
 
@@ -540,6 +587,19 @@ def _sabotera(namn: str):
         äkta = passlager._stäng_redan_bedömda
         passlager._stäng_redan_bedömda = lambda *a, **kw: 0
         return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
+
+    if namn == "ingen tom mening ställs":
+        # Före rättelsen: sökningen visste inte vilka kort som redan var
+        # bedömda idag, så en kandidat vars alla kort var avklarade kunde
+        # vinna. `redan_klara=None` är exakt det gamla läget.
+        äkta = Generator._sök
+
+        def utan(själv, kandidater, mål, förfallna, sedda, nu,
+                 redan_klara=None):
+            return äkta(själv, kandidater, mål, förfallna, sedda, nu, None)
+
+        Generator._sök = utan
+        return lambda: setattr(Generator, "_sök", äkta)
 
     if namn == "sista nivån går att nå":
         # Före rättelsen: taket hårdkodat till 21 i båda grindarna.
@@ -702,7 +762,13 @@ def _sabotera(namn: str):
 
     if namn == "räknaren i takt med bokföringen":
         # Före fixen lästes den RÅA kön, alltså läget före den här meningen.
-        äkta = Övningstjänst._igen_efter
+        # `staticmethod` BÅDE VID SABOTAGE OCH ÅTERSTÄLLNING. Attributläsning
+        # på klassen packar upp deskriptorn till en vanlig funktion, så ett
+        # naket `setattr` lämnar metoden som en instansmetod — och `self`
+        # smyger då in som första argument nästa gång någon anropar den.
+        # Felet syntes inte förrän ett prov som körs EFTER det här sabotaget
+        # anropade `svara`, alltså långt från sin orsak.
+        äkta = Övningstjänst.__dict__["_igen_efter"]
         Övningstjänst._igen_efter = staticmethod(lambda g, utfall: g.passkö())
         return lambda: setattr(Övningstjänst, "_igen_efter", äkta)
 

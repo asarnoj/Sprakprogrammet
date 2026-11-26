@@ -2249,6 +2249,54 @@ via `claude -p` som subprocess.
 (`--sammanställ` grupperar på språk × åtgärd × feltyp) men ingen tillämpar
 den automatiskt — och det ska den kanske inte heller.
 
+#### EN MENING SOM INTE BOKFÖR NÅGOT SKA INTE STÄLLAS (2026-08-29)
+
+Julius: *"Den gav en mening som inte testar ett enda kort."* Spåret gav
+honom rätt. `Vous existez`, sex kort: fem med `läge: redan_bedömd` — rätt
+bedömda tidigare samma dag, och en andra rätt samma dygn är noll i FSRS
+(E2) — och det sjätte utan passrad, alltså medföljande.
+
+**Och det var inte en olycka.** Mätt på en nollställd fransk kurs, hela
+dagen i rätt form med glosdelen först:
+
+     7  Elle existe.   bokförs 0   kvar 2
+     8  J'ai.          bokförs 0   kvar 2
+     9  Il coûte.      bokförs 0   kvar 2
+
+Tre i rad, **3 av 11 meningar**. De två sista väntande korten gick inte att
+bygga en mening kring, och då vann den minst dåliga kandidaten — vars kort
+alla redan var avklarade. Poängsättaren straffar det med `tomgång`, men ett
+straff hjälper inte när varje kandidat är lika tom: någon måste vinna.
+
+Nödutgången (B8) fanns och löste ut till slut, men den prövade fel sak: om
+kön var BYGGBAR, inte om meningen BOKFÖR något. Därför hann tre tomma
+meningar serveras först.
+
+**Frågan går att ställa före svaret**, och det är vad som gör rättelsen
+möjlig: ett rätt svar bokför varje kort utom de som redan bedömts rätt idag.
+Är alla korten avklarade gör meningen ingenting hur användaren än svarar
+rätt. Sökningen läser mängden en gång per anrop och hoppar över sådana
+kandidater.
+
+**Villkoret sitter i sökslingan och inte på vinnaren**, och det är skillnaden
+mellan att laga och att stympa. Första försöket prövade bara den bästa
+kandidaten och returnerade `None` när den var tom — då föll hela dagen så
+snart det inträffade, och meningar som FAKTISKT bokförde något gick förlorade
+med den: dagen gick från elva meningar till fem. Med villkoret i slingan
+faller bara den tomma kandidaten, och en bokförande vinner när en sådan
+finns. Efter rättelsen: **11 meningar, noll tomma** — dagen blev inte
+kortare, bara ärlig.
+
+Skärmen ljög aldrig om det. Raden `All N cards here were already graded
+today, so nothing moved` fanns hela tiden. Problemet var inte att användaren
+inte fick veta, utan att meningen inte borde ha ställts.
+
+Ett pre-existerande fel föll ut på vägen: `_sabotera` i `tjänsteprov`
+återställde `_igen_efter` med ett naket `setattr`, vilket gör en
+`staticmethod` till en instansmetod — `self` smyger in som första argument.
+Det syntes inte förrän ett prov som körs EFTER det sabotaget anropade
+`svara`, alltså långt från sin orsak.
+
 ### C4 ? — Hur väljs den bästa av tusen kandidater?
 
 Åtta vikter:
