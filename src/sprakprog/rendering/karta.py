@@ -226,7 +226,7 @@ def _domän(k: _Kontext, klass: str, namn: str) -> list:
         return {"preposition": [("symbol", sym(("Prepositionsfras", "preposition")))],
                 "komplement": [("NF", nf)]}[namn]
     if klass == "Bisats":
-        return {"subjunktion": [("symbol", sym(("Bisats", "subjunktion")))],
+        return {"subjunktion": [ingen, ("symbol", sym(("Bisats", "subjunktion")))],
                 "sats": [("Mening", lambda: _lat(LatMening, kör, väg, begr, rel))]}[namn]
     raise KeyError(klass)
 

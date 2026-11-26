@@ -591,6 +591,10 @@ class SvenskRenderare:
                 ord.append(negation)
             self.u.ordning("rak_ordföljd_i_bisats", subjekt, [verb[0]])
             ord.extend(verb)
+            if frågeord is not None:
+                # Frågeordet leder bisatsen: "hon vet vad blod kostar".
+                self.u.ordning("frågeord_först", frågeord, ord[:1])
+                ord[0:0] = frågeord
             if reflexiv is not None:
                 self.u.ordning("objekt_efter_verb", verb, [reflexiv])
                 ord.append(reflexiv)
@@ -689,10 +693,21 @@ class SvenskRenderare:
 
     @frasdel
     def bisats(self, b: Bisats) -> list[Ord]:
-        """Subjunktion plus satsen i bisatsordföljd."""
-        subjunktion = self.u.form_för(b.subjunktion, "inv")
+        """Subjunktionen och satsen i bisatsordföljd.
+
+        En frågeordsfråga leds av frågeordet självt och har ingen subjunktion
+        (`spec.Bisats`): "hon vet varför blod finns".
+        """
+        if (b.subjunktion is None) != (b.sats.fråga_om is not None):
+            raise RenderingsFel(
+                "sv: en bisats leds av en subjunktion eller av ett frågeord, "
+                f"aldrig av båda och aldrig av ingen (subjunktion={b.subjunktion!r}, "
+                f"fråga_om={b.sats.fråga_om!r})")
         with self.u.led("sats"):
             sats = self.satsled(b.sats, bisats=True)
+        if b.subjunktion is None:
+            return sats
+        subjunktion = self.u.form_för(b.subjunktion, "inv")
         self.u.ordning("subjunktion_först", [subjunktion], sats[:1])
         return [subjunktion, *sats]
 

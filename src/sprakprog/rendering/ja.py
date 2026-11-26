@@ -401,6 +401,10 @@ class JapanskRenderare:
 
         Omvänt mot alla sex andra språken, precis som med prepositionerna.
         """
+        if b.subjunktion is None:
+            raise RenderingsFel(
+                "ja: en inbäddad frågeordsfråga leds av frågeordet och har ingen "
+                "subjunktion (spec.Bisats); det språket är inte byggt för det än")
         return ("".join(self.satsled(b.sats, bisats=True))
                 + self.u.form_för(b.subjunktion, "inv"))
 

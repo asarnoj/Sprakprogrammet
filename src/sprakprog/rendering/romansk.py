@@ -852,6 +852,10 @@ class RomanskRenderare:
         senare är skälet till att den överordnade meningen skickas med:
         bisatsen kan inte veta vad som styr den.
         """
+        if b.subjunktion is None:
+            raise RenderingsFel(
+                "romansk: en inbäddad frågeordsfråga leds av frågeordet och har ingen "
+                "subjunktion (spec.Bisats); det språket är inte byggt för det än")
         modus = self.modusrektion(b.subjunktion, "komplement")
         if modus is None and styrande is not None:
             modus = self.modusrektion(styrande.verb, self.bisatsslot(styrande.verb))

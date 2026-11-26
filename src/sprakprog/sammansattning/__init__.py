@@ -48,7 +48,8 @@ from ..rendering import RENDERARE, RenderingsFel, spåra
 from ..rendering import spec as S
 from ..rendering.karta import FÄLTKLASSER
 from ..rendering.restriktioner import TIDSBIT, Validator
-from .forklaring import Bevisfel, Nod, absolut, bevisa, uppfyller
+from .forklaring import (Bevisfel, Nod, absolut, bevisa, bevisa_osynligt,
+                         uppfyller)
 
 #: Händelser som kan bli kort. "del" är ett anrop och "ordföljd" den gamla
 #: kärnans logg.
@@ -198,6 +199,9 @@ class Sammansättare:
         self._bärarcache: dict = {}
         #: Prövas varje förutsägelse mot renderingen, i stället för att hoppas över?
         self.kontroll = False
+        #: Frågans mål, som bevisen om osynlighet gäller.
+        self._mål: Kort | None = None
+        self._nytt_bevis = False
         self.statistik: Counter = Counter()
         for del_, vägar in karta["vägar"].items():
             for väg in vägar:
@@ -455,6 +459,14 @@ class Sammansättare:
             if ((nod.verb or self._rör_subjekt(nod))
                     and not self._verben_möjliga(v, händelser + h, tillåten)):
                 continue
+            # Delen kan ha fått ett bevis efter att den byggdes: samma del
+            # återanvänds i tusentals sammansättningar, och anroparen är den
+            # som bygger vidare på den.
+            if self._bevisad(nod, v, händelser + h, tillåten):
+                self.statistik["delar bevisade"] += 1
+                if not self.kontroll:
+                    continue
+                nod.täckt = True
             godtagna = frozenset(ä for ä in nod.väntande
                                  if self._längden_passar(lokala, nr, n + ä))
             yield from self._anropen(väg, i + 1, bindning, v, händelser + h, ord + n,
@@ -586,8 +598,11 @@ class Sammansättare:
         """
         ut = []
         for b in self._bevis.get(nod.nyckel, ()):
-            if tillåten(b.kort):
-                continue
+            if b.syns:
+                if tillåten(b.kort):
+                    continue        # kortet är tillåtet: att det syns gör inget
+            elif b.kort != self._mål:
+                continue            # osynligheten gäller bara frågans eget mål
             for rel, etikett in b.fält:
                 namn = absolut(nod.bindning, rel)
                 if namn is None or (villkor[namn] != etikett if namn in villkor
@@ -597,6 +612,15 @@ class Sammansättare:
                 if all(absolut(nod.bindning, rel) is not None for rel, _, _ in b.platser):
                     ut.append(b)
         return ut
+
+    def _bevisad(self, nod: Nod, villkor: dict, händelser: list,
+                 tillåten: Tillåten) -> bool:
+        """Faller varje mening med delen, med de bevis som finns nu?"""
+        if tillåten is None or nod.nyckel not in self._bevis:
+            return False
+        bevis = [b for b in self._aktiva(nod, villkor, tillåten, fullständig=False)
+                 if not b.ändring]
+        return bool(bevis) and self._täckt(nod, villkor, händelser, tillåten, False, bevis)
 
     def _täckt(self, nod: Nod, villkor: dict, händelser: list, tillåten: Callable,
                fullständig: bool, bevis: list | None = None) -> bool:
@@ -694,20 +718,31 @@ class Sammansättare:
         return False
 
     def _lär(self, rot: Nod, villkor: dict, bundna: dict, platser: dict, ut,
-             kort: frozenset, tillåten: Callable) -> bool:
-        """Ett bevis ur en mening som föll på ett förbjudet val. True om det är nytt.
+             kort: frozenset, tillåten: Callable, mål: Kort | None = None) -> bool:
+        """Ett bevis ur en mening som inte dög. True om det är nytt.
 
-        Ett bevis räcker för att meningen ska falla, så sökningen slutar vid det
-        första. En sammansättning där ett kort inte gick att bevisa prövas inte
-        igen för samma kort.
+        Föll meningen på ett förbjudet val bevisas att valet syns; syns inte
+        målet bevisas i stället att det inte kan synas här. Ett bevis räcker för
+        att meningen ska falla, så sökningen slutar vid det första. En
+        sammansättning där ett kort inte gick att bevisa prövas inte igen för
+        samma kort.
         """
+        if mål is not None and mål not in kort and (rot.nyckel, mål, False) not in self._obevisbara:
+            bevis = bevisa_osynligt(self, rot, villkor, bundna, platser, ut, mål)
+            if bevis is None:
+                self._obevisbara.add((rot.nyckel, mål, False))
+            elif bevis not in self._bevismängd:
+                self._bevismängd.add(bevis)
+                self._bevis[bevis.nod].append(bevis)
+                self.statistik["bevis: syns inte"] += 1
+                return True
         for k in sorted(kort, key=str):
             if (tillåten(k) or k.typ != "regel" or k.nyckel[0] != "val"
-                    or (rot.nyckel, k) in self._obevisbara):
+                    or (rot.nyckel, k, True) in self._obevisbara):
                 continue
             bevis = bevisa(self, rot, villkor, bundna, platser, ut, k)
             if bevis is None:
-                self._obevisbara.add((rot.nyckel, k))
+                self._obevisbara.add((rot.nyckel, k, True))
                 continue
             if bevis in self._bevismängd:
                 return False
@@ -885,8 +920,9 @@ class Sammansättare:
         return S.Nominalfras(**ut)
 
     def _bisats(self, v: dict, rot: str, ordet) -> S.Bisats:
-        return S.Bisats(ordet(f"{rot}.subjunktion", ("Bisats", "subjunktion")),
-                        self._mening(v, f"{rot}.sats", ordet))
+        subjunktion = (ordet(f"{rot}.subjunktion", ("Bisats", "subjunktion"))
+                       if v.get(f"{rot}.subjunktion") == "symbol" else None)
+        return S.Bisats(subjunktion, self._mening(v, f"{rot}.sats", ordet))
 
     def _lexemen(self, ordklass: str) -> list:
         if ordklass not in self._rader:
@@ -1419,6 +1455,7 @@ class Sammansättare:
         behöver en mening per korttäckning slipper de andra.
         """
         sedda: set = set()
+        self._mål = mål
         # Två specar som ger samma mening med samma kort är samma mening här.
         visade: set = set()
         nåbar = self._nåbarhet(mål)
@@ -1455,7 +1492,19 @@ class Sammansättare:
         är `Bevisfel`.
         """
         sedda: set = set()
+        self._mål = mål
         nåbar = self._nåbarhet(mål)
+        while True:
+            träff = self._leta(mål, tillåten, nåbar, sedda)
+            if träff is not None or not self._nytt_bevis:
+                return träff
+            # Ett nytt bevis gäller från början: uppräkningen har redan gått
+            # förbi de delar det skär bort, och kommer inte tillbaka dit.
+            self.statistik["omstarter"] += 1
+
+    def _leta(self, mål: Kort, tillåten: Tillåten, nåbar, sedda: set) -> Träff | None:
+        """Ett varv genom sammansättningarna. Slutar också när ett nytt bevis lärts."""
+        self._nytt_bevis = False
         for villkor, händelser, ord, _, _, rot in self._delen(
                 "rendera", ROT, {"m": "m"}, {}, math.inf, tillåten, (), nåbar, True):
             if not self._kan_innehålla(händelser, mål):
@@ -1500,10 +1549,10 @@ class Sammansättare:
                 if träff is not None:
                     return träff
                 if (tillåten is not None and ut is not None
-                        and self._lär(rot, villkor, bundna, platser, ut, kort, tillåten)):
+                        and self._lär(rot, villkor, bundna, platser, ut, kort, tillåten, mål)):
+                    self._nytt_bevis = True
+                    if not self.kontroll:
+                        return None
                     giltiga = self._giltiga(rot, villkor, tillåten)
                     täckt = self._någon_täckt(giltiga, villkor, händelser, tillåten)
-                    if täckt and not self.kontroll:
-                        self.statistik["sammansättningar bevisade"] += 1
-                        break
         return None

@@ -197,6 +197,7 @@ class _Logg:
         self.ord: tuple = ()                  # de utskrivna orden
         self.beslut: dict = {}                # beslutets id → anrop
         self.rader: dict[int, tuple] = {}     # id(rad) → (källa, variant)
+        self.fel_i: int | None = None         # anropet där renderingen vägrade
         self._behåll: list = []
 
     @property
@@ -307,6 +308,10 @@ def _del(logg: _Logg, namn: str, verklig):
         logg.stack.append(nr)
         try:
             ut = verklig(*args, **kwargs)
+        except RenderingsFel:
+            if logg.fel_i is None:
+                logg.fel_i = nr
+            raise
         finally:
             logg.stack.pop()
         logg.anrop[nr].retur = (("none",) if ut is None else ("ord",) if isinstance(ut, str)
@@ -316,10 +321,13 @@ def _del(logg: _Logg, namn: str, verklig):
     return omslag
 
 
-def genomlys(renderare, mening, tvång: dict | None = None) -> tuple:
+def genomlys(renderare, mening, tvång: dict | None = None,
+             tillåt_fel: bool = False) -> tuple:
     """Rendera och skriv ner varje anrop, läsning, fältläsning och uppslag.
 
-    `mening` ska vara byggd med `platsnyckel` och `spårad_spec`. Ger (text, ord, logg).
+    `mening` ska vara byggd med `platsnyckel` och `spårad_spec`. Ger (text, ord,
+    logg); med `tillåt_fel` ges loggen också när renderingen vägrar, och texten
+    är då None. Läsningarna fram till vägran är det som avgjorde den.
     """
     logg = _Logg()
     u = renderare.u
@@ -331,9 +339,13 @@ def genomlys(renderare, mening, tvång: dict | None = None) -> tuple:
     for namn in delar:
         setattr(renderare, namn, _del(logg, namn, getattr(renderare, namn)))
     _Logg.aktiv = logg
+    text, ord = None, ()
     try:
         text, ord, _ = _rendera(renderare, mening, tvång)
         logg.ord = ord
+    except RenderingsFel:
+        if not tillåt_fel:
+            raise
     finally:
         _Logg.aktiv = None
         for namn in (*LÄSNINGAR, "regel"):
@@ -354,12 +366,15 @@ class Bevis:
     fält     ((fält, etikett), …) — etiketten meningen har i fältet, None för ingen
     ändring  hur många fler ord delens lista har med beslutet tvingat; är den
              inte 0 gäller beviset bara där delarna ovanför godtar längden
+    syns     True: kortet SYNS, och meningen faller när kortet är förbjudet.
+             False: kortet syns INTE, och meningen prövar det alltså inte
     """
     kort: Kort
     nod: int
     platser: tuple
     fält: tuple
     ändring: int = 0
+    syns: bool = True
 
 
 def bevisa(s, rot: Nod, villkor: dict, bundna: dict, platser: dict,
@@ -542,6 +557,8 @@ def _uppfyller(u, villkor: tuple, nyckel: str) -> bool:
             return (nyckel == villkor[1]) == villkor[2]
         if villkor[0] == "former":
             return _former_mall(u, villkor[1], nyckel) != _former_mall(u, villkor[2], nyckel)
+        if villkor[0] == "formlika":
+            return _former_mall(u, villkor[1], nyckel) == _former_mall(u, villkor[2], nyckel)
         _, namn, norm, kwargs, svar = villkor
         argument = []
         for a in norm:
@@ -570,3 +587,154 @@ def _former_mall(u, mall: tuple, nyckel: str) -> Counter:
         else:
             räkning[(post[1], post[2])] += 1
     return räkning
+
+
+# ── beviset för att ett kort inte syns ───────────────────────────────────
+
+
+def bevisa_osynligt(s, rot: Nod, villkor: dict, bundna: dict, platser: dict,
+                    ut: Utskrift, kort: Kort) -> Bevis | None:
+    """Ett bevis för att `kort` inte syns i någon mening med den här delen.
+
+    Ett beslut syns bara när något annat utfall ger en annan mening (6.2). Ger
+    inget utfall det — engelskans «what» är samma ord som subjekt och objekt —
+    prövar meningen inte kortet, och inte heller någon annan mening där delen
+    ser likadan ut. Utan beviset renderas varje ordval i varje sådan
+    sammansättning: 15 000 renderingar på nittio sekunder för engelskans «whom»
+    (mätt 2026-09-19).
+    """
+    beslut = [b for b in ut.beslut
+              if b.sort == "regel" and not b.syns and beslutskort(s.språk, b) == kort]
+    if not beslut:
+        s.statistik["osynligt: inget beslut"] += 1
+        return None
+    mening = spårad_spec(s._mening(villkor, "m",
+                                   lambda text, _: platsnyckel(bundna[text], text)), "m")
+    try:
+        _, ord_a, a = genomlys(s.renderare, mening)
+    except RenderingsFel:
+        s.statistik["osynligt: genomlysningen vägrar"] += 1
+        return None
+    if [str(o) for o in ord_a] != [str(o) for o in ut.ord]:
+        s.statistik["osynligt: en annan mening"] += 1
+        return None
+    noder = _para(a, 0, rot, {}) if a.anrop and a.anrop[0].del_ == "rendera" else None
+    if noder is None:
+        s.statistik["osynligt: anropen följer inte sammansättningen"] += 1
+        return None
+    bäst = None
+    for b in beslut:
+        d = a.beslut.get(b.id)
+        if d is None:
+            continue
+        loggar = []
+        for annat in b.domän:
+            if annat == b.utfall:
+                continue
+            text, _, f = genomlys(s.renderare, mening, {b.id: annat}, tillåt_fel=True)
+            loggar.append((f, text is not None))
+        funnet = _osynligt_för(s, a, loggar, d, noder, villkor, bundna, platser, kort)
+        if funnet is not None and (bäst is None or funnet[0] < bäst[0]):
+            bäst = funnet
+    if bäst is None:
+        s.statistik["osynligt: ingen del räcker"] += 1
+        return None
+    return bäst[1]
+
+
+def _osynligt_för(s, a: _Logg, loggar: list, d: int, noder: dict, villkor: dict,
+                  bundna: dict, platser: dict, kort: Kort) -> tuple | None:
+    """Den innersta del där varje annat utfall ger samma ord eller vägrar.
+
+    Ett utfall som vägrar räknas bara när vägran skedde inne i delen: annars
+    beror den på något utanför, som kan vara ett annat i en annan mening.
+    """
+    nr = d
+    while nr is not None:
+        anrop = a.anrop[nr]
+        duger = True
+        for f, lyckades in loggar:
+            if lyckades:
+                if (nr >= len(f.anrop) or f.anrop[nr].del_ != anrop.del_
+                        or f.anrop[nr].retur != anrop.retur):
+                    duger = False
+                    break
+            elif f.fel_i is None or f.fel_i not in f.under(nr):
+                duger = False
+                break
+        if duger:
+            bevis = _delens_osynliga(s, a, loggar, nr, noder[nr], villkor, bundna,
+                                     platser, kort)
+            if bevis is not None:
+                return (len(noder[nr].alla()), True), bevis
+        nr = anrop.förälder
+    return None
+
+
+def _delens_osynliga(s, a: _Logg, loggar: list, nr: int, nod: Nod, villkor: dict,
+                     bundna: dict, platser: dict, kort: Kort) -> Bevis | None:
+    """Villkoren för att delen ska ge samma ord vid varje annat utfall."""
+    from . import _döp
+
+    inne = [(a, a.under(nr))] + [(f, f.under(nr)) for f, _ in loggar]
+    villkoren: dict = defaultdict(set)
+    for logg, under in inne:
+        for anrop, plats, läsning in logg.läsningar:
+            if anrop in under:
+                villkoren[plats].add(("läs", *läsning))
+        for anrop, plats, med, svar in logg.jämförelser:
+            if anrop in under:
+                if med[0] == "plats":
+                    s.statistik["delbevis: två platser jämförs"] += 1
+                    return None
+                villkoren[plats].add(("lika", med[1], svar))
+
+    for (f, lyckades), (_, under_f) in zip(loggar, inne[1:]):
+        if not lyckades:
+            continue
+        for grupp, (i_a, i_f) in _grupperna(a, a.under(nr), f, under_f).items():
+            platsnamn = {k[1] for k, _, _, _ in i_a + i_f if k[0] == "plats"}
+            if len(platsnamn) > 1:
+                s.statistik["osynligt: två platser på samma ställe"] += 1
+                return None
+            if _utskrivna(i_a, bundna) != _utskrivna(i_f, bundna):
+                s.statistik["osynligt: utfallet ändrar ändå ordet"] += 1
+                return None
+            if platsnamn:
+                villkoren[next(iter(platsnamn))].add(
+                    ("formlika", _mall(i_a), _mall(i_f)))
+
+    platsdel = []
+    for plats, atomer in villkoren.items():
+        rel = relativ(nod.bindning, plats)
+        if rel is None or plats not in platser:
+            s.statistik["delbevis: plats utanför delen"] += 1
+            return None
+        platsdel.append((rel, platser[plats], tuple(sorted(atomer, key=repr))))
+
+    egna = {_döp(k, n.bindning) for n in nod.alla()
+            for k, _ in s._globala[id(n.väg)] if isinstance(k, str)}
+    fältdel: dict = {}
+    for logg, under in inne:
+        for anrop, namn in logg.fält:
+            if anrop in under and namn not in egna:
+                rel = relativ(nod.bindning, namn)
+                if rel is None:
+                    s.statistik["delbevis: fält utanför delen"] += 1
+                    return None
+                fältdel[rel] = villkor.get(namn)
+    return Bevis(kort, nod.nyckel, tuple(sorted(platsdel, key=repr)),
+                 tuple(sorted(fältdel.items(), key=repr)), 0, False)
+
+
+def _grupperna(a: _Logg, under_a: set, f: _Logg, under_f: set) -> dict:
+    """De utskrivna ordens uppslag per ställe och led, i båda renderingarna."""
+    grupper: dict = defaultdict(lambda: ([], []))
+    for i, (logg, under) in enumerate(((a, under_a), (f, under_f))):
+        for o in logg.ord:
+            post = logg.uppslag.get(o.nyckel)
+            if post is None or post[0] not in under:
+                continue
+            _, led, ställe, källa, variant, cell = post
+            grupper[(led, ställe)][i].append((källa, variant, cell, str(o)))
+    return grupper

@@ -390,12 +390,13 @@ class EngelskRenderare:
     # ── satsen ───────────────────────────────────────────────────────
 
     @frasdel
-    def satsled(self, m: Mening) -> list[Ord]:
-        """Satsens ord. Engelsk bisats har SAMMA ordföljd som huvudsatsen.
+    def satsled(self, m: Mening, bisats: bool = False) -> list[Ord]:
+        """Satsens ord. Engelsk bisats har samma ordföljd som huvudsatsen — utom
+        att en FRÅGA inte inverterar i bisats.
 
-        Det gör den till undantaget: svenskan flyttar satsadverbialet och
-        tyskan verbet. Engelskan flyttar ingenting — bara subjunktionen läggs
-        till, av `bisats`.
+        "Does blood exist?" men "she knows if blood exists", "whom does blood
+        cost?" men "she knows whom blood costs". Inversionen och do-omskrivningen
+        hör till den fristående frågan.
         """
         if m.fråga and m.fråga_om is not None:
             raise RenderingsFel("en: en sats kan inte vara både ja/nej-fråga "
@@ -410,7 +411,7 @@ class EngelskRenderare:
         # Frågan inverterar hjälpverbet och subjektet: "does the girl read?".
         # Subjektsfrågan gör det inte — frågeordet står redan på subjektets
         # plats: "who reads the book?".
-        inversion = m.fråga or (frågeord is not None and not subjektsfråga)
+        inversion = not bisats and (m.fråga or (frågeord is not None and not subjektsfråga))
         with self.u.led("verb"):
             verb = self.verbfras(m, satsart, m.negerad or inversion)
 
@@ -500,10 +501,21 @@ class EngelskRenderare:
 
     @frasdel
     def bisats(self, b: Bisats) -> list[Ord]:
-        """Subjunktion plus satsen, i samma ordföljd som en huvudsats."""
-        subjunktion = self.u.form_för(b.subjunktion, "inv")
+        """Subjunktionen och satsen, i rak ordföljd.
+
+        En frågeordsfråga leds av frågeordet självt och har ingen subjunktion
+        (`spec.Bisats`): "she knows why blood exists".
+        """
+        if (b.subjunktion is None) != (b.sats.fråga_om is not None):
+            raise RenderingsFel(
+                "en: en bisats leds av en subjunktion eller av ett frågeord, "
+                f"aldrig av båda och aldrig av ingen (subjunktion={b.subjunktion!r}, "
+                f"fråga_om={b.sats.fråga_om!r})")
         with self.u.led("sats"):
-            sats = self.satsled(b.sats)
+            sats = self.satsled(b.sats, bisats=True)
+        if b.subjunktion is None:
+            return sats
+        subjunktion = self.u.form_för(b.subjunktion, "inv")
         self.u.ordning("subjunktion_först", [subjunktion], sats[:1])
         return [subjunktion, *sats]
 

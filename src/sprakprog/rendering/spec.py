@@ -270,8 +270,13 @@ class Bisats:
     satsadverbialet före det. Japanskan byter dessutom register — bisatsen
     står alltid i enkel form, aldrig artig, och det är grammatik och inte
     stil.
+
+    En INBÄDDAD FRÅGEORDSFRÅGA leds av frågeordet självt: "hon vet varför blod
+    finns", aldrig "hon vet att varför blod finns". Frågeordet tar
+    subjunktionens plats, och `subjunktion` är None precis då. En inbäddad
+    ja/nej-fråga har däremot en egen subjunktion: "hon vet OM blod finns".
     """
-    subjunktion: str
+    subjunktion: str | None
     sats: "Mening"
 
 

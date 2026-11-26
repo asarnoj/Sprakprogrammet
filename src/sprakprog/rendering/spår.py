@@ -48,6 +48,8 @@ class Beslut:
     #: Utfall → meningens ord när beslutet tvingas till det. Bara utfall som
     #: gick att rendera; för en ordningsregel nyckeln "omvänd".
     alternativ: dict
+    #: Beslutets möjliga utfall, också de som vägrade renderas.
+    domän: tuple = ()
 
     @property
     def namn(self) -> str:
@@ -121,7 +123,7 @@ def spåra(renderare, m: Mening) -> Utskrift:
             positioner |= ändrade
             luckor |= nya_luckor
         beslut.append(Beslut(sort, id, utfall, tuple(sorted(positioner)),
-                             tuple(sorted(luckor)), alternativ))
+                             tuple(sorted(luckor)), alternativ, tuple(domän or ())))
     return Utskrift(text, ord, tuple(beslut))
 
 

@@ -694,6 +694,10 @@ class TyskRenderare:
 
     def bisats(self, b: Bisats) -> list[str]:
         """Subjunktion plus sats med verbet sist."""
+        if b.subjunktion is None:
+            raise RenderingsFel(
+                "de: en inbäddad frågeordsfråga leds av frågeordet och har ingen "
+                "subjunktion (spec.Bisats); det språket är inte byggt för det än")
         return [self.u.form_för(b.subjunktion, "inv", self._subjunktionsvariant(b)),
                 *self.satsled(b.sats, bisats=True)]
 
