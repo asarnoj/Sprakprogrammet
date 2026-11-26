@@ -45,7 +45,12 @@ dokumenterat skäl att sakna böjning.
 tillämpa-granskning --torkörning` ger noll satser att köra. Alla sju språk är
 granskade av en starkare modell.
 
-**Renderaren finns inte.** Det är nästa fas.
+**Renderaren är klar.** Alla sju språk bygger meningen ur samma
+språkoberoende specifikation, identiskt med de meningar `RENDERARE_KRAV.md`
+renderade för hand. `ordbok rendera --exempel --språk <xx>`.
+
+**Nästa fas är semantiska restriktioner** — se
+[`paradigm/RESTRIKTIONER.md`](paradigm/RESTRIKTIONER.md).
 
 ---
 
@@ -97,20 +102,19 @@ kasusrektion — var inget hål alls. `Mönster.språk` fanns redan och är
 nullbar just för det: ett mönster med `språk='de'` skuggar det universella
 och bär bara det som skiljer. Se `ordbok/migrationer/rektion.sql`.
 
-**Datalagret är slut.** Sju av elva brister i `RENDERARE_KRAV.md` är
-åtgärdade, och de fyra som återstår är alla kod, inte data:
+**Datalagret är slut, och renderaren är byggd.** Samtliga elva brister i
+`RENDERARE_KRAV.md` är åtgärdade. Det som återstår är nästa lager:
 
-1. **Meningsspecifikationen** — `Mönster` säger vilka ord som får kombineras,
-   men det finns ingen datastruktur för en *färdig* mening: tempus,
-   bestämdhet, negation, vem som är koreferent med vem. Designarbete, och
-   det som allt annat vilar på.
-2. **Tempusmappningen** (§3.6) — "förfluten tid, perfektiv" måste bli passé
-   composé i franska och preteritum i svenska. Tabellen finns inte.
-3. **Renderaren, ett språk i taget.** Svenska först (du kan bedöma resultatet
-   direkt), sedan tyska (kasus + V2 tvingar fram rätt arkitektur medan den
-   är billig att ändra). Klarar den de två är resten arbete, inte problem.
-4. **Ordföljd** (§3.10) — de V2/verbfinal, TeKaMoLo, ja SOV, fr klitikaordning.
-   Ingenting av det är representerat. Största enskilda posten.
+1. **Semantiska restriktioner.** Renderaren bygger vilken spec den än får,
+   så `flickan gav en näsa` och `Flickan ger en bok igår` är båda felfria.
+   Eftersom meningarna ska genereras ur repetitionskön och inte författas
+   är det bärande. Plan och mätningar i `paradigm/RESTRIKTIONER.md`.
+2. **Meningskomplexitet.** `Mening` uttrycker en huvudsats med subjekt,
+   objekt, io och adverbial. Negation, frågor, bisatser, komparation och
+   modalverb finns som ord i databasen men inte som fält i specen.
+3. **Meningsgeneratorn** — den som löser fram en mening ur repetitionskön.
+4. **Kortmodellen och appen.** Kortnivå (form / mening / kontrast) är ännu
+   inte avgjord.
 
 Datalagret har inga öppna poster kvar. Sista passet drog ut en princip
 som borde ha dragits ut tidigare: om FSRS spårar per ordform måste **varje**

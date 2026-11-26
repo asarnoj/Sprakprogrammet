@@ -59,6 +59,41 @@ inte), inte `flickan köpte en dörr` (osannolikt men möjligt).
 renderarlagret. Taggning utan validator ändrar ingenting — därför byggs
 validatorn först.
 
+### Utgångsmätning 2026-08-12
+
+Validatorn byggd och körd mot 93 verb × 259 substantiv = 24 087 kombinationer:
+
+```
+passerar   17 330   (72 %)
+avvisas     6 757   (28 %)
+```
+
+Det befintliga systemet gör alltså redan en fjärdedel av jobbet. `äta`
+avvisar 242 av 259, `dricka` 251, `läsa` 254.
+
+**Men mätningen avslöjade ett hål jag inte letat efter.** Sex verb avvisar
+noll — inte för att kravet är svagt, utan för att det inte finns:
+
+| Slot | Antal | Med krav | **Utan krav** |
+|---|---|---|---|
+| subjekt | 174 | 154 | 20 |
+| objekt | 93 | 59 | **34** |
+| komplement | 12 | 0 | **12** |
+| kommunikat | 10 | 5 | 5 |
+| predikativ | 4 | 0 | **4** |
+| io | 5 | 5 | 0 |
+| adverbial | 3 | 3 | 0 |
+
+**75 av 301 slots har ingen semantisk restriktion alls.** För objektsslotten
+är det 34 stycken — nästan lika många som de 36 som har den för svaga
+KONKRET-biten. Otaggade slots är alltså ett minst lika stort problem som
+trubbiga bitar, och det stod inte i planen ovan.
+
+Två slottyper är helt otaggade: `komplement` (12) och `predikativ` (4).
+Ingen av dem går heller att uttrycka i `Mening` idag — specen har fält för
+subjekt, objekt, io och adverbial, inget annat. Det hör till
+meningskomplexiteten, inte till restriktionerna, men de möts här.
+
 ---
 
 ## Fem relationer, inte en
