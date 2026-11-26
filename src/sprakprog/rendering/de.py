@@ -30,7 +30,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
-    RenderingsFel, attribut_med_grad, bestämd_fras,
+    NAKEN, RenderingsFel, attribut_med_grad, bestämd_fras,
     FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -116,6 +116,8 @@ class TyskRenderare:
                     f"attribut eller possessiv")
             return [self.u.form(huvud, KASUSNAMN[kasus])]
 
+        self.u.kontrollera_naken(nf)
+
         genus = huvud["genus"]
         if genus is None:
             raise RenderingsFel(
@@ -151,13 +153,17 @@ class TyskRenderare:
             cell = f"{g}_{k}" if nf.numerus is Numerus.SG else f"pl_{k}"
             ord.append(self.u.form_för("kvant_ingen_det", cell))
             deklination = "bland"
-        elif nf.numerus is Numerus.SG:
+        elif nf.bestämdhet in NAKEN or nf.numerus is not Numerus.SG:
+            # HÄR bor den starka deklinationen. Utan determinerare måste
+            # adjektivet självt bära kasus, genus och numerus — "roter
+            # Wein", "kaltes Wasser", "guten Weines" — och det är därför
+            # den starka böjningen ser ut som den bestämda artikeln.
+            # Obestämd plural hamnar också här, vilket är hela skälet till
+            # att 10 av 39 starka celler var nådda innan GENERISK fanns.
+            deklination = "stark"
+        else:
             ord.append(self.u.form_för("artikel_obestamd", f"{g}_{k}"))
             deklination = "bland"
-        else:
-            # Obestämd plural saknar artikel i tyskan ("rote Buecher"), och
-            # utan determinerare tar adjektivet stark ändelse.
-            deklination = "stark"
 
         formgenus = g if nf.numerus is Numerus.SG else "pl"
         for attribut in nf.attribut:

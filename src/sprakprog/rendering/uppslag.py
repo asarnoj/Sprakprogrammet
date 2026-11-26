@@ -14,7 +14,7 @@ from __future__ import annotations
 import sqlite3
 from ..generering.granskning import _former_per_cell
 from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
-from .spec import RenderingsFel
+from .spec import NAKEN, Numerus, RenderingsFel
 
 # docs/BITMASK.md §11. Enda biten uppslaget behöver känna till, och bara
 # för att välja mellan vem och vad.
@@ -97,6 +97,28 @@ class Uppslag:
                WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = 'komplement'""",
             (verb, self.språk)).fetchone()
         return rad["nyckel"] if rad else None
+
+    def kontrollera_naken(self, nf) -> None:
+        """En naken SINGULAR kräver ett oräknebart huvudord.
+
+        "vatten", "vin", "kaffe" går bra; "bok" gör det inte — "hon läser
+        bok" finns inte i något av de sju språken. Plural är fri: "böcker är
+        dyra" är den generiska frasen för räknebara ord, och oräknebara har
+        ingen plural att be om.
+
+        `Koncept.räknebar` fylldes långt innan någon konstruktion behövde
+        den. Det här är den första som gör det — samma sak som hände med
+        MönsterKrav.frastyp och hjälpverbskolumnen.
+        """
+        if nf.bestämdhet not in NAKEN or nf.numerus is not Numerus.SG:
+            return
+        rad = self.conn.execute(
+            "SELECT räknebar FROM Koncept WHERE nyckel = ?", (nf.koncept,)).fetchone()
+        if rad is not None and rad["räknebar"]:
+            raise RenderingsFel(
+                f"{self.språk}/{nf.koncept}: naken singular kräver ett "
+                f"oräknebart ord — 'vatten' går, 'bok' gör det inte. "
+                f"Räknebara ord tar artikel i singular eller står i plural")
 
     def frågepronomen(self, koncept: str) -> str:
         """vem eller vad — avgörs på det EFTERFRÅGADE, inte på slotten.

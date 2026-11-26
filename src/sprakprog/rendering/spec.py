@@ -31,8 +31,29 @@ from enum import StrEnum
 
 
 class Bestämdhet(StrEnum):
+    """Hur frasen pekar ut sitt referent.
+
+    OBESTÄMD och BESTÄMD räckte i tjugoen nivåer, men bara därför att
+    meningarna alltid handlade om räknebara exemplar. De två sista värdena
+    är de som INTE gör det, och de skiljer sig åt på ett sätt som fyra av
+    sju språk inte visar men tre gör:
+
+      GENERISK   frasen namnger en SORT: "böcker är dyra", "vin är gott".
+      PARTITIV   frasen namnger en obestämd MÄNGD: "jag dricker vatten".
+
+    sv, en, de och ja renderar båda som naken fras. De romanska språken
+    skiljer dem: franskan säger "les livres sont chers" men "je bois de
+    l'eau", italienskan "i libri" men "dell'acqua". Spanskan tar bestämd
+    artikel för sorten men naken fras för mängden.
+
+    Det är den nakna frasen tyskans STARKA deklination kräver — "roter
+    Wein", "kaltes Wasser" — och de sista 39 av 147 adjektivceller satt
+    bakom den.
+    """
     OBESTÄMD = "obestämd"
     BESTÄMD = "bestämd"
+    GENERISK = "generisk"
+    PARTITIV = "partitiv"
 
 
 class Numerus(StrEnum):
@@ -376,6 +397,11 @@ def bestämd_fras(nf: "Nominalfras") -> bool:
     """
     return (nf.bestämdhet is Bestämdhet.BESTÄMD
             or nf.possessiv is not None or nf.ägare is not None)
+
+
+#: Frastyper utan determinerare i de språk som tillåter sådana. Samlade här
+#: därför att alla sju renderare behöver samma test.
+NAKEN = (Bestämdhet.GENERISK, Bestämdhet.PARTITIV)
 
 
 #: De argumentslottar en wh-fråga kan efterfråga. Adverbialfrågor namnger

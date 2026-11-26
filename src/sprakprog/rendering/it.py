@@ -36,6 +36,15 @@ def _kräver_lo(ord: str) -> bool:
     return len(o) > 1 and o[0] == "s" and o[1] not in VOKALER
 
 
+# Determinerare och sammandragna prepositionsartiklar som tappar sin
+# slutvokal framför vokalljud. Sluten lista, av samma skäl som franskans.
+ELIDERAR = frozenset({
+    "lo", "la",
+    "dello", "della", "nello", "nella", "allo", "alla",
+    "dallo", "dalla", "sullo", "sulla",
+})
+
+
 class ItalienskRenderare(RomanskRenderare):
     SPRÅK = "it"
     SUBJEKTSCELL = "soggetto"
@@ -98,6 +107,16 @@ class ItalienskRenderare(RomanskRenderare):
         return [x[0] for x in (cod, coi) if x]
 
     def eliderar(self, första: str, andra: str) -> bool:
-        """lo/la → l' framför vokal. il elideras aldrig."""
-        return (första in ("lo", "la")
+        """lo/la → l' framför vokal. il elideras aldrig.
+
+        Också de SAMMANDRAGNA formerna elideras: dell'acqua, nell'aula,
+        all'amico. De uppstår i sandhi (di + la → della) och möter sedan
+        nästa ord, så elisionen måste köras på resultatet — vilket den gör,
+        eftersom sandhi arbetar sig igenom listan ord för ord.
+
+        Listan är sluten och räknas upp i stället för att härledas ur
+        ändelsen -lo/-la: annars skulle vilket ord som helst på -la elideras
+        framför vokal, och "la scuola è aperta" skulle bli "la scuol'è".
+        """
+        return (första in ELIDERAR
                 and andra[:1].lower() in self.VOKAL)

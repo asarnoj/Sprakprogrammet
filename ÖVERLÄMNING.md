@@ -108,20 +108,28 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 `Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
 ```
-sv  3 988 / 4 988   80 %      it  7 877 / 10 246   77 %
-en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
-ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
-                              de 14 417 / 23 494   61 %
+sv  4 728 / 4 988   95 %      de 19 242 / 23 494   82 %
+en  2 034 / 2 293   89 %      it  7 877 / 10 246   77 %
+ja  1 472 / 2 498   59 %      fr  6 650 /  9 070   73 %
+                              es  7 114 / 10 608   67 %
 ```
 
 Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
 Japanskan: 31 % → 45 % (imperativ) → **58 %** (bisatser).
 
-**Siffran mäter svepet lika mycket som specen.** Tre artefakter hittades
-och rättades under mätningen. Två låg i svepet: subjektet var alltid tredje
-person, vilket fick hela personböjningen att se onåbar ut, och attributet
-satt bara i objektet, vilket bara mätte ackusativ. Tyskan gick 13 % → 20 %
-→ 33 % på dem ensamma.
+**Siffran mäter svepet lika mycket som specen — FYRA gånger har svepet varit
+det som begränsade**, och varje gång såg det ut som en spec-brist:
+
+```
+subjektet var alltid tredje person      hela personböjningen såg onåbar ut
+attributet satt bara i objektet         bara ackusativ mättes
+bisatsens subjekt var 3sg               2 av 12 konjunktivceller mättes
+ägaren var alltid bestämd singular      genitivböjningen såg onåbar ut
+```
+
+Den sista tog svenskan från 80 till **95 %** och engelskan från 79 till 89 %
+utan att en rad renderarkod ändrades. Mönstret är alltid detsamma: en axel
+som varieras i huvudsatsen men inte i den inbäddade frasen.
 
 Den tredje låg i RENDERAREN och är den viktiga. Japanskan mätte 31 % tills
 uppmaningen byggdes, och även då syntes bara 8 av 346 nya former — därför
@@ -142,14 +150,12 @@ Vad som faktiskt är onått, efter de rättelserna:
 
 | Språk | Block | Vad som krävs |
 |---|---|---|
-| de | 39 av 147 adjektivceller — stark deklination | `Bestämdhet` saknar artikellös fras ("roter Wein") |
 | fr/es/it | konditionalis (6 celler per verb) | villkorssatser |
+| es | konjunktiv imperfekt i huvudsats | villkorssatser |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
-**Tyskans siffra styrdes av en enda sak, och den är åtgärdad** — se
-avsnittet om attributiv komparation. Kvar i tyskan är den STARKA
-deklinationen: 39 celler som kräver en fras helt utan determinerare ("roter
-Wein"), och `Bestämdhet` har bara OBESTÄMD och BESTÄMD.
+**Tyskan gick 36 → 82 % på två utökningar**, båda om nominalfrasens inre:
+attributiv komparation och artikellös fras. Se de två avsnitten nedan.
 
 ---
 
@@ -368,6 +374,67 @@ gör den avgränsningen exakt.
 
 Konjunktivstyrande subjunktioner vägrades först, och byggdes sedan — se
 nästa avsnitt.
+
+---
+
+## Artikellös nominalfras — och tyskan i mål
+
+`Bestämdhet` hade OBESTÄMD och BESTÄMD. Det räckte i tjugoen nivåer, men
+bara därför att meningarna alltid handlade om räknebara exemplar. Två värden
+till, och de skiljer sig åt på ett sätt fyra av sju språk inte visar men tre
+gör:
+
+- **GENERISK** — frasen namnger en SORT: "böcker är dyra", "vin är gott".
+- **PARTITIV** — frasen namnger en obestämd MÄNGD: "jag dricker vatten".
+
+```
+              GENERISK                   PARTITIV
+sv/en/de/ja   naken fras                 naken fras
+fr            les livres sont chers      elle boit de l'eau
+es            los libros son caros       ella bebe agua
+it            i libri sono cari          lei beve dell'acqua
+```
+
+**Partitiven kostade ingen ny data.** Den är prepositionen de/di plus den
+bestämda artikeln, och sammandragningen du/della sköts av sandhi — exakt
+samma mekanism som genitivet redan använder. Spanskan står naken i
+mängdbetydelse och behöver inte ens det.
+
+**Tyskan gick 61 → 82 %.** Den starka deklinationen bor precis här: utan
+determinerare måste adjektivet självt bära kasus, genus och numerus —
+*roter Wein*, *kaltes Wasser* — och det är därför den starka böjningen ser
+ut som den bestämda artikeln. Tillsammans med attributiv komparation tog de
+två utökningarna tyskan från 36 till 82 %, båda om nominalfrasens inre.
+
+### Naken singular kräver ett oräknebart ord
+
+"Hon läser bok" finns inte. Plural är fri — "böcker är dyra" är den
+generiska frasen för räknebara ord — men singular kräver att huvudordet
+namnger ett ämne. `Koncept.räknebar` fylldes vid koncepttaggningen och hade
+aldrig lästs av någon konstruktion; kontrollen ligger i `Uppslag` så att
+alla sju delar den.
+
+**Och taggningen visade sig inkonsekvent.** te, vin och öl stod som
+räknebara medan juice, kaffe och mjölk stod som oräknebara — samma sorts
+dryck, två olika svar. Kriteriet som gäller för de senare är att ordet
+namnger ett ämne som mäts i mängd, och det gäller alla sex. De tre är
+rättade, med motivering i `koncepttaggning.sql`. Kvar som inkonsekvens: ost,
+soppa och bröd, som har en levande räkneläsning ("ett bröd") och därför
+lämnas — men gränsen är inte skarp.
+
+### Två elisioner till
+
+**Italienskans sammandragna prepositionsartiklar elideras**: *dell'acqua*,
+inte *della acqua*. Bristen fanns sedan genitivet byggdes men syntes aldrig,
+eftersom ingen ägare i svepen började på vokal. Listan räknas upp i stället
+för att härledas ur ändelsen -la, annars skulle "la scuola è aperta" bli
+"la scuol'è".
+
+**Spanskans *el agua* är INTE byggd.** Feminina ord som börjar på betonat
+/a/ tar `el` i singular — *el agua*, *el águila* — trots att de är
+feminina. Renderaren ger *la agua*. Felet är pre-existerande (det syns med
+BESTÄMD också) och kräver en flagga på lexemet, i stil med `prenominal`,
+eftersom betoningen inte syns i stavningen.
 
 ---
 
@@ -639,14 +706,12 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
    som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
    förfluten tid. **Den var blockerad av meningskomplexiteten och är det
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
-   nu mogen — med 59–80 % nåbart avgörs det som övas av strategin, inte av
+   nu mogen — med 59–95 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **Artikellös nominalfras.** `Bestämdhet` har bara OBESTÄMD och BESTÄMD.
-   Tyskans starka deklination kräver en fras helt utan determinerare —
-   "roter Wein", "kaltes Wasser" — och det är de sista 39 av 147
-   adjektivceller. Störst avkastning av det som återstår.
-3. **Italienska possessiver saknar artikel** — "suo libro" ska vara "il suo
+2. **Italienska possessiver saknar artikel** — "suo libro" ska vara "il suo
    libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
+3. **Spanskans el agua** — feminina ord på betonat /a/ tar `el` i singular.
+   Kräver en flagga på lexemet; betoningen syns inte i stavningen.
 4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
    indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
    Partikeln ligger i formen och borde ligga i det infinita fältet.
