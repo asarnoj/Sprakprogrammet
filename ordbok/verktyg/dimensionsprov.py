@@ -191,13 +191,137 @@ def prov_varvas() -> list[str]:
     return fel
 
 
+def _befolkad():
+    """En färsk kortdatabas med hela beståndet. Byggs en gång och delas."""
+    global _CACHE
+    if _CACHE is None:
+        import tempfile
+        from sprakprog.db import anslut
+        from sprakprog.kort.befolka import befolka
+        from sprakprog.kort.db import skapa_kortdatabas
+        katalog = tempfile.mkdtemp()
+        db = skapa_kortdatabas(Path(katalog) / "prov.db")
+        befolka(db, anslut(), set(SPRÅK), cefr="C2", mät=False)
+        _CACHE = db
+    return _CACHE
+
+
+_CACHE = None
+
+
+def prov_inget_tomt_läromoment() -> list[str]:
+    """Två ändelsekort i samma klass får aldrig ha samma svar.
+
+    Franskans K0 hade `pres_1sg = e` och `pres_3sg = e` som TVÅ kort. Det
+    andra kunde inte lära ut något — har man klarat det första finns
+    ingenting kvar att kunna. Mätt över alla sju språken var **52 % av
+    ändelsekorten** sådana: 831 kort för 394 kunskaper, och tyskan ensam 241
+    för 39.
+
+    Kortet hör därför till ÄNDELSEN och inte till cellen. Invarianten är att
+    hopslagningen faktiskt sker: samma svar i samma klass betyder samma kort.
+    """
+    db = _befolkad()
+    fel = []
+    for r in db.execute(
+            """SELECT språk, ordklass, klass, facit, COUNT(*) n
+               FROM Kort WHERE typ = 'system'
+               GROUP BY språk, ordklass, klass, facit HAVING n > 1"""):
+        fel.append(f"{r['språk']}/{r['klass']}: {r['facit']!r} finns som "
+                   f"{r['n']} kort — {r['n'] - 1} av dem lär inte ut något")
+    return fel
+
+
+def prov_varje_cell_har_ett_kort() -> list[str]:
+    """Varje cell med en ändelse ska peka på ett kort.
+
+    DET FARLIGA MED HOPSLAGNINGEN, och skälet att den valdes framför att
+    grinda bort celler: en cell utan kort går inte att attribuera. Meningen
+    `Elle parle.` slår upp `pres_3sg`, och finns inget kort där kan ändelsen
+    varken prövas eller skyllas på. Hopslagningen ska ta bort det tomma
+    momentet UTAN att lämna hålet.
+    """
+    import csv as _csv
+    from sprakprog.kort.dimensioner import ÄNDELSEFIL
+    db = _befolkad()
+    kort = {(r["språk"], r["ordklass"], r["klass"], r["facit"])
+            for r in db.execute(
+                "SELECT språk, ordklass, klass, facit FROM Kort WHERE typ='system'")}
+    fel = []
+    with ÄNDELSEFIL.open(encoding="utf-8") as f:
+        for rad in _csv.DictReader(f, delimiter="\t"):
+            nyckel = (rad["språk"], rad["ordklass"], rad["klass"],
+                      rad["ändelse"] or "∅")
+            if nyckel not in kort:
+                fel.append(f"{rad['språk']}/{rad['klass']}/{rad['cell']}: "
+                           f"ändelsen {rad['ändelse'] or '∅'!r} har inget kort")
+    return fel[:6]
+
+
+def prov_migrationen_bevarar_historiken() -> list[str]:
+    """Ett cell-nycklat ändelsekort ska föras över, inte lämnas kvar.
+
+    KORTETS IDENTITET ÄNDRADES, och det är den farligaste sortens ändring:
+    de gamla korten blir inte fel, de blir OSYNLIGA. Utan migrationen står de
+    kvar med sin historik men utan rad i `Cellkort` — schemalagda, förfallna,
+    och omöjliga för någon mening att nå. Mätt på Julius franska: 15
+    föräldralösa kort efter en nivåupplåsning, varav 7 med historik. Det är
+    exakt A3:s spökkort, självförvållade.
+
+    Provet bygger ett gammalt kort med historik, kör `befolka`, och kräver
+    tre saker: kortet är borta, repetitionsraden finns kvar, och den pekar på
+    efterföljaren.
+    """
+    import tempfile
+    from sprakprog.db import anslut
+    from sprakprog.kort.befolka import befolka
+    from sprakprog.kort.db import skapa_kortdatabas
+    db = skapa_kortdatabas(Path(tempfile.mkdtemp()) / "mig.db")
+    # Ett kort med den GAMLA nyckeln: franskans K0, cellen pres_3sg, `e`.
+    db.execute(
+        """INSERT INTO Kort (nyckel, typ, språk, ordklass, klass, cell, facit,
+                             räckvidd, stabilitet, svårighet, tillstånd, steg,
+                             sedd, förfaller, antal, fall)
+           VALUES ('system:fr:::Verb:K0:pres_3sg::', 'system', 'fr', 'Verb',
+                   'K0', 'pres_3sg', 'e', 122, 3.5, 5.0, 2, NULL,
+                   '2026-08-01T09:00:00+00:00', '2026-08-20T09:00:00+00:00',
+                   4, 1)""")
+    gammalt = db.execute("SELECT last_insert_rowid() AS i").fetchone()["i"]
+    db.execute("""INSERT INTO Repetition (kort_id, tidpunkt, betyg)
+                  VALUES (?, '2026-08-01T09:00:00+00:00', 3)""", (gammalt,))
+    db.commit()
+    befolka(db, anslut(), {"fr"}, cefr="C2", mät=False)
+
+    fel = []
+    if db.execute("SELECT 1 FROM Kort WHERE id = ?", (gammalt,)).fetchone():
+        fel.append("det cell-nycklade kortet står kvar")
+    rad = db.execute(
+        "SELECT kort_id FROM Repetition WHERE tidpunkt = '2026-08-01T09:00:00+00:00'"
+    ).fetchone()
+    if rad is None:
+        fel.append("repetitionsraden försvann med kortet")
+    else:
+        ny = db.execute("SELECT typ, facit, cell FROM Kort WHERE id = ?",
+                        (rad["kort_id"],)).fetchone()
+        if ny is None:
+            fel.append("repetitionsraden pekar på ett kort som inte finns")
+        elif not (ny["typ"] == "system" and ny["facit"] == "e"
+                  and ny["cell"] is None):
+            fel.append(f"historiken hamnade på fel kort: {dict(ny)}")
+    db.close()
+    return fel
+
+
 PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("ingen ändelse lärs ut två gånger", prov_ingen_upprepning),
         ("varje ändelse lärs ut någon gång", prov_allt_lärs_ut),
         ("stegen viks olika per språk", prov_stegen_viks),
         ("den flätade stegen är hel", prov_stegen_är_hel),
         ("konstruktion aldrig före sin böjning", prov_beroenden),
-        ("de två sorterna varvas", prov_varvas)]
+        ("de två sorterna varvas", prov_varvas),
+        ("inget tomt läromoment", prov_inget_tomt_läromoment),
+        ("varje cell har ett kort", prov_varje_cell_har_ett_kort),
+        ("migrationen bevarar historiken", prov_migrationen_bevarar_historiken)]
 
 
 
@@ -270,6 +394,74 @@ def _sabotage_tappa_steg():
     return lambda: setattr(d, "stege", äkta)
 
 
+def _sabotage_kort_per_cell():
+    """Före hopslagningen: ett ändelsekort per CELL, inte per ändelse."""
+    # VIA sys.modules: `sprakprog.kort.befolka` löser upp till FUNKTIONEN,
+    # eftersom `kort/__init__.py` återexporterar den och skuggar submodulen.
+    import sprakprog.kort.befolka          # noqa: F401  (registrerar modulen)
+    b = sys.modules["sprakprog.kort.befolka"]
+    global _CACHE
+    äkta_cache, _CACHE = _CACHE, None
+    äkta = b._lägg_till
+    def per_cell(kort, typ, språk, facit, **kw):
+        if typ == "system":
+            kw["cell"] = kw.pop("egenskap", None) and None
+            kw["cell"] = kw.get("cell") or f"cell{len(kort)}"
+        return äkta(kort, typ, språk, facit, **kw)
+    b._lägg_till = per_cell
+    def ångra():
+        global _CACHE
+        b._lägg_till = äkta
+        _CACHE = äkta_cache
+    return ångra
+
+
+def _sabotage_hoppa_celler():
+    """Grinda bort celler i stället för att slå ihop dem — hålet återinfört.
+
+    Det VAR det andra alternativet: låta böjningsstegen utelämna celler vars
+    ändelse redan lärts ut. Då försvinner kortet för `K0/pres_3sg`, och
+    meningen `Elle parle.` slår upp en cell utan kort.
+    """
+    import sprakprog.kort.befolka                # noqa: F401
+    b = sys.modules["sprakprog.kort.befolka"]
+    global _CACHE
+    äkta_cache, _CACHE = _CACHE, None
+    äkta = b._lägg_till
+    tappade: set = set()
+
+    def hoppa(kort, typ, språk, facit, **kw):
+        # TAPPA DET FÖRSTA kortet per (språk, klass), inte dubbletterna.
+        #
+        # Första försöket hoppade över dubbletterna — men efter hopslagningen
+        # FINNS inga dubbletter, så sabotaget tog bort ingenting och provet
+        # såg stumt ut. Invarianten handlar om att varje ändelse HAR ett
+        # kort, och det enda som bryter den är ett kort som saknas.
+        if typ == "system":
+            nyckel = (språk, kw.get("ordklass"), kw.get("klass"))
+            if nyckel not in tappade:
+                tappade.add(nyckel)
+                return None
+        return äkta(kort, typ, språk, facit, **kw)
+
+    b._lägg_till = hoppa
+
+    def ångra():
+        global _CACHE
+        b._lägg_till = äkta
+        _CACHE = äkta_cache
+    return ångra
+
+
+def _sabotage_utan_migration():
+    """Före migrationen: gamla cell-nycklade kort lämnades kvar."""
+    import sprakprog.kort.befolka                # noqa: F401
+    b = sys.modules["sprakprog.kort.befolka"]
+    äkta = b._slå_ihop_gamla_ändelsekort
+    b._slå_ihop_gamla_ändelsekort = lambda *a, **kw: 0
+    return lambda: setattr(b, "_slå_ihop_gamla_ändelsekort", äkta)
+
+
 #: (sabotage, vilket prov det ska fälla).
 SABOTAGE = [
     (_sabotage_omkastad, 0),
@@ -279,6 +471,9 @@ SABOTAGE = [
     (_sabotage_tappa_steg, 4),
     (_sabotage_utan_beroenden, 5),
     (_sabotage_två_block, 6),
+    (_sabotage_kort_per_cell, 7),
+    (_sabotage_hoppa_celler, 8),
+    (_sabotage_utan_migration, 9),
 ]
 
 

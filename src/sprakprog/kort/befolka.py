@@ -230,9 +230,27 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
                 and rad["cell"] not in böjningsceller[nyckel]):
             continue
         n = klasstorlek.get((rad["språk"], rad["ordklass"], rad["klass"]), 1)
+        # KORTET HÖR TILL ÄNDELSEN, INTE TILL CELLEN — och det är skillnaden
+        # mellan att lära sig något och att bli tillfrågad om det.
+        #
+        # Franskans K0 hade `pres_1sg = e` och `pres_3sg = e` som TVÅ kort med
+        # olika namn och samma svar. Det andra kunde aldrig lära ut något: har
+        # man klarat det första finns ingenting kvar. Sex frågor för fem
+        # kunskaper.
+        #
+        # Nyckeln är därför (typ, språk, ordklass, klass, ÄNDELSE) och cellen
+        # står tom. `INSERT OR IGNORE` gör hopslagningen av sig själv: två
+        # celler med samma ändelse ger samma naturliga nyckel och därmed ett
+        # kort. Båda cellernas uppslag pekar sedan på det via `Cellkort`, så
+        # `Elle parle.` och `Je parle.` prövar samma kunskap — vilket de gör.
+        #
+        # Alternativet var att grinda bort den andra cellen på nivåstegen,
+        # men då försvann attributionen med den: meningen slog upp en cell
+        # utan kort. Att slå ihop är att ta bort det tomma momentet UTAN att
+        # lämna ett hål. Se F5b.
         _lägg_till(kort, "system", rad["språk"], rad["ändelse"] or "∅",
                    ordklass=rad["ordklass"], klass=rad["klass"],
-                   cell=rad["cell"], räckvidd=n)
+                   egenskap=rad["ändelse"] or "∅", räckvidd=n)
 
     # ── rektionskort: att ett styrande ord kräver en viss form ────────
     for r in språk_db.execute(
@@ -320,6 +338,10 @@ def _cellkort(språk: set[str]) -> list[tuple]:
     känner till, till de kort som prövas när formen används.
     """
     ut = []
+    # (språk, ordklass, klass, cell) → ändelse. Läses en gång; uppslaget görs
+    # per cell och per stam nedan.
+    ändelser = {(r["språk"], r["ordklass"], r["klass"], r["cell"]):
+                r["ändelse"] or "∅" for r in _ändelserader(språk)}
     for rad in _stamrader(språk):
         grupp = int(rad["stamgrupp"])
         celler = rad["celler"].split(",")
@@ -333,9 +355,18 @@ def _cellkort(språk: set[str]) -> list[tuple]:
                        cell, nyckel))
         # ändelsen som gäller samma cell
         for cell in celler:
+            # ÄNDELSEN, inte cellen — samma nyckel som kortet fick ovan.
+            ändelse = ändelser.get(
+                (rad["språk"], rad["ordklass"], rad["klass"], cell))
+            if ändelse is None:
+                # Klassen har ingen ändelse för cellen. Det är inte ett fel:
+                # paradigmet kan sakna cellen helt, och då finns inget kort
+                # att peka på heller.
+                continue
             ut.append((rad["språk"], rad["koncept"], rad["variant"] or None, cell,
                        _nyckel("system", rad["språk"], None, None,
-                               rad["ordklass"], rad["klass"], cell, None, None)))
+                               rad["ordklass"], rad["klass"], None, None,
+                               ändelse)))
     return ut
 
 
@@ -392,6 +423,69 @@ def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
     return sedda
 
 
+def _slå_ihop_gamla_ändelsekort(kort_db: sqlite3.Connection,
+                                språk: set[str]) -> int:
+    """Flytta historiken från cell-nycklade ändelsekort till de ändelse-nycklade.
+
+    ENGÅNGSMIGRATION, och den behövs därför att kortets IDENTITET ändrades.
+    Förut fanns ett kort per (klass, cell); nu ett per (klass, ändelse). Utan
+    den här funktionen blir de gamla korten kvar med sin historik men UTAN
+    rad i `Cellkort` — alltså schemalagda, förfallna, och omöjliga för någon
+    mening att nå. Mätt på Julius franska: 15 föräldralösa kort efter en
+    nivåupplåsning, varav 7 med historik. Det är exakt A3:s spökkort.
+
+    DEN SVAGASTE EVIDENSEN VINNER. Två gamla kort — `pres_1sg` och
+    `pres_3sg`, båda `e` — blir ett. Vilken stabilitet ska det ärva? Det
+    lägsta, och skälet är att den sammanslagna kunskapen inte kan vara
+    säkrare än den osäkraste mätningen av den. Att ta den högsta vore att
+    påstå att man kan något bättre än man visat.
+
+    Repetitionsraderna följer med allihop: de är mätningar av samma kunskap,
+    gjorda under olika namn, och FSRS optimerare läser dem som en historik.
+    """
+    flyttade = 0
+    for s_ in sorted(språk):
+        gamla = kort_db.execute(
+            """SELECT id, ordklass, klass, facit, stabilitet, svårighet,
+                      tillstånd, steg, sedd, förfaller, antal, fall
+               FROM Kort WHERE språk = ? AND typ = 'system'
+                 AND cell IS NOT NULL""", (s_,)).fetchall()
+        if not gamla:
+            continue
+        nya = {(r["ordklass"], r["klass"], r["facit"]): r["id"]
+               for r in kort_db.execute(
+                   """SELECT id, ordklass, klass, facit FROM Kort
+                      WHERE språk = ? AND typ = 'system' AND cell IS NULL""",
+                   (s_,))}
+        for g in gamla:
+            ny_id = nya.get((g["ordklass"], g["klass"], g["facit"]))
+            if ny_id is None:
+                continue          # ingen efterföljare — lämna kortet i fred
+            kort_db.execute("UPDATE Repetition SET kort_id = ? WHERE kort_id = ?",
+                            (ny_id, g["id"]))
+            if g["sedd"] is not None:
+                mål = kort_db.execute(
+                    "SELECT stabilitet, sedd FROM Kort WHERE id = ?",
+                    (ny_id,)).fetchone()
+                svagare = (mål["sedd"] is None
+                           or (g["stabilitet"] or 0) < (mål["stabilitet"] or 0))
+                if svagare:
+                    kort_db.execute(
+                        """UPDATE Kort SET stabilitet = ?, svårighet = ?,
+                               tillstånd = ?, steg = ?, sedd = ?, förfaller = ?
+                           WHERE id = ?""",
+                        (g["stabilitet"], g["svårighet"], g["tillstånd"],
+                         g["steg"], g["sedd"], g["förfaller"], ny_id))
+                kort_db.execute(
+                    "UPDATE Kort SET antal = antal + ?, fall = fall + ? WHERE id = ?",
+                    (g["antal"] or 0, g["fall"] or 0, ny_id))
+            kort_db.execute("DELETE FROM Kort WHERE id = ?", (g["id"],))
+            flyttade += 1
+    if flyttade:
+        kort_db.commit()
+    return flyttade
+
+
 def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             språk: set[str], *, nivå: int | None = None,
             cefr: str = "C2", mät: bool = True,
@@ -418,6 +512,10 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             stamgrupp, egenskap, facit, räckvidd)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""", rader)
     kort_db.commit()
+    # MIGRATIONEN KÖRS EFTER INSÄTTNINGEN, så efterföljarkorten finns att
+    # flytta till. Den är idempotent: har inga cell-nycklade kort kvar gör
+    # den ingenting.
+    _slå_ihop_gamla_ändelsekort(kort_db, språk)
     efter = kort_db.execute("SELECT COUNT(*) FROM Kort").fetchone()[0]
 
     # Beroendekartan byggs om varje gång — den bär ingen historik, bara

@@ -4078,20 +4078,55 @@ Med grinden skapas alltså inget kort för `(K0, pres_3sg)`. Men meningen
 attribuera eller pröva där. Att ta bort det tomma läromomentet tog med sig
 attributionen.
 
-**Två vägar, och de är olika stora:**
+#### VALT OCH BYGGT: KORTET HÖR TILL ÄNDELSEN (2026-08-28)
 
-*Nyckla kortet på (klass, ÄNDELSE) i stället för (klass, cell).* Då är `e`
-ETT kort som täcker både 1sg och 3sg, och båda cellernas uppslag pekar på
-det. Det är vad Julius insikt egentligen säger — det man lär sig är
-ändelsen, inte cellen — och det gör det tomma momentet omöjligt i stället
-för bortfiltrerat. Kostnaden är `_nyckel` för systemkort plus
-beroendekartans (klass, cell) → kort-uppslag.
+Julius valde att nyckla kortet på `(klass, ändelse)` i stället för
+`(klass, cell)`. `e` är därmed ETT kort som täcker både `pres_1sg` och
+`pres_3sg`, och båda cellernas uppslag pekar på det via `Cellkort`.
 
-*Skapa alla cellkort men SCHEMALÄGG bara de upplåsta.* Kortet finns för
-attributionens skull, nivån styr när det kommer i kön. Mindre ingrepp, men
-det tomma momentet finns kvar som ett kort som aldrig lär ut något.
+Det är skillnaden mot att grinda bort den redundanta cellen: hopslagningen
+tar bort det tomma momentet UTAN att lämna ett hål. `Elle parle.` slår
+fortfarande upp `pres_3sg` och hittar ett kort.
 
-Den första är riktigare och den andra billigare. Frågan är Julius.
+**Omfattningen, räknad ur `ändelser.tsv`:**
+
+    språk    per cell   per ändelse   tomma moment
+    sv             68            39             29
+    en             20            16              4
+    de            241            39            202
+    fr            111            75             36
+    es            191           109             82
+    it            180            97             83
+    ja             20            19              1
+    ALLA          831           394            437
+
+**52 % av alla ändelsekort frågade om något ett annat kort redan lärt ut.**
+Tyskan ensam: 241 kort för 39 kunskaper.
+
+Verifierat att attributionen håller: på `Tu trouvXX.` mot facit
+`Tu trouves.` fälls `es`-kortet och `∅`-kortet står kvar som rätt.
+
+#### IDENTITETSBYTET GJORDE 15 KORT OSYNLIGA (2026-08-28)
+
+Den farligaste sortens ändring: de gamla korten blev inte fel, de blev
+**onåbara**. Mätt på Julius franska efter en nivåupplåsning utan
+nollställning — 15 cell-nycklade kort utan rad i `Cellkort`, varav **7 med
+repetitionshistorik**. Schemalagda, förfallna, och omöjliga för någon mening
+att nå. A3:s spökkort, självförvållade.
+
+`_slå_ihop_gamla_ändelsekort` flyttar historiken till efterföljaren och tar
+bort det gamla kortet. Mätt: 15 kort → 12, noll föräldralösa, **alla 36
+repetitionsrader bevarade**, och idempotent vid omkörning.
+
+**DEN SVAGASTE EVIDENSEN VINNER.** Två gamla kort — `pres_1sg` och
+`pres_3sg`, båda `e` — blir ett, och det ärver den LÄGSTA stabiliteten.
+Skälet är att den sammanslagna kunskapen inte kan vara säkrare än den
+osäkraste mätningen av den; att ta den högsta vore att påstå att man kan
+något bättre än man visat.
+
+`dimensionsprov` vaktar numera tio invarianter, var och en med eget
+sabotage — inklusive att migrationen bevarar historiken och att varje cell
+med en ändelse har ett kort att peka på.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 
