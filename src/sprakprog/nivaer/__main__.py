@@ -14,6 +14,7 @@ import sqlite3
 import time
 from pathlib import Path
 
+from ..avtryck import avtryck, skiljer
 from ..rendering.karta import ladda
 from ..sammansattning import Sammansättare
 from . import Krav, Nivåkort, rita_nivåer
@@ -47,6 +48,19 @@ def main() -> None:
 
     karta = ladda(a.karta)
     språk = karta["språk"]
+
+    # KARTAN MÅSTE VARA BYGGD UR NUVARANDE GRAMMATIK. Kraven läses ur den (4.2),
+    # så en karta byggd ur en äldre `sprak.db` ger krav som beskriver meningar
+    # grammatiken inte längre bygger — elva falska krav, och en dagsplan som
+    # aldrig blev klar (`sprakprog.avtryck`). Att bygga nivåerna ur en sådan
+    # karta är att lägga en timme på ett svar som inte gäller.
+    fel = skiljer(karta.get("avtryck"), avtryck())
+    if fel:
+        raise SystemExit(
+            f"{a.karta} är inte byggd ur nuvarande grammatik:\n"
+            + "".join(f"    {rad}\n" for rad in fel)
+            + f"Bygg om kartan först:\n"
+              f"    python -m sprakprog.rendering.karta {språk} {a.karta}")
     s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), karta, a.källspråk)
     s.kontroll = a.kontroll
     nivå = Nivåkort(s.tabell)
@@ -87,6 +101,10 @@ def main() -> None:
         Path(a.spara).write_text(json.dumps({
             "språk": språk,
             "källspråk": a.källspråk,
+            # Avtrycket av det nivåerna vilar på: grammatiken, renderaren och
+            # kartan. Passet vägrar en fil vars avtryck inte stämmer.
+            "avtryck": avtryck(),
+            "karta": karta.get("avtryck"),
             "krav": [[rad(k), [rad(d) for d in sorted(m, key=str)]]
                      for k, m in sorted(karta_.krav.items(), key=lambda x: str(x[0]))],
             "nivåer": [[rad(k) for k in sorted(n, key=str)] for n in karta_.nivåer],

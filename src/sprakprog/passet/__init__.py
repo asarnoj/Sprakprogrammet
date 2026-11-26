@@ -891,7 +891,7 @@ class Passet:
         return rad["ordklass"] if rad else ""
 
     def _användbara(self, korten: list[Kort], tillåtna: set,
-                    klasser: dict, m: int) -> dict[str, list[Kort]]:
+                    klasser: dict, m: int, tak: int) -> dict[str, list[Kort]]:
         """De ord som FAKTISKT går att bygga en mening av, m per ordklass.
 
         Att nominera orden på frekvens ensamt räcker inte: nivå 1 har
@@ -901,28 +901,64 @@ class Passet:
         karantän. Vilka ord som duger avgörs av byggvillkoren, inte av en
         tabell, så frågan ställs till generatorn.
 
-        Sökningen slutar när varje öppen ordklass har m ord, eller när
-        generatorn tar slut. Meningen behöver inte renderas: bara vilka ord
-        den bär är intressant, och renderingen är det dyra.
+        TVÅ SVEP, och det första finns för att inte vänta på det omöjliga.
+        Villkoret «m ord i VARJE klass» kan vara ouppfyllbart: dagens kort
+        behöver inte kunna nå en ordklass alls. Dag fyras första kort, mätt
+        2026-09-28, efter 2000 meningar på tre sekunder: Substantiv 248, Verb
+        36 — trettiofem gånger de sju som behövdes — och Adverb NOLL, eftersom
+        kortets konstruktion inte rör något adverb. `klart()` blev därför aldrig
+        sant, uppräkningen fortsatte i hundratusentals meningar, och nästa kort
+        gjorde samma sak: över tjugo minuter för en dagsplan.
+
+        1. **Ett billigt svep**, högst `tak` meningar per kort — planens eget tak
+           (`dagsplan`), alltså det antal källmeningar dagen kan visa. Det säger
+           vilka ordklasser korten NÅR.
+        2. **Djupt svep, bara för de nådda** som ännu saknar ord. En klass som
+           inte syntes en enda gång i första svepet kan dagens kort inte fylla,
+           och den får det fröet gav.
+
+        Det andra svepet måste vara djupt: den knappa klassen ligger LÅNGT in.
+        Dag ett räknar upp substantiv med samma verb — «Tid står», «Väder står»,
+        «Vatten står» — så de första tjugoen meningarna ger tjugoen substantiv
+        och två verb. Ett tak ensamt skar därför bort just det som fyllde verben,
+        och dag ett gick från fyra introövningar till noll.
+
+        Kvar står samma utsatthet som förut för en klass som syns men har för
+        få ord: då töms generatorn. Det var läget före den här ändringen och
+        gäller dag ett till tre, som fungerar; det är inte lagat, bara inte
+        försämrat.
+
+        Meningen behöver inte renderas: bara vilka ord den bär är intressant,
+        och renderingen är det dyra.
         """
         funna: dict[str, dict[Kort, None]] = {ok: {} for ok in klasser}
 
-        def klart() -> bool:
-            return all(len(v) >= m for v in funna.values())
+        def klart(mål) -> bool:
+            return all(len(funna[ok]) >= m for ok in mål)
 
         def tillåten(k: Kort) -> bool:
             return k in tillåtna or self._fritt_ord(k)
 
-        for kort in korten:
-            if klart():
-                break
-            for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA,
-                                         per_mall=None, grupperat=False):
-                for k in träff.kort:
-                    if k.familj == "ord" and (ok := self._ordklass(k)) in funna:
-                        funna[ok][k] = None
-                if klart():
-                    break
+        def svep(mål, gräns: int | None) -> None:
+            for kort in korten:
+                if klart(mål):
+                    return
+                sedda = 0
+                for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA,
+                                             per_mall=None, grupperat=False):
+                    sedda += 1
+                    if gräns is not None and sedda > gräns:
+                        break
+                    for k in träff.kort:
+                        if k.familj == "ord" and (ok := self._ordklass(k)) in funna:
+                            funna[ok][k] = None
+                    if klart(mål):
+                        return
+
+        svep(funna, tak)
+        nådda = [ok for ok, v in funna.items() if v]
+        if nådda:
+            svep(nådda, None)
         return {ok: sorted(v, key=lambda k: self.s._ordvikt(k.nyckel[0]))
                 for ok, v in funna.items()}
 
@@ -1006,7 +1042,11 @@ class Passet:
         if c >= 2:
             while m ** c - m < 2 * p:
                 m += 1
-        användbara = self._användbara(korten, tillåtna, öppna, m)
+        # Taket i det billiga svepet är planens eget (`dagsplan`s `tak`): en
+        # lektion och en övning per mönsterkort plus en mening per ord, räknat
+        # med det ordförråd som finns när frågan ställs — alltså fröets.
+        användbara = self._användbara(korten, tillåtna, öppna, m,
+                                      tak=3 * p + len(ut))
         for ordklass, frön in öppna.items():
             valda = set(frön)
             # De INFÖRDA först, och inom varje grupp det vanligaste (5.6).

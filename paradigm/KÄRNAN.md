@@ -62,7 +62,7 @@ Två grundfel, och resten av specen är deras motsats:
 
 ## 2 · Grundreglerna
 
-Sex regler. Allt annat i specen följer av dem eller av en mätning.
+Sju regler. Allt annat i specen följer av dem eller av en mätning.
 
 **R1 · Axiomet**
 
@@ -125,6 +125,52 @@ det ändå händer står i 7.3.
 
 Retentionsmålet 0,9 är grunden; toleranser, fönster och trösklar härleds ur det.
 Bilaga B visar varför regeln finns.
+
+**R7 · Bygget svarar på vad som går att lära, dagen på vad som bör läras nu**
+
+> Allt som är likadant varje dag räknas fram när kartan och nivåerna byggs. Vid
+> körtid ställs bara de frågor vars svar beror på ANVÄNDAREN: vad hen kan väl,
+> och vad hen redan sett i dag.
+
+Sökningen är uttömmande (6.7), och det gör frågorna osymmetriska. Ett **ja** är
+billigt: sökningen slutar när den hittat en mening. Ett **nej** kräver att hela
+rummet gås igenom, och rummet växer med antalet tillåtna kort. Mätt 2026-09-27,
+samma fråga om `ord:räkn_1` tre gånger:
+
+| tillåtet | nejet kostar |
+|--|--|
+| bara kortets krav | 6 s |
+| de sjuttio införda korten | 82 s |
+| samma, plus dagens sexton valda | 821 s |
+
+En körtidsfråga som *kan* svara nej är därför inte en kostnad utan en risk, och
+den växer med kursen. Regeln tar bort risken i stället för att begränsa den: en
+fråga bygget redan besvarat kan inte svara nej vid körtid, för den ställs inte.
+
+Regeln kommer ur fyra fel funna samma dygn, alla samma sak — en körtidsfråga vars
+svar bygget kunde ha gett:
+
+- grinden (4.4) släppte upp kort ur en kravtabell som var falsk, och passet
+  betalade ett nej per kort och dag,
+- paketet (3.10) byggde en giltig övning för att få fram en minsta mening, fast
+  beviset redan fanns,
+- ordvalet (5.6) väntade på ord i en ordklass dagens kort inte kan nå,
+- kandidatinsamlingen (5.1) tar ett tak meningar per kort som inte alltid finns.
+
+**Gränsen är skarp, och det är det som gör regeln användbar.** En mening byggd av
+kortets krav, kortet självt och fria ord är giltig **varje dag från och med den
+dag kortet låses upp**: grinden öppnar kortet först när kravet är infört (4.4),
+och de införda korten blir aldrig färre (5.1). Sådana meningar kan alltså räknas
+fram en gång per språkpar och gälla kursen ut. Vad som beror på dagen är bara två
+filter, och båda är mängdtest: är alla meningens kort tillåtna i dag (R1), och
+har meningen redan ställts i dag (6.1 punkt 8).
+
+Kvar vid körtid hör det som mäter användaren — lånekortens vikt (5.4), som vilar
+på retrievability, täckningen per kort (5.6) — och urvalet: vilken mening som bär
+vilket kort. Det är räkning över en ändlig tabell, inte sökning.
+
+Hur många meningar per kort som ska räknas fram är ett tal, och lyder därför
+under R6: det mäts, det väljs inte.
 
 ---
 
@@ -2139,6 +2185,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     P3  provsviten                         parallellt — simulerade kurser (3.10)
     P4  valideringen                       parallellt — kaikki, AI-granskning, användarflaggor (3.4)
     P5  täckningen                         parallellt — den nya täckningen per kort, läst ur formtabellen (3.4) och kartan (6.7) utan att bygga meningar (5.6); ersätter både kandidatmängden och ordningen i 5.6, som tills dess är nästa nivå med mönsterkorten först
+    P6  semantiken                         parallellt — meningarna är grammatiska men befängda («Weather stands.», «See under lives!»); mekanismen finns (bitmasken i `docs/BITMASK.md` §11), tabellen är halvfylld och kravet släpps tyst; planen nedan
 
 **Kärnan byggs först för ett språkpar: svenska och engelska.** En kurs har två språk.
 Entydighetsfiltret behöver källspråkets karta (6.5), och målspråket behöver allt:
@@ -2160,6 +2207,57 @@ Håller den inte syns det innan något har raderats. För svenskan höll den (8.
 **Rent arbete, utan kvarstående beslut:** böjningsreglerna och redovisningen för övriga
 språk, aspektkraven på adverbialkoncepten, och datafelen i punkt 12. Lektionerna och
 frekvenserna väntar på beslut (punkt 10).
+
+### Semantiken (P6) i fem steg
+
+Meningarna är grammatiska men befängda: «Weather stands.», «Love suits.», «See under
+lives!», «Who says?» utan objekt. Mätt 2026-10-06 på trettio meningspar spridda över
+kursens 171 nivåer — ingen av dem är grammatiskt fel av det här skälet, men många är
+semantiskt tomma, och dag ett visar tre av dem.
+
+**Mekanismen finns redan och behöver inte uppfinnas.** Tjugo semantikbitar på
+`Koncept.semantik` matchas mot `MönsterKrav.tagg` med OCH (`docs/BITMASK.md` §11).
+Bitarna sitter på KONCEPTET, inte på lexemet, så varje ifylld rad gäller alla sju
+språken. Arbetet är att fylla tabellen och att låta kravet bita.
+
+1. **Kravet får inte släppas tyst.** `generator/urval.py:219` gör
+   `träffar or kandidater`: uppfyller inget koncept kravet används alla kandidater.
+   Därför biter semantiken inte alls i dag — `fys_ha` har ett objektskrav, och
+   «Have worlds!» byggs ändå. Bygget ska stanna i stället. Det här steget är
+   **först** därför att det gör de andra mätbara: innan kravet biter går det inte
+   att se effekten av en ifylld bit.
+
+2. **Koncepten får sina bitar.** 409 av 736 koncept har `semantik = 0`, och
+   eftersom matchningen är OCH kan ett sådant koncept inte fylla NÅGON taggad
+   plats. Det är en rad per koncept. Förslagen kan komma ur en språkmodell, som
+   för böjningen; kontrollen är ett nät.
+
+3. **De nio verben får sitt subjektskrav.** Tjugo verb saknar taggat
+   subjektskrav och elva ska sakna det: modalerna, kopulorna, `asp_börja` och
+   `ext_verka` tar med rätta vilket subjekt som helst. Kvar är `pos_stå`,
+   `pos_sitta`, `pos_ligga`, `gen_passa`, `gen_skydda`, `gen_växa`, `per_lukta`,
+   `per_smaka`, `eko_v_kosta`.
+
+4. **Komplementen får krav.** Nittiosju komplementkrav, noll med tagg. Därav
+   «See under lives!» och «Se mot världar!».
+
+5. **Obligatoriska argument.** «Vem säger?» byggs därför att objektsplatsen får
+   stå tom: ett krav säger i dag vad objektet måste VARA, aldrig att det måste
+   FINNAS. Det är ett fält till på `MönsterKrav`.
+
+**Varje steg kräver ett ombygge** av kartan och nivåerna, eftersom färre lagliga
+kombinationer kan göra kort oprövbara — och stämpeln (R7) vägrar annars att
+starta passet. Räkna en timme obevakad maskintid per steg och språkpar.
+
+**Ett semantiskt krav är inget kort.** Renderaren VÄLJER inte semantik; den
+hindras från olagliga kombinationer, precis som `restriktioner.py` hindrar
+oräknebara substantiv i plural. Alltså inga nya nivåkort, och R3 gäller
+oförändrat.
+
+**Falsifieringen är två listor, inte en.** Den ena är meningar vi dömt befängda
+och som inte längre får gå att bygga. Den andra är meningar vi dömt riktiga och
+som fortfarande måste gå. Utan den andra mäter arbetet bara hur mycket det
+förbjuder, och ett krav som förbjuder allt ser ut som en framgång.
 
 ---
 

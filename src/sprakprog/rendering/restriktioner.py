@@ -103,6 +103,11 @@ class Brott:
                     f"och står ingen annanstans i satsen — «min» utan «min "
                     f"bok» någonstans gör konceptet omöjligt att återskapa, "
                     f"och specen bär då ett val som ingenting hänger på")
+        if self.slot == "ägare":
+            return (f"ägare={self.koncept}: en självständig possessiv kan inte "
+                    f"äga en annan fras — engelskans «yours older sister» finns "
+                    f"inte, och ägarens eget huvudord skrivs aldrig ut, så "
+                    f"specen bär ett led som ingenting hänger på")
         if self.slot == "tempus":
             tillåtna = "/".join(n for b, n in TIDSNAMN.items() if self.krav & b)
             return (f"adverbial={self.koncept}: kräver {tillåtna}, "
@@ -355,6 +360,39 @@ class Validator:
                 brott.append(Brott("självständig", nf.koncept, 0, None))
         return brott
 
+    def _självständig_ägare(self, m: Mening) -> list[Brott]:
+        """En självständig possessiv kan inte vara ägare åt en annan fras.
+
+        `självständig` betyder att possessiven ÄR frasen: «boken är min» säger
+        `min`, inte `min bok`, och huvudordet skrivs inte ut. Står den i ett
+        ÄGARLED blir nästlingen osynlig, för ägarens huvudord renderas aldrig —
+        och det som skrivs ut har ett led för lite:
+
+            subjekt = storasyster, ägare = (självständig, poss_2sg_formal)
+            svenskan   «Er storasyster ser.»          ett storasyster, specen har två
+            engelskan  «Yours older sister sees.»     fel form
+
+        Engelskan skiljer formerna: `your` framför ett substantiv, `yours`
+        fristående (species 1 och 2 i `Former`). Genitiv av `yours` finns inte —
+        ägandet sägs med den attributiva formen, «your older sister». Svenskan
+        renderar rätt av en slump, eftersom `er` är båda formerna.
+
+        DET ÄR SAMMA FRIA VÄRDE UTAN VERKAN som `_utan_antecedent` vaktar mot,
+        och den regeln räcker inte: där är ägarens koncept samma som
+        huvudordets, så antecedenten finns och kravet uppfylls degenererat.
+
+        Kortet blir inte oprövbart. `oregelbunden:poss_2sg_formal/best` prövas
+        predikativt i stället — «Luft är er.» → «Air is yours.» — och det är den
+        enda ställning den självständiga formen har. Mätt 2026-10-06: tio av tio
+        meningar för kortet gick genom ägarledet, alla med fel engelsk form.
+        """
+        brott = []
+        for nf in self._nominalfraser(m):
+            ägare = getattr(nf, "ägare", None)
+            if ägare is not None and ägare.självständig:
+                brott.append(Brott("ägare", ägare.koncept, 0, None))
+        return brott
+
     def validera(self, m: Mening) -> list[Brott]:
         """Alla krav specen bryter mot. Tom lista = välformad."""
         krav = self.krav_för(m.verb)
@@ -385,6 +423,7 @@ class Validator:
                 brott += self._attributbrott(slot, nf)
 
         brott += self._utan_antecedent(m)
+        brott += self._självständig_ägare(m)
         brott += self._oräknebart_exemplar(m)
 
         brott += self._deixisbrott(m)

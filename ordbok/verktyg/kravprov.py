@@ -46,6 +46,7 @@ from pathlib import Path
 ROT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROT / "src"))
 
+from sprakprog.avtryck import avtryck, skiljer                    # noqa: E402
 from sprakprog.kortmodell import Kort                             # noqa: E402
 from sprakprog.passet import SLUTNA_ORDKLASSER                    # noqa: E402
 from sprakprog.rendering.karta import ladda                       # noqa: E402
@@ -113,6 +114,16 @@ def varje_kort_går_att_införa() -> list[str]:
         return [f"{NIVÅER.name} bär inget källspråk — kraven gäller per "
                 "språkpar (4.2), och utan paret är de räknade för ingen kurs"]
 
+    # ARTEFAKTERNA MÅSTE VARA BYGGDA UR NUVARANDE GRAMMATIK, annars prövar det
+    # här nätet en annan version än den som körs. Det var precis så de falska
+    # kraven kunde leva: kartan var byggd tjugotre timmar före `sprak.db`.
+    nu = avtryck()
+    brister = [f"{NIVÅER.name}: {rad}" for rad in skiljer(d.get("avtryck"), nu)]
+    brister += [f"{KARTA.name}: {rad}"
+                for rad in skiljer(ladda(KARTA).get("avtryck"), nu)]
+    if brister:
+        return brister
+
     def rapport(i, k, ja, dt):
         if not ja or dt > 20:
             print(f"      nivå {i:>3}  {dt:>7.1f} s  "
@@ -155,7 +166,11 @@ def main() -> int:
         for b in fel:
             print(f"      {b}")
         brister += fel
-    brister += _falsifiera()
+    # FALSIFIERINGEN BARA NÄR KONTROLLEN HÖLL. Den kostar en egen genomgång av
+    # alla nivåer, och mot en fallen kontroll säger den ingenting: är
+    # artefakterna byggda ur en annan grammatik prövar båda svaren fel version.
+    if not brister:
+        brister += _falsifiera()
     print(f"\n{len(PROV)} kontroller, "
           + (f"{len(brister)} brister." if brister else "alla håller."))
     return 1 if brister else 0

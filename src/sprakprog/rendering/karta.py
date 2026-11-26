@@ -1089,6 +1089,21 @@ def ladda(fil) -> dict:
         return _Avläsare(f).load()
 
 
+def _stämpla(fil: str) -> None:
+    """Kartan bär avtrycket av grammatiken och renderaren den byggdes ur.
+
+    Utan det gick den inte att skilja från en karta byggd ur en äldre
+    `sprak.db`, och det kostade elva falska krav och en dagsplan som aldrig blev
+    klar (`sprakprog.avtryck`).
+    """
+    from ..avtryck import avtryck
+    with open(fil, "rb") as f:
+        karta = pickle.load(f)
+    karta["avtryck"] = avtryck()
+    with open(fil, "wb") as f:
+        pickle.dump(karta, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+
 def main() -> None:
     språk = sys.argv[1] if len(sys.argv) > 1 else "sv"
     conn = sqlite3.connect("sprak.db")
@@ -1098,6 +1113,7 @@ def main() -> None:
     kartor = ritare.rita()
     if len(sys.argv) > 2:
         ritare.spara(sys.argv[2])
+        _stämpla(sys.argv[2])
         print(f"sparade vägarna i {sys.argv[2]}")
     print(f"\n{'del':18} {'vägar':>9} {'klara':>8} {'vägrar':>7} {'förbi':>6} "
           f"{'krasch':>6} {'väntar':>6} {'utfall':>7} {'genomg.':>7} {'läses':>6}")

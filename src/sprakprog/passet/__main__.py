@@ -15,6 +15,7 @@ import time
 from pathlib import Path
 
 from ..fsrslager import Lager
+from ..avtryck import avtryck, skiljer
 from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
 from ..rattning import FEL
@@ -57,6 +58,17 @@ def _nivåfil(fil: str, källspråk: str, språk: str) -> tuple[
 
     def kort(rad) -> Kort:
         return Kort(rad[0], rad[1], tuple(rad[2]))
+
+    fel = skiljer(data.get("avtryck"), avtryck())
+    if fel:
+        raise SystemExit(
+            f"{fil} är inte byggd ur nuvarande grammatik:\n"
+            + "".join(f"    {rad}\n" for rad in fel)
+            + "Kraven (4.2) är lästa ur en karta som beskriver meningar "
+              "grammatiken kanske inte längre bygger. Bygg om:\n"
+              f"    python -m sprakprog.rendering.karta {språk} kartor/{språk}.pkl\n"
+              f"    python -m sprakprog.nivaer kartor/{språk}.pkl "
+              f"--källspråk {källspråk} --spara {fil}")
 
     krav = {kort(k): frozenset(map(kort, m)) for k, m in data["krav"]}
     bevis = {kort(k): frozenset(map(kort, m)) for k, m in data.get("bevis", [])}
@@ -407,6 +419,18 @@ def main() -> None:
 
     karta = ladda(a.karta)
     språk = karta["språk"]
+
+    # KARTAN OCKSÅ, inte bara nivåfilen. Passet bygger sina meningar ur kartan
+    # (6.7), så en karta byggd ur en äldre grammatik ger meningar som inte
+    # stämmer med de böjningar databasen har i dag.
+    fel = skiljer(karta.get("avtryck"), avtryck())
+    if fel:
+        raise SystemExit(
+            f"{a.karta} är inte byggd ur nuvarande grammatik:\n"
+            + "".join(f"    {rad}\n" for rad in fel)
+            + "Bygg om:\n"
+              f"    python -m sprakprog.rendering.karta {språk} {a.karta}")
+
     sprak = sqlite3.connect(ROT / "sprak.db")
     data = Kursdata(sqlite3.connect(a.kurs), a.källspråk, språk)
     krav, nivåer, bevis = _nivåfil(a.nivåer, a.källspråk, språk)
