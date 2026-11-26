@@ -4043,11 +4043,55 @@ och gick därför igenom med sabotaget på. Provet har nu sin egen kopia av
 kraven, och den kopian är den grammatiska sanningen: säger modulens tabell
 något annat är det provet som säger ifrån.
 
-**KVAR INNAN INKOPPLING.** Mekanismen räknar; den styr fortfarande
-ingenting. Inkopplingen är att `befolka` skapar ändelsekort per steg i
-stället för alla på nivå 1, och att `upplåsningsläge`/`byggbarhet` grindar
-böjningsstegen — en böjningsnivå är redo när ordförrådet räcker för att möta
-cellen, vilket är en annan fråga än om en KONSTRUKTION går att bygga.
+#### GRINDEN BYGGD — OCH DEN BLOTTAR ETT VAL (2026-08-28)
+
+`befolka` tar numera `böjningsceller` och skapar bara ändelsekort för celler
+stegen öppnat. `dimensioner.upplåst_vid(språk, nivå)` ger båda mängderna ur
+samma lista — konstruktionerna och cellerna — vilket är hela poängen med en
+gemensam numrering: de kan inte glida isär, för de var aldrig två.
+
+**Verbändelser per nivå, mätt:**
+
+    fr    nivå 1: 2    nivå 6: 8    nivå 12: 16    nivå 54: 68    ogrindat 90
+    de    nivå 1: 0    nivå 6: 4    nivå 12: 8     nivå 28: 16    ogrindat 62
+    sv    nivå 1: 0    nivå 6: 2    nivå 12: 4     nivå 25: 8     ogrindat 20
+
+**En bugg i min första grind:** den nycklade på SPRÅK, och eftersom stegen
+bara känner verbcellerna föll substantivens och adjektivens ändelser bort
+helt — tyskans 241 ändelsekort blev 16. Nyckeln är nu `(språk, ordklass)`,
+och en ordklass utan stege passerar ogrindad i stället för att försvinna.
+
+**Och `kort.sql` gick inte att köra.** `Spår` skapades utan `IF NOT EXISTS`
+medan migrationen skapar den vid anslutning, och `skapa_kortdatabas` ansluter
+FÖRE den kör schemat. Ingen ny kortdatabas kunde skapas — det bröt `ordbok
+kort --återinitiera`, tyst, tills ett prov råkade skapa en.
+
+#### VALET: VAD ÄR ETT ÄNDELSEKORT NYCKLAT PÅ? (`?`)
+
+Grinden fungerar men får en följd som måste avgöras först. Franskans K0:
+
+    pres_1sg = e     ← projektionen gör den till ett steg
+    pres_3sg = e     ← UTELÄMNAD, ändelsen är redan lärd
+
+Med grinden skapas alltså inget kort för `(K0, pres_3sg)`. Men meningen
+`Elle parle.` slår upp just den cellen, och utan kort går ändelsen inte att
+attribuera eller pröva där. Att ta bort det tomma läromomentet tog med sig
+attributionen.
+
+**Två vägar, och de är olika stora:**
+
+*Nyckla kortet på (klass, ÄNDELSE) i stället för (klass, cell).* Då är `e`
+ETT kort som täcker både 1sg och 3sg, och båda cellernas uppslag pekar på
+det. Det är vad Julius insikt egentligen säger — det man lär sig är
+ändelsen, inte cellen — och det gör det tomma momentet omöjligt i stället
+för bortfiltrerat. Kostnaden är `_nyckel` för systemkort plus
+beroendekartans (klass, cell) → kort-uppslag.
+
+*Skapa alla cellkort men SCHEMALÄGG bara de upplåsta.* Kortet finns för
+attributionens skull, nivån styr när det kommer i kön. Mindre ingrepp, men
+det tomma momentet finns kvar som ett kort som aldrig lär ut något.
+
+Den första är riktigare och den andra billigare. Frågan är Julius.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 

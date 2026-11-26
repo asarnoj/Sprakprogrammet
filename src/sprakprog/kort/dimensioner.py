@@ -251,3 +251,20 @@ def stege(språk: str, ordklass: str = "Verb") -> list[tuple[str, str]]:
         rader.append((pos, 1, "konstruktion", namn))
     rader.sort(key=lambda r: (r[0], r[1]))
     return [(typ, namn) for _, _, typ, namn in rader]
+
+
+def upplåst_vid(språk: str, nivå: int,
+                ordklass: str = "Verb") -> tuple[list[str], set[str]]:
+    """(konstruktioner, böjningsceller) som är öppna vid `nivå` i den flätade stegen.
+
+    `nivå` indexerar den GEMENSAMMA numreringen — Julius val: en stege där
+    konstruktioner och böjning varvas. Nivå 1 är stegens första rad, vilken
+    sort den än är.
+
+    Båda mängderna kommer ur samma lista, och det är hela poängen med en
+    gemensam numrering: det finns ingen risk att de två axlarna glider isär,
+    eftersom de aldrig var två.
+    """
+    steg = stege(språk, ordklass)[:max(0, nivå)]
+    return ([namn for typ, namn in steg if typ == "konstruktion"],
+            {namn for typ, namn in steg if typ == "böjning"})

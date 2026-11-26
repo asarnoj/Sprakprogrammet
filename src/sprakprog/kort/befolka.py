@@ -103,7 +103,8 @@ def _ändelserader(språk: set[str]):
 
 
 def härled(språk_db: sqlite3.Connection, språk: set[str],
-           nåbart: dict[str, set[tuple]] | None = None) -> list[tuple]:
+           nåbart: dict[str, set[tuple]] | None = None,
+           böjningsceller: dict[str, set[str]] | None = None) -> list[tuple]:
     """Alla kort som ska finnas, som rader redo att sättas in.
 
     `nåbart` är språk → {(koncept, variant, cell)} som går att möta på
@@ -212,6 +213,21 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
             nådda_celler[s_] = {c for _, _, c in mängd}
     for rad in _ändelserader(språk):
         if nåbart is not None and rad["cell"] not in nådda_celler.get(rad["språk"], set()):
+            continue
+        # BÖJNINGSSTEGEN GRINDAR ÄNDELSEKORTEN. Utan den här raden skapades
+        # franskans sex personändelser allihop på nivå 1 — sex läromoment
+        # samma dag, varav två tomma (`pres_1sg` och `pres_3sg` är båda `e`
+        # i K0). Se F5b och `dimensioner.stege`.
+        #
+        # NYCKELN ÄR (SPRÅK, ORDKLASS) och inte bara språket. Första
+        # versionen grindade på språk, och eftersom stegen bara känner
+        # VERBcellerna föll substantivens och adjektivens ändelser bort helt:
+        # tyskans 241 ändelsekort blev 16. En ordklass utan stege ska passera
+        # ogrindad, inte försvinna — och `None` betyder fortfarande ingen
+        # grind alls, vilket verktyg som sveper hela beståndet behöver.
+        nyckel = (rad["språk"], rad["ordklass"])
+        if (böjningsceller is not None and nyckel in böjningsceller
+                and rad["cell"] not in böjningsceller[nyckel]):
             continue
         n = klasstorlek.get((rad["språk"], rad["ordklass"], rad["klass"]), 1)
         _lägg_till(kort, "system", rad["språk"], rad["ändelse"] or "∅",
@@ -378,7 +394,8 @@ def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
 
 def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             språk: set[str], *, nivå: int | None = None,
-            cefr: str = "C2", mät: bool = True) -> dict[str, int]:
+            cefr: str = "C2", mät: bool = True,
+            böjningsceller: dict[str, set[str]] | None = None) -> dict[str, int]:
     """Sätt in de kort som saknas. Rör aldrig ett kort som redan finns.
 
     Additivt av ett skäl: ett befintligt kort bär repetitionshistorik, och
@@ -393,7 +410,7 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
     nåbart = None
     if nivå is not None:
         nåbart = {s_: nåbara(språk_db, s_, nivå, cefr) for s_ in sorted(språk)}
-    rader = härled(språk_db, språk, nåbart)
+    rader = härled(språk_db, språk, nåbart, böjningsceller)
     före = kort_db.execute("SELECT COUNT(*) FROM Kort").fetchone()[0]
     kort_db.executemany(
         """INSERT OR IGNORE INTO Kort

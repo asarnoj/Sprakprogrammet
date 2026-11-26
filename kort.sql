@@ -367,7 +367,11 @@ CREATE TABLE Kurs (
    aldrig av schemaläggningen — annars vore det inte längre ett spår utan
    en del av modellen.
    ──────────────────────────────────────────────────────────────── */
-CREATE TABLE Spår (
+/* IF NOT EXISTS, därför att migrationen `spar.sql` kör vid varje anslutning
+   och `skapa_kortdatabas` ansluter FÖRE den kör grundschemat. Utan det kunde
+   ingen ny kortdatabas skapas: tabellen fanns redan när schemat nådde hit.
+   Det bröt `ordbok kort --återinitiera`. */
+CREATE TABLE IF NOT EXISTS Spår (
     id           INTEGER PRIMARY KEY,
     mening_id    INTEGER NOT NULL REFERENCES Mening(id) ON DELETE CASCADE,
     svar         TEXT,
@@ -375,4 +379,4 @@ CREATE TABLE Spår (
     kortlägen    TEXT NOT NULL DEFAULT '[]'
 );
 
-CREATE INDEX idx_spår_mening ON Spår(mening_id);
+CREATE INDEX IF NOT EXISTS idx_spår_mening ON Spår(mening_id);
