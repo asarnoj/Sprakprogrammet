@@ -282,10 +282,30 @@ Det som är kvar delar sig i två. Verb som `glömma`, `minnas`, `söka` och
 meningar — det är scope-beslutet i arbete. Men två adjektivgrupper är
 verkliga kategorifel som inte taggades:
 
-- `möjlig`, `omöjlig`, `nödvändig` borde kräva ABSTRAKT
-- `snabb`, `långsam` borde kräva RÖRELSE **eller** ANIMAT — och det går
-  inte att uttrycka med OCH-matchning. Först här blir OR-begränsningen
-  ett verkligt hinder snarare än en olägenhet.
+- ~~`möjlig`, `omöjlig`, `nödvändig` borde kräva ABSTRAKT~~ **åtgärdat**
+- ~~`snabb`, `långsam` borde kräva RÖRELSE **eller** ANIMAT~~ **åtgärdat**
+  med ELLER-stödet, se Matchningsregeln ovan
+
+### Efter ELLER-stödet
+
+```
+avvisas 67,9 %   [66,1 % före]
+```
+
+Tre förluster återvunna: `bryta armen`, `blanda mjölk` och `en snabb bil`
+går alla att bygga igen, samtidigt som `bryta en mamma`, `blanda en bok`
+och `ett snabbt salt` fortfarande avvisas.
+
+Det som passerar nu är nästan uteslutande scope-beslutet i arbete:
+
+```
+Sonen förlorade en gammal mus igen.        rimlig
+Chefen nådde en rolig restaurang ofta.     rimlig
+Vännen förlorade ett djupt bibliotek igen. osannolik, godkänd
+Chefen litar på en hård t-shirt ofta.      osannolik, godkänd
+```
+
+Inga uppenbara kategorifel återstår i stickprovet.
 
 ---
 
@@ -312,15 +332,33 @@ så `två ris` kraschar redan. Rätt beteende, fel skäl.
 
 ## Matchningsregeln
 
-`BITMASK.md` §11 säger att masken används för att matcha koncept mot
+`BITMASK.md` §11 sade att masken används för att matcha koncept mot
 slot-krav, men aldrig **hur**. Odefinierat, eftersom meningsbyggaren inte
 funnits.
 
-> **Regel: OCH.** Konceptet måste ha ALLA bitar som kravet anger.
-> `Koncept.semantik & MönsterKrav.tagg == MönsterKrav.tagg`
+> **Disjunktiv normalform.**
+> Bitar inom EN rad = OCH — konceptet måste ha alla.
+> Flera RADER för samma slot = ELLER — minst en rad måste uppfyllas.
 
-Med OCH går konjunktioner att uttrycka. Med ELLER går de inte, och hela
-resonemanget nedan faller.
+OCH ensamt räckte i tre steg. Sedan tog det stopp tre gånger i rad:
+
+| Krav | Behöver | Kringgicks med |
+|---|---|---|
+| `bryta` | KONSTRUERAD **eller** KROPPSDEL | förlorade "bryta armen" |
+| `blanda` | ÄTBAR **eller** DRICKBAR | HANTERBAR, för brett |
+| `snabb` | RÖRELSE **eller** ANIMAT | otaggad, släppte igenom allt |
+
+Ingen av de tre har en gemensam bit, och ingen bredare bit fångar bara dem.
+Tre gånger på en session är ett mönster, inte ett undantag — därför ELLER.
+
+Det kostade ingen schemaändring för verben: `MönsterKrav` är redan rader,
+och ingen slot hade flera rader, så tolkningen var fri att definiera.
+Adjektivens `attributkrav` var däremot en kolumn och kunde bara bära en
+konjunktion. Den ersattes av tabellen `Attributkrav` med samma regel.
+
+Bara ett enda krav i hela databasen använder äkta OCH över flera bitar:
+`köra` kräver RÖRELSE+INSTRUMENT, alltså fordon. Att i stället tolka masken
+som ELLER rakt igenom hade brutit det — en penna är INSTRUMENT.
 
 ---
 
