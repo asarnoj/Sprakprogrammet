@@ -20,7 +20,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Prepositionsfras,
-    RenderingsFel, Tidsreferens,
+    RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -228,7 +228,7 @@ class SvenskRenderare:
         adjektiv = self.u.lexem(m.predikativ)
         form = self.u._celler(adjektiv).get(cell)
         if form:
-            ut = [form]
+            ut = [self.u.form(adjektiv, cell)]
         else:
             markör = "komp_mer" if m.grad is Grad.KOMPARATIV else "komp_mest"
             huvud = self.u.lexem(m.subjekt.koncept)
@@ -249,6 +249,13 @@ class SvenskRenderare:
         returtypen är en lista och inte en sträng.
         """
         lexem = self.u.lexem(m.verb)
+        if m.modus is Satsmodus.IMPERATIV:
+            # Svenskan har EN imperativform för alla tilltal: "läs!" säger
+            # man till en som till många. Tilltalet läses ändå ut, för att
+            # ett subjekt som inte är någon tilltalad ska stoppas här och
+            # inte tyst rendera en uppmaning till tredje person.
+            tilltal(m, "sv", ("2sg", "2pl", "artig"))
+            return [self.u.form(lexem, "imp")]
         if m.diates is Diates.PASSIV_HÄNDELSE:
             # "boken blev läst" — bli plus perfektparticip, som kongruerar
             # med subjektet. Den betonar händelsen; s-passiven är omarkerad.
@@ -298,8 +305,14 @@ class SvenskRenderare:
         kräva en riktig ordföljdsmodell, och den byggs när det andra språket
         visar vilken form den behöver ha, inte innan.
         """
-        subjekt = self.nominalfras(m.subjekt, subjekt=True)
         verb = self.verbfras(m)
+        # Imperativen säger inte ut den tilltalade: "läs boken!". Subjektet
+        # finns kvar i specen och har redan prövats mot verbets krav — det
+        # är bara ordet som uteblir.
+        if m.modus is Satsmodus.IMPERATIV:
+            subjekt: list[str] = []
+        else:
+            subjekt = self.nominalfras(m.subjekt, subjekt=True)
         # Ja/nej-fråga är ren omkastning: det finita verbet först, subjektet
         # sedan. Samma sats, annan ordning — inget ord läggs till.
         ord = [verb[0], *subjekt] if m.fråga else [*subjekt, verb[0]]
@@ -319,4 +332,4 @@ class SvenskRenderare:
             ord.extend(self.adverbial(adverbial))
 
         mening = " ".join(ord)
-        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")
+        return mening[0].upper() + mening[1:] + slutar(m)

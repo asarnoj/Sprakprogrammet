@@ -22,7 +22,7 @@ som styr vilka ord som får kombineras.
 ## Var vi står
 
 **Datalagret, renderaren och restriktionerna är klara. Meningsformen är
-utbyggd genom arton nivåer. Generatorn är inte byggd.**
+utbyggd genom nitton nivåer. Generatorn är inte byggd.**
 
 ```
 Koncept        736        Mönster        271   (universella
@@ -51,7 +51,7 @@ uttrycksförmågan. Det är den inte längre; se nåbarhetsmätningen nedan.
 
 ## Vad som gjordes sist (2026-08-13 — 08-14)
 
-Åtta konstruktioner byggdes, en i taget, var och en i alla sju språk innan
+Nio konstruktioner byggdes, en i taget, var och en i alla sju språk innan
 nästa påbörjades. Ordningen togs inte på känsla utan **härleddes ur
 `MönsterKrav.slot` × `MönsterKrav.frastyp`** — en kolumn som legat ifylld
 sedan mönstertaggningen utan att någon läst den. Metoden flyttade
@@ -69,6 +69,7 @@ fyra dimensioner och inte en. Se GENERATOR.md, avsnittet med samma namn.
 | 16 | ja/nej-fråga | `fråga` |
 | 17 | passiv | `Diates`, båda svenska passiverna |
 | 18 | komparation | `Grad`, `jämförelse` |
+| 19 | imperativ | `Satsmodus` |
 
 Renderarna växte med det: `kein` i tyskan, do-support i engelskan,
 klitikaordning och sandhi i de romanska, ukemi-passiv och より-jämförelse i
@@ -105,37 +106,50 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 `Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
 ```
-sv  3 526 / 4 988   71 %      fr  5 088 /  9 070   56 %
-en  1 645 / 2 293   72 %      it  5 097 / 10 246   50 %
-                              es  4 637 / 10 596   44 %
-ja    770 / 2 498   31 %      de  7 839 / 23 493   33 %
+sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
+en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
+                              es  6 045 / 10 596   57 %
+ja  1 116 / 2 498   45 %      de  8 508 / 23 494   36 %
 ```
 
-Svenskan: 37 % → 45 % (genitiv) → **71 %** (de åtta utökningarna).
+Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
 
-**Siffran mäter svepet lika mycket som specen.** Två artefakter hittades och
-rättades under mätningen: subjektet var alltid tredje person, vilket fick
-hela personböjningen att se onåbar ut, och attributet satt bara i objektet,
-vilket bara mätte ackusativ. Tyskan gick 13 % → 20 % → 33 % på de två
-rättelserna ensamma. Lägg till dimensionen i svepet innan du drar slutsatsen
-att specen inte når en cell.
+**Siffran mäter svepet lika mycket som specen.** Tre artefakter hittades
+och rättades under mätningen. Två låg i svepet: subjektet var alltid tredje
+person, vilket fick hela personböjningen att se onåbar ut, och attributet
+satt bara i objektet, vilket bara mätte ackusativ. Tyskan gick 13 % → 20 %
+→ 33 % på dem ensamma.
+
+Den tredje låg i RENDERAREN och är den viktiga. Japanskan mätte 31 % tills
+uppmaningen byggdes, och även då syntes bara 8 av 346 nya former — därför
+att renderaren hämtade cellerna direkt ur `_celler` i stället för genom
+`Uppslag.form`, som är den enda väg instrumenteringen ser. Samma genväg
+fanns i engelskans presens och preteritum och i den syntetiska
+komparationen i sv/en/fr/es/it. Alla är omlagda, vilket lyfte sv 71→75 %,
+en 72→78 % och ja 31→45 % **utan att ändra en enda renderad mening**.
+
+Det spelar roll bortom mätningen: generatorns attribution ska gå samma väg.
+En form som hämtas förbi `form()` går inte att knyta till ett kort, och
+felet hade annars upptäckts först när generatorn inte kunde svara på vilket
+kort som fällde en mening. Lägg till dimensionen i svepet — och kontrollera
+att renderaren går genom `form()` — innan du drar slutsatsen att specen
+inte når en cell.
 
 Vad som faktiskt är onått, efter de rättelserna:
 
 | Språk | Block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv + konditionalis | bisatser respektive villkorssatser |
-| alla | imperativ | satsmodus |
+| fr/es/it | konjunktiv (resten) + konditionalis | bisatser respektive villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
-| ja | jisho/ta/nai | register, utanför scope |
+| ja | jisho/ta | register, utanför scope |
 
-**Tyskans 33 % beror på en enda sak.** 16 121 av 23 493 tyska former är
+**Tyskans 36 % beror på en enda sak.** 16 121 av 23 494 tyska former är
 adjektivformer, och två tredjedelar av det paradigmet är komparativ och
 superlativ i attributiv ställning. `Grad` finns på `Mening` men styr bara
 predikativet. Att flytta graden in i `Nominalfras.attribut` är den enskilt
 största utökningen som återstår — värd omkring 10 500 tyska former, mer än
-alla åtta gjorda utökningar tillsammans på det språket.
+alla nio gjorda utökningar tillsammans på det språket.
 
 ---
 
@@ -190,7 +204,100 @@ databasen. Den ligger nu som en egen cell `part2_passiv` (Sup + Passiv) i
 `paradigm/de/verb.yaml`, tom för alla verb utom `werden` — samma lösning som
 svenskans s-passivceller, och samma mönster som engelskans nio be-celler.
 
-**Kända täckningsgränser** (inga fel, men bra att veta):
+---
+
+## Imperativen — nivå 19
+
+**Subjektet står kvar och namnger den tilltalade.** Imperativen fick inget
+eget fält för det: person och numerus kommer därifrån precis som i alla
+andra satser, restriktionsvalidatorn kan pröva tilltalet mot verbets
+subjektskrav utan att veta något om imperativ, och renderaren tiger om
+subjektet i stället för att specen ska tappa det. `Mening.modus` är en
+`Satsmodus`-enum och inte ett `imperativ: bool`, eftersom konjunktiv och
+konditionalis ska in i samma axel när bisatserna finns.
+
+Fyra tilltal räcker: 2sg, 2pl, artig, 1pl. Det största paradigmet (es) har
+fem celler, och den femte — ustedes — är `artig` i plural, vilket numerus
+redan säger.
+
+```
+        2sg                2pl                  artig                1pl
+sv      Läs boken!         Läs boken!           Läs boken!           ✋
+en      Read the book!     Read the book!       Read the book!       ✋
+de      Lies das Buch!     Lest das Buch!       Lesen Sie das Buch!  Lesen wir das Buch!
+fr      Lis le livre!      Lisez le livre!      Lisez le livre!      Lisons le livre!
+es      ¡Lee el libro!     ¡Leed el libro!      ¡Lea el libro!       ¡Leamos el libro!
+it      Leggi il libro!    Leggete il libro!    Legga il libro!      Leggiamo il libro!
+ja      本を読んでください。 (samma för alla tre tilltal)              本を読みましょう。
+```
+
+Nekad imperativ är **inte** samma form som jakande i två språk:
+
+| Språk | Jakande | Nekad | Varför |
+|---|---|---|---|
+| es | ¡Lee! | ¡No **leas**! | hela paradigmet byter till presens konjunktiv |
+| it | Leggi! | Non **leggere**! | bara 2sg, och dit till infinitiv |
+| övriga | — | oförändrad form | negationen läggs bara till |
+
+Svenskan och engelskan saknar 1pl-imperativ: "låt oss läsa", "let's read"
+är omskrivningar med ett verb databasen inte har. De vägrar med ett besked
+om just det i stället för att rendera något annat. Japanskans nekade
+förslag (`読むのはやめましょう`) vägras av samma skäl.
+
+**Två beslut, båda i `ordbok/beslut.tsv`:**
+
+*Tyskans imperativformer ska inte innehålla subjektspronomenet.* 17 av 167
+verb hade `lesen Sie` / `Lesen wir!` i cellen, 105 slutade på utropstecken
+och 56 var versalinledda — tre konventioner i samma cell, och noll sådana
+fall i någon annan tysk cell eller något annat språk. 141 former städade.
+Pronomenet är ett eget ord som renderaren placerar, av samma skäl som
+artiklarna lades i `Former` i stället för att bakas in i substantiven.
+
+*Japansk uppmaning renderas som てください, inte som paradigmets 命令形.*
+読め finns i datan och är morfologiskt imperativen, men är en ren befallning
+som knappt förekommer i tal. Renderaren har redan valt artig stil åt hela
+japanskan; att blanda in 読め vore inte ett registerval utan en
+inkonsekvens. Register ligger utanför projektets scope — men just därför
+måste språket hålla EN stil, och valet var redan gjort.
+
+**Datafixen avslöjade ett indikativfel.** För `finden` och `kriechen`
+kollapsade den trasiga imperativraden över `pres_1pl`: "wir finden"
+renderades som **"Wir Finden wir."** Felet låg alltså inte bara i
+imperativen, och det hade stått där sedan formerna genererades.
+
+**Utökningen var värd 3 744 former**, inte de 161 den svenska tabellen i
+GENERATOR.md förutspådde:
+
+```
+es +1 388   it +674   de +668   fr +507   ja +346   sv +161   en ±0
+```
+
+Spanskan vinner mest därför att den nekade imperativen drar in halva
+konjunktivparadigmet. Engelskan vinner noll: `inf_imp` ÄR imperativcellen,
+och den var redan nådd som infinitiv.
+
+### Två gränser, båda medvetna
+
+**Jakande imperativ med klitika är inte byggd i fr/es/it.** "Donne-le-moi",
+"¡dámelo!", "dammelo!" kräver enklis — klitikan fäster EFTER verbet, med
+bindestreck och moi/toi i franskan, accentflytt i spanskan och
+konsonantfördubbling i italienskan. Nekad imperativ är proklitisk som alla
+andra satser ("no me lo des") och fungerar. Renderaren vägrar med ett
+besked som säger just det. Eftersom spanskan dubblerar det indirekta
+objektet med klitika träffar gränsen varje spansk imperativ med io.
+
+**Tyska partikelverb står fel — och gjorde det redan.** "Rufen an Sie!"
+i stället för "Rufen Sie an!". Partikeln ligger i själva formen (`ruft an`),
+och indikativen har samma fel: "Das Mädchen ruft an den Bruder." Partikeln
+hör hemma i satsklammern, sist i satsen, där infinita verbdelar redan
+hamnar. 14 tyska verb berörs. Inte lagat — det är en egen konstruktion, inte
+en del av imperativen.
+
+---
+
+## Kända täckningsgränser
+
+(Inga fel, men bra att veta.)
 
 - Mönster finns bara på verb. Schemat tillåter adjektiv och prepositioner
   som styrande ord (`rädd för`, `intresserad av`) — inte taggat.
@@ -227,17 +334,21 @@ svenskans s-passivceller, och samma mönster som engelskans nio be-celler.
    som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
    förfluten tid. **Den var blockerad av meningskomplexiteten och är det
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
-   nu mogen — med 71 % nåbart avgörs det som övas av strategin, inte av
+   nu mogen — med 78 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **Tre konstruktioner kvar på stegen:** imperativ (satsmodus, 161 svenska
-   former, `imp`-celler finns i alla sju språk), bisatser (`Mening` måste
-   kunna innehålla en `Mening` — 22 verb har Bisatsfras-slots) och
-   wh-frågor (de 76 frågeorden har former; specen saknar sätt att markera
-   vilken slot som efterfrågas). Bisatserna är strukturellt tyngst och låser
-   dessutom upp de romanska konjunktiverna.
+2. **Två konstruktioner kvar på stegen:** bisatser (`Mening` måste kunna
+   innehålla en `Mening` — 22 verb har Bisatsfras-slots) och wh-frågor (de
+   76 frågeorden har former; specen saknar sätt att markera vilken slot som
+   efterfrågas). Bisatserna är strukturellt tyngst och låser dessutom upp
+   resten av de romanska konjunktiverna — imperativen tog redan halva
+   konjunktivparadigmet i spanskan.
 3. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
-   allt som återstår, och billig: graden finns redan som `Grad`.
-4. **Appen.** Desktop först, mobil senare.
+   allt som återstår (~10 500 tyska former), och billig: graden finns redan
+   som `Grad`, den sitter bara på fel ställe.
+4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
+   indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
+   Partikeln ligger i formen och borde ligga i det infinita fältet.
+5. **Appen.** Desktop först, mobil senare.
 
 Håll FSRS, ljuduppläsning och appen utanför tills generatorn löser fram
 meningar.
@@ -326,6 +437,7 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `paradigm/GENERATOR.md` | kortmodellen, komplexitetsstegen, nåbarheten — alla beslut med motiveringar |
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
 | `src/sprakprog/rendering/spec.py` | meningsspecifikationen — enda källan till vad som går att uttrycka |
+| `ordbok/verktyg/nåbarhet.py` | mäter hur mycket av formbeståndet specen når; modulhuvudet varnar för mätartefakterna |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
 **Scope-beslutet, ordagrant:** *"Flickan köpte en dörr."* är helt okej trots

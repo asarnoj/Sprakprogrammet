@@ -27,7 +27,10 @@ from __future__ import annotations
 
 import sqlite3
 
-from .spec import Aspekt, Diates, Grad, Mening, Nominalfras, RenderingsFel, Tidsreferens
+from .spec import (
+    Aspekt, Diates, Grad, Mening, Nominalfras, RenderingsFel, Satsmodus,
+    Tidsreferens, tilltal,
+)
 from .uppslag import Uppslag
 
 TOPIK, OBJEKT, DATIV = "は", "を", "に"
@@ -80,6 +83,8 @@ class JapanskRenderare:
         """Artig form. Register är renderarens val, inte en Former-axel."""
         lexem = self.u.lexem(m.verb)
         celler = self.u._celler(lexem)
+        if m.modus is Satsmodus.IMPERATIV:
+            return self._uppmaning(m, lexem)
         # Läses genom VERB-paradigmet, så adjektivets ku-cell syns inte här.
         # Kännetecknet är i stället att ます saknas medan grundformen slutar
         # på い — det är ett i-adjektiv som råkat hamna under ett verbkoncept.
@@ -136,6 +141,45 @@ class JapanskRenderare:
         # framtid, och tidsadverbialet gör skillnaden.
         return masu
 
+    def _uppmaning(self, m: Mening, lexem) -> str:
+        """Uppmaning som て-form plus ください: 読んでください.
+
+        Paradigmets 命令形 (読め) är den morfologiska imperativen, och den
+        ligger i datan — men den är en ren befallning som knappt förekommer
+        i tal, och renderaren har redan valt artig stil åt hela japanskan.
+        Att blanda in 読め bland 読みます och 美しいです vore inte ett
+        register­val utan en inkonsekvens. てください är den form en inlärare
+        faktiskt möter som uppmaning, och ください finns redan i databasen
+        som interj_please.
+
+        Nekad uppmaning byggs ur ない-formen på samma sätt: 読まないでくださ
+        い. Det är て-formen av negationen, komponerad ur cellen precis som
+        ません komponeras ur ます-stammen.
+
+        Förstapersonsplural är ingen uppmaning till någon annan utan ett
+        förslag, och japanskan uttrycker det med ましょう ur samma ます-stam:
+        読みましょう.
+        """
+        tal = tilltal(m, "ja", ("2sg", "2pl", "artig", "1pl"))
+        if tal == "1pl":
+            if m.negerad:
+                # ましょう har ingen nekad motsvarighet. "Låt oss inte läsa"
+                # blir en omskrivning (読むのはやめましょう) och byggs inte —
+                # hellre det än att tappa negationen tyst.
+                raise RenderingsFel(
+                    "ja: nekat förslag (ましょう) finns inte som form — "
+                    "japanskan skriver om det")
+            masu = self.u.form(lexem, "masu")
+            if not masu.endswith("ます"):
+                raise RenderingsFel(
+                    f"ja: masu-formen {masu!r} slutar inte på ます — "
+                    f"ましょう kan inte komponeras")
+            return masu[:-2] + "ましょう"
+        snälla = self.u.form_för("interj_please", "inv")
+        if m.negerad:
+            return self.u.form(lexem, "nai") + "で" + snälla
+        return self.u.form(lexem, "te") + snälla
+
     def predikativ(self, m: Mening) -> list[str]:
         """Predikativ i japanskan — och tempus hamnar på ADJEKTIVET.
 
@@ -190,7 +234,11 @@ class JapanskRenderare:
                 "読みたい (vill), 読める (kan), 読まなければならない (måste) — "
                 "inte med ett styrande verb plus infinitiv. Kräver en egen "
                 "modell och är inte byggt")
-        delar = [self.nominalfras(m.subjekt) + TOPIK]
+        # Uppmaningen säger inte ut den tilltalade — 本を読んでください,
+        # inte あなたは本を読んでください. Att sätta ut あなた är
+        # dessutom påfallande i japanskan, inte bara överflödigt.
+        delar = ([] if m.modus is Satsmodus.IMPERATIV
+                 else [self.nominalfras(m.subjekt) + TOPIK])
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
                 delar.append(self.u.form_för(adverbial, "inv") + "、")

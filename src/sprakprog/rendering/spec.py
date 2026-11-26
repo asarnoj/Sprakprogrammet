@@ -79,6 +79,41 @@ class Diates(StrEnum):
     PASSIV_HÄNDELSE = "passiv_händelse"
 
 
+class Satsmodus(StrEnum):
+    """Satsens modus. Imperativen är en uppmaning: "läs boken!".
+
+    Imperativen har inget eget subjektsfält. Subjektet står kvar och namnger
+    den TILLTALADE — det är därifrån person och numerus kommer, precis som i
+    alla andra satser, och det är därför validatorn kan pröva tilltalet mot
+    verbets subjektskrav utan att veta något om imperativ. Renderaren tiger
+    om subjektet i stället för att specen ska tappa det.
+
+    Bara tyskan säger ändå ut pronomenet, och bara i två av sina fyra
+    former: "Lesen Sie!" och "Lesen wir!" — 2sg och 2pl står nakna som i de
+    andra språken.
+
+    Modus är en axel som kommer att växa. Konjunktiv och konditionalis
+    ligger som ifyllda celler i fr/es/it och är det största onådda blocket
+    efter tyskans attributiva komparation; de blir egna värden här när
+    bisatserna finns. Därför en enum och inte ett `imperativ: bool`.
+    """
+    INDIKATIV = "indikativ"
+    IMPERATIV = "imperativ"
+
+
+#: Subjektskonceptet i en imperativsats → tilltalsform. Fyra tilltal räcker:
+#: imperativens paradigm är som störst fem celler (es), och den femte —
+#: ustedes — är samma tilltal som `artig` i plural, vilket numerus redan
+#: säger. Ett subjekt utanför tabellen är inget tilltal, och att uppmana
+#: någon frånvarande är inte en imperativ utan en önskan.
+TILLTAL = {
+    "pronomen_2sg": "2sg",
+    "pronomen_2pl": "2pl",
+    "pronomen_2sg_formal": "artig",
+    "pronomen_1pl": "1pl",
+}
+
+
 class Referentgenus(StrEnum):
     """Naturligt genus hos den som åsyftas — inte grammatiskt genus.
 
@@ -212,6 +247,13 @@ class Mening:
     """
     tid: Tidsreferens = Tidsreferens.NUTID
     aspekt: Aspekt = Aspekt.PERFEKTIV
+    modus: Satsmodus = Satsmodus.INDIKATIV
+    """Satsmodus. IMPERATIV gör meningen till en uppmaning: "läs boken!".
+
+    Imperativen har inget tempus — en uppmaning gäller framåt per definition
+    — så `tid` och `aspekt` ignoreras när modus är IMPERATIV i stället för
+    att tyst producera en form som inte finns.
+    """
 
 
 class RenderingsFel(Exception):
@@ -221,3 +263,36 @@ class RenderingsFel(Exception):
     stopp — hela poängen med det här projektet är att det renderade
     resultatet ska gå att lita på.
     """
+
+
+def slutar(m: "Mening") -> str:
+    """Satsens skiljetecken. Frågan vinner över uppmaningen.
+
+    En imperativ kan inte samtidigt vara en ja/nej-fråga — "läser boken!?"
+    är ingen sats — men specen kan bära båda flaggorna, och då är frågan den
+    som syns i ordföljden. Spanskans inledande ¡ och ¿ hanteras i sin egen
+    renderare; det här är tecknet på slutet.
+    """
+    if m.fråga:
+        return "?"
+    return "!" if m.modus is Satsmodus.IMPERATIV else "."
+
+
+def tilltal(m: "Mening", språk: str, stöds: tuple[str, ...]) -> str:
+    """Vem imperativen riktar sig till, läst ur subjektet.
+
+    `stöds` är de tilltal språket har en form för. Svenskan och engelskan
+    saknar 1pl-imperativ helt — "låt oss läsa", "let's read" är omskrivningar
+    med ett verb databasen inte har — och ska säga det i stället för att
+    tyst rendera något annat.
+    """
+    if m.subjekt.koncept not in TILLTAL:
+        raise RenderingsFel(
+            f"{språk}: imperativens subjekt måste vara den tilltalade "
+            f"({', '.join(TILLTAL)}), inte {m.subjekt.koncept!r}")
+    tal = TILLTAL[m.subjekt.koncept]
+    if tal not in stöds:
+        raise RenderingsFel(
+            f"{språk}: saknar imperativform för {tal} — språket har bara "
+            f"{', '.join(stöds)} och uttrycker resten med en omskrivning")
+    return tal

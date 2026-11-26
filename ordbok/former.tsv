@@ -11210,19 +11210,19 @@ adv_sällan	fr	rarement	rarement
 adv_sällan	it	raramente	raramente								
 adv_sällan	ja	めったに	めったに								
 adv_sällan	sv	sällan	sällan						1		
-arb_arbeta	de	arbeiten	Arbeiten Sie!	1				16		3	1
-arb_arbeta	de	arbeiten	Arbeiten wir!	2				16		1	1
+arb_arbeta	de	arbeiten	arbeite	1				16		2	1
 arb_arbeta	de	arbeiten	arbeite	1				1024		3	1
 arb_arbeta	de	arbeiten	arbeite	1				1026		1	1
-arb_arbeta	de	arbeiten	arbeite!	1				16		2	1
 arb_arbeta	de	arbeiten	arbeiten					1			1
+arb_arbeta	de	arbeiten	arbeiten	1				16		3	1
+arb_arbeta	de	arbeiten	arbeiten	2				16		1	1
 arb_arbeta	de	arbeiten	arbeiten	2				1026		1	1
 arb_arbeta	de	arbeiten	arbeiten	2				1026		3	1
 arb_arbeta	de	arbeiten	arbeitend					128			1
 arb_arbeta	de	arbeiten	arbeitest	1				1026		2	1
 arb_arbeta	de	arbeiten	arbeitet	1				2		3	1
+arb_arbeta	de	arbeiten	arbeitet	2				16		2	1
 arb_arbeta	de	arbeiten	arbeitet	2				1026		2	1
-arb_arbeta	de	arbeiten	arbeitet!	2				16		2	1
 arb_arbeta	de	arbeiten	arbeitete	1				2052		1	1
 arb_arbeta	de	arbeiten	arbeitete	1				2052		3	1
 arb_arbeta	de	arbeiten	arbeiteten	2				2052		1	1
@@ -11398,10 +11398,10 @@ arb_betala	de	bezahlen	bezahle	1				16		2	1
 arb_betala	de	bezahlen	bezahle	1				1024		3	1
 arb_betala	de	bezahlen	bezahle	1				1026		1	1
 arb_betala	de	bezahlen	bezahlen					1			1
+arb_betala	de	bezahlen	bezahlen	1				16		3	1
+arb_betala	de	bezahlen	bezahlen	2				16		1	1
 arb_betala	de	bezahlen	bezahlen	2				1026		1	1
 arb_betala	de	bezahlen	bezahlen	2				1026		3	1
-arb_betala	de	bezahlen	bezahlen Sie	1				16		3	1
-arb_betala	de	bezahlen	bezahlen wir	2				16		1	1
 arb_betala	de	bezahlen	bezahlend					128			1
 arb_betala	de	bezahlen	bezahlest	1				1024		2	1
 arb_betala	de	bezahlen	bezahlet	2				1024		2	1
@@ -12466,13 +12466,13 @@ arb_studera	sv	studera	studeras					3			2
 arb_studera	sv	studera	studerat					8			1
 arb_studera	sv	studera	studerat	1	1		2	8			1
 arb_studera	sv	studera	studerats					8			2
-arb_städa	de	putzen	Putzen Sie!	1				16		3	1
-arb_städa	de	putzen	Putzen wir!	2				16		1	1
 arb_städa	de	putzen	geputzt					8			1
-arb_städa	de	putzen	putz!	1				16		2	1
+arb_städa	de	putzen	putz	1				16		2	1
 arb_städa	de	putzen	putze	1				1024		3	1
 arb_städa	de	putzen	putze	1				1026		1	1
 arb_städa	de	putzen	putzen					1			1
+arb_städa	de	putzen	putzen	1				16		3	1
+arb_städa	de	putzen	putzen	2				16		1	1
 arb_städa	de	putzen	putzen	2				1026		1	1
 arb_städa	de	putzen	putzen	2				1026		3	1
 arb_städa	de	putzen	putzend					128			1
@@ -12481,7 +12481,7 @@ arb_städa	de	putzen	putzet	2				1024		2	1
 arb_städa	de	putzen	putzt	1				2		2	1
 arb_städa	de	putzen	putzt	1				2		3	1
 arb_städa	de	putzen	putzt	2				2		2	1
-arb_städa	de	putzen	putzt!	2				16		2	1
+arb_städa	de	putzen	putzt	2				16		2	1
 arb_städa	de	putzen	putzte	1				2052		1	1
 arb_städa	de	putzen	putzte	1				2052		3	1
 arb_städa	de	putzen	putzten	2				2052		1	1
@@ -12878,20 +12878,20 @@ artikel_obestamd	it	un	una	1			2
 artikel_obestamd	it	un	uno	1	2		1				
 artikel_obestamd	sv	en	en	1			1				
 artikel_obestamd	sv	en	ett	1			2				
-asp_börja	de	anfangen	Fangen Sie an!	1				16		3	1
-asp_börja	de	anfangen	Fangen wir an!	2				16		1	1
 asp_börja	de	anfangen	anfangen					1			1
 asp_börja	de	anfangen	anfangend					128			1
 asp_börja	de	anfangen	angefangen					8			1
-asp_börja	de	anfangen	fang an!	1				16		2	1
+asp_börja	de	anfangen	fang an	1				16		2	1
 asp_börja	de	anfangen	fange an	1				1024		3	1
 asp_börja	de	anfangen	fange an	1				1026		1	1
+asp_börja	de	anfangen	fangen an	1				16		3	1
+asp_börja	de	anfangen	fangen an	2				16		1	1
 asp_börja	de	anfangen	fangen an	2				1026		1	1
 asp_börja	de	anfangen	fangen an	2				1026		3	1
 asp_börja	de	anfangen	fangest an	1				1024		2	1
 asp_börja	de	anfangen	fanget an	2				1024		2	1
 asp_börja	de	anfangen	fangt an	2				2		2	1
-asp_börja	de	anfangen	fangt an!	2				16		2	1
+asp_börja	de	anfangen	fangt an	2				16		2	1
 asp_börja	de	anfangen	fing an	1				4		1	1
 asp_börja	de	anfangen	fing an	1				4		3	1
 asp_börja	de	anfangen	finge an	1				2048		1	1
@@ -13237,14 +13237,14 @@ asp_fortsätta	sv	fortsätta	fortsätta					1			1
 asp_fortsätta	sv	fortsätta	fortsättas					1			2
 asp_fortsätta	sv	fortsätta	fortsätter					2			1
 asp_fortsätta	sv	fortsätta	fortsätts					2			2
-asp_sluta	de	aufhören	Hören Sie auf!	1				16		3	1
-asp_sluta	de	aufhören	Hören wir auf!	2				16		1	1
 asp_sluta	de	aufhören	aufgehört					8			1
 asp_sluta	de	aufhören	aufhören					1			1
 asp_sluta	de	aufhören	aufhörend					128			1
-asp_sluta	de	aufhören	hör auf!	1				16		2	1
+asp_sluta	de	aufhören	hör auf	1				16		2	1
 asp_sluta	de	aufhören	höre auf	1				1024		3	1
 asp_sluta	de	aufhören	höre auf	1				1026		1	1
+asp_sluta	de	aufhören	hören auf	1				16		3	1
+asp_sluta	de	aufhören	hören auf	2				16		1	1
 asp_sluta	de	aufhören	hören auf	2				1026		1	1
 asp_sluta	de	aufhören	hören auf	2				1026		3	1
 asp_sluta	de	aufhören	hörest auf	1				1024		2	1
@@ -13252,7 +13252,7 @@ asp_sluta	de	aufhören	höret auf	2				1024		2	1
 asp_sluta	de	aufhören	hörst auf	1				2		2	1
 asp_sluta	de	aufhören	hört auf	1				2		3	1
 asp_sluta	de	aufhören	hört auf	2				2		2	1
-asp_sluta	de	aufhören	hört auf!	2				16		2	1
+asp_sluta	de	aufhören	hört auf	2				16		2	1
 asp_sluta	de	aufhören	hörte auf	1				2052		1	1
 asp_sluta	de	aufhören	hörte auf	1				2052		3	1
 asp_sluta	de	aufhören	hörten auf	2				2052		1	1
@@ -13963,10 +13963,10 @@ eko_v_låna	de	leihen	leih	1				16		2	1
 eko_v_låna	de	leihen	leihe	1				1024		3	1
 eko_v_låna	de	leihen	leihe	1				1026		1	1
 eko_v_låna	de	leihen	leihen					1			1
+eko_v_låna	de	leihen	leihen	1				16		3	1
+eko_v_låna	de	leihen	leihen	2				16		1	1
 eko_v_låna	de	leihen	leihen	2				1026		1	1
 eko_v_låna	de	leihen	leihen	2				1026		3	1
-eko_v_låna	de	leihen	leihen Sie	1				16		3	1
-eko_v_låna	de	leihen	leihen wir	2				16		1	1
 eko_v_låna	de	leihen	leihend					128			1
 eko_v_låna	de	leihen	leihest	1				1024		2	1
 eko_v_låna	de	leihen	leihet	2				1024		2	1
@@ -14678,12 +14678,12 @@ ext_dö	sv	dö	döda				3	8			1
 ext_dö	sv	dö	dör					2			1
 ext_dö	sv	dö	dött					8			1
 ext_dö	sv	dö	dött	1	1		2	8			1
-ext_hända	de	passieren	Passieren Sie!	1				16		3	1
-ext_hända	de	passieren	Passieren wir!	2				16		1	1
+ext_hända	de	passieren	passiere	1				16		2	1
 ext_hända	de	passieren	passiere	1				1024		3	1
 ext_hända	de	passieren	passiere	1				1026		1	1
-ext_hända	de	passieren	passiere!	1				16		2	1
 ext_hända	de	passieren	passieren					1			1
+ext_hända	de	passieren	passieren	1				16		3	1
+ext_hända	de	passieren	passieren	2				16		1	1
 ext_hända	de	passieren	passieren	2				1026		1	1
 ext_hända	de	passieren	passieren	2				1026		3	1
 ext_hända	de	passieren	passierend					128			1
@@ -14693,7 +14693,7 @@ ext_hända	de	passieren	passierst	1				2		2	1
 ext_hända	de	passieren	passiert					8			1
 ext_hända	de	passieren	passiert	1				2		3	1
 ext_hända	de	passieren	passiert	2				2		2	1
-ext_hända	de	passieren	passiert!	2				16		2	1
+ext_hända	de	passieren	passiert	2				16		2	1
 ext_hända	de	passieren	passierte	1				2052		1	1
 ext_hända	de	passieren	passierte	1				2052		3	1
 ext_hända	de	passieren	passierten	2				2052		1	1
@@ -14857,10 +14857,10 @@ ext_leva	de	leben	leb	1				16		2	1
 ext_leva	de	leben	lebe	1				1024		3	1
 ext_leva	de	leben	lebe	1				1026		1	1
 ext_leva	de	leben	leben					1			1
+ext_leva	de	leben	leben	1				16		3	1
+ext_leva	de	leben	leben	2				16		1	1
 ext_leva	de	leben	leben	2				1026		1	1
 ext_leva	de	leben	leben	2				1026		3	1
-ext_leva	de	leben	leben Sie	1				16		3	1
-ext_leva	de	leben	leben wir	2				16		1	1
 ext_leva	de	leben	lebend					128			1
 ext_leva	de	leben	lebest	1				1024		2	1
 ext_leva	de	leben	lebet	2				1024		2	1
@@ -15032,13 +15032,13 @@ ext_leva	sv	leva	levs					3			2
 ext_leva	sv	leva	levt					8			1
 ext_leva	sv	leva	levt	1	1		2	8			1
 ext_leva	sv	leva	levts					8			2
-ext_verka	de	scheinen	Scheinen Sie!	1				16		3	1
-ext_verka	de	scheinen	Scheinen wir!	2				16		1	1
 ext_verka	de	scheinen	geschienen					8			1
-ext_verka	de	scheinen	schein!	1				16		2	1
+ext_verka	de	scheinen	schein	1				16		2	1
 ext_verka	de	scheinen	scheine	1				1024		3	1
 ext_verka	de	scheinen	scheine	1				1026		1	1
 ext_verka	de	scheinen	scheinen					1			1
+ext_verka	de	scheinen	scheinen	1				16		3	1
+ext_verka	de	scheinen	scheinen	2				16		1	1
 ext_verka	de	scheinen	scheinen	2				1026		1	1
 ext_verka	de	scheinen	scheinen	2				1026		3	1
 ext_verka	de	scheinen	scheinend					128			1
@@ -15047,7 +15047,7 @@ ext_verka	de	scheinen	scheinet	2				1024		2	1
 ext_verka	de	scheinen	scheinst	1				2		2	1
 ext_verka	de	scheinen	scheint	1				2		3	1
 ext_verka	de	scheinen	scheint	2				2		2	1
-ext_verka	de	scheinen	scheint!	2				16		2	1
+ext_verka	de	scheinen	scheint	2				16		2	1
 ext_verka	de	scheinen	schien	1				4		1	1
 ext_verka	de	scheinen	schien	1				4		3	1
 ext_verka	de	scheinen	schiene	1				2048		1	1
@@ -17274,8 +17274,6 @@ fys_göra	sv	göra	gör					18			1
 fys_göra	sv	göra	göra					1			1
 fys_göra	sv	göra	göras					1			2
 fys_göra	sv	göra	görs					2			2
-fys_hitta	de	finden	Finden Sie	1				16		3	1
-fys_hitta	de	finden	Finden wir	2				1042		1	1
 fys_hitta	de	finden	fand	1				4		1	1
 fys_hitta	de	finden	fand	1				4		3	1
 fys_hitta	de	finden	fanden	2				4		1	1
@@ -17286,7 +17284,9 @@ fys_hitta	de	finden	finde	1				16		2	1
 fys_hitta	de	finden	finde	1				1024		3	1
 fys_hitta	de	finden	finde	1				1026		1	1
 fys_hitta	de	finden	finden					1			1
+fys_hitta	de	finden	finden	1				16		3	1
 fys_hitta	de	finden	finden	2				1026		3	1
+fys_hitta	de	finden	finden	2				1042		1	1
 fys_hitta	de	finden	findend					128			1
 fys_hitta	de	finden	findest	1				1026		2	1
 fys_hitta	de	finden	findet	1				2		3	1
@@ -18183,10 +18183,10 @@ fys_lägga	de	legen	leg	1				16		2	1
 fys_lägga	de	legen	lege	1				1024		3	1
 fys_lägga	de	legen	lege	1				1026		1	1
 fys_lägga	de	legen	legen					1			1
+fys_lägga	de	legen	legen	1				16		3	1
+fys_lägga	de	legen	legen	2				16		1	1
 fys_lägga	de	legen	legen	2				1026		1	1
 fys_lägga	de	legen	legen	2				1026		3	1
-fys_lägga	de	legen	legen Sie	1				16		3	1
-fys_lägga	de	legen	legen wir	2				16		1	1
 fys_lägga	de	legen	legend					128			1
 fys_lägga	de	legen	legest	1				1024		2	1
 fys_lägga	de	legen	leget	2				1024		2	1
@@ -18357,12 +18357,12 @@ fys_lägga	sv	lägga	lägga					1			1
 fys_lägga	sv	lägga	läggas					1			2
 fys_lägga	sv	lägga	lägger					2			1
 fys_lägga	sv	lägga	läggs					2			2
-fys_reparera	de	reparieren	Reparieren Sie!	1				16		3	1
-fys_reparera	de	reparieren	Reparieren wir!	2				16		1	1
+fys_reparera	de	reparieren	repariere	1				16		2	1
 fys_reparera	de	reparieren	repariere	1				1024		3	1
 fys_reparera	de	reparieren	repariere	1				1026		1	1
-fys_reparera	de	reparieren	repariere!	1				16		2	1
 fys_reparera	de	reparieren	reparieren					1			1
+fys_reparera	de	reparieren	reparieren	1				16		3	1
+fys_reparera	de	reparieren	reparieren	2				16		1	1
 fys_reparera	de	reparieren	reparieren	2				1026		1	1
 fys_reparera	de	reparieren	reparieren	2				1026		3	1
 fys_reparera	de	reparieren	reparierend					128			1
@@ -18372,7 +18372,7 @@ fys_reparera	de	reparieren	reparierst	1				2		2	1
 fys_reparera	de	reparieren	repariert					8			1
 fys_reparera	de	reparieren	repariert	1				2		3	1
 fys_reparera	de	reparieren	repariert	2				2		2	1
-fys_reparera	de	reparieren	repariert!	2				16		2	1
+fys_reparera	de	reparieren	repariert	2				16		2	1
 fys_reparera	de	reparieren	reparierte	1				2052		1	1
 fys_reparera	de	reparieren	reparierte	1				2052		3	1
 fys_reparera	de	reparieren	reparierten	2				2052		1	1
@@ -18719,28 +18719,28 @@ fys_röra	sv	röra	rörs					3			2
 fys_röra	sv	röra	rört					8			1
 fys_röra	sv	röra	rört	1	1		2	8			1
 fys_röra	sv	röra	rörts					8			2
-fys_samla	de	sammeln	Sammeln Sie!	1				16		3	1
-fys_samla	de	sammeln	Sammeln wir!	2				16		1	1
 fys_samla	de	sammeln	gesammelt					8			1
 fys_samla	de	sammeln	sammelest	1				1024		2	1
 fys_samla	de	sammeln	sammelet	2				1024		2	1
 fys_samla	de	sammeln	sammeln					1			1
+fys_samla	de	sammeln	sammeln	1				16		3	1
+fys_samla	de	sammeln	sammeln	2				16		1	1
 fys_samla	de	sammeln	sammeln	2				1026		1	1
 fys_samla	de	sammeln	sammeln	2				1026		3	1
 fys_samla	de	sammeln	sammelnd					128			1
 fys_samla	de	sammeln	sammelst	1				2		2	1
 fys_samla	de	sammeln	sammelt	1				2		3	1
 fys_samla	de	sammeln	sammelt	2				2		2	1
-fys_samla	de	sammeln	sammelt!	2				16		2	1
+fys_samla	de	sammeln	sammelt	2				16		2	1
 fys_samla	de	sammeln	sammelte	1				2052		1	1
 fys_samla	de	sammeln	sammelte	1				2052		3	1
 fys_samla	de	sammeln	sammelten	2				2052		1	1
 fys_samla	de	sammeln	sammelten	2				2052		3	1
 fys_samla	de	sammeln	sammeltest	1				2052		2	1
 fys_samla	de	sammeln	sammeltet	2				2052		2	1
+fys_samla	de	sammeln	sammle	1				16		2	1
 fys_samla	de	sammeln	sammle	1				1024		3	1
 fys_samla	de	sammeln	sammle	1				1026		1	1
-fys_samla	de	sammeln	sammle!	1				16		2	1
 fys_samla	en	collect	collect					17			1
 fys_samla	en	collect	collected					12			1
 fys_samla	en	collect	collecting					128			1
@@ -19073,20 +19073,20 @@ fys_skära	sv	skära	skär					18			1
 fys_skära	sv	skära	skära					1			1
 fys_skära	sv	skära	skäras					1			2
 fys_skära	sv	skära	skärs					2			2
-fys_slå	de	schlagen	Schlagen Sie!	1				16		3	1
-fys_slå	de	schlagen	Schlagen wir!	2				16		1	1
 fys_slå	de	schlagen	geschlagen					8			1
-fys_slå	de	schlagen	schlag!	1				16		2	1
+fys_slå	de	schlagen	schlag	1				16		2	1
 fys_slå	de	schlagen	schlage	1				1024		3	1
 fys_slå	de	schlagen	schlage	1				1026		1	1
 fys_slå	de	schlagen	schlagen					1			1
+fys_slå	de	schlagen	schlagen	1				16		3	1
+fys_slå	de	schlagen	schlagen	2				16		1	1
 fys_slå	de	schlagen	schlagen	2				1026		1	1
 fys_slå	de	schlagen	schlagen	2				1026		3	1
 fys_slå	de	schlagen	schlagend					128			1
 fys_slå	de	schlagen	schlagest	1				1024		2	1
 fys_slå	de	schlagen	schlaget	2				1024		2	1
 fys_slå	de	schlagen	schlagt	2				2		2	1
-fys_slå	de	schlagen	schlagt!	2				16		2	1
+fys_slå	de	schlagen	schlagt	2				16		2	1
 fys_slå	de	schlagen	schlug	1				4		1	1
 fys_slå	de	schlagen	schlug	1				4		3	1
 fys_slå	de	schlagen	schlugen	2				4		1	1
@@ -19638,7 +19638,7 @@ fys_ta	de	nehmen	nehmend					128			1
 fys_ta	de	nehmen	nehmest	1				1024		2	1
 fys_ta	de	nehmen	nehmet	2				1024		2	1
 fys_ta	de	nehmen	nehmt	2				18		2	1
-fys_ta	de	nehmen	nimm!	1				16		2	1
+fys_ta	de	nehmen	nimm	1				16		2	1
 fys_ta	de	nehmen	nimmst	1				2		2	1
 fys_ta	de	nehmen	nimmt	1				2		3	1
 fys_ta	de	nehmen	nähme	1				2048		1	1
@@ -19810,10 +19810,10 @@ fys_trycka	de	drücken	drücke	1				16		2	1
 fys_trycka	de	drücken	drücke	1				1024		3	1
 fys_trycka	de	drücken	drücke	1				1026		1	1
 fys_trycka	de	drücken	drücken					1			1
+fys_trycka	de	drücken	drücken	1				16		3	1
+fys_trycka	de	drücken	drücken	2				16		1	1
 fys_trycka	de	drücken	drücken	2				1026		1	1
 fys_trycka	de	drücken	drücken	2				1026		3	1
-fys_trycka	de	drücken	drücken Sie	1				16		3	1
-fys_trycka	de	drücken	drücken wir	2				16		1	1
 fys_trycka	de	drücken	drückend					128			1
 fys_trycka	de	drücken	drückest	1				1024		2	1
 fys_trycka	de	drücken	drücket	2				1024		2	1
@@ -21537,12 +21537,12 @@ färg_vit	sv	vit	vitare						2
 färg_vit	sv	vit	vitast						3		
 färg_vit	sv	vit	vitaste		2				3		
 färg_vit	sv	vit	vitt	1	1		2		1		
-gen_acceptera	de	akzeptieren	Akzeptieren Sie!	1				16		3	1
-gen_acceptera	de	akzeptieren	Akzeptieren wir!	2				16		1	1
+gen_acceptera	de	akzeptieren	akzeptiere	1				16		2	1
 gen_acceptera	de	akzeptieren	akzeptiere	1				1024		3	1
 gen_acceptera	de	akzeptieren	akzeptiere	1				1026		1	1
-gen_acceptera	de	akzeptieren	akzeptiere!	1				16		2	1
 gen_acceptera	de	akzeptieren	akzeptieren					1			1
+gen_acceptera	de	akzeptieren	akzeptieren	1				16		3	1
+gen_acceptera	de	akzeptieren	akzeptieren	2				16		1	1
 gen_acceptera	de	akzeptieren	akzeptieren	2				1026		1	1
 gen_acceptera	de	akzeptieren	akzeptieren	2				1026		3	1
 gen_acceptera	de	akzeptieren	akzeptierend					128			1
@@ -21552,7 +21552,7 @@ gen_acceptera	de	akzeptieren	akzeptierst	1				2		2	1
 gen_acceptera	de	akzeptieren	akzeptiert					8			1
 gen_acceptera	de	akzeptieren	akzeptiert	1				2		3	1
 gen_acceptera	de	akzeptieren	akzeptiert	2				2		2	1
-gen_acceptera	de	akzeptieren	akzeptiert!	2				16		2	1
+gen_acceptera	de	akzeptieren	akzeptiert	2				16		2	1
 gen_acceptera	de	akzeptieren	akzeptierte	1				2052		1	1
 gen_acceptera	de	akzeptieren	akzeptierte	1				2052		3	1
 gen_acceptera	de	akzeptieren	akzeptierten	2				2052		1	1
@@ -22065,20 +22065,20 @@ gen_döda	sv	döda	dödas					3			2
 gen_döda	sv	döda	dödat					8			1
 gen_döda	sv	döda	dödat	1	1		2	8			1
 gen_döda	sv	döda	dödats					8			2
-gen_erbjuda	de	anbieten	Bieten Sie an!	1				16		3	1
-gen_erbjuda	de	anbieten	Bieten wir an!	2				16		1	1
 gen_erbjuda	de	anbieten	anbieten					1			1
 gen_erbjuda	de	anbieten	anbietend					128			1
 gen_erbjuda	de	anbieten	angeboten					8			1
+gen_erbjuda	de	anbieten	biete an	1				16		2	1
 gen_erbjuda	de	anbieten	biete an	1				1024		3	1
 gen_erbjuda	de	anbieten	biete an	1				1026		1	1
-gen_erbjuda	de	anbieten	biete an!	1				16		2	1
+gen_erbjuda	de	anbieten	bieten an	1				16		3	1
+gen_erbjuda	de	anbieten	bieten an	2				16		1	1
 gen_erbjuda	de	anbieten	bieten an	2				1026		1	1
 gen_erbjuda	de	anbieten	bieten an	2				1026		3	1
 gen_erbjuda	de	anbieten	bietest an	1				1026		2	1
 gen_erbjuda	de	anbieten	bietet an	1				2		3	1
+gen_erbjuda	de	anbieten	bietet an	2				16		2	1
 gen_erbjuda	de	anbieten	bietet an	2				1026		2	1
-gen_erbjuda	de	anbieten	bietet an!	2				16		2	1
 gen_erbjuda	de	anbieten	bot an	1				4		1	1
 gen_erbjuda	de	anbieten	bot an	1				4		3	1
 gen_erbjuda	de	anbieten	boten an	2				4		1	1
@@ -22605,10 +22605,10 @@ gen_förklara	de	erklären	erkläre	1				16		2	1
 gen_förklara	de	erklären	erkläre	1				1024		3	1
 gen_förklara	de	erklären	erkläre	1				1026		1	1
 gen_förklara	de	erklären	erklären					1			1
+gen_förklara	de	erklären	erklären	1				16		3	1
+gen_förklara	de	erklären	erklären	2				16		1	1
 gen_förklara	de	erklären	erklären	2				1026		1	1
 gen_förklara	de	erklären	erklären	2				1026		3	1
-gen_förklara	de	erklären	erklären Sie	1				16		3	1
-gen_förklara	de	erklären	erklären wir	2				16		1	1
 gen_förklara	de	erklären	erklärend					128			1
 gen_förklara	de	erklären	erklärest	1				1024		2	1
 gen_förklara	de	erklären	erkläret	2				1024		2	1
@@ -23502,13 +23502,13 @@ gen_lita	sv	lita på	litas på					3			2
 gen_lita	sv	lita på	litat på					8			1
 gen_lita	sv	lita på	litat på	1	1		2	8			1
 gen_lita	sv	lita på	litats på					8			2
-gen_lyckas	de	schaffen	Schaffen Sie!	1				16		3	1
-gen_lyckas	de	schaffen	Schaffen wir!	2				16		1	1
 gen_lyckas	de	schaffen	geschafft					8			1
-gen_lyckas	de	schaffen	schaff!	1				16		2	1
+gen_lyckas	de	schaffen	schaff	1				16		2	1
 gen_lyckas	de	schaffen	schaffe	1				1024		3	1
 gen_lyckas	de	schaffen	schaffe	1				1026		1	1
 gen_lyckas	de	schaffen	schaffen					1			1
+gen_lyckas	de	schaffen	schaffen	1				16		3	1
+gen_lyckas	de	schaffen	schaffen	2				16		1	1
 gen_lyckas	de	schaffen	schaffen	2				1026		1	1
 gen_lyckas	de	schaffen	schaffen	2				1026		3	1
 gen_lyckas	de	schaffen	schaffend					128			1
@@ -23517,7 +23517,7 @@ gen_lyckas	de	schaffen	schaffet	2				1024		2	1
 gen_lyckas	de	schaffen	schaffst	1				2		2	1
 gen_lyckas	de	schaffen	schafft	1				2		3	1
 gen_lyckas	de	schaffen	schafft	2				2		2	1
-gen_lyckas	de	schaffen	schafft!	2				16		2	1
+gen_lyckas	de	schaffen	schafft	2				16		2	1
 gen_lyckas	de	schaffen	schaffte	1				2052		1	1
 gen_lyckas	de	schaffen	schaffte	1				2052		3	1
 gen_lyckas	de	schaffen	schafften	2				2052		1	1
@@ -24032,22 +24032,22 @@ gen_mena	sv	mena	menas					3			2
 gen_mena	sv	mena	menat					8			1
 gen_mena	sv	mena	menat	1	1		2	8			1
 gen_mena	sv	mena	menats					8			2
-gen_misslyckas	de	scheitern	Scheitern Sie!	1				16		3	1
-gen_misslyckas	de	scheitern	Scheitern wir!	2				16		1	1
 gen_misslyckas	de	scheitern	gescheitert					8			1
+gen_misslyckas	de	scheitern	scheitere	1				16		2	1
 gen_misslyckas	de	scheitern	scheitere	1				1024		3	1
 gen_misslyckas	de	scheitern	scheitere	1				1026		1	1
-gen_misslyckas	de	scheitern	scheitere!	1				16		2	1
 gen_misslyckas	de	scheitern	scheiterest	1				1024		2	1
 gen_misslyckas	de	scheitern	scheiteret	2				1024		2	1
 gen_misslyckas	de	scheitern	scheitern					1			1
+gen_misslyckas	de	scheitern	scheitern	1				16		3	1
+gen_misslyckas	de	scheitern	scheitern	2				16		1	1
 gen_misslyckas	de	scheitern	scheitern	2				1026		1	1
 gen_misslyckas	de	scheitern	scheitern	2				1026		3	1
 gen_misslyckas	de	scheitern	scheiternd					128			1
 gen_misslyckas	de	scheitern	scheiterst	1				2		2	1
 gen_misslyckas	de	scheitern	scheitert	1				2		3	1
 gen_misslyckas	de	scheitern	scheitert	2				2		2	1
-gen_misslyckas	de	scheitern	scheitert!	2				16		2	1
+gen_misslyckas	de	scheitern	scheitert	2				16		2	1
 gen_misslyckas	de	scheitern	scheiterte	1				2052		1	1
 gen_misslyckas	de	scheitern	scheiterte	1				2052		3	1
 gen_misslyckas	de	scheitern	scheiterten	2				2052		1	1
@@ -24388,13 +24388,13 @@ gen_måla	sv	måla	målas					3			2
 gen_måla	sv	måla	målat					8			1
 gen_måla	sv	måla	målat	1	1		2	8			1
 gen_måla	sv	måla	målats					8			2
-gen_passa	de	passen	Passen Sie!	1				16		3	1
-gen_passa	de	passen	Passen wir!	2				16		1	1
 gen_passa	de	passen	gepasst					8			1
-gen_passa	de	passen	pass!	1				16		2	1
+gen_passa	de	passen	pass	1				16		2	1
 gen_passa	de	passen	passe	1				1024		3	1
 gen_passa	de	passen	passe	1				1026		1	1
 gen_passa	de	passen	passen					1			1
+gen_passa	de	passen	passen	1				16		3	1
+gen_passa	de	passen	passen	2				16		1	1
 gen_passa	de	passen	passen	2				1026		1	1
 gen_passa	de	passen	passen	2				1026		3	1
 gen_passa	de	passen	passend					128			1
@@ -24403,7 +24403,7 @@ gen_passa	de	passen	passet	2				1024		2	1
 gen_passa	de	passen	passt	1				2		2	1
 gen_passa	de	passen	passt	1				2		3	1
 gen_passa	de	passen	passt	2				2		2	1
-gen_passa	de	passen	passt!	2				16		2	1
+gen_passa	de	passen	passt	2				16		2	1
 gen_passa	de	passen	passte	1				2052		1	1
 gen_passa	de	passen	passte	1				2052		3	1
 gen_passa	de	passen	passten	2				2052		1	1
@@ -24569,20 +24569,20 @@ gen_passa	sv	passa	passas					3			2
 gen_passa	sv	passa	passat					8			1
 gen_passa	sv	passa	passat	1	1		2	8			1
 gen_passa	sv	passa	passats					8			2
-gen_rädda	de	retten	Retten Sie!	1				16		3	1
-gen_rädda	de	retten	Retten wir!	2				16		1	1
 gen_rädda	de	retten	gerettet					8			1
+gen_rädda	de	retten	rette	1				16		2	1
 gen_rädda	de	retten	rette	1				1024		3	1
 gen_rädda	de	retten	rette	1				1026		1	1
-gen_rädda	de	retten	rette!	1				16		2	1
 gen_rädda	de	retten	retten					1			1
+gen_rädda	de	retten	retten	1				16		3	1
+gen_rädda	de	retten	retten	2				16		1	1
 gen_rädda	de	retten	retten	2				1026		1	1
 gen_rädda	de	retten	retten	2				1026		3	1
 gen_rädda	de	retten	rettend					128			1
 gen_rädda	de	retten	rettest	1				1026		2	1
 gen_rädda	de	retten	rettet	1				2		3	1
+gen_rädda	de	retten	rettet	2				16		2	1
 gen_rädda	de	retten	rettet	2				1026		2	1
-gen_rädda	de	retten	rettet!	2				16		2	1
 gen_rädda	de	retten	rettete	1				2052		1	1
 gen_rädda	de	retten	rettete	1				2052		3	1
 gen_rädda	de	retten	retteten	2				2052		1	1
@@ -25802,8 +25802,6 @@ gen_söka	sv	söka	sökt	1	1		2	8			1
 gen_söka	sv	söka	sökta				3	8			1
 gen_söka	sv	söka	sökte					4			1
 gen_söka	sv	söka	söktes					4			2
-gen_tycka	de	finden	Finden Sie	1				16		3	1
-gen_tycka	de	finden	Finden wir	2				16		1	1
 gen_tycka	de	finden	fand	1				4		1	1
 gen_tycka	de	finden	fand	1				4		3	1
 gen_tycka	de	finden	fanden	2				4		1	1
@@ -25814,6 +25812,8 @@ gen_tycka	de	finden	finde	1				16		2	1
 gen_tycka	de	finden	finde	1				1024		3	1
 gen_tycka	de	finden	finde	1				1026		1	1
 gen_tycka	de	finden	finden					1			1
+gen_tycka	de	finden	finden	1				16		3	1
+gen_tycka	de	finden	finden	2				16		1	1
 gen_tycka	de	finden	finden	2				1026		1	1
 gen_tycka	de	finden	finden	2				1026		3	1
 gen_tycka	de	finden	findend					128			1
@@ -27969,10 +27969,10 @@ kog_bestämma	de	entscheiden	entscheide	1				16		2	1
 kog_bestämma	de	entscheiden	entscheide	1				1024		3	1
 kog_bestämma	de	entscheiden	entscheide	1				1026		1	1
 kog_bestämma	de	entscheiden	entscheiden					1			1
+kog_bestämma	de	entscheiden	entscheiden	1				16		3	1
+kog_bestämma	de	entscheiden	entscheiden	2				16		1	1
 kog_bestämma	de	entscheiden	entscheiden	2				1026		1	1
 kog_bestämma	de	entscheiden	entscheiden	2				1026		3	1
-kog_bestämma	de	entscheiden	entscheiden Sie	1				16		3	1
-kog_bestämma	de	entscheiden	entscheiden wir	2				16		1	1
 kog_bestämma	de	entscheiden	entscheidend					128			1
 kog_bestämma	de	entscheiden	entscheidest	1				1026		2	1
 kog_bestämma	de	entscheiden	entscheidet	1				2		3	1
@@ -29039,10 +29039,10 @@ kog_lära	de	lernen	lern	1				16		2	1
 kog_lära	de	lernen	lerne	1				1024		3	1
 kog_lära	de	lernen	lerne	1				1026		1	1
 kog_lära	de	lernen	lernen					1			1
+kog_lära	de	lernen	lernen	1				16		3	1
+kog_lära	de	lernen	lernen	2				16		1	1
 kog_lära	de	lernen	lernen	2				1026		1	1
 kog_lära	de	lernen	lernen	2				1026		3	1
-kog_lära	de	lernen	lernen Sie	1				16		3	1
-kog_lära	de	lernen	lernen wir	2				16		1	1
 kog_lära	de	lernen	lernend					128			1
 kog_lära	de	lernen	lernest	1				1024		2	1
 kog_lära	de	lernen	lernet	2				1024		2	1
@@ -29565,13 +29565,13 @@ kog_märka	sv	märka	märkta				3	8			1
 kog_märka	sv	märka	märkte					4			1
 kog_märka	sv	märka	märktes					4			2
 kog_märka	sv	märka	märkts					8			2
-kog_planera	de	planen	Planen Sie!	1				16		3	1
-kog_planera	de	planen	Planen wir!	2				16		1	1
 kog_planera	de	planen	geplant					8			1
+kog_planera	de	planen	plane	1				16		2	1
 kog_planera	de	planen	plane	1				1024		3	1
 kog_planera	de	planen	plane	1				1026		1	1
-kog_planera	de	planen	plane!	1				16		2	1
 kog_planera	de	planen	planen					1			1
+kog_planera	de	planen	planen	1				16		3	1
+kog_planera	de	planen	planen	2				16		1	1
 kog_planera	de	planen	planen	2				1026		1	1
 kog_planera	de	planen	planen	2				1026		3	1
 kog_planera	de	planen	planend					128			1
@@ -29580,7 +29580,7 @@ kog_planera	de	planen	planet	2				1024		2	1
 kog_planera	de	planen	planst	1				2		2	1
 kog_planera	de	planen	plant	1				2		3	1
 kog_planera	de	planen	plant	2				2		2	1
-kog_planera	de	planen	plant!	2				16		2	1
+kog_planera	de	planen	plant	2				16		2	1
 kog_planera	de	planen	plante	1				2052		1	1
 kog_planera	de	planen	plante	1				2052		3	1
 kog_planera	de	planen	planten	2				2052		1	1
@@ -29932,10 +29932,10 @@ kog_tänka	de	denken	denke	1				16		2	1
 kog_tänka	de	denken	denke	1				1024		3	1
 kog_tänka	de	denken	denke	1				1026		1	1
 kog_tänka	de	denken	denken					1			1
+kog_tänka	de	denken	denken	1				16		3	1
+kog_tänka	de	denken	denken	2				16		1	1
 kog_tänka	de	denken	denken	2				1026		1	1
 kog_tänka	de	denken	denken	2				1026		3	1
-kog_tänka	de	denken	denken Sie	1				16		3	1
-kog_tänka	de	denken	denken wir	2				16		1	1
 kog_tänka	de	denken	denkend					128			1
 kog_tänka	de	denken	denkest	1				1024		2	1
 kog_tänka	de	denken	denket	2				1024		2	1
@@ -31011,10 +31011,10 @@ kom_diskutera	de	diskutieren	diskutiere	1				16		2	1
 kom_diskutera	de	diskutieren	diskutiere	1				1024		3	1
 kom_diskutera	de	diskutieren	diskutiere	1				1026		1	1
 kom_diskutera	de	diskutieren	diskutieren					1			1
+kom_diskutera	de	diskutieren	diskutieren	1				16		3	1
+kom_diskutera	de	diskutieren	diskutieren	2				16		1	1
 kom_diskutera	de	diskutieren	diskutieren	2				1026		1	1
 kom_diskutera	de	diskutieren	diskutieren	2				1026		3	1
-kom_diskutera	de	diskutieren	diskutieren Sie	1				16		3	1
-kom_diskutera	de	diskutieren	diskutieren wir	2				16		1	1
 kom_diskutera	de	diskutieren	diskutierend					128			1
 kom_diskutera	de	diskutieren	diskutierest	1				1024		2	1
 kom_diskutera	de	diskutieren	diskutieret	2				1024		2	1
@@ -31547,10 +31547,10 @@ kom_läsa	de	lesen	last	2				4		2	1
 kom_läsa	de	lesen	lese	1				1024		3	1
 kom_läsa	de	lesen	lese	1				1026		1	1
 kom_läsa	de	lesen	lesen					1			1
+kom_läsa	de	lesen	lesen	1				16		3	1
+kom_läsa	de	lesen	lesen	2				16		1	1
 kom_läsa	de	lesen	lesen	2				1026		1	1
 kom_läsa	de	lesen	lesen	2				1026		3	1
-kom_läsa	de	lesen	lesen Sie	1				16		3	1
-kom_läsa	de	lesen	lesen wir	2				16		1	1
 kom_läsa	de	lesen	lesend					128			1
 kom_läsa	de	lesen	lesest	1				1024		2	1
 kom_läsa	de	lesen	leset	2				1024		2	1
@@ -32082,8 +32082,6 @@ kom_prata	sv	prata	pratas					3			2
 kom_prata	sv	prata	pratat					8			1
 kom_prata	sv	prata	pratat	1	1		2	8			1
 kom_prata	sv	prata	pratats					8			2
-kom_ringa	de	anrufen	Rufen Sie an!	1				16		3	1
-kom_ringa	de	anrufen	Rufen wir an!	2				16		1	1
 kom_ringa	de	anrufen	angerufen					8			1
 kom_ringa	de	anrufen	anrufen					1			1
 kom_ringa	de	anrufen	anrufend					128			1
@@ -32097,9 +32095,11 @@ kom_ringa	de	anrufen	riefest an	1				2048		2	1
 kom_ringa	de	anrufen	riefet an	2				2048		2	1
 kom_ringa	de	anrufen	riefst an	1				4		2	1
 kom_ringa	de	anrufen	rieft an	2				4		2	1
-kom_ringa	de	anrufen	ruf an!	1				16		2	1
+kom_ringa	de	anrufen	ruf an	1				16		2	1
 kom_ringa	de	anrufen	rufe an	1				1024		3	1
 kom_ringa	de	anrufen	rufe an	1				1026		1	1
+kom_ringa	de	anrufen	rufen an	1				16		3	1
+kom_ringa	de	anrufen	rufen an	2				16		1	1
 kom_ringa	de	anrufen	rufen an	2				1026		1	1
 kom_ringa	de	anrufen	rufen an	2				1026		3	1
 kom_ringa	de	anrufen	rufest an	1				1024		2	1
@@ -32107,7 +32107,7 @@ kom_ringa	de	anrufen	rufet an	2				1024		2	1
 kom_ringa	de	anrufen	rufst an	1				2		2	1
 kom_ringa	de	anrufen	ruft an	1				2		3	1
 kom_ringa	de	anrufen	ruft an	2				2		2	1
-kom_ringa	de	anrufen	ruft an!	2				16		2	1
+kom_ringa	de	anrufen	ruft an	2				16		2	1
 kom_ringa	en	call	call					17			1
 kom_ringa	en	call	called					12			1
 kom_ringa	en	call	calling					128			1
@@ -32642,19 +32642,19 @@ kom_skriva	sv	skriva	skrivit					8			1
 kom_skriva	sv	skriva	skrivits					8			2
 kom_skriva	sv	skriva	skrivna				3	8			1
 kom_skriva	sv	skriva	skrivs					2			2
-kom_svara	de	antworten	Antworten Sie!	1				16		3	1
-kom_svara	de	antworten	Antworten wir!	2				16		1	1
+kom_svara	de	antworten	antworte	1				16		2	1
 kom_svara	de	antworten	antworte	1				1024		3	1
 kom_svara	de	antworten	antworte	1				1026		1	1
-kom_svara	de	antworten	antworte!	1				16		2	1
 kom_svara	de	antworten	antworten					1			1
+kom_svara	de	antworten	antworten	1				16		3	1
+kom_svara	de	antworten	antworten	2				16		1	1
 kom_svara	de	antworten	antworten	2				1026		1	1
 kom_svara	de	antworten	antworten	2				1026		3	1
 kom_svara	de	antworten	antwortend					128			1
 kom_svara	de	antworten	antwortest	1				1026		2	1
 kom_svara	de	antworten	antwortet	1				2		3	1
+kom_svara	de	antworten	antwortet	2				16		2	1
 kom_svara	de	antworten	antwortet	2				1026		2	1
-kom_svara	de	antworten	antwortet!	2				16		2	1
 kom_svara	de	antworten	antwortete	1				2052		1	1
 kom_svara	de	antworten	antwortete	1				2052		3	1
 kom_svara	de	antworten	antworteten	2				2052		1	1
@@ -32820,13 +32820,13 @@ kom_svara	sv	svara	svaras					3			2
 kom_svara	sv	svara	svarat					8			1
 kom_svara	sv	svara	svarat	1	1		2	8			1
 kom_svara	sv	svara	svarats					8			2
-kom_säga	de	sagen	Sagen Sie!	1				16		3	1
-kom_säga	de	sagen	Sagen wir!	2				16		1	1
 kom_säga	de	sagen	gesagt					8			1
-kom_säga	de	sagen	sag!	1				16		2	1
+kom_säga	de	sagen	sag	1				16		2	1
 kom_säga	de	sagen	sage	1				1024		3	1
 kom_säga	de	sagen	sage	1				1026		1	1
 kom_säga	de	sagen	sagen					1			1
+kom_säga	de	sagen	sagen	1				16		3	1
+kom_säga	de	sagen	sagen	2				16		1	1
 kom_säga	de	sagen	sagen	2				1026		1	1
 kom_säga	de	sagen	sagen	2				1026		3	1
 kom_säga	de	sagen	sagend					128			1
@@ -32835,7 +32835,7 @@ kom_säga	de	sagen	saget	2				1024		2	1
 kom_säga	de	sagen	sagst	1				2		2	1
 kom_säga	de	sagen	sagt	1				2		3	1
 kom_säga	de	sagen	sagt	2				2		2	1
-kom_säga	de	sagen	sagt!	2				16		2	1
+kom_säga	de	sagen	sagt	2				16		2	1
 kom_säga	de	sagen	sagte	1				2052		1	1
 kom_säga	de	sagen	sagte	1				2052		3	1
 kom_säga	de	sagen	sagten	2				2052		1	1
@@ -33515,19 +33515,19 @@ krop_tunga	sv	tunga	tungor	2	1	7
 krop_tunga	sv	tunga	tungorna	2	2	7					
 krop_tunga	sv	tunga	tungornas	2	2	8					
 krop_tunga	sv	tunga	tungors	2	1	8					
-krop_v_andas	de	atmen	Atmen Sie!	1				16		3	1
-krop_v_andas	de	atmen	Atmen wir!	2				16		1	1
+krop_v_andas	de	atmen	atme	1				16		2	1
 krop_v_andas	de	atmen	atme	1				1024		3	1
 krop_v_andas	de	atmen	atme	1				1026		1	1
-krop_v_andas	de	atmen	atme!	1				16		2	1
 krop_v_andas	de	atmen	atmen					1			1
+krop_v_andas	de	atmen	atmen	1				16		3	1
+krop_v_andas	de	atmen	atmen	2				16		1	1
 krop_v_andas	de	atmen	atmen	2				1026		1	1
 krop_v_andas	de	atmen	atmen	2				1026		3	1
 krop_v_andas	de	atmen	atmend					128			1
 krop_v_andas	de	atmen	atmest	1				1026		2	1
 krop_v_andas	de	atmen	atmet	1				2		3	1
+krop_v_andas	de	atmen	atmet	2				16		2	1
 krop_v_andas	de	atmen	atmet	2				1026		2	1
-krop_v_andas	de	atmen	atmet!	2				16		2	1
 krop_v_andas	de	atmen	atmete	1				2052		1	1
 krop_v_andas	de	atmen	atmete	1				2052		3	1
 krop_v_andas	de	atmen	atmeten	2				2052		1	1
@@ -34053,20 +34053,20 @@ krop_v_hosta	sv	hosta	hostas					3			2
 krop_v_hosta	sv	hosta	hostat					8			1
 krop_v_hosta	sv	hosta	hostat	1	1		2	8			1
 krop_v_hosta	sv	hosta	hostats					8			2
-krop_v_sova	de	schlafen	Schlafen Sie!	1				16		3	1
-krop_v_sova	de	schlafen	Schlafen wir!	2				16		1	1
 krop_v_sova	de	schlafen	geschlafen					8			1
-krop_v_sova	de	schlafen	schlaf!	1				16		2	1
+krop_v_sova	de	schlafen	schlaf	1				16		2	1
 krop_v_sova	de	schlafen	schlafe	1				1024		3	1
 krop_v_sova	de	schlafen	schlafe	1				1026		1	1
 krop_v_sova	de	schlafen	schlafen					1			1
+krop_v_sova	de	schlafen	schlafen	1				16		3	1
+krop_v_sova	de	schlafen	schlafen	2				16		1	1
 krop_v_sova	de	schlafen	schlafen	2				1026		1	1
 krop_v_sova	de	schlafen	schlafen	2				1026		3	1
 krop_v_sova	de	schlafen	schlafend					128			1
 krop_v_sova	de	schlafen	schlafest	1				1024		2	1
 krop_v_sova	de	schlafen	schlafet	2				1024		2	1
 krop_v_sova	de	schlafen	schlaft	2				2		2	1
-krop_v_sova	de	schlafen	schlaft!	2				16		2	1
+krop_v_sova	de	schlafen	schlaft	2				16		2	1
 krop_v_sova	de	schlafen	schlief	1				4		1	1
 krop_v_sova	de	schlafen	schlief	1				4		3	1
 krop_v_sova	de	schlafen	schliefe	1				2048		1	1
@@ -36348,10 +36348,10 @@ käns_skratta	de	lachen	lach	1				16		2	1
 käns_skratta	de	lachen	lache	1				1024		3	1
 käns_skratta	de	lachen	lache	1				1026		1	1
 käns_skratta	de	lachen	lachen					1			1
+käns_skratta	de	lachen	lachen	1				16		3	1
+käns_skratta	de	lachen	lachen	2				16		1	1
 käns_skratta	de	lachen	lachen	2				1026		1	1
 käns_skratta	de	lachen	lachen	2				1026		3	1
-käns_skratta	de	lachen	lachen Sie	1				16		3	1
-käns_skratta	de	lachen	lachen wir	2				16		1	1
 käns_skratta	de	lachen	lachend					128			1
 käns_skratta	de	lachen	lachest	1				1024		2	1
 käns_skratta	de	lachen	lachet	2				1024		2	1
@@ -37139,13 +37139,13 @@ mat_öl	sv	öl	öl	2	1	7
 mat_öl	sv	öl	ölet	1	2	7					
 mat_öl	sv	öl	ölets	1	2	8					
 mat_öl	sv	öl	öls	1	1	8					
-modal_brukar	de	pflegen	Pflegen Sie!	1				16		3	1
-modal_brukar	de	pflegen	Pflegen wir!	2				16		1	1
 modal_brukar	de	pflegen	gepflegt					8			1
+modal_brukar	de	pflegen	pflege	1				16		2	1
 modal_brukar	de	pflegen	pflege	1				1024		3	1
 modal_brukar	de	pflegen	pflege	1				1026		1	1
-modal_brukar	de	pflegen	pflege!	1				16		2	1
 modal_brukar	de	pflegen	pflegen					1			1
+modal_brukar	de	pflegen	pflegen	1				16		3	1
+modal_brukar	de	pflegen	pflegen	2				16		1	1
 modal_brukar	de	pflegen	pflegen	2				1026		1	1
 modal_brukar	de	pflegen	pflegen	2				1026		3	1
 modal_brukar	de	pflegen	pflegend					128			1
@@ -37154,7 +37154,7 @@ modal_brukar	de	pflegen	pfleget	2				1024		2	1
 modal_brukar	de	pflegen	pflegst	1				2		2	1
 modal_brukar	de	pflegen	pflegt	1				2		3	1
 modal_brukar	de	pflegen	pflegt	2				2		2	1
-modal_brukar	de	pflegen	pflegt!	2				16		2	1
+modal_brukar	de	pflegen	pflegt	2				16		2	1
 modal_brukar	de	pflegen	pflegte	1				2052		1	1
 modal_brukar	de	pflegen	pflegte	1				2052		3	1
 modal_brukar	de	pflegen	pflegten	2				2052		1	1
@@ -39103,13 +39103,13 @@ per_känna	sv	känna	känns					2			2
 per_känna	sv	känna	känt					8			1
 per_känna	sv	känna	känt	1	1		2	8			1
 per_känna	sv	känna	känts					8			2
-per_lukta	de	riechen	Riechen Sie!	1				16		3	1
-per_lukta	de	riechen	Riechen wir!	2				16		1	1
 per_lukta	de	riechen	gerochen					8			1
-per_lukta	de	riechen	riech!	1				16		2	1
+per_lukta	de	riechen	riech	1				16		2	1
 per_lukta	de	riechen	rieche	1				1024		3	1
 per_lukta	de	riechen	rieche	1				1026		1	1
 per_lukta	de	riechen	riechen					1			1
+per_lukta	de	riechen	riechen	1				16		3	1
+per_lukta	de	riechen	riechen	2				16		1	1
 per_lukta	de	riechen	riechen	2				1026		1	1
 per_lukta	de	riechen	riechen	2				1026		3	1
 per_lukta	de	riechen	riechend					128			1
@@ -39118,7 +39118,7 @@ per_lukta	de	riechen	riechet	2				1024		2	1
 per_lukta	de	riechen	riechst	1				2		2	1
 per_lukta	de	riechen	riecht	1				2		3	1
 per_lukta	de	riechen	riecht	2				2		2	1
-per_lukta	de	riechen	riecht!	2				16		2	1
+per_lukta	de	riechen	riecht	2				16		2	1
 per_lukta	de	riechen	roch	1				4		1	1
 per_lukta	de	riechen	roch	1				4		3	1
 per_lukta	de	riechen	rochen	2				4		1	1
@@ -39836,13 +39836,13 @@ per_smaka	sv	smaka	smakas					3			2
 per_smaka	sv	smaka	smakat					8			1
 per_smaka	sv	smaka	smakat	1	1		2	8			1
 per_smaka	sv	smaka	smakats					8			2
-per_titta	de	schauen	Schauen Sie!	1				16		3	1
-per_titta	de	schauen	Schauen wir!	2				16		1	1
 per_titta	de	schauen	geschaut					8			1
-per_titta	de	schauen	schau!	1				16		2	1
+per_titta	de	schauen	schau	1				16		2	1
 per_titta	de	schauen	schaue	1				1024		3	1
 per_titta	de	schauen	schaue	1				1026		1	1
 per_titta	de	schauen	schauen					1			1
+per_titta	de	schauen	schauen	1				16		3	1
+per_titta	de	schauen	schauen	2				16		1	1
 per_titta	de	schauen	schauen	2				1026		1	1
 per_titta	de	schauen	schauen	2				1026		3	1
 per_titta	de	schauen	schauend					128			1
@@ -39851,7 +39851,7 @@ per_titta	de	schauen	schauet	2				1024		2	1
 per_titta	de	schauen	schaust	1				2		2	1
 per_titta	de	schauen	schaut	1				2		3	1
 per_titta	de	schauen	schaut	2				2		2	1
-per_titta	de	schauen	schaut!	2				16		2	1
+per_titta	de	schauen	schaut	2				16		2	1
 per_titta	de	schauen	schaute	1				2052		1	1
 per_titta	de	schauen	schaute	1				2052		3	1
 per_titta	de	schauen	schauten	2				2052		1	1
@@ -43573,9 +43573,9 @@ rör_krypa	de	kriechen	kriech	1				16		2	1
 rör_krypa	de	kriechen	krieche	1				1024		3	1
 rör_krypa	de	kriechen	krieche	1				1026		1	1
 rör_krypa	de	kriechen	kriechen					1			1
+rör_krypa	de	kriechen	kriechen	1				16		3	1
 rör_krypa	de	kriechen	kriechen	2				1026		3	1
-rör_krypa	de	kriechen	kriechen Sie	1				16		3	1
-rör_krypa	de	kriechen	kriechen wir	2				1042		1	1
+rör_krypa	de	kriechen	kriechen	2				1042		1	1
 rör_krypa	de	kriechen	kriechend					128			1
 rör_krypa	de	kriechen	kriechest	1				1024		2	1
 rör_krypa	de	kriechen	kriechet	2				1024		2	1
@@ -44296,13 +44296,13 @@ rör_nå	sv	nå	nås					3			2
 rör_nå	sv	nå	nått					8			1
 rör_nå	sv	nå	nått	1	1		2	8			1
 rör_nå	sv	nå	nåtts					8			2
-rör_resa	de	reisen	Reisen Sie!	1				16		3	1
-rör_resa	de	reisen	Reisen wir!	2				16		1	1
 rör_resa	de	reisen	gereist					8			1
+rör_resa	de	reisen	reise	1				16		2	1
 rör_resa	de	reisen	reise	1				1024		3	1
 rör_resa	de	reisen	reise	1				1026		1	1
-rör_resa	de	reisen	reise!	1				16		2	1
 rör_resa	de	reisen	reisen					1			1
+rör_resa	de	reisen	reisen	1				16		3	1
+rör_resa	de	reisen	reisen	2				16		1	1
 rör_resa	de	reisen	reisen	2				1026		1	1
 rör_resa	de	reisen	reisen	2				1026		3	1
 rör_resa	de	reisen	reisend					128			1
@@ -44311,7 +44311,7 @@ rör_resa	de	reisen	reiset	2				1024		2	1
 rör_resa	de	reisen	reist	1				2		2	1
 rör_resa	de	reisen	reist	1				2		3	1
 rör_resa	de	reisen	reist	2				2		2	1
-rör_resa	de	reisen	reist!	2				16		2	1
+rör_resa	de	reisen	reist	2				16		2	1
 rör_resa	de	reisen	reiste	1				2052		1	1
 rör_resa	de	reisen	reiste	1				2052		3	1
 rör_resa	de	reisen	reisten	2				2052		1	1
@@ -45020,10 +45020,10 @@ rör_springa	de	laufen	lauf	1				16		2	1
 rör_springa	de	laufen	laufe	1				1024		3	1
 rör_springa	de	laufen	laufe	1				1026		1	1
 rör_springa	de	laufen	laufen					1			1
+rör_springa	de	laufen	laufen	1				16		3	1
+rör_springa	de	laufen	laufen	2				16		1	1
 rör_springa	de	laufen	laufen	2				1026		1	1
 rör_springa	de	laufen	laufen	2				1026		3	1
-rör_springa	de	laufen	laufen Sie	1				16		3	1
-rör_springa	de	laufen	laufen wir	2				16		1	1
 rör_springa	de	laufen	laufend					128			1
 rör_springa	de	laufen	laufest	1				1024		2	1
 rör_springa	de	laufen	laufet	2				1024		2	1
@@ -45201,19 +45201,19 @@ rör_springa	sv	springa	sprunget	1	1		2	8			1
 rör_springa	sv	springa	sprungit					8			1
 rör_springa	sv	springa	sprungits					8			2
 rör_springa	sv	springa	sprungna				3	8			1
-rör_stanna	de	anhalten	Halten Sie an!	1				16		3	1
-rör_stanna	de	anhalten	Halten wir an!	2				16		1	1
 rör_stanna	de	anhalten	angehalten					8			1
 rör_stanna	de	anhalten	anhalten					1			1
 rör_stanna	de	anhalten	anhaltend					128			1
-rör_stanna	de	anhalten	halt an!	1				16		2	1
+rör_stanna	de	anhalten	halt an	1				16		2	1
 rör_stanna	de	anhalten	halte an	1				1024		3	1
 rör_stanna	de	anhalten	halte an	1				1026		1	1
+rör_stanna	de	anhalten	halten an	1				16		3	1
+rör_stanna	de	anhalten	halten an	2				16		1	1
 rör_stanna	de	anhalten	halten an	2				1026		1	1
 rör_stanna	de	anhalten	halten an	2				1026		3	1
 rör_stanna	de	anhalten	haltest an	1				1024		2	1
+rör_stanna	de	anhalten	haltet an	2				16		2	1
 rör_stanna	de	anhalten	haltet an	2				1026		2	1
-rör_stanna	de	anhalten	haltet an!	2				16		2	1
 rör_stanna	de	anhalten	hielt an	1				4		1	1
 rör_stanna	de	anhalten	hielt an	1				4		3	1
 rör_stanna	de	anhalten	hielte an	1				2048		1	1
@@ -46286,10 +46286,10 @@ soc_bjuda	de	einladen	einladend					128			1
 soc_bjuda	de	einladen	lade ein	1				16		2	1
 soc_bjuda	de	einladen	lade ein	1				1024		3	1
 soc_bjuda	de	einladen	lade ein	1				1026		1	1
-soc_bjuda	de	einladen	laden Sie ein	1				16		3	1
+soc_bjuda	de	einladen	laden ein	1				16		3	1
+soc_bjuda	de	einladen	laden ein	2				16		1	1
 soc_bjuda	de	einladen	laden ein	2				1026		1	1
 soc_bjuda	de	einladen	laden ein	2				1026		3	1
-soc_bjuda	de	einladen	laden wir ein	2				16		1	1
 soc_bjuda	de	einladen	ladest ein	1				1024		2	1
 soc_bjuda	de	einladen	ladet ein	2				1042		2	1
 soc_bjuda	de	einladen	lud ein	1				4		1	1
@@ -47537,10 +47537,10 @@ soc_tacka	de	danken	danke	1				16		2	1
 soc_tacka	de	danken	danke	1				1024		3	1
 soc_tacka	de	danken	danke	1				1026		1	1
 soc_tacka	de	danken	danken					1			1
+soc_tacka	de	danken	danken	1				16		3	1
+soc_tacka	de	danken	danken	2				16		1	1
 soc_tacka	de	danken	danken	2				1026		1	1
 soc_tacka	de	danken	danken	2				1026		3	1
-soc_tacka	de	danken	danken Sie	1				16		3	1
-soc_tacka	de	danken	danken wir	2				16		1	1
 soc_tacka	de	danken	dankend					128			1
 soc_tacka	de	danken	dankest	1				1024		2	1
 soc_tacka	de	danken	danket	2				1024		2	1

@@ -259,7 +259,7 @@ utökningarna flyttar bara taket.
 18  boken är större än huset        + komparation      ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
-19  läs!                            + imperativ        ✗
+19  läs boken!                      + imperativ        ✅ 2026-08-14
 20  hon vet att han kom             + bisatser         ✗
 21  vem läser boken?                + wh-frågor        ✗
 ```
@@ -319,8 +319,22 @@ Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
 | ~~Perfektparticip~~ | ~~454~~ | ✅ används av bli-passiven |
 | ~~Komparation~~ | ~~294~~ | ✅ `Grad` |
 | ~~Perfekt~~ | ~~165~~ | ✅ `Aspekt.PERFEKT` |
-| Imperativ | 161 | satsmodus |
+| ~~Imperativ~~ | ~~161~~ | ✅ `Satsmodus` |
 | ~~Oböjda ordklasser~~ | ~~105~~ | ✅ prepositionsfraser byggda |
+
+Tabellen mäter bara svenskan, och det visade sig underskatta imperativen
+grovt. Svenskan har EN imperativform; de andra sex har tre till fem, och
+spanskans nekade imperativ drar dessutom in halva konjunktivparadigmet.
+Mätt på alla sju blev utökningen värd **3 744 former**, inte 161:
+
+```
+es +1 388   (860 imperativ + konjunktiven som den nekade formen kräver)
+it   +674     de +668     fr +507     ja +346     sv +161     en ±0
+```
+
+Engelskan vinner noll: `inf_imp` ÄR imperativcellen, och den var redan nådd
+som infinitiv. Att en utökning ger noll former i ett språk och 1 388 i ett
+annat är regel, inte undantag — vilket är skälet att mäta per språk.
 
 **Negation och frågor låser upp noll former** — negationsadverben har redan
 sin `inv`-form. Men de mångdubblar antalet *meningar* som går att bygga av
@@ -332,37 +346,50 @@ imperativ, resten.
 
 ## Det som blockerar
 
-Mätt om 2026-08-14 efter de åtta utökningarna, nu på alla sju språk och med
+Mätt om 2026-08-14 efter de nio utökningarna, nu på alla sju språk och med
 ett verktyg i stället för för hand: `ordbok/verktyg/nåbarhet.py`. Det
 instrumenterar `Uppslag.form`, sveper hela korsprodukten av det `Mening`
 kan uttrycka, och räknar unionen av begärda celler mot hela lexikonet.
 
 ```
-sv  3 526 / 4 988   71 %      fr  5 088 /  9 070   56 %
-en  1 645 / 2 293   72 %      it  5 097 / 10 246   50 %
-                              es  4 637 / 10 596   44 %
-ja    770 / 2 498   31 %      de  7 839 / 23 493   33 %
+sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
+en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
+                              es  6 045 / 10 596   57 %
+ja  1 116 / 2 498   45 %      de  8 508 / 23 494   36 %
 ```
 
-Svenskan gick 37 % → 45 % → **71 %**. Men de sju språken skiljer sig mer än
-väntat, och skälet är att **de stora onådda blocken inte är samma block**:
+Svenskan gick 37 % → 45 % → 71 % → **78 %**. Men de sju språken skiljer sig
+mer än väntat, och skälet är att **de stora onådda blocken inte är samma
+block**:
 
 | Språk | Största onådda block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv (6–12 celler) + konditionalis (6) | bisatser respektive villkorssatser |
-| alla | imperativ | satsmodus |
+| fr/es/it | konjunktiv (resten) + konditionalis (6 celler) | bisatser respektive villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
 | ja | jisho/ta/nai — de enkla formerna | register, utanför scope |
 
-**Tyskans siffra är låg av en enda anledning.** 16 121 av 23 493 tyska
+**Tyskans siffra är låg av en enda anledning.** 16 121 av 23 494 tyska
 former är adjektivformer, och två tredjedelar av adjektivparadigmet är
 komparativ och superlativ i attributiv ställning. `Grad` finns på `Mening`
 och styr predikativet; attributet är fortfarande bara en konceptnyckel.
 Att flytta graden in i `Nominalfras.attribut` är den enskilt största
 utökningen som återstår — värd omkring 10 500 tyska former.
 
-**Generatorn är inte längre blockerad av uttrycksförmågan.** Med 71 % på
-svenska och 72 % på engelska avgörs det som övas nu av strategin, inte av
-vad specen kan säga. Frågan om täckande mot opportunistisk urvalsstrategi
-är därmed mogen att ta.
+**Mätningen mäter också sig själv.** Japanskan låg på 31 % tills
+uppmaningen byggdes — men bara 8 av de 346 formerna syntes först, eftersom
+renderaren hämtade て- och ない-cellerna direkt ur `_celler` i stället för
+genom `Uppslag.form`, som är den enda väg instrumenteringen ser. Samma
+genväg fanns i engelskans presens och preteritum och i den syntetiska
+komparationen. Alla är omlagda nu, vilket lyfte sv 71→75 %, en 72→78 % och
+ja 31→45 % utan att ändra en enda renderad mening.
+
+Det spelar roll bortom mätningen: **generatorns attribution bygger på exakt
+samma väg.** En form som hämtas förbi `form()` går inte att knyta till ett
+kort, och felet hade upptäckts först när generatorn inte kunde svara på
+vilket kort som fällde en mening.
+
+**Generatorn är inte längre blockerad av uttrycksförmågan.** Med 78 % på
+svenska och engelska avgörs det som övas nu av strategin, inte av vad
+specen kan säga. Frågan om täckande mot opportunistisk urvalsstrategi är
+därmed mogen att ta.

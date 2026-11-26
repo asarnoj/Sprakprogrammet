@@ -16,7 +16,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -91,7 +92,10 @@ class EngelskRenderare:
                      "pres_3sg" if (person, numerus) == (3, "sg") else None,
                      "inf_imp"):
             if cell and celler.get(cell):
-                return celler[cell]
+                # Uppslaget görs om via form() i stället för att returnera
+                # strängen direkt: allt som passerar DEN vägen går att spåra
+                # till en cell, och generatorns attribution bygger på det.
+                return self.u.form(lexem, cell)
         raise RenderingsFel(f"en/{lexem['lemma']}: ingen presensform")
 
     def preteritum(self, koncept: str, nf: Nominalfras) -> str:
@@ -100,7 +104,7 @@ class EngelskRenderare:
         celler = self.u._celler(lexem)
         for cell in (f"pret_{person}{numerus}", "pret"):
             if celler.get(cell):
-                return celler[cell]
+                return self.u.form(lexem, cell)
         raise RenderingsFel(f"en/{lexem['lemma']}: ingen preteritumform")
 
     def _tredje_person_sg(self, nf: Nominalfras) -> bool:
@@ -113,6 +117,17 @@ class EngelskRenderare:
         return person == 3
 
     def verbdelar(self, m: Mening) -> list[str]:
+        if m.modus is Satsmodus.IMPERATIV:
+            # "read!" — imperativen ÄR den nakna infinitiven, och delar cell
+            # med den. Negationen tar do-omskrivning som vanligt, men utan
+            # kongruens: "don't read!", aldrig "doesn't read!", eftersom
+            # imperativen inte har någon person att kongruera med.
+            tilltal(m, "en", ("2sg", "2pl", "artig"))
+            bar = self.u.form_för(m.verb, "inf_imp")
+            if m.negerad:
+                return [self.u.form_för("fys_göra", "inf_imp"),
+                        self.u.form_för("neg_inte", "inv"), bar]
+            return [bar]
         if m.diates is not Diates.AKTIV:
             # "the book is read". Engelskan har bara en passiv, så båda
             # specvärdena ger samma konstruktion.
@@ -189,8 +204,9 @@ class EngelskRenderare:
             # "bigger" men "more interesting" — engelskan avgör per ord,
             # och datan vet: saknas cellen kompareras det analytiskt.
             cell = "komp" if m.grad is Grad.KOMPARATIV else "superl"
-            form = self.u._celler(self.u.lexem(m.predikativ)).get(cell)
-            ut = ([form] if form else
+            adjektiv = self.u.lexem(m.predikativ)
+            form = self.u._celler(adjektiv).get(cell)
+            ut = ([self.u.form(adjektiv, cell)] if form else
                   [self.u.form_för("komp_mer" if m.grad is Grad.KOMPARATIV
                                    else "komp_mest", "pos"),
                    self.u.form_för(m.predikativ, "pos")])
@@ -206,7 +222,9 @@ class EngelskRenderare:
         return self.nominalfras(m.predikativ)
 
     def rendera(self, m: Mening) -> str:
-        subjekt = self.nominalfras(m.subjekt, "subjekt")
+        # Imperativen säger inte ut den tilltalade: "read the book!".
+        subjekt = ([] if m.modus is Satsmodus.IMPERATIV
+                   else self.nominalfras(m.subjekt, "subjekt"))
         verb = self.verbdelar(m)
         if m.fråga:
             # Engelskan kräver do-omskrivning i frågor precis som i
@@ -247,4 +265,4 @@ class EngelskRenderare:
                 ord.append(self.u.form_för(adverbial.preposition, "inv"))
                 ord += self.nominalfras(adverbial.komplement)
         mening = " ".join(self.sandhi(ord))
-        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")
+        return mening[0].upper() + mening[1:] + slutar(m)

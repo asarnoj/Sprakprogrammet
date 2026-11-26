@@ -29,7 +29,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -47,6 +48,15 @@ TEMPUSSTAM = {
     Tidsreferens.NUTID: "pres",
     Tidsreferens.FÖRFLUTEN: "pret",
 }
+
+# Tyskan är det enda av de sju språken som säger ut pronomenet i imperativ,
+# och bara i två av fyra former: "Lesen Sie!" och "Lesen wir!". Duformerna
+# står nakna. Skillnaden är att de två förstnämnda LÅNAR sin verbform från
+# ett annat paradigm — konjunktiv I respektive presens — och utan pronomenet
+# vore satsen inte igenkännbar som uppmaning.
+IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
+                 "artig": "imp_3sg", "1pl": "imp_1pl"}
+IMPERATIVPRONOMEN = {"artig": "pronomen_2sg_formal", "1pl": "pronomen_1pl"}
 
 
 def _substantivcell(kasus: int, numerus: Numerus) -> str:
@@ -186,6 +196,12 @@ class TyskRenderare:
         som hamnar i slutet.
         """
         person, numerus = self._subjektsform(m.subjekt)
+        if m.modus is Satsmodus.IMPERATIV:
+            # Fyra tilltal, fyra celler. Sie-imperativen ligger under P3sg
+            # trots att den formellt är konjunktiv I P3pl — cellen är döpt
+            # efter tilltalet, inte efter härkomsten (se slot-filens not).
+            return self.u.form_för(m.verb, IMPERATIVCELL[
+                tilltal(m, "de", tuple(IMPERATIVCELL))]), []
         if m.diates is not Diates.AKTIV:
             # "das Buch wird gelesen" — werden, inte sein. Tyskan har bara
             # en passiv, och den delar hjälpverb med futurum: skillnaden är
@@ -291,8 +307,17 @@ class TyskRenderare:
                        and m.objekt.bestämdhet is Bestämdhet.OBESTÄMD
                        and m.objekt.possessiv is None and m.objekt.ägare is None)
 
-        vorfeld = self.nominalfras(m.subjekt, self.kasus_för(m.verb, "subjekt"))
-        mittelfeld: list[str] = []
+        # Imperativen har V1 som ja/nej-frågan, och Vorfeld står tomt: det
+        # är själva kännetecknet. Sie- och wir-formen sätter ändå ut sitt
+        # pronomen, omedelbart efter verbet — där subjektet skulle stått.
+        if m.modus is Satsmodus.IMPERATIV:
+            tal = tilltal(m, "de", tuple(IMPERATIVCELL))
+            vorfeld: list[str] = []
+            mittelfeld = ([self.u.form_för(IMPERATIVPRONOMEN[tal], "nom")]
+                          if tal in IMPERATIVPRONOMEN else [])
+        else:
+            vorfeld = self.nominalfras(m.subjekt, self.kasus_för(m.verb, "subjekt"))
+            mittelfeld = []
         if m.io is not None:
             mittelfeld += self.nominalfras(m.io, self.kasus_för(m.verb, "io"))
         for adverbial in m.adverbial:
@@ -321,7 +346,8 @@ class TyskRenderare:
         # Tyskan har V2 i påstående men V1 i ja/nej-fråga: det finita
         # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.
         # Satsklammern består — infinita delar hamnar sist ändå.
-        ord = ([finit, *vorfeld, *mittelfeld, *infinit] if m.fråga
+        ord = ([finit, *vorfeld, *mittelfeld, *infinit]
+               if m.fråga or m.modus is Satsmodus.IMPERATIV
                else [*vorfeld, finit, *mittelfeld, *infinit])
         mening = " ".join(ord)
-        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")
+        return mening[0].upper() + mening[1:] + slutar(m)
