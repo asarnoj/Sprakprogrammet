@@ -11,6 +11,15 @@ och tvingar fram kasus och V2 medan arkitekturen fortfarande är billig att
 Det renderaren INTE gör: gissar. Varje fall som inte är implementerat
 kastar RenderingsFel med vad som saknas. En tyst felaktig mening är värre
 än ett stopp.
+
+REDOVISNINGEN (KÄRNAN 8.3, steg 1). Varje beslut går genom `Uppslag`: valen
+mellan utfall som `regel`, ordföljden som `ordning`, ordens egenskaper som
+`egenskap` och verbets krav som `rektion`. Valen står uppräknade nedan med
+sina utfall, och koden grenar på det utfall `regel` lämnar tillbaka — inte på
+specen. Det är det som gör att ett beslut kan tvingas fram och dess positioner
+räknas ut (`rendering/spår.py`).
+
+Id:na i kommentarerna (G1, S1 …) är inventeringen i `paradigm/TYSTA_BESLUT.md`.
 """
 
 from __future__ import annotations
@@ -20,21 +29,57 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
-    NAKEN, Numerus, attribut_med_grad, bestämd_fras,
+    NAKEN, Numerus, attribut_med_grad,
     Prepositionsfras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
-from .uppslag import Uppslag
+from .uppslag import Ord, Uppslag, Val
 
 UTRUM, NEUTRUM = 1, 2
 
-# Tidsreferens + aspekt → verbcell. Svenskan saknar morfologisk aspekt, så
-# axeln ignoreras här — men den finns i specifikationen för fr/es/it, där
-# "il donnait" och "il a donné" skiljs åt just på den.
-TEMPUSCELL = {
-    Tidsreferens.NUTID: "pres",
-    Tidsreferens.FÖRFLUTEN: "pret",
-}
+# ── besluten ─────────────────────────────────────────────────────────────
+
+#: G1. jag/mig — pronomenets form efter roll.
+PRONOMENFORM = Val("pronomenform", ("subjektsform", "objektsform"))
+
+#: G2–G7, S1. Vad som står före huvudordet och vilken form huvudordet får:
+#: "vilken bok", "flickans bok", "sin bok", "den röda boken", "vatten",
+#: "en bok", "boken", "böcker".
+BESTÄMNING = Val("bestämning", (
+    "frågedeterminant", "genitiv", "possessiv", "dubbel_bestämdhet", "naken",
+    "obestämd_artikel", "bestämd_suffix", "obestämd_plural"))
+
+#: G8, G9, S2. Adjektivets form, attributivt och predikativt: "röda", "röda",
+#: "röd", "rött".
+ADJEKTIVFORM = Val("adjektivform", ("svag", "plural", "utrum", "neutrum"))
+
+#: G12, S4. "den största boken" men "boken är störst".
+SUPERLATIVFORM = Val("superlativform", ("bestämd", "obestämd"))
+
+#: G10. "hon är läkare", inte "hon är en läkare".
+PREDIKATIVT_SUBSTANTIV = Val("predikativt_substantiv",
+                             ("utan_artikel", "med_artikel"))
+
+#: G16, G17. "läser", "läste", "ska läsa", "har läst", "hade läst".
+TEMPUSFORM = Val("tempusform", (
+    "presens", "preteritum", "futurum", "perfekt", "pluskvamperfekt"))
+
+#: G18. "boken lästes" eller "boken blev läst".
+PASSIVFORM = Val("passivform", ("s_passiv", "bli_passiv"))
+
+#: S5. Bli-passivens particip kongruerar: "blev läst", "blev målat", "blev lästa".
+PARTICIPFORM = Val("participform", ("utrum", "neutrum", "plural"))
+
+#: G21. "läs boken!" eller "du läser boken".
+SATSART = Val("satsart", ("indikativ", "imperativ"))
+
+#: G19, S6. Reflexivet kongruerar med subjektet, och artigt ni tar er.
+REFLEXIVPRONOMEN = Val("reflexivpronomen", ("mig", "dig", "sig", "oss", "er"))
+
+#: G20. vem eller vad.
+FRÅGEPRONOMEN = Val("frågepronomen", ("person", "sak"))
+
+# ── celler ───────────────────────────────────────────────────────────────
 
 SUBSTANTIVCELL = {
     (Bestämdhet.OBESTÄMD, Numerus.SG): "obest_sg_ack_dat_nom",
@@ -51,36 +96,39 @@ SUBSTANTIVCELL_GEN = {
     (Bestämdhet.BESTÄMD, Numerus.PL): "best_pl_gen",
 }
 
+#: Bestämningens utfall → huvudordets bestämdhet. Efter en possessiv, en
+#: genitiv eller en frågedeterminant står huvudordet obestämt: "sin bok",
+#: "flickans bok", "vilken bok" — aldrig "sin boken".
+HUVUDORDETS_BESTÄMDHET = {
+    "frågedeterminant": Bestämdhet.OBESTÄMD, "genitiv": Bestämdhet.OBESTÄMD,
+    "possessiv": Bestämdhet.OBESTÄMD, "dubbel_bestämdhet": Bestämdhet.BESTÄMD,
+    "naken": Bestämdhet.OBESTÄMD, "obestämd_artikel": Bestämdhet.OBESTÄMD,
+    "bestämd_suffix": Bestämdhet.BESTÄMD, "obestämd_plural": Bestämdhet.OBESTÄMD,
+}
 
-def _adjektivcell(bestämdhet: Bestämdhet, numerus: Numerus, genus: int,
-                  efter_possessiv: bool = False) -> str:
-    """Svensk adjektivkongruens.
+#: Bestämningar som ger adjektivet svag form: "den röda boken", "sin röda bok",
+#: "flickans röda bok". En frågedeterminant gör det inte: "vilken röd bok".
+SVAG_BESTÄMNING = frozenset({"genitiv", "possessiv", "dubbel_bestämdhet",
+                             "bestämd_suffix"})
 
-    Cellnamnen använder m/f för utrum/neutrum enligt _legend.yaml, där
-    UtrMask och NeuFem delas mellan svenska och de romanska språken.
+#: Reflexivpronomenets utfall → koncept. Bara tredje person har ett eget
+#: reflexivt pronomen — "sig" — medan första och andra använder sitt vanliga
+#: objektspronomen: mig, dig, oss, er.
+REFLEXIVKONCEPT = {"mig": "pronomen_1sg", "dig": "pronomen_2sg",
+                   "oss": "pronomen_1pl", "er": "pronomen_2pl",
+                   "sig": "pronomen_reflexiv"}
+REFLEXIV_EFTER_PERSON = {(1, "sg"): "mig", (2, "sg"): "dig",
+                         (1, "pl"): "oss", (2, "pl"): "er"}
 
-    En possessiv tvingar fram den bestämda (svaga) formen oavsett frasens
-    bestämdhet: "sin röda bok", aldrig "sin röd bok". Possessiven beter sig
-    som en bestämd artikel för adjektivet, trots att substantivet samtidigt
-    står i obestämd form. Svenskan drar alltså isär de två.
+
+def _adjektivcell(utfall: str, numerus: Numerus) -> str:
+    """Adjektivformens cell. Cellnamnen använder m/f för utrum/neutrum
+    enligt _legend.yaml, där UtrMask och NeuFem delas med de romanska språken.
     """
-    if efter_possessiv or bestämdhet is Bestämdhet.BESTÄMD:
+    if utfall == "svag":
         return "best_a_sg_pos" if numerus is Numerus.SG else "best_a_pl_pos"
-    if numerus is Numerus.PL:
-        return "obest_a_pl_pos"
-    return "obest_m_sg_pos" if genus == UTRUM else "obest_f_sg_pos"
-
-
-def _predikativcell(numerus: Numerus, genus: int) -> str:
-    """Predikativt adjektiv tar OBESTÄMD form och kongruerar med subjektet.
-
-    "hon är glad", "barnet är glatt", "de är glada". Aldrig den bestämda
-    formen — "hon är glada" finns inte. Det skiljer predikativet från
-    attributet, som styrs av frasens bestämdhet.
-    """
-    if numerus is Numerus.PL:
-        return "obest_a_pl_pos"
-    return "obest_m_sg_pos" if genus == UTRUM else "obest_f_sg_pos"
+    return {"plural": "obest_a_pl_pos", "utrum": "obest_m_sg_pos",
+            "neutrum": "obest_f_sg_pos"}[utfall]
 
 
 def _artikelcell(numerus: Numerus, genus: int) -> str:
@@ -108,7 +156,7 @@ class SvenskRenderare:
     # ── nominalfras ──────────────────────────────────────────────────
 
     def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False,
-                    genitiv: bool = False) -> list[str]:
+                    genitiv: bool = False) -> list[Ord]:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
@@ -116,191 +164,239 @@ class SvenskRenderare:
         # enda morfologiska kasusdistinktionen språket har kvar, och därför
         # behöver renderaren veta om frasen är subjekt. Det syntes inte
         # förrän tyskan tvingade fram rollbegreppet.
-        if huvud["ordklass"] == "Pronomen":
+        if self.u.ordklass(huvud) == "Pronomen":
             if nf.attribut or nf.possessiv is not None:
                 raise RenderingsFel(
-                    f"sv/{huvud['lemma']}: ett pronomen kan inte ta artikel, "
-                    f"attribut eller possessiv")
-            return [self.u.form(huvud, "nom" if subjekt else "ack_dat")]
+                    f"sv/{self.u.lemma(huvud)}: ett pronomen kan inte ta "
+                    f"artikel, attribut eller possessiv")
+            if genitiv:
+                # Specens ägare är ett substantiv; en pronominell ägare är en
+                # possessiv. Förut blev det "mig bok".
+                raise RenderingsFel(
+                    f"sv/{self.u.lemma(huvud)}: en pronominell ägare uttrycks "
+                    f"med possessiv ('min bok'), inte med genitiv")
+            form = self.u.regel(PRONOMENFORM,
+                                "subjektsform" if subjekt else "objektsform")
+            return [self.u.form(huvud, "nom" if form == "subjektsform"
+                                else "ack_dat")]
 
         self.u.kontrollera_naken(nf)
 
-        # Genus avgör cellen bara i SINGULAR: artikel, possessiv och
-        # adjektiv är alla genusneutrala i plural ("de stora böckerna",
-        # "de stora husen"). Uppslaget loggas därför bara där — annars
-        # ger varje plural genuskortet beröm den aldrig prövade.
-        genus = (self.u.egenskap(huvud, "genus")
-                 if nf.numerus is Numerus.SG else huvud["genus"])
+        # Genus avgör artikel, possessiv och adjektiv bara i singular — "de
+        # stora böckerna", "de stora husen". Egenskapen läses ändå alltid;
+        # att den inte syns i plural räknar spåret ut (rendering/spår.py).
+        genus = self.u.egenskap(huvud, "genus")
         if genus is None:
             raise RenderingsFel(
-                f"sv/{huvud['lemma']}: genus saknas — artikel och "
+                f"sv/{self.u.lemma(huvud)}: genus saknas — artikel och "
                 f"adjektivkongruens går inte att avgöra utan det")
 
-        ord: list[str] = []
-
-        # Bestämdhet realiseras olika beroende på vad som står framför
-        # huvudordet: suffix i "flickan", fristående artikel i "en bok",
-        # och ingen artikel alls när en possessiv tar platsen ("sin bror").
         if nf.frågedeterminant is not None:
-            # "vilken bok" — frågedeterminanten tar artikelns plats, och
-            # substantivet står obestämt precis som efter en possessiv.
-            ord.append(self.u.form_för(nf.frågedeterminant, _artikelcell(
-                nf.numerus, genus).replace("utr", "utr_sg").replace("neu", "neu_sg")))
-            substantivform = Bestämdhet.OBESTÄMD
+            naturlig = "frågedeterminant"
         elif nf.ägare is not None:
-            # "flickans bok" — ägaren står i genitiv FÖRE huvudordet, och
-            # huvudordet blir obestämt precis som efter en possessiv.
-            # Svenskan säger aldrig "flickans boken".
-            ord.extend(self.nominalfras(nf.ägare, genitiv=True))
-            substantivform = Bestämdhet.OBESTÄMD
+            naturlig = "genitiv"
         elif nf.possessiv is not None:
-            # Possessiven tar artikelns plats: "sin bror", aldrig "sin en bror".
-            # Substantivet står i obestämd form trots att frasen är bestämd.
-            variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
-            ord.append(self.u.form_för(
-                nf.possessiv, _possessivcell(nf.numerus, genus), variant))
-            substantivform = Bestämdhet.OBESTÄMD
+            naturlig = "possessiv"
         elif nf.bestämdhet is Bestämdhet.BESTÄMD and nf.attribut:
+            naturlig = "dubbel_bestämdhet"
+        elif nf.bestämdhet in NAKEN:
+            naturlig = "naken"
+        elif nf.bestämdhet is Bestämdhet.OBESTÄMD and nf.numerus is Numerus.SG:
+            naturlig = "obestämd_artikel"
+        elif nf.bestämdhet is Bestämdhet.BESTÄMD:
+            naturlig = "bestämd_suffix"
+        else:
+            naturlig = "obestämd_plural"
+        bestämning = self.u.regel(BESTÄMNING, naturlig)
+
+        före: list[Ord] = []
+        if bestämning == "frågedeterminant":
+            # "vilken bok" — frågedeterminanten tar artikelns plats.
+            if nf.frågedeterminant is None:
+                raise RenderingsFel("sv: frasen har ingen frågedeterminant")
+            före = [self.u.form_för(nf.frågedeterminant, _artikelcell(
+                nf.numerus, genus).replace("utr", "utr_sg").replace("neu", "neu_sg"))]
+        elif bestämning == "genitiv":
+            # "flickans bok" — ägaren står i genitiv FÖRE huvudordet.
+            if nf.ägare is None:
+                raise RenderingsFel("sv: frasen har ingen genitivägare")
+            with self.u.led("ägare"):
+                före = self.nominalfras(nf.ägare, genitiv=True)
+        elif bestämning == "possessiv":
+            # Possessiven tar artikelns plats: "sin bror", aldrig "sin en bror".
+            if nf.possessiv is None:
+                raise RenderingsFel("sv: frasen har ingen possessiv")
+            variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
+            före = [self.u.form_för(
+                nf.possessiv, _possessivcell(nf.numerus, genus), variant)]
+        elif bestämning == "dubbel_bestämdhet":
             # Svenskans dubbla bestämdhet: "den röda boken" kräver BÅDE den
             # fristående artikeln och suffixet på substantivet. Utan attribut
-            # räcker suffixet ensamt ("boken"), och "den boken" skulle bli
-            # demonstrativt i stället för bestämt.
-            ord.append(self.u.form_för("artikel_bestamd", _artikelcell(nf.numerus, genus)))
-            substantivform = Bestämdhet.BESTÄMD
-        elif nf.bestämdhet in NAKEN:
-            # "vatten", "böcker är dyra" — ingen artikel alls. Svenskan
-            # skiljer inte sort från mängd; båda står nakna.
-            substantivform = Bestämdhet.OBESTÄMD
-        elif nf.bestämdhet is Bestämdhet.OBESTÄMD and nf.numerus is Numerus.SG:
-            ord.append(self.u.form_för(
-                "artikel_obestamd", "utr" if genus == UTRUM else "neu"))
-            substantivform = Bestämdhet.OBESTÄMD
-        else:
-            # Obestämd plural har ingen artikel i svenskan ("böcker"), och
-            # bestämdhet uttrycks med suffix på substantivet.
-            substantivform = nf.bestämdhet
+            # räcker suffixet ensamt ("boken").
+            före = [self.u.form_för("artikel_bestamd",
+                                    _artikelcell(nf.numerus, genus))]
+        elif bestämning == "obestämd_artikel":
+            före = [self.u.form_för("artikel_obestamd",
+                                    "utr" if genus == UTRUM else "neu")]
+        # naken ("vatten"), bestämd_suffix ("boken") och obestämd_plural
+        # ("böcker") har inget ord före huvudordet.
 
-        for attribut in nf.attribut:
-            # Genitivattribut styr adjektivet likadant som en possessiv:
-            # "flickans röda bok", aldrig "flickans röd bok".
-            ord.extend(self.attribut(attribut, nf, genus))
+        attribut: list[Ord] = []
+        for i, a in enumerate(nf.attribut):
+            with self.u.led(f"attribut{i}"):
+                attribut.extend(self.attribut(a, bestämning, nf.numerus, genus))
 
         tabell = SUBSTANTIVCELL_GEN if genitiv else SUBSTANTIVCELL
-        cell = tabell[(substantivform, nf.numerus)]
+        cell = tabell[(HUVUDORDETS_BESTÄMDHET[bestämning], nf.numerus)]
         try:
-            ord.append(self.u.form(huvud, cell))
+            huvudord = self.u.form(huvud, cell)
         except RenderingsFel:
             # Plurale tantum: "pengar" har ingen singular alls. Datan har
             # ingen flagga för det — tomma singularceller ÄR markeringen.
-            # Säg det rakt ut i stället för att låta felet se ut som ett hål.
-            celler = self.u._celler(huvud)
             if nf.numerus is Numerus.SG and not any(
-                    celler.get(c) for (_, n), c in SUBSTANTIVCELL.items()
-                    if n is Numerus.SG):
+                    self.u.har_form(huvud, c)
+                    for (_, n), c in SUBSTANTIVCELL.items() if n is Numerus.SG):
                 raise RenderingsFel(
-                    f"sv/{huvud['lemma']}: saknar singular helt (plurale tantum) "
-                    f"— meningen kan inte be om {nf.numerus.value}") from None
+                    f"sv/{self.u.lemma(huvud)}: saknar singular helt (plurale "
+                    f"tantum) — meningen kan inte be om {nf.numerus.value}") from None
             raise
-        return ord
+        self.u.ordning("bestämning_före_huvudord", före, [*attribut, huvudord])
+        self.u.ordning("attribut_före_huvudord", attribut, [huvudord])
+        return [*före, *attribut, huvudord]
 
-    # ── sats ─────────────────────────────────────────────────────────
+    # ── adjektiv ─────────────────────────────────────────────────────
 
-    def attribut(self, a: str | Attribut, nf: Nominalfras, genus: int) -> list[str]:
+    def _adjektiv(self, koncept: str, svag: bool, numerus: Numerus,
+                  genus: int) -> Ord:
+        """Adjektivet i positiv, i den form bestämningen och kongruensen ger.
+
+        Predikativt tar adjektivet alltid obestämd form och kongruerar med
+        subjektet: "hon är glad", "barnet är glatt", "de är glada".
+        """
+        if svag:
+            naturlig = "svag"
+        elif numerus is Numerus.PL:
+            naturlig = "plural"
+        else:
+            naturlig = "utrum" if genus == UTRUM else "neutrum"
+        form = self.u.regel(ADJEKTIVFORM, naturlig)
+        return self.u.form_för(koncept, _adjektivcell(form, numerus))
+
+    def attribut(self, a: str | Attribut, bestämning: str, numerus: Numerus,
+                 genus: int) -> list[Ord]:
         """Attributivt adjektiv i sin grad.
 
         Komparativen är OBÖJLIG i svenskan — "en större bok", "det större
         huset", "de större böckerna" är alla samma form. Superlativen böjs
         däremot, och attributivt tar den ALLTID den bestämda formen:
-        "den största boken", aldrig "en störst bok". Det följer av att
-        superlativen pekar ut ett bestämt exemplar.
+        "den största boken", aldrig "en störst bok".
 
-        Saknas cellen kompareras ordet perifrastiskt, samma regel som
-        predikativet redan använder — och då är det MARKÖREN som bär graden
-        medan adjektivet står i positiv: "den mest intressanta boken".
+        Kompareras ordet perifrastiskt är det MARKÖREN som bär graden medan
+        adjektivet står i positiv: "den mest intressanta boken".
         """
         a = attribut_med_grad(a)
-        svag = bestämd_fras(nf)
+        svag = bestämning in SVAG_BESTÄMNING
         if a.grad is Grad.POSITIV:
-            return [self.u.form_för(a.koncept, _adjektivcell(
-                nf.bestämdhet, nf.numerus, genus, efter_possessiv=svag))]
+            return [self._adjektiv(a.koncept, svag, numerus, genus)]
 
         if a.grad is Grad.SUPERLATIV and not svag:
             # "en störst bok" finns inte. Attributiv superlativ pekar ut ett
-            # unikt exemplar och är därför alltid bestämd — den obestämda
-            # formen (störst) hör hemma i predikativet, "boken är störst".
+            # unikt exemplar och är därför alltid bestämd.
             raise RenderingsFel(
                 f"sv/{a.koncept}: attributiv superlativ kräver bestämd fras "
                 f"— 'den största boken', inte 'en störst bok'")
         lexem = self.u.lexem(a.koncept)
-        celler = self.u._celler(lexem)
-        cell = "komp" if a.grad is Grad.KOMPARATIV else "best_superl"
-        if celler.get(cell):
-            return [self.u.form(lexem, cell)]
-        markör = "komp_mer" if a.grad is Grad.KOMPARATIV else "komp_mest"
-        return [self.u.form_för(markör, "pos"),
-                self.u.form_för(a.koncept, _adjektivcell(
-                    nf.bestämdhet, nf.numerus, genus, efter_possessiv=svag))]
+        if self.u.egenskap(lexem, "komparation") == "syntetisk":
+            if a.grad is Grad.KOMPARATIV:
+                return [self.u.form(lexem, "komp")]
+            form = self.u.regel(SUPERLATIVFORM, "bestämd")
+            return [self.u.form(lexem, "best_superl" if form == "bestämd"
+                                else "obest_superl")]
+        markör = self.u.form_för(
+            "komp_mer" if a.grad is Grad.KOMPARATIV else "komp_mest", "pos")
+        adjektiv = self._adjektiv(a.koncept, svag, numerus, genus)
+        self.u.ordning("komparationsmarkör_före", [markör], [adjektiv])
+        return [markör, adjektiv]
 
-    def adverbial(self, a: str | Prepositionsfras | Bisats) -> list[str]:
+    # ── satsens delar ────────────────────────────────────────────────
+
+    def adverbial(self, a: str | Prepositionsfras | Bisats) -> list[Ord]:
         """Adverb, prepositionsfras eller bisats — samma slot, tre frastyper."""
         if isinstance(a, str):
             return [self.u.form_för(a, "pos")]
         if isinstance(a, Bisats):
             return self.bisats(a)
-        return [self.u.form_för(a.preposition, "inv"),
-                *self.nominalfras(a.komplement)]
+        preposition = self.u.form_för(a.preposition, "inv")
+        with self.u.led("komplement"):
+            komplement = self.nominalfras(a.komplement)
+        self.u.ordning("preposition_före_komplement", [preposition], komplement)
+        return [preposition, *komplement]
 
-    def komplement(self, m: Mening) -> list[str]:
+    def komplement(self, m: Mening) -> list[Ord]:
         """Infinitivkomplement: "vill läsa", "börjar att läsa"."""
         markör = self.u.infinitivmarkör(m.verb)
         infinitiv = self.u.form_för(m.komplement, "inf")
         if markör is None:
             return [infinitiv]
-        return [self.u.form_för(markör, "inv"), infinitiv]
+        markörord = self.u.form_för(markör, "inv")
+        self.u.ordning("infinitivmarkör_före", [markörord], [infinitiv])
+        return [markörord, infinitiv]
 
-    def predikativ(self, m: Mening) -> list[str]:
+    def predikativ(self, m: Mening) -> list[Ord]:
         if isinstance(m.predikativ, str):
             if m.grad is not Grad.POSITIV:
                 return self._komparation(m)
-            huvud = self.u.lexem(m.subjekt.koncept)
-            genus = (self.u.egenskap(huvud, "genus")
-                     if m.subjekt.numerus is Numerus.SG
-                     else huvud["genus"]) or UTRUM
-            return [self.u.form_för(
-                m.predikativ, _predikativcell(m.subjekt.numerus, genus))]
+            genus = self.u.egenskap(self.u.lexem(m.subjekt.koncept), "genus") or UTRUM
+            return [self._adjektiv(m.predikativ, False,
+                                   self._subjektets_numerus(m.subjekt), genus)]
         # Predikativt substantiv står utan artikel: "hon är läkare".
-        return [self.u.form(
-            self.u.lexem(m.predikativ.koncept),
-            SUBSTANTIVCELL[(Bestämdhet.OBESTÄMD, m.predikativ.numerus)])]
+        form = self.u.regel(PREDIKATIVT_SUBSTANTIV, "utan_artikel")
+        lexem = self.u.lexem(m.predikativ.koncept)
+        artikel: list[Ord] = []
+        if form == "med_artikel":
+            if m.predikativ.numerus is Numerus.PL:
+                raise RenderingsFel("sv: obestämd artikel finns inte i plural")
+            genus = self.u.egenskap(lexem, "genus")
+            artikel = [self.u.form_för("artikel_obestamd",
+                                       "utr" if genus == UTRUM else "neu")]
+        substantiv = self.u.form(
+            lexem, SUBSTANTIVCELL[(Bestämdhet.OBESTÄMD, m.predikativ.numerus)])
+        self.u.ordning("bestämning_före_huvudord", artikel, [substantiv])
+        return [*artikel, substantiv]
 
-    def _komparation(self, m: Mening) -> list[str]:
+    def _komparation(self, m: Mening) -> list[Ord]:
         """Syntetisk komparation om formen finns, annars perifrastisk.
 
         "större" men "mer intressant" — svenskan avgör per ord, och datan
-        vet vilket: adjektiv som saknar komp-cell kompareras analytiskt.
-        Predikativ superlativ tar den OBESTÄMDA formen: "boken är störst",
-        inte "störste".
+        vet vilket. Predikativ superlativ tar den OBESTÄMDA formen: "boken är
+        störst", inte "största".
         """
-        cell = "komp" if m.grad is Grad.KOMPARATIV else "obest_superl"
         adjektiv = self.u.lexem(m.predikativ)
-        form = self.u._celler(adjektiv).get(cell)
-        if form:
-            ut = [self.u.form(adjektiv, cell)]
+        if self.u.egenskap(adjektiv, "komparation") == "syntetisk":
+            if m.grad is Grad.KOMPARATIV:
+                ut = [self.u.form(adjektiv, "komp")]
+            else:
+                form = self.u.regel(SUPERLATIVFORM, "obestämd")
+                ut = [self.u.form(adjektiv, "obest_superl" if form == "obestämd"
+                                  else "best_superl")]
         else:
-            markör = "komp_mer" if m.grad is Grad.KOMPARATIV else "komp_mest"
-            huvud = self.u.lexem(m.subjekt.koncept)
-            ut = [self.u.form_för(markör, "pos"),
-                  self.u.form_för(m.predikativ, _predikativcell(
-                      m.subjekt.numerus,
-                      (self.u.egenskap(huvud, "genus")
-                       if m.subjekt.numerus is Numerus.SG
-                       else huvud["genus"]) or UTRUM))]
+            markör = self.u.form_för(
+                "komp_mer" if m.grad is Grad.KOMPARATIV else "komp_mest", "pos")
+            genus = self.u.egenskap(self.u.lexem(m.subjekt.koncept), "genus") or UTRUM
+            ord = self._adjektiv(m.predikativ, False,
+                                 self._subjektets_numerus(m.subjekt), genus)
+            self.u.ordning("komparationsmarkör_före", [markör], [ord])
+            ut = [markör, ord]
         if m.jämförelse is not None:
-            ut.append(self.u.form_för("komp_än", "inv"))
-            ut += self.nominalfras(m.jämförelse)
+            än = self.u.form_för("komp_än", "inv")
+            with self.u.led("jämförelse"):
+                jämfört = self.nominalfras(m.jämförelse)
+            self.u.ordning("jämförelse_efter_adjektiv", ut, [än])
+            self.u.ordning("än_före_jämförelseled", [än], jämfört)
+            ut += [än, *jämfört]
         return ut
 
-    def verbfras(self, m: Mening) -> list[str]:
+    def verbfras(self, m: Mening, satsart: str) -> list[Ord]:
         """Verbet, som ett eller flera ord.
 
         Svenskan har ingen syntetisk futurumform. "ska ge" byggs av
@@ -309,177 +405,226 @@ class SvenskRenderare:
         returtypen är en lista och inte en sträng.
         """
         lexem = self.u.lexem(m.verb)
-        if m.modus is Satsmodus.IMPERATIV:
+        if satsart == "imperativ":
             # Svenskan har EN imperativform för alla tilltal: "läs!" säger
             # man till en som till många. Tilltalet läses ändå ut, för att
             # ett subjekt som inte är någon tilltalad ska stoppas här och
             # inte tyst rendera en uppmaning till tredje person.
             tilltal(m, "sv", ("2sg", "2pl", "artig"))
             return [self.u.form(lexem, "imp")]
-        if m.diates is Diates.PASSIV_HÄNDELSE:
+
+        passiv = None
+        if m.diates is not Diates.AKTIV:
+            passiv = self.u.regel(PASSIVFORM, "bli_passiv"
+                                  if m.diates is Diates.PASSIV_HÄNDELSE
+                                  else "s_passiv")
+        if passiv == "bli_passiv":
             # "boken blev läst" — bli plus perfektparticip, som kongruerar
-            # med subjektet. Den betonar händelsen; s-passiven är omarkerad.
-            huvud = self.u.lexem(m.subjekt.koncept)
-            genus = (self.u.egenskap(huvud, "genus")
-                     if m.subjekt.numerus is Numerus.SG
-                     else huvud["genus"]) or UTRUM
-            cell = ("perfpart_a" if m.subjekt.numerus is Numerus.PL
-                    else "perfpart_obest_utr_sg" if genus == UTRUM
-                    else "perfpart_obest_neu_sg")
-            # Bli bär hela tempus- och aspektapparaten och böjs som vilket
-            # verb som helst: "ska bli läst", "har blivit läst". Den går
-            # därför genom den aktiva grenen i stället för att få egna
-            # tempusfall här — annars måste varje ny tempusform skrivas in
-            # på två ställen, och passiven blir efter.
+            # med subjektet. Bli bär hela tempus- och aspektapparaten och
+            # böjs som vilket verb som helst, så det går genom den aktiva
+            # grenen i stället för att få egna tempusfall här.
+            genus = self.u.egenskap(self.u.lexem(m.subjekt.koncept), "genus") or UTRUM
+            if self._subjektets_numerus(m.subjekt) is Numerus.PL:
+                naturlig = "plural"
+            else:
+                naturlig = "utrum" if genus == UTRUM else "neutrum"
+            form = self.u.regel(PARTICIPFORM, naturlig)
+            cell = {"plural": "perfpart_a", "utrum": "perfpart_obest_utr_sg",
+                    "neutrum": "perfpart_obest_neu_sg"}[form]
             hjälp = replace(m, verb="verb_bli", diates=Diates.AKTIV)
-            return [*self.verbfras(hjälp), self.u.form(lexem, cell)]
+            with self.u.led("hjälpverb"):
+                hjälpverb = self.verbfras(hjälp, satsart)
+            particip = self.u.form(lexem, cell)
+            self.u.ordning("hjälpverb_före_huvudverb", hjälpverb, [particip])
+            return [*hjälpverb, particip]
+
         # S-passiven är svenskans omarkerade: läses, lästes, lästs. Den
         # ligger som egna celler i Former, inte som en konstruktion.
-        suffix = ("_passiv" if m.diates is Diates.PASSIV
-                  or self._deponens(lexem) else "")
+        suffix = "_passiv" if passiv == "s_passiv" or self._deponens(lexem) else ""
         if m.aspekt is Aspekt.PERFEKT:
+            naturlig = ("pluskvamperfekt" if m.tid is Tidsreferens.FÖRFLUTEN
+                        else "perfekt")
+        elif m.tid is Tidsreferens.FRAMTID:
+            naturlig = "futurum"
+        elif m.tid is Tidsreferens.FÖRFLUTEN:
+            naturlig = "preteritum"
+        else:
+            naturlig = "presens"
+        tempus = self.u.regel(TEMPUSFORM, naturlig)
+        if tempus in ("perfekt", "pluskvamperfekt"):
             # "har läst" / "hade läst" — hjälpverbet bär tempus, supinumet
             # är oföränderligt. Svenskan använder alltid ha, aldrig vara.
-            hjälpcell = "pret" if m.tid is Tidsreferens.FÖRFLUTEN else "pres"
-            return [self.u.form_för("verb_ha", hjälpcell),
-                    self.u.form(lexem, "sup" + suffix)]
-        if m.tid is Tidsreferens.FRAMTID:
-            return [self.u.form_för("modal_ska", "pres"),
-                    self.u.form(lexem, "inf" + suffix)]
-        return [self.u.form(lexem, TEMPUSCELL[m.tid] + suffix)]
+            hjälp = self.u.form_för(
+                "verb_ha", "pret" if tempus == "pluskvamperfekt" else "pres")
+            huvud = self.u.form(lexem, "sup" + suffix)
+        elif tempus == "futurum":
+            hjälp = self.u.form_för("modal_ska", "pres")
+            huvud = self.u.form(lexem, "inf" + suffix)
+        else:
+            return [self.u.form(
+                lexem, ("pres" if tempus == "presens" else "pret") + suffix)]
+        self.u.ordning("hjälpverb_före_huvudverb", [hjälp], [huvud])
+        return [hjälp, huvud]
+
+    def _subjektets_numerus(self, nf: Nominalfras) -> Numerus:
+        """Numeruset predikativet och bli-participet kongruerar med.
+
+        Ett pronomen bär sitt numerus självt — "de är glada", "vi blev lurade" —
+        oavsett vad frasen säger. Förut lästes frasens numerus, som för ett
+        pronomen står kvar på singular, och facit blev "De är modig".
+        """
+        if (self.u.ordklass(self.u.lexem(nf.koncept)) == "Pronomen"
+                and self.u.koncept(nf.koncept, "numerus") == 2):
+            return Numerus.PL
+        return nf.numerus
 
     def _deponens(self, lexem) -> bool:
         """Deponens: verb som bara finns i s-form (minnas, hoppas, trivas).
 
         De har ingen aktiv böjning alls — "minnas/minns/mindes" ligger under
         diates=Passiv i Former, och de aktiva cellerna är tomma. Att läsa av
-        det ur datan är säkrare än en lista över deponensverb: tom aktiv
-        infinitiv plus fylld passiv är precis vad deponens betyder här.
+        det ur datan är säkrare än en lista över deponensverb.
         """
-        celler = self.u._celler(lexem)
-        return not celler.get("inf") and bool(celler.get("inf_passiv"))
+        return (not self.u.har_form(lexem, "inf")
+                and self.u.har_form(lexem, "inf_passiv"))
 
-    # Reflexivpronomenets konceptnyckel per person och numerus. Bara tredje
-    # person har ett eget reflexivt pronomen — "sig" — medan första och
-    # andra använder sitt vanliga objektspronomen: mig, dig, oss, er. Det
-    # artiga `ni` bär sitt eget (`er`) och står därför med i tabellen i
-    # stället för att falla igenom.
-    REFLEXIVPRONOMEN = {(1, "sg"): "pronomen_1sg", (2, "sg"): "pronomen_2sg",
-                        (1, "pl"): "pronomen_1pl", (2, "pl"): "pronomen_2pl"}
-
-    def reflexivpronomen(self, m: Mening) -> str | None:
+    def reflexivpronomen(self, m: Mening) -> Ord | None:
         """Verbets reflexiva pronomen i subjektets person, annars None.
 
-        PRONOMENET LÅG INBAKAT I FORMEN — `Former.form` stod som "skyndar
-        sig" — och det är rätt bara i tredje person. Svenskans reflexiv
-        kongruerar med subjektet: jag skyndar mig, vi skyndar oss, ni
-        skyndar er. Facit blev därför "Vi skyndar sig".
-
-        Formerna står numera nakna (se migrationen `reflexiva_former.sql`)
-        och pronomenet byggs här, ur LEMMAT som bär det: "skynda sig".
+        Svenskans reflexiv kongruerar med subjektet: jag skyndar mig, vi
+        skyndar oss, ni skyndar er. Att verbet är reflexivt är en egenskap hos
+        verbet som syns på pronomenet (KÄRNAN 3.5).
         """
-        if not self.u.lexem(m.verb, None)["lemma"].endswith(" sig"):
+        if not self.u.egenskap(self.u.lexem(m.verb, None), "reflexiv"):
             return None
         nf = m.subjekt
         if nf.koncept == "pronomen_2sg_formal":
             # Artigt `ni` är andra person SINGULAR i Koncept men tar
             # pluralens `er`. Utan undantaget blev det "ni skyndar dig".
-            koncept = "pronomen_2sg_formal"
+            naturlig, koncept = "er", "pronomen_2sg_formal"
         else:
-            rad = self.u.conn.execute(
-                "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
-                (nf.koncept,)).fetchone()
-            person = rad["person"] if rad and rad["person"] else 3
+            person = self.u.koncept(nf.koncept, "person") or 3
             numerus = ("pl" if nf.numerus is Numerus.PL
-                       or (rad and rad["numerus"] == 2) else "sg")
-            koncept = self.REFLEXIVPRONOMEN.get((person, numerus),
-                                                "pronomen_reflexiv")
+                       or self.u.koncept(nf.koncept, "numerus") == 2 else "sg")
+            naturlig = REFLEXIV_EFTER_PERSON.get((person, numerus), "sig")
+            koncept = REFLEXIVKONCEPT[naturlig]
+        utfall = self.u.regel(REFLEXIVPRONOMEN, naturlig)
+        if utfall != naturlig:
+            koncept = REFLEXIVKONCEPT[utfall]
         return self.u.form_för(koncept, "ack_dat")
 
-    def satsled(self, m: Mening, bisats: bool = False) -> list[str]:
+    # ── satsen ───────────────────────────────────────────────────────
+
+    def satsled(self, m: Mening, bisats: bool = False) -> list[Ord]:
         """Satsens ord, utan skiljetecken och utan inledande subjunktion.
 
         `bisats` styr EN sak, och det är hela skillnaden mellan svensk huvud-
         och bisatsordföljd: satsadverbialet står FÖRE det finita verbet i
         bisats — "att han inte kom" mot "han kom inte". BIFF-regeln.
-        Allt annat är identiskt, vilket är skälet att bisatsen renderas av
-        samma funktion i stället för att få en egen.
         """
-        verb = self.verbfras(m)
-        reflexiv = self.reflexivpronomen(m)
-        # Imperativen säger inte ut den tilltalade: "läs boken!". Subjektet
-        # finns kvar i specen och har redan prövats mot verbets krav — det
-        # är bara ordet som uteblir.
-        if m.modus is Satsmodus.IMPERATIV:
-            subjekt: list[str] = []
-        else:
-            subjekt = self.nominalfras(m.subjekt, subjekt=True)
-        # Ja/nej-fråga är ren omkastning: det finita verbet först, subjektet
-        # sedan. Samma sats, annan ordning — inget ord läggs till.
+        satsart = self.u.regel(SATSART, "imperativ"
+                               if m.modus is Satsmodus.IMPERATIV else "indikativ")
+        with self.u.led("verb"):
+            verb = self.verbfras(m, satsart)
+        with self.u.led("reflexiv"):
+            reflexiv = self.reflexivpronomen(m)
+
         # Wh-frågan ersätter det efterfrågade ledet med ett frågeord och
         # flyttar det först. Subjektsfrågan inverterar INTE: frågeordet står
         # redan på subjektets plats, så "vem läser boken?" har rak ordföljd
-        # medan "vad läser hon?" har omvänd.
-        frågeord = self.frågeord(m)
+        # medan "vad läser hon?" har omvänd. Ett ersatt subjekt renderas inte
+        # alls — en form som slås upp men aldrig skrivs ut räknas annars som
+        # prövad.
+        with self.u.led("frågeord"):
+            frågeord = self.frågeord(m)
         if frågeord is not None and m.fråga_om == "subjekt":
-            subjekt = [frågeord]
-            frågeord = None
+            subjekt, frågeord = frågeord, None
+        elif satsart == "imperativ":
+            # Imperativen säger inte ut den tilltalade: "läs boken!".
+            subjekt = []
+        else:
+            with self.u.led("subjekt"):
+                subjekt = self.nominalfras(m.subjekt, subjekt=True)
 
         if bisats:
             # BIFF: negationen kilar in sig mellan subjektet och verbet.
-            # Regeln SYNS bara när det finns ett satsadverbial att flytta —
-            # utan negation är bisatsen identisk med huvudsatsen, och då
-            # tillämpades ingen regel.
             ord = [*subjekt]
             if m.negerad:
-                self.u.ordföljd("biff")
-                ord.append(self.u.form_för("neg_inte", "inv"))
+                negation = self.u.form_för("neg_inte", "inv")
+                self.u.ordning("biff", [negation], [verb[0]])
+                ord.append(negation)
+            self.u.ordning("rak_ordföljd_i_bisats", subjekt, [verb[0]])
             ord.extend(verb)
             if reflexiv is not None:
+                self.u.ordning("objekt_efter_verb", verb, [reflexiv])
                 ord.append(reflexiv)
         else:
             omvänd = m.fråga or frågeord is not None
             if omvänd:
-                self.u.ordföljd("v2_fråga")
+                self.u.ordning("v2_fråga", [verb[0]], subjekt)
             else:
-                self.u.ordföljd("svo")
+                self.u.ordning("svo", subjekt, [verb[0]])
             ord = [verb[0], *subjekt] if omvänd else [*subjekt, verb[0]]
             if frågeord is not None:
-                ord.insert(0, frågeord)
+                self.u.ordning("frågeord_först", frågeord, ord[:1])
+                ord[0:0] = frågeord
             # OBJEKTSSKIFTE. Ett pronominellt objekt flyttar vänster om
             # satsadverbialet BARA när huvudverbet självt har flyttat, alltså
             # i enkla tempus: "jag skyndar mig inte". Finns ett hjälpverb
-            # står huvudverbet kvar och pronomenet stannar till höger om
-            # det: "vi har inte oroat oss", aldrig "vi har oss oroat".
-            #
-            # Det är Holmbergs generalisering, och den syns bara när
-            # verbfrasen har fler än en del — vilket är skälet att felet
-            # gick att missa i presens.
+            # står huvudverbet kvar och pronomenet stannar till höger om det:
+            # "vi har inte oroat oss". Holmbergs generalisering.
             if reflexiv is not None and len(verb) == 1:
                 ord.append(reflexiv)
+            negation = None
             if m.negerad:
                 # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
                 # inte "ska ge inte". Därför delas verbfrasen här.
-                ord.append(self.u.form_för("neg_inte", "inv"))
+                negation = self.u.form_för("neg_inte", "inv")
+                ord.append(negation)
+                self.u.ordning("negation_efter_finit", [verb[0]], [negation])
+                self.u.ordning("negation_före_infinit", [negation], verb[1:])
             ord.extend(verb[1:])
-            if reflexiv is not None and len(verb) > 1:
-                ord.append(reflexiv)
+            if reflexiv is not None:
+                if len(verb) > 1:
+                    ord.append(reflexiv)
+                elif negation is not None:
+                    self.u.ordning("objektsskifte", [reflexiv], [negation])
+                self.u.ordning("objekt_efter_verb", verb, [reflexiv])
+
+        objekt: dict[str, list[Ord]] = {}
         for slot, nf in (("io", m.io), ("objekt", m.objekt)):
             if nf is not None and slot != m.fråga_om:
-                ord.extend(self.nominalfras(nf))
+                with self.u.led(slot):
+                    objekt[slot] = self.nominalfras(nf)
+                self.u.ordning("objekt_efter_verb", verb, objekt[slot])
+                ord.extend(objekt[slot])
+        if "io" in objekt and "objekt" in objekt:
+            self.u.ordning("io_före_objekt", objekt["io"], objekt["objekt"])
         if m.komplement is not None:
-            ord.extend(self.komplement(m))
+            with self.u.led("komplement"):
+                komplement = self.komplement(m)
+            self.u.ordning("komplement_efter_verb", verb, komplement)
+            ord.extend(komplement)
         if m.predikativ is not None:
-            ord.extend(self.predikativ(m))
+            with self.u.led("predikativ"):
+                predikativ = self.predikativ(m)
+            self.u.ordning("predikativ_efter_verb", verb, predikativ)
+            ord.extend(predikativ)
         if m.adverbial:
-            self.u.ordföljd("adverbial_sist")
-        for adverbial in m.adverbial:
-            ord.extend(self.adverbial(adverbial))
+            adverbial: list[Ord] = []
+            for i, a in enumerate(m.adverbial):
+                with self.u.led(f"adverbial{i}"):
+                    adverbial.extend(self.adverbial(a))
+            self.u.ordning("adverbial_sist", ord[-1:], adverbial)
+            ord.extend(adverbial)
         if m.bisats is not None:
-            ord.extend(self.bisats(m.bisats))
+            with self.u.led("bisats"):
+                argumentbisats = self.bisats(m.bisats)
+            self.u.ordning("objekt_efter_verb", verb, argumentbisats[:1])
+            ord.extend(argumentbisats)
         return ord
 
-    def frågeord(self, m: Mening) -> str | None:
+    def frågeord(self, m: Mening) -> list[Ord] | None:
         """Frågeordet i en wh-fråga, böjt efter sin roll. None = ingen sådan.
 
         Svenskan har kasus kvar bara i genitiv (vems), så subjekt och objekt
@@ -489,7 +634,7 @@ class SvenskRenderare:
         if m.fråga_om is None:
             return None
         if m.fråga_om not in FRÅGESLOTTAR:
-            return self.u.form_för(m.fråga_om, "inv")
+            return [self.u.form_för(m.fråga_om, "inv")]
         efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
         if efterfrågat is None:
             raise RenderingsFel(
@@ -498,25 +643,23 @@ class SvenskRenderare:
         if efterfrågat.frågedeterminant is not None:
             # "vilken bok läser hon?" — hela frasen flyttas, inte bara ett
             # pronomen. Huvudordet står kvar och sägs ut.
-            return " ".join(self.nominalfras(
-                efterfrågat, subjekt=m.fråga_om == "subjekt"))
-        return self.u.form_för(
-            self.u.frågepronomen(efterfrågat.koncept),
-            "nom" if m.fråga_om == "subjekt" else "ack_dat")
+            return self.nominalfras(efterfrågat, subjekt=m.fråga_om == "subjekt")
+        sort = self.u.regel(FRÅGEPRONOMEN, "person"
+                            if self.u.mänsklig(efterfrågat.koncept) else "sak")
+        return [self.u.form_för(
+            "frågepronomen_person" if sort == "person" else "frågepronomen_sak",
+            "nom" if m.fråga_om == "subjekt" else "ack_dat")]
 
-    def bisats(self, b: Bisats) -> list[str]:
+    def bisats(self, b: Bisats) -> list[Ord]:
         """Subjunktion plus satsen i bisatsordföljd."""
-        return [self.u.form_för(b.subjunktion, "inv"),
-                *self.satsled(b.sats, bisats=True)]
+        subjunktion = self.u.form_för(b.subjunktion, "inv")
+        with self.u.led("sats"):
+            sats = self.satsled(b.sats, bisats=True)
+        self.u.ordning("subjunktion_först", [subjunktion], sats[:1])
+        return [subjunktion, *sats]
 
     def rendera(self, m: Mening) -> str:
-        """Svensk huvudsats: subjekt, verb, indirekt objekt, objekt, adverbial.
-
-        Ordföljden är hårdkodad här och inte datadriven. Det är medvetet så
-        länge bara svenskan finns — tyskans V2 och japanskans SOV kommer att
-        kräva en riktig ordföljdsmodell, och den byggs när det andra språket
-        visar vilken form den behöver ha, inte innan.
-        """
+        """Svensk sats: subjekt, verb, indirekt objekt, objekt, adverbial."""
         self.osammansmält = self.satsled(m)
         mening = " ".join(self.osammansmält)
         return mening[0].upper() + mening[1:] + slutar(m)

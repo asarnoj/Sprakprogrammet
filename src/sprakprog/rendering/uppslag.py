@@ -1,4 +1,4 @@
-"""Uppslagslagret — koncept + cell → ordform.
+"""Uppslagslagret — koncept + cell → ordform, och redovisningen av renderarens beslut.
 
 Renderaren ska aldrig känna till Former-tabellens axelkodning. Den frågar
 efter "bok, bestämd singular" via cell-ID och får tillbaka en sträng.
@@ -7,11 +7,33 @@ Cellmatchningen återanvänder `_former_per_cell` från granskningen i stället
 för att skriva en ny. Den logiken har rättats två gånger (SCHEMA.md §5 om
 bitmask-kollaps, och kandidaten som tillhör en mer specifik cell) och en
 andra implementation skulle med säkerhet återinföra samma buggar.
+
+REDOVISNINGEN (KÄRNAN 8.3). Allt renderaren vet om språket hämtas här, och
+därför är det här varje beslut blir synligt. Fem sorters anrop bär kunskap
+som kan bli kort:
+
+    form       ordformen i en cell
+    egenskap   en egenskap hos ordet som syns på ett annat ord (genus)
+    rektion    vad ett styrande ord kräver (infinitivmarkör, kasus)
+    regel      ett val mellan namngivna utfall (bestämning, tempusform)
+    ordning    att ett led står före ett annat (svo, adverbial_sist)
+
+Övriga läsningar — ordklass, lemma, om en cell finns, konceptets person — bär
+ingen kunskap i sig, men måste ändå gå hit så att kartan (KÄRNAN 6.7) ser dem.
+
+När ett `Spår` är satt loggas varje kunskapsanrop, och ett beslut kan tvingas
+till ett annat utfall. `rendering/spår.py` räknar på det sättet ut var ett
+beslut syns: de ord som ändras när beslutet tvingas fram.
 """
 
 from __future__ import annotations
 
 import sqlite3
+import sys
+from collections import Counter
+from contextlib import contextmanager
+from dataclasses import dataclass
+
 from ..generering.granskning import _former_per_cell
 from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
 from .spec import NAKEN, Numerus, RenderingsFel
@@ -19,6 +41,70 @@ from .spec import NAKEN, Numerus, RenderingsFel
 # docs/BITMASK.md §11. Enda biten uppslaget behöver känna till, och bara
 # för att välja mellan vem och vad.
 MÄNSKLIG = 32
+
+#: Kolumner på Koncept som renderaren får läsa. Listan är sluten, så att en
+#: läsning av något annat syns som ett fel i stället för att gå förbi.
+KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik")
+
+#: Hur ett reflexivt verb syns i lemmat (KÄRNAN 3.5, TYSTA_BESLUT A8). Bara de
+#: språk vars renderare läser egenskapen genom `egenskap` står här.
+REFLEXIVT_LEMMA = {"sv": lambda lemma: lemma.endswith(" sig")}
+
+
+def _anropsställe() -> tuple[str, int]:
+    """Funktionen och raden i renderaren som gjorde uppslaget."""
+    ram = sys._getframe(1)
+    while ram.f_code.co_filename == __file__:
+        ram = ram.f_back
+    return ram.f_code.co_name, ram.f_lineno
+
+
+@dataclass(frozen=True, slots=True)
+class Val:
+    """Ett beslut mellan namngivna utfall. Varje utfall är ett kort.
+
+    Utfallen är de sätt språket självt kan realisera samma sak på. Renderaren
+    grenar på det utfall `Uppslag.regel` lämnar tillbaka och inte på specen,
+    så att vart och ett av dem kan tvingas fram.
+    """
+    namn: str
+    utfall: tuple[str, ...]
+
+
+class Ord(str):
+    """Ett utskrivet ord, och vad det slogs upp som.
+
+    `nyckel` är ("form", led, ställe, koncept, n): det n:te uppslaget av
+    konceptet från samma ställe i renderaren, inom samma led i specen. Nyckeln
+    står still när en ordföljdsregel flyttar ordet och när ett uppslag i ett
+    annat led tillkommer eller försvinner — två renderingar av samma spec kan
+    därför jämföras ord för ord. Ledet skiljer subjektets "den" från objektets,
+    och stället skiljer subjektets "jag" från reflexivets "mig", som båda är
+    `pronomen_1sg`. Nyckeln sätts bara när ett spår är aktivt.
+    """
+    koncept: str
+    variant: str | None
+    cell: str
+    nyckel: tuple | None = None
+
+
+class Spår:
+    """Vad en rendering redovisade, och vilka beslut som tvingas fram.
+
+    Ett besluts id är dess sort, nyckel och ordningsnummer bland beslut med
+    samma nyckel. I en tvingad rendering är id:t detsamma som i den
+    ursprungliga fram till beslutet, eftersom renderingen är deterministisk.
+    """
+
+    def __init__(self, tvång: dict | None = None) -> None:
+        self.händelser: list[tuple] = []
+        self.tvång: dict = dict(tvång or {})
+        self._räknare: Counter = Counter()
+
+    def id(self, *nyckel) -> tuple:
+        n = self._räknare[nyckel]
+        self._räknare[nyckel] += 1
+        return (*nyckel, n)
 
 
 class Uppslag:
@@ -34,6 +120,24 @@ class Uppslag:
         # cache körs den om för varje enskild ordform: ett brett svep över
         # databasen gick från minuter till sekunder med den här raden.
         self._cellcache: dict[int, dict[str, str]] = {}
+        self._konceptcache: dict[tuple[str, str], object] = {}
+        self._domän: dict = {}
+        #: Sätts av `rendering/spår.py` under en spårad rendering.
+        self.spår: Spår | None = None
+        self._led: list[str] = []
+
+    @contextmanager
+    def led(self, namn: str):
+        """Renderingen går in i specens led `namn`: subjekt, objekt, attribut0.
+
+        Ledens väg ingår i varje ords och besluts id. Den är också gränsen
+        mellan de delar kartan går igenom var för sig (KÄRNAN 6.7).
+        """
+        self._led.append(namn)
+        try:
+            yield
+        finally:
+            self._led.pop()
 
     # ── lexem ────────────────────────────────────────────────────────
 
@@ -73,6 +177,34 @@ class Uppslag:
             f"(varianter: {', '.join(varianter)}) och variant={variant!r} "
             f"pekar inte ut ett enda")
 
+    # ── läsningar utan kunskap ───────────────────────────────────────
+
+    def ordklass(self, lexem: sqlite3.Row) -> str:
+        return lexem["ordklass"]
+
+    def lemma(self, lexem: sqlite3.Row) -> str:
+        """Lemmat, för felmeddelanden. Renderaren fattar inga beslut på det."""
+        return lexem["lemma"]
+
+    def har_form(self, lexem: sqlite3.Row, cell: str) -> bool:
+        """Finns cellen, och är den ifylld?"""
+        return bool(self._celler(lexem).get(cell))
+
+    def koncept(self, nyckel: str, namn: str):
+        """En kolumn på Koncept: person, numerus, räknebarhet eller semantik."""
+        if namn not in KONCEPTKOLUMNER:
+            raise ValueError(f"Koncept.{namn} är ingen läsbar kolumn "
+                             f"({', '.join(KONCEPTKOLUMNER)})")
+        k = (nyckel, namn)
+        if k not in self._konceptcache:
+            rad = self.conn.execute(
+                f"SELECT {namn} FROM Koncept WHERE nyckel = ?", (nyckel,)).fetchone()
+            self._konceptcache[k] = rad[0] if rad else None
+        return self._konceptcache[k]
+
+    def mänsklig(self, koncept: str) -> bool:
+        return bool((self.koncept(koncept, "semantik") or 0) & MÄNSKLIG)
+
     # ── former ───────────────────────────────────────────────────────
 
     def _celler(self, lexem: sqlite3.Row) -> dict[str, str]:
@@ -88,6 +220,10 @@ class Uppslag:
 
         None = ren infinitiv. Läses ur det språkspecifika mönstret, samma
         väg som kasusrektionen och den romanska io-prepositionen.
+
+        GÅR GENOM `rektion`, också när markören saknas: att ett modalverb tar
+        ren infinitiv — "vill läsa", aldrig "vill att läsa" — är lika mycket
+        kunskap om verbet som att ett annat tar markören (TYSTA_BESLUT A6).
         """
         rad = self.conn.execute(
             """SELECT p.nyckel FROM Mönster m
@@ -96,7 +232,8 @@ class Uppslag:
                JOIN Koncept p ON p.id = mk.preposition_koncept_id
                WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = 'komplement'""",
             (verb, self.språk)).fetchone()
-        return rad["nyckel"] if rad else None
+        return self.rektion(verb, "komplement", "infinitivmarkör",
+                            rad["nyckel"] if rad else None)
 
     def kontrollera_naken(self, nf) -> None:
         """En naken SINGULAR kräver ett oräknebart huvudord.
@@ -112,9 +249,7 @@ class Uppslag:
         """
         if nf.bestämdhet not in NAKEN or nf.numerus is not Numerus.SG:
             return
-        rad = self.conn.execute(
-            "SELECT räknebar FROM Koncept WHERE nyckel = ?", (nf.koncept,)).fetchone()
-        if rad is not None and rad["räknebar"]:
+        if self.koncept(nf.koncept, "räknebar"):
             raise RenderingsFel(
                 f"{self.språk}/{nf.koncept}: naken singular kräver ett "
                 f"oräknebart ord — 'vatten' går, 'bok' gör det inte. "
@@ -128,10 +263,8 @@ class Uppslag:
         restriktionerna redan använder räcker för att avgöra det, så
         frågeordet behöver ingen egen taggning.
         """
-        rad = self.conn.execute(
-            "SELECT semantik FROM Koncept WHERE nyckel = ?", (koncept,)).fetchone()
-        mänsklig = bool(rad and (rad["semantik"] or 0) & MÄNSKLIG)
-        return "frågepronomen_person" if mänsklig else "frågepronomen_sak"
+        return ("frågepronomen_person" if self.mänsklig(koncept)
+                else "frågepronomen_sak")
 
     def _slot_för(self, ordklass: str):
         if ordklass not in self._slot:
@@ -139,7 +272,7 @@ class Uppslag:
                 self.språk, ordklass, legend=self._legend)
         return self._slot[ordklass]
 
-    def form(self, lexem: sqlite3.Row, cell: str) -> str:
+    def form(self, lexem: sqlite3.Row, cell: str) -> Ord:
         """Ordformen i en given cell. Kastar hellre än returnerar tomt."""
         celler = self._celler(lexem)
         if cell not in celler:
@@ -152,76 +285,130 @@ class Uppslag:
             raise RenderingsFel(
                 f"{self.språk}/{lexem['lemma']}: cellen {cell!r} är tom — "
                 f"formen saknas i databasen")
-        return form
+        ord = Ord(form)
+        ord.koncept, ord.variant, ord.cell = lexem["nyckel"], lexem["variant"], cell
+        if self.spår is not None:
+            ord.nyckel = self.spår.id("form", tuple(self._led), _anropsställe(),
+                                      lexem["nyckel"])
+            self.spår.händelser.append(("form", ord))
+        return ord
 
-    def form_för(self, koncept: str, cell: str, variant: str | None = None) -> str:
+    def form_för(self, koncept: str, cell: str, variant: str | None = None) -> Ord:
         return self.form(self.lexem(koncept, variant), cell)
+
+    # ── kunskap som kan bli kort ─────────────────────────────────────
 
     def egenskap(self, lexem: sqlite3.Row, namn: str):
         """En LEXIKAL egenskap som avgör vilken cell som ska slås upp.
 
-        Ser onödig ut — den returnerar `lexem[namn]` och inget mer — och det
-        är hela poängen: den finns för att gå att INSTRUMENTERA, precis som
-        `form`. Beroendekartan säger idag vilka FORMER en mening rörde, och
-        därmed vilka kort. Men genus är inget cellvärde utan det som VÄLJER
-        cellen: `das` slogs upp i `n_nom` därför att Kind är neutrum, och den
-        kunskapen är ett eget kort som meningen faktiskt prövade.
+        Genus är inget cellvärde utan det som VÄLJER cellen: `das` slogs upp i
+        `n_nom` därför att Kind är neutrum, och den kunskapen är ett eget kort
+        som meningen prövade. Att läsa `lexem["genus"]` direkt förbi den här
+        gör kortet osynligt.
 
-        Utan den här funktionen var de korten oåtkomliga. 428 av tyskans
-        1 112 kort — den största korttypen — hade noll kopplingar, noll
-        prövningar, och stod ändå som schemalagda i kön: mål som ingen mening
-        kunde nå. Rättningen kunde heller aldrig skylla ett artikelfel på
-        substantivets genus, bara på artikelformen, vilket är fel kort i
-        nästan varje verkligt fall.
-
-        Att läsa `lexem["genus"]` direkt förbi den här går fortfarande — och
-        gör kortet osynligt igen. Samma regel som för `form`.
+        Egenskapen loggas varje gång den läses, också där den inte syns — i
+        svensk plural avgör genuset ingenting. Om den syntes räknas ut av
+        spåret, som tvingar fram det andra genuset och ser vilka ord som
+        ändras.
         """
+        värde = self._egenskapsvärde(lexem, namn)
+        # Saknas värdet finns inget att kunna: "du" har inget genus i datan, och
+        # renderaren faller tillbaka på utrum. Då redovisas ingen egenskap.
+        if self.spår is None or värde is None:
+            return värde
+        id = self.spår.id("egenskap", tuple(self._led), lexem["nyckel"], namn)
+        värde = self.spår.tvång.get(id, värde)
+        self.spår.händelser.append(("egenskap", id, värde, self.egenskapsdomän(namn)))
+        return värde
+
+    def _egenskapsvärde(self, lexem: sqlite3.Row, namn: str):
+        if namn == "reflexiv":
+            return REFLEXIVT_LEMMA[self.språk](lexem["lemma"])
+        if namn == "komparation":
+            # Syntetisk komparation finns precis när komparativcellen är
+            # ifylld; för svenskan har de 111 adjektiven antingen alla tre
+            # komparationscellerna eller ingen (mätt 2026-09-13).
+            return "syntetisk" if self.har_form(lexem, "komp") else "perifrastisk"
         return lexem[namn]
+
+    def egenskapsdomän(self, namn: str) -> tuple | None:
+        """Egenskapens möjliga värden i språket, eller None om de inte är kända."""
+        if namn == "genus":
+            if "genus" not in self._domän:
+                self._domän["genus"] = tuple(r[0] for r in self.conn.execute(
+                    """SELECT DISTINCT genus FROM Lexem
+                       WHERE språk = ? AND genus IS NOT NULL ORDER BY genus""",
+                    (self.språk,)))
+            return self._domän["genus"]
+        return {"reflexiv": (False, True),
+                "komparation": ("syntetisk", "perifrastisk")}.get(namn)
 
     def egenskap_för(self, koncept: str, namn: str, variant: str | None = None):
         return self.egenskap(self.lexem(koncept, variant), namn)
 
-    def ordföljd(self, regel: str) -> None:
-        """Renderaren tillämpade en ORDFÖLJDSREGEL. Fjärde instrumenteringen.
-
-        Samma tomma form som `egenskap` och `rektion`, men utan värde att
-        lämna tillbaka: här ÄR anropet hela informationen. Regeln kom inte ur
-        databasen — den är kod, den är renderarens egen struktur — så det
-        enda som går att observera utifrån är att den tillämpades.
-
-        Nyckeln är regelns namn ur `befolka.ORDFÖLJD` (`v2`, `verb_sist`,
-        `satsklammer`). Kortet bär det i `egenskap` och beskrivningen i
-        `facit`.
-
-        VARFÖR DET RÄCKER ATT LOGGA TILLÄMPNINGEN. E6 delar upp reglerna åt
-        oss utan att någon behöver välja: en regel som gäller i varje mening
-        får exponering nära 1 och lyfts ur schemat automatiskt (tyskans V2,
-        engelskans SVO), medan en som bara gäller när nivån öppnat
-        konstruktionen — bisatsordföljd, inversion i frågor — får en
-        exponering som går att schemalägga. Uppdelningen i A7 punkt 2 är
-        alltså ingen ny regel utan en följd av den mätning som redan finns.
-
-        Utan den här loggen var ordföljdskorten oåtkomliga: 6 tyska, 3
-        engelska, 3 franska och 4 japanska kort, `schemalagt = 1`, som ingen
-        mening kunde röra (A3).
-        """
-
     def rektion(self, koncept: str, slot: str, namn: str, värde):
-        """Vad ett VERBS mönster kräver av en slot. Tredje instrumenteringen.
+        """Vad ett STYRANDE ord kräver av en slot.
 
-        Samma tomma form som `egenskap`, och av exakt samma skäl: den
-        returnerar sitt argument och finns för att gå att logga. Skillnaden
-        mot `egenskap` är vem kunskapen hör till. Genus är ett faktum om
-        SUBSTANTIVET; rektion är ett faktum om VERBET som styr frasen —
-        `helfen` tar dativ, `fragen` ackusativ — så nyckeln är verbets
-        koncept plus slotten, inte det uppslagna lexemet.
-
-        Utan den här loggen var rektionskorten oåtkomliga. Mätt över alla
-        språk: 6 tyska och 2 franska rektionskort som ingen mening kunde
-        röra, `schemalagt = 1`, alltså mål i kön som aldrig kunde nås (A3).
-
-        Att läsa mönsterkravet direkt förbi den här går fortfarande — och gör
-        kortet osynligt igen. Samma regel som för `form` och `egenskap`.
+        Genus är ett faktum om SUBSTANTIVET; rektion är ett faktum om ordet som
+        styr frasen — `helfen` tar dativ, `vilja` tar ren infinitiv — så nyckeln
+        är det styrande konceptet plus slotten, inte det uppslagna lexemet.
         """
+        if self.spår is None:
+            return värde
+        id = self.spår.id("rektion", tuple(self._led), koncept, slot, namn)
+        värde = self.spår.tvång.get(id, värde)
+        self.spår.händelser.append(
+            ("rektion", id, värde, self.rektionsdomän(slot, namn)))
         return värde
+
+    def rektionsdomän(self, slot: str, namn: str) -> tuple | None:
+        if (slot, namn) == ("komplement", "infinitivmarkör"):
+            k = ("rektion", slot, namn)
+            if k not in self._domän:
+                self._domän[k] = (None, *(r[0] for r in self.conn.execute(
+                    """SELECT DISTINCT p.nyckel FROM Mönster m
+                       JOIN MönsterKrav mk ON mk.mönster_id = m.id
+                       JOIN Koncept p ON p.id = mk.preposition_koncept_id
+                       WHERE m.språk = ? AND mk.slot = 'komplement'
+                       ORDER BY p.nyckel""", (self.språk,))))
+            return self._domän[k]
+        return None
+
+    def regel(self, val: Val, utfall: str) -> str:
+        """Renderaren väljer `utfall` i beslutet `val`. Lämnar tillbaka utfallet.
+
+        Renderaren ska grena på det som kommer tillbaka och inte på specen: i
+        en tvingad rendering är det ett annat utfall än det specen gav.
+        """
+        if utfall not in val.utfall:
+            raise ValueError(f"{val.namn}: {utfall!r} är inget av utfallen "
+                             f"{val.utfall}")
+        if self.spår is None:
+            return utfall
+        id = self.spår.id("regel", tuple(self._led), val.namn)
+        utfall = self.spår.tvång.get(id, utfall)
+        self.spår.händelser.append(("regel", id, utfall, val.utfall))
+        return utfall
+
+    def ordning(self, namn: str, före, efter) -> None:
+        """Ordföljdsregeln `namn`: varje ord i `före` står före varje ord i `efter`.
+
+        Renderaren bygger ordningen själv; anropet redovisar den. Spåret
+        kontrollerar att regeln stämmer med den färdiga meningen, så att
+        redovisningen inte kan glida isär från koden. Tomma led loggas inte —
+        då finns inget att ordna.
+        """
+        # Den gamla kärnans logg, som känner reglerna under det här namnet.
+        # Tas bort när den gamla kärnan raderas (KÄRNAN 8.1).
+        self.ordföljd(namn)
+        if self.spår is not None and före and efter:
+            id = self.spår.id("ordning", tuple(self._led), namn)
+            self.spår.händelser.append(("ordning", id, tuple(före), tuple(efter)))
+
+    def ordföljd(self, regel: str) -> None:
+        """Den gamla kärnans ordföljdslogg. Nya renderare anropar `ordning`.
+
+        Står kvar för de sex renderare som ännu inte redovisar enligt KÄRNAN
+        8.3, och för den gamla generatorn som lyssnar på den. Tas bort med den
+        gamla kärnan.
+        """

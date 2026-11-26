@@ -7,9 +7,9 @@ inte ändringar i den kod som finns.
 > **Läge 2026-09-13.** Designen är avgjord utom frågorna i punkt 10, och ingen av dem
 > blockerar bygget.
 > Steg 0 är gjort för svenska och väntar på granskning
-> (`ordbok/regelkontroll/sv.md`). Steg 1 är inventerat men inte byggt
-> (`paradigm/TYSTA_BESLUT.md`). Nästa arbete är att bygga steg 1 och ta fram
-> böjningsreglerna för övriga språk.
+> (`ordbok/regelkontroll/sv.md`). Steg 1 är byggt och mätt för svenskan
+> (8.3) och inventerat för övriga språk (`paradigm/TYSTA_BESLUT.md`). Nästa arbete är
+> kartan (steg 1b) på den nya redovisningen, och steg 1 för de övriga sex språken.
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -958,10 +958,14 @@ Exempel: när genuskortet för `hus` är målet duger `ett hus`, där genuset sy
 ett ställe. `ett stort hus` duger inte — där styr genuset både artikeln och
 adjektivet, och ett fel går inte att knyta till ett enda kort.
 
-**Ett korts positioner är de utskrivna ord vars form kortet bestämde.** Renderaren
-spårar det för varje ord (8.3), även när ord smälter ihop (`au` = `à` + `le`) och när
-språket skrivs utan mellanslag. Två kort är oberoende när deras positioner inte
-överlappar. Samma spår är rättningens underlag (7.3).
+**Ett korts positioner är de utskrivna ord vars form kortet bestämde.** De räknas ut
+och märks inte för hand (8.3): beslutet tvingas till vart och ett av sina andra utfall,
+meningen renderas om, och de ord som ändras är positionerna. Ett beslut kan också synas
+som en **lucka** — platsen där ett ord hade stått. Syns beslutet inte alls, som genuset
+i svensk plural, prövades det inte. Det gäller även när ord smälter ihop (`au` = `à` +
+`le`) och när språket skrivs utan mellanslag. Två kort är oberoende när deras
+positioner och luckor inte överlappar. Samma omrenderingar är rättningens alternativ
+(7.3).
 
 Undantaget är ett ord och dess formkort. De delar alltid position, men prerekvisitregeln
 i 7.3 håller isär dem — föll ordet är formen ograderad — och därför får ett mönster
@@ -1444,39 +1448,102 @@ genuskortet omöjligt att pröva. **Inventeringen i steg 1 visar att de fyra anr
 räcker** (`paradigm/TYSTA_BESLUT.md`): 206 beslut fattas tyst, 26 läsningar av
 befintliga kort går förbi anropen, och tio ord skrivs ut utan att vara lexem.
 
-Steg 1 gör därför fem saker:
+Steg 1 gör fem saker per språk:
 
-1. **`ordföljd` byter namn till `regel`.** Anropet har redan rätt form, men de flesta
-   tysta besluten gäller kongruens, konstruktion och ljud, inte ordföljd.
-2. **Förbigångarna lagas först**, eftersom de gör befintliga korttyper omätbara.
+1. **Varje beslut blir ett anrop** (se nedan).
+2. **Förbigångarna lagas**, eftersom de gör befintliga korttyper omätbara.
 3. **De hårdkodade orden blir lexem**, så att de får `ord`-kort.
-4. **Renderaren delas i frasfunktioner med uttryckliga indata**, så att kartan kan gå
-   igenom varje del uttömmande (6.7). Kraven och byggvillkoren läses sedan ur kartan i
-   stället för att skrivas för hand. Ett anrop under renderingen hade kommit för sent,
-   men kartan finns innan något byggs. Den ger nivågrafen dess kanter (4.2), generatorn
-   förmågan att bygga mot en regel (6.4), och underlaget för prövbarheten (3.10) och
+4. **Renderaren delas i led med uttryckliga indata**, så att kartan kan gå igenom varje
+   del uttömmande (6.7). Kraven och byggvillkoren läses sedan ur kartan i stället för att
+   skrivas för hand. Ett anrop under renderingen hade kommit för sent, men kartan finns
+   innan något byggs. Den ger nivågrafen dess kanter (4.2), generatorn förmågan att
+   bygga mot en regel (6.4), och underlaget för prövbarheten (3.10) och
    införandeordningen (5.6).
-5. **Renderaren spårar vilka kort som bestämde varje utskrivet ord**, och för en
-   ordföljdsregel vilka ord den placerade. Det är positionerna i 6.2 och rättningens
-   underlag i 7.3. `form` redovisar formens kort ur tabellen i 3.4.
+5. **Positionerna räknas ut ur renderingen** (`rendering/spår.py`) i stället för att
+   märkas för hand.
 
-Att redovisa ett beslut betyder att göra det till ett anrop:
+#### Anropen
+
+Allt renderaren vet om språket hämtas genom `Uppslag`. Fem anrop bär kunskap som kan bli
+kort:
+
+| Anrop | Vad det redovisar | Alternativ |
+|---|---|---|
+| `form(lexem, cell)` | ordformen | — formkortets del av formen (3.4) |
+| `egenskap(lexem, namn)` | en egenskap hos ordet: genus, reflexivt verb, komparation | egenskapens värden i språket |
+| `rektion(koncept, slot, namn, värde)` | vad ett styrande ord kräver: infinitivmarkör, kasus | kravets värden i språket |
+| `regel(val, utfall)` | ett val mellan namngivna utfall: bestämning, tempusform | valets övriga utfall |
+| `ordning(namn, före, efter)` | att ett led står före ett annat: svo, adverbial_sist | de två leden omkastade |
+
+Övriga läsningar — ordklass, lemma, om en cell finns, konceptets person — bär ingen
+kunskap men går ändå genom `Uppslag`, så att kartan ser dem. En egenskap utan värde i
+datan redovisas inte: har "du" inget genus finns inget att kunna. Renderaren grenar på
+det utfall `regel` lämnar tillbaka och inte på specen, och markerar med `led` vilket led
+i specen den renderar:
 
 ```python
-self.u.regel("klitika_före")            # redovisat — syns, och finns i kartan
-def eliderar(self, första, andra):      # inte redovisat — sker tyst
+BESTÄMNING = Val("bestämning", ("possessiv", "obestämd_artikel", "bestämd_suffix", …))
+
+bestämning = self.u.regel(BESTÄMNING, naturlig)      # redovisat — kan tvingas fram
+if bestämning == "possessiv": …
+self.u.ordning("attribut_före_huvudord", attribut, [huvudord])
+def eliderar(self, första, andra):                   # inte redovisat — sker tyst
 ```
 
 Anropet gör beslutet till ett kort. Var i kartan anropet finns ger kortets krav och
 byggvillkor.
+
+**Positionerna räknas ut.** Spåret tvingar varje beslut till vart och ett av dess andra
+utfall och renderar om. Ord som ändras är positioner, och ett ord som bara finns i den
+tvingade meningen ger en lucka. Omrenderingarna är samtidigt de alternativ rättningen
+jämför med (7.3). Spåret kontrollerar också renderaren: en ordningsregel som inte
+stämmer med meningen, eller en form som slås upp men inte syns, är ett fel.
+
+Det gör tre handskrivna saker onödiga: att logga genus bara i singular, att logga en
+ordföljdsregel bara där den syns, och att märka vilka ord ett beslut rör.
+
+#### Svenskan, 2026-09-13
+
+Byggd och mätt. Inventeringens 29 tysta beslut, de fyra ordföljdsreglerna och
+förbigångarna A6 och A8 redovisas som 11 val med 35 utfall, 22 ordningsregler, tre
+egenskaper och infinitivmarkörens rektion (`rendering/sv.py`).
+
+- **Texten är oförändrad** för 99 818 av 100 000 specar
+  (`ordbok/verktyg/renderarfacit.py`). De 182 skillnaderna är rättelser:
+  - ett pluralpronomen kongruerar i plural: «De är modiga», inte «De är modig» (103)
+  - ett subjekt som ersätts av vem eller vad renderas inte längre, och kan därför inte
+    få frågan att vägras (38)
+  - «vilken nyfiken rygg» i stället för «vilken nyfikna rygg» (30)
+  - vilken med superlativ vägras (11)
+
+  En pronominell genitivägare («mig bok») vägras också; samplaren bygger inga sådana.
+  De övriga sex språken har noll skillnader.
+- **Spåret håller** för alla 88 297 renderbara meningar: ingen ordningsregel motsäger
+  meningen, och ingen form slås upp utan att synas.
+- **Den gamla kärnans nät håller** (`alla_prov.py --snabb`, 8 av 8). `ordning` anropar
+  även den gamla `ordföljd`-loggen, som tas bort med den gamla kärnan (8.1).
+
+**Steg 1:s prov** (`ordbok/verktyg/redovisningsmätning.py`, 5 000 meningar):
+
+    ord per mening                             4,9
+    kort per mening, ord och former inräknade  18,5
+    högst samtidigt svaga kort (6.2)           10,8
+    förväxlingsbara beslut (villkor 7)         0,6 %
+
+**Attributionen håller.** En mening rymmer i snitt elva kort som kan vara svaga samtidigt
+utan att dela plats, medan budgeten (6.3) bara släpper in ett fåtal mål. Det som
+begränsar är alltså budgeten och inte positionerna. De förväxlingsbara besluten är nästan
+alla kongruens där genuset bara syns på det kongruerande ordet: «ölet … blivit litat»
+kan vara substantivets genus eller participformen. Där hindrar villkor 7 att båda är
+svaga samtidigt.
 
 ---
 
 ## 9 · Byggordningen
 
     0   böjningsreglerna per språk         svenskan gjord, väntar på granskning; slutna ordklasser och sex språk kvar
-    1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); delar med uttryckliga indata, spåret; allt annat bygger på detta
-    1b  kartan                             kräver 1; varje del genomgången uttömmande, storleken mätt per språk (6.7); prototyp för svenskan i ordbok/verktyg/karta_sv.py
+    1   renderarna redovisar sina beslut   svenskan byggd och mätt (8.3); sex språk kvar, inventerade i TYSTA_BESLUT.md; allt annat bygger på detta
+    1b  kartan                             kräver 1; varje del genomgången uttömmande, storleken mätt per språk (6.7); prototypen i ordbok/verktyg/karta_sv.py är skriven före den nya redovisningen och ska skrivas om
     2   nivåerna och grafen                kräver 1b; kraven ur kartan, nivåerna är grafens starka komponenter (4.1)
     3   kortmodellen                       kräver 0; tabellen från form till kort (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
@@ -1492,7 +1559,7 @@ byggvillkor.
 **Steg 1 är det billigaste sättet att upptäcka om modellen håller.** När renderarna
 redovisar går det att mäta hur många regler en mening faktiskt använder, och alltså
 om attributionen fungerar med ett par hundra regelkort i stället för dagens tre.
-Håller den inte syns det innan något har raderats.
+Håller den inte syns det innan något har raderats. För svenskan höll den (8.3).
 
 **Rent arbete, utan kvarstående beslut:** böjningsreglerna för övriga sex språk,
 renderarnas redovisning, en lektionstext per regelkort och källspråk, frekvenserna för
@@ -1524,7 +1591,7 @@ Frågorna väntar på Julius, och ingen av dem blockerar bygget.
 |---|---|---|
 | kort i en mening som varken är införda eller presenterade i dag | 4 | 0 |
 | paket som blivit delvis införda | ej mätt | 0 |
-| läsningar i renderarna som går förbi kartan | 26 kända förbigångar | 0 — genomgången stoppar på dem (6.7) |
+| läsningar i renderarna som går förbi kartan | 24 kända förbigångar, svenskans lagade | 0 — genomgången stoppar på dem (6.7) |
 | meningar som inte är bevisat bäst | ej styrt | 0 |
 | källmeningar som ställs två gånger samma dag | ej styrt | 0 |
 | införda kort som inte är prövbara | ej mätt | 0 |
@@ -1565,8 +1632,7 @@ eller av mätningar, utom:
 | japanskans `no`- och verbfrasadjektiv (36 st) saknar former | orden kan inte renderas | en form per ord, giltig i alla celler (3.9) |
 | enstaka tomma celler, t.ex. `sv/bröd best_pl` | enstaka specar faller | fyll i |
 | 52 misstänkta datafel i svenska former — passiv utan -s, genitiv, genus | fel facit | `ordbok/regelkontroll/sv.md` |
-| 26 läsningar av befintliga kort går förbi instrumenteringen (`hjälpverb`, `prenominal`, `ja_adjektiv_typ`, konjunktivrektion, infinitivmarkör …) | korten kan inte prövas | steg 1; `TYSTA_BESLUT.md` punkt 1 |
-| tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
+| 24 läsningar av befintliga kort går förbi instrumenteringen i sex språk (`hjälpverb`, `prenominal`, `ja_adjektiv_typ`, konjunktivrektion, infinitivmarkör …); svenskans två är lagade | korten kan inte prövas | steg 1; `TYSTA_BESLUT.md` punkt 1 || tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
 | de romanska renderarna skriver alltid ut subjektspronomenet (`yo leo`) | varianten `leo` finns inte | variantsökningen (6.5) |
 | `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst, och meningar bryter mot verbets krav | stoppa bygget i stället för att släppa kravet |
 | ingen provsvit (inga `test_*.py`) | inget visar att attributionen fortfarande fungerar | steg 8b |

@@ -107,6 +107,10 @@ precis det täckningskravet i KÄRNAN 3.8 förbjuder.
 
 ### Svenska
 
+*Redovisat 2026-09-13 i `rendering/sv.py` (KÄRNAN 8.3).* G-besluten och S1–S7 är val
+(`regel`), S8–S10 ordningsregler (`ordning`), A6 är rektion och A8 egenskap. Texten
+ändrades inte utom i tre rättade fall; se KÄRNAN 8.3.
+
 | id | beslut | exempel | språk | blir |
 |---|---|---|---|---|
 | S1 | dubbel bestämdhet med attribut | den röda boken | sv | regel |
