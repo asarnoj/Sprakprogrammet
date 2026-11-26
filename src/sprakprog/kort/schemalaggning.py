@@ -1189,6 +1189,16 @@ def _kapacitetsval(kort_db: sqlite3.Connection, språk: str,
     return rad["meningar_per_dag"] if rad else STANDARD_MENINGAR_PER_DAG
 
 
+def _infört_idag(kort_db: sqlite3.Connection, språk: str,
+                 nu: datetime | None) -> int:
+    """Hur många kort som förbrukats av dagen. Egen funktion för att den ska
+    gå att sabotera — invarianten i `arbetsbördeprov` behöver kunna sätta
+    tillbaka det gamla filtret."""
+    return kort_db.execute(
+        "SELECT COUNT(*) FROM Kort WHERE språk = ? AND sedd >= ?",
+        (språk, dygnets_början(nu))).fetchone()[0]
+
+
 def dagsplan(kort_db: sqlite3.Connection, språk: str,
              meningar_per_dag: int | None = None, *, passkö: int = 0,
              minuter_per_dag: float | None = None,
@@ -1258,10 +1268,19 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
     #
     # Måttet behöver ingen egen bokföring — ett infört kort ÄR sett, och
     # `sedd` bär tidpunkten.
-    infört_idag = kort_db.execute(
-        f"""SELECT COUNT(*) FROM Kort
-           WHERE språk = ? AND {INFÖRBAR} AND sedd >= ?""",
-        (språk, dygnets_början(nu))).fetchone()[0]
+    #
+    # UTAN `INFÖRBAR`, till skillnad från `osedda` ovan, och de två frågorna
+    # är olika. `osedda` frågar vad som får PLANERAS; ett kort som tagits ur
+    # kön för att det är allestädes närvarande (`schemalagt = 0`) ska inte
+    # planeras. `infört_idag` frågar vad som FÖRBRUKATS av dagen, och där
+    # räknas kortet: det blev bedömt så snart en mening råkade innehålla det,
+    # och den repetitionen kommer tillbaka som arbete oavsett hur den kom in.
+    #
+    # Mätt på franskans dag 2026-08-29: 34 kort infördes, `INFÖRBAR` räknade
+    # 29. De fem osynliga var `system` 2, `form` 1, `ordföljd` 1, `stam` 1 —
+    # alla `schemalagt = 0`. Taket var 25, så filtret dolde en femtedel av
+    # överskridandet.
+    infört_idag = _infört_idag(kort_db, språk, nu)
     ord_infört_idag = kort_db.execute(
         """SELECT COUNT(*) FROM Kort
            WHERE språk = ? AND typ = 'ord' AND sedd >= ?""",

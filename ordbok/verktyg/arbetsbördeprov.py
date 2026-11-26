@@ -225,6 +225,38 @@ def prov_upplåsningströskeln(k) -> list[str]:
     return fel
 
 
+def prov_saldot_ser_de_oschemalagda(k) -> list[str]:
+    """Ett kort som INTE är schemalagt förbrukar ändå av dagen när det införs.
+
+    `INFÖRBAR = (schemalagt = 1 OR typ = 'ord')` satt på båda frågorna, och de
+    är olika. Vad som får PLANERAS ska filtreras — ett allestädes närvarande
+    ändelsekort hör inte i kön. Vad som FÖRBRUKATS ska inte: kortet blev
+    bedömt så snart en mening råkade innehålla det, och den repetitionen
+    kommer tillbaka som arbete oavsett hur den kom in.
+
+    Mätt på franskans dag 2026-08-29: 34 kort infördes, filtret räknade 29.
+    De fem osynliga var `system` 2, `form` 1, `ordföljd` 1, `stam` 1. Taket
+    var 25, så filtret dolde en femtedel av överskridandet.
+    """
+    p = S.dagsplan(k, "de")
+    if not p["nya"]:
+        return ["kursen har inga nya kort kvar — provet kan inte mäta"]
+    idn = [r["id"] for r in k.execute(
+        """SELECT id FROM Kort WHERE språk = 'de' AND schemalagt = 0
+           AND typ != 'ord' AND sedd IS NULL LIMIT 3""")]
+    if not idn:
+        return ["ingen oschemalagd kandidat — provet kan inte mäta"]
+    s = S.Schemaläggare(k)
+    for kid in idn:
+        s.repetera(kid, True)
+    k.commit()
+    efter = S.dagsplan(k, "de")
+    if efter["infört_idag"] != p["infört_idag"] + len(idn):
+        return [f"införde {len(idn)} oschemalagda kort men `infört_idag` gick "
+                f"{p['infört_idag']} → {efter['infört_idag']}"]
+    return []
+
+
 PROV = [
     ("kostnadskurvans form", prov_kurvans_form),
     ("horisonten håller målet", prov_horisonten_håller_målet),
@@ -233,12 +265,25 @@ PROV = [
     ("båda villkoren binder", prov_villkoren_binder),
     ("tidsspärren är binär", prov_tidsspärren_är_binär),
     ("nya är ett saldo", prov_nya_är_ett_saldo),
+    ("saldot ser de oschemalagda", prov_saldot_ser_de_oschemalagda),
     ("upplåsningströskeln", prov_upplåsningströskeln),
 ]
 
 
 def _sabotera(namn: str):
     """Återinför felet kontrollen finns för. Returnerar en ångra-funktion."""
+    if namn == "saldot ser de oschemalagda":
+        # Före rättelsen: `INFÖRBAR` satt på båda frågorna, så ett kort som
+        # inte var schemalagt förbrukade ingenting av dagen.
+        äkta = S._infört_idag
+        def filtrerat(kort_db, språk, nu):
+            return kort_db.execute(
+                f"""SELECT COUNT(*) FROM Kort
+                    WHERE språk = ? AND {S.INFÖRBAR} AND sedd >= ?""",
+                (språk, S.dygnets_början(nu))).fetchone()[0]
+        S._infört_idag = filtrerat
+        return lambda: setattr(S, "_infört_idag", äkta)
+
     if namn == "kostnadskurvans form":
         äkta = A.nykortskurva
         A.nykortskurva = lambda dr, dygn=A.KOSTNADSHORISONT_DYGN: (
