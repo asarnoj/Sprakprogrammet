@@ -318,7 +318,41 @@ def prov_tomt_pass_fylls(tj, kort) -> list[str]:
     return fel
 
 
+def prov_nollställning_rensar_taket(tj, kort) -> list[str]:
+    """En nollställd kurs får inte ärva gårdagens frysta inflödestak.
+
+    Taket fryses per dygn för att brådska inte ska belönas (`dagsplan`), men
+    det är ett tal OM EN KORTLEK. Nollställningen raderar kortleken, och ett
+    tak från före den beskriver då ingenting som finns kvar.
+
+    JULIUS MÄTTE FÖLJDEN: hans nollställda franskkurs hade rummet 51 kort men
+    läste det frysta 7, och genom `nya_ord = int(tak / kort_per_koncept)` blev
+    hela första dagens lektion `int(7 / 4,01) = 1`. Ett enda ord, `nous`, och
+    sedan var dagen slut.
+
+    Invarianten är på TAKET och inte på antalet ord, därför att antalet beror
+    på ordförråd och kort-per-koncept i varje språk. Det som ska gälla är att
+    talet räknas om — vad det landar på är en annan fråga.
+    """
+    fel: list[str] = []
+    for kurs in kort.execute("SELECT * FROM Kurs ORDER BY id"):
+        # Frys ett tak genom att läsa dagen, och nollställ sedan.
+        tj.hem(kurs["id"])
+        före = kort.execute("SELECT tak_datum, tak_kort FROM Kurs WHERE id = ?",
+                            (kurs["id"],)).fetchone()
+        if före["tak_datum"] is None:
+            continue                      # kursen har inget tak att ärva
+        tj.nollställ(kurs["id"], "RESET")
+        efter = kort.execute("SELECT tak_datum, tak_kort FROM Kurs WHERE id = ?",
+                             (kurs["id"],)).fetchone()
+        if efter["tak_datum"] is not None:
+            fel.append(f"[{kurs['id']} {kurs['målspråk']}] taket {efter['tak_kort']} "
+                       f"från {efter['tak_datum']} överlevde nollställningen")
+    return fel
+
+
 PROV = [("nollställning bygger om passet", prov_nollställning_bygger_om),
+        ("nollställning rensar dagens tak", prov_nollställning_rensar_taket),
         ("ett tomt pass fylls", prov_tomt_pass_fylls),
         ("grannkursen överlever en nollställning", prov_grannkursen_överlever),
         ("upplåsning utökar dagen", prov_upplåsning_utökar),
@@ -356,12 +390,36 @@ def _sabotage_bygg_om_alltid():
     return lambda: setattr(passlager, "nuvarande", orig)
 
 
+def _sabotage_behåll_taket():
+    """Före rättelsen: `nollställ` lämnade dagens frysta tak orört.
+
+    Sabotaget återställer taket EFTER nollställningen i stället för att hindra
+    raderingen — `sqlite3.Connection` går inte att patcha, och utfallet är
+    detsamma: kursen står med ett tak som beskriver en kortlek som är borta.
+    """
+    orig = Övningstjänst.nollställ
+    def behåll(self, kurs_id, bekräftelse):
+        rad = self.kort_db.execute(
+            "SELECT målspråk, tak_datum, tak_kort FROM Kurs WHERE id = ?",
+            (kurs_id,)).fetchone()
+        svar = orig(self, kurs_id, bekräftelse)
+        if svar is not None and rad is not None:
+            self.kort_db.execute(
+                "UPDATE Kurs SET tak_datum = ?, tak_kort = ? WHERE målspråk = ?",
+                (rad["tak_datum"], rad["tak_kort"], rad["målspråk"]))
+            self.kort_db.commit()
+        return svar
+    Övningstjänst.nollställ = behåll
+    return lambda: setattr(Övningstjänst, "nollställ", orig)
+
+
 SABOTAGE = [(_sabotage_ovillkorlig_idempotens, 0),
-            (_sabotage_utan_påfyllning, 1),
-            (_sabotage_ovillkorlig_idempotens, 2),
-            (_sabotage_utan_utökning, 3),
+            (_sabotage_behåll_taket, 1),
+            (_sabotage_utan_påfyllning, 2),
+            (_sabotage_ovillkorlig_idempotens, 3),
             (_sabotage_utan_utökning, 4),
-            (_sabotage_bygg_om_alltid, 5)]
+            (_sabotage_utan_utökning, 5),
+            (_sabotage_bygg_om_alltid, 6)]
 
 
 def main() -> int:

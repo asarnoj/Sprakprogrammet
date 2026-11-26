@@ -997,6 +997,54 @@ konceptet i ordboken eller räknas fram per kurs.
 
 ### B4 ! — Hur mycket vill användaren öva?
 
+#### FÖRSTA DAGEN BLEV ETT ENDA ORD (2026-08-27)
+
+Julius: *"Nu när jag kör så består första övningen endast av ett ord
+'nous'."* Reproducerat exakt: hela dagen var en glosa, `att_göra = 1`, med
+tjugo minuter budgeterade.
+
+Kedjan, mätt led för led:
+
+    inflödestak            7      ← frusen från FÖRE nollställningen
+    kort_per_koncept (fr)  4,01
+    nya_ord = int(7 / 4,01) = 1   ← hela dagens lektion
+
+**Taket fryses per dygn med flit** — svarar man snabbt sjunker
+sekunder-per-repetition, vilket annars höjde målet mitt i ett pass, och
+brådska ska inte belönas. Men `nollställ` raderar hela kortleken och rörde
+aldrig frysningen. Kursens EGET rum var 51 kort; den läste 7 från en kortlek
+som inte längre fanns.
+
+Efter rättelsen: inflödestak 7 → **51**, dagens lektion 1 → **18 ord**,
+`att_göra` 1 → 28.
+
+**Heltalsavkortningen förstärkte felet men var inte orsaken.** `int(tak /
+kort_per_koncept)` ger noll ord för allt under 4,01 och ett ord ända upp till
+8,02 — så ett lågt tak kollapsar till en tom eller nästan tom dag. Talet är
+riktigt räknat; det var indatan som var gammal.
+
+#### TVÅ KURSER MOT SAMMA SPRÅK ÄR INTE BYGGT (2026-08-27, `?`)
+
+Fyndet ovan blottade en större sak. Julius har två franskakurser, och de
+delar mer än han kan se:
+
+- **`Kort` har `språk` men ingen `kurs_id`.** Båda kurserna övar SAMMA
+  kortlek. Nollställer man den ena nollställs den andra.
+- **`nollställ` bygger om kortleken på nivå 1** för hela språket, men sätter
+  `nivå = 1` bara på den kurs som nollställdes. Grannkursen står kvar på sin
+  nivå med en kortlek byggd för nivå 1.
+- **Dagens tak och `meningar_per_dag` slås upp med `WHERE målspråk = ?`**,
+  som returnerar en enda rad för två kurser. Det är medvetet — en tidigare
+  rättelse la det på språk just för att kortleken är gemensam — men taket
+  härleds ur `minuter_per_dag`, som är per kurs (10 respektive 20 hos
+  honom). Delningen kan alltså inte vara riktig åt något håll.
+
+**Det här är inte en bugg utan en obyggd konfiguration.** Antingen ska
+kortleken bli per kurs (`kurs_id` på `Kort`, en stor ändring), eller så ska
+en andra kurs mot samma målspråk vägras. Frågan är Julius.
+
+
+
 Det enda talet användaren behöver ange, eftersom det är det enda som inte
 går att räkna fram: det är inte ett faktum om språket utan om hens dygn.
 

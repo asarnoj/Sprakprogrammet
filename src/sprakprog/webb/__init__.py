@@ -219,6 +219,26 @@ class Övningstjänst:
             # nivåspärren finns för att förhindra. Här är det tryggt: all
             # historik för språket är just raderad, så inget går förlorat.
             self.kort_db.execute("DELETE FROM Kort WHERE språk = ?", (språk,))
+            # DAGENS FRYSTA INFLÖDESTAK ÖVERLEVDE NOLLSTÄLLNINGEN, och det var
+            # ett fel. Taket fryses per dygn för att brådska inte ska belönas
+            # (se `dagsplan`), men det är ett tal om en kortlek som just har
+            # raderats — och ett tak från före nollställningen beskriver
+            # ingenting som finns kvar.
+            #
+            # Mätt på Julius franska: den nollställda kursens EGET rum var 51
+            # kort, men den läste det frysta 7. Genom `nya_ord = int(tak /
+            # kort_per_koncept)` blev hela första dagens lektion
+            # `int(7 / 4,01) = 1` — ett enda ord, `nous`, och sedan var dagen
+            # slut. Samma spärr som redan finns när användaren ändrar
+            # minuterna, av samma skäl: ett tal som inte längre beskriver
+            # läget ska räknas om, inte ligga kvar.
+            #
+            # PÅ SPRÅK OCH INTE PÅ ID, precis som i `sätt_minuter`: kortleken
+            # är gemensam för alla kurser mot samma målspråk, så ett tak om
+            # den kortleken kan inte höra till en av dem.
+            self.kort_db.execute(
+                "UPDATE Kurs SET tak_datum = NULL, tak_kort = NULL "
+                "WHERE målspråk = ?", (språk,))
             self.kort_db.execute("UPDATE Kurs SET nivå = 1 WHERE id = ?",
                                  (kurs_id,))
             self.kort_db.commit()
