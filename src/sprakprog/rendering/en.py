@@ -77,6 +77,8 @@ class EngelskRenderare:
         return person == 3
 
     def verbdelar(self, m: Mening) -> list[str]:
+        if m.negerad:
+            return self._negerat_verb(m)
         if m.tid is Tidsreferens.FRAMTID:
             return [self.u.form_för("modal_ska", "pres_3sg"),
                     self.u.form_för(m.verb, "inf_imp")]
@@ -84,6 +86,33 @@ class EngelskRenderare:
             return [self.u.form_för(m.verb, "pret")]
         cell = "pres_3sg" if self._tredje_person_sg(m.subjekt) else "inf_imp"
         return [self.u.form_för(m.verb, cell)]
+
+    def _negerat_verb(self, m: Mening) -> list[str]:
+        """Engelsk negation kräver do-omskrivning — utom med be och modaler.
+
+        "she does not read" men "she is not happy" och "she will not read".
+        Hjälpverbet do lånar sina former från fys_göra: auxiliärt och
+        lexikalt do är samma ord, så formerna finns redan och behöver inte
+        uppfinnas. Att de betyder olika saker spelar ingen roll här,
+        eftersom bara formen används.
+        """
+        inte = self.u.form_för("neg_inte", "inv")
+
+        if m.tid is Tidsreferens.FRAMTID:
+            return [self.u.form_för("modal_ska", "pres_3sg"), inte,
+                    self.u.form_för(m.verb, "inf_imp")]
+
+        def böjt(koncept: str) -> str:
+            if m.tid is Tidsreferens.FÖRFLUTEN:
+                return self.u.form_för(koncept, "pret")
+            return self.u.form_för(
+                koncept, "pres_3sg" if self._tredje_person_sg(m.subjekt)
+                else "inf_imp")
+
+        if m.verb == "verb_vara":
+            # Kopulan negeras direkt: "she is not happy", inte "does not be".
+            return [böjt(m.verb), inte]
+        return [böjt("fys_göra"), inte, self.u.form_för(m.verb, "inf_imp")]
 
     def sandhi(self, ord: list[str]) -> list[str]:
         """a → an framför vokalljud.

@@ -17,6 +17,7 @@ class FranskRenderare(RomanskRenderare):
     # a donné, inte "donna" — passé simple är litterärt och passé composé
     # är den levande perfektiva dåtiden.
     SAMMANSATT_DÅTID = True
+    NEKANDE_FÖRLED = "ne"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",
                   ("de", "le"): "du", ("de", "les"): "des"}
 
@@ -41,5 +42,7 @@ class FranskRenderare(RomanskRenderare):
         h aspiré-ord (héros) skulle kräva en flagga på Lexem, i stil med
         prenominal — skillnaden syns inte i stavningen.
         """
+        if första == "ne":
+            return andra[:1].lower() in self.VOKAL | {"h"}
         return (första in ("le", "la")
                 and andra[:1].lower() in self.VOKAL | {"h"})

@@ -269,6 +269,25 @@ class RomanskRenderare:
             genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
         return genus, numerus
 
+    # Franskans ne har ingen motsvarighet i es/it, som klarar sig med en
+    # enda preverbal partikel.
+    NEKANDE_FÖRLED: str | None = None
+
+    def negation(self, m: Mening) -> tuple[list[str], list[str]]:
+        """(före verbet, efter verbet). Romanska språk skiljer sig här.
+
+        es och it sätter en partikel före verbet: "no lee", "non legge".
+        Franskan klämmer in verbet mellan två: "ne lit pas". Förledet ne
+        finns inte som lexem i databasen — det är en ren grammatisk klitika
+        utan egen betydelse, hårdkodad här på samma sätt som japanskans
+        partiklar. Efterledet pas ligger däremot i neg_inte.
+        """
+        if not m.negerad:
+            return [], []
+        if self.NEKANDE_FÖRLED is not None:
+            return [self.NEKANDE_FÖRLED], [self.u.form_för("neg_inte", "inv")]
+        return [self.u.form_för("neg_inte", "inv")], []
+
     def ordna_klitika(self, cod, coi) -> list[str]:
         """Inbördes ordning mellan klitika framför verbet.
 
@@ -310,8 +329,15 @@ class RomanskRenderare:
         if coi is None and self.DUBBLERAR and m.io is not None:
             coi = self._dubblering(m.io)
 
+        före, efter = self.negation(m)
+        ord += före
         ord += self.ordna_klitika(cod, coi)
-        ord += self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
+        verb = self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
+        # Negationens efterled hamnar efter det FINITA verbet, inte efter
+        # participet: "elle n'a pas donné", aldrig "elle n'a donné pas".
+        ord.append(verb[0])
+        ord += efter
+        ord += verb[1:]
 
         if m.predikativ is not None:
             ord += self.predikativ(m)

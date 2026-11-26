@@ -121,6 +121,14 @@ class Mening:
     läkare", inte "hon är en läkare" — men med artikel i engelskan.
     """
     adverbial: tuple[str, ...] = field(default=())
+    negerad: bool = False
+    """Nekande sats: "flickan läser inte boken".
+
+    Låser upp noll nya ordformer men mångdubblar antalet meningar som går
+    att bygga av samma ord. Realiseras helt olika i de sju språken: ett
+    satsadverbial i sv och de, do-omskrivning i en, en tvådelad klammer i
+    fr, en preverbal partikel i es och it, och ren verbböjning i ja.
+    """
     tid: Tidsreferens = Tidsreferens.NUTID
     aspekt: Aspekt = Aspekt.PERFEKTIV
 

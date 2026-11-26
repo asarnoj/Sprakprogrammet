@@ -218,6 +218,15 @@ class TyskRenderare:
         if m.objekt is not None:
             mittelfeld += self.nominalfras(m.objekt, self.kasus_för(m.verb, "objekt"))
 
+        if m.negerad:
+            # nicht står sist i Mittelfeld, efter objekten men före
+            # predikativet och de infinita verbdelarna.
+            #
+            # KÄND GRÄNS: tyskan negerar OBESTÄMDA nominalfraser med "kein"
+            # i stället — "sie gab kein Buch", inte "sie gab nicht ein Buch".
+            # kein finns inte i databasen; det är en negerad obestämd artikel
+            # och borde vara ett determinerarlexem.
+            mittelfeld.append(self.u.form_för("neg_inte", "inv"))
         if m.predikativ is not None:
             mittelfeld += self.predikativ(m)
 
