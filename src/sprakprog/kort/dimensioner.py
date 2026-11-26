@@ -314,8 +314,10 @@ def nåbara_celler(språk: str, ordklass: str = "Verb",
     from .befolka import nåbara
     db = anslut()
     try:
+        from ..generator.urval import NIVÅ
         celler = {c for _, _, c in nåbara(db, språk, 21, "C2",
-                                          kandidater=kandidater)}
+                                          kandidater=kandidater,
+                                          tillåtet=set(NIVÅ.values()))}
     finally:
         db.close()
     _nåbarcache[språk] = frozenset(celler)
@@ -439,6 +441,56 @@ def upplåst_vid(språk: str, nivå: int,
     gemensam numrering: det finns ingen risk att de två axlarna glider isär,
     eftersom de aldrig var två.
     """
+    # ETT KONSTRUKTIONSSTEG BÄR BÅDA SORTERNA sedan hopslagningen: först
+    # konstruktionens namn, sedan de celler den kräver. Att läsa hela tupeln
+    # som konstruktioner gav 33 "konstruktioner" i franskan, av tjugo möjliga
+    # — cellerna räknades som konstruktioner och `Samplare.tillåtet` fick
+    # namn som `pret_1sg`, som ingen `ANVÄNDER`-post känner.
     steg = stege(språk, ordklass)[:max(0, nivå)]
-    return ([n for typ, namn in steg if typ == "konstruktion" for n in namn],
-            {n for typ, namn in steg if typ == "böjning" for n in namn})
+    return ([namn[0] for typ, namn in steg if typ == "konstruktion"],
+            {n for typ, namn in steg
+             for n in (namn if typ == "böjning" else namn[1:])})
+
+
+def nivåns_krav(språk: str, nivå: int,
+                ordklass: str = "Verb") -> tuple[str | None, frozenset[str]]:
+    """Vad `nivå` kräver av en mening: (konstruktion, böjningsceller).
+
+    GRINDEN FRÅGAR OLIKA SAKER OM DE TVÅ SORTERNAS STEG.
+
+    Är steget en KONSTRUKTION räcker konstruktionen som krav — de celler som
+    slagits ihop med den kommer med på köpet, och en mening som använder
+    konstruktionen använder dem. `ANVÄNDER` svarar på specen, utan att
+    rendera.
+
+    Är steget en ren BÖJNING finns ingen konstruktion att fråga om. Kravet
+    är i stället att meningen faktiskt SLÅR UPP en av cellerna, och det syns
+    bara i renderingen. `byggbarhet` har uppslagen redan, så det kostar
+    ingenting extra.
+
+    NIVÅ 1 KRÄVER INGENTING. Den är grundböjningen, som varje mening
+    använder — att kräva den vore att kräva att meningen har ett verb.
+    """
+    steg = stege(språk, ordklass)
+    if nivå <= 1 or nivå > len(steg):
+        return None, frozenset()
+    typ, namn = steg[nivå - 1]
+    if typ == "konstruktion":
+        return namn[0], frozenset()
+    return None, frozenset(namn)
+
+
+def toppnivå(språk: str, ordklass: str = "Verb") -> int:
+    """Stegens sista nivå — där allt är upplåst.
+
+    TALET 21 BETYDER INTE LÄNGRE "ALLT". Det var antalet konstruktioner, och
+    så länge nivån indexerade dem var 21 toppen. Nu indexerar den den flätade
+    stegen, som är 22 steg i svenskan och 24 i japanskan — och nivå 21 i
+    franskan är `inf`, inte slutet.
+
+    Mätt när nivån kopplades in: `ordföljdsprov` byggde sin generator på nivå
+    21 och fick tre ordföljdsregler som inte gick att möta, därför att
+    `est_ce_que` och japanskans bisatsregler ligger på steg 22 och senare.
+    Ett hårdkodat tak som tyst blev fel när stegen växte.
+    """
+    return len(stege(språk, ordklass))

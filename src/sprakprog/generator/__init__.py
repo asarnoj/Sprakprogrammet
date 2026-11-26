@@ -817,6 +817,10 @@ class Generator:
         konstruktion nästan aldrig går att bygga är inte redo — oavsett hur
         bra de meningar som lyckas råkar vara.
         """
+        from ..kort.dimensioner import nivåns_krav
+        konstruktion, celler = (
+            (None, frozenset()) if nivå is None
+            else nivåns_krav(self.språk, nivå))
         sedda = self._sedda_koncept()
         träffar = byggda = 0
         for _ in range(kandidater):
@@ -826,12 +830,20 @@ class Generator:
             resultat = self._rendera(m)
             if resultat is None:
                 continue
-            _text, kort, _uppslag, _egenskaper, _rekt, _ordf, _osm = resultat
+            _text, kort, uppslag, _egenskaper, _rekt, _ordf, _osm = resultat
             byggda += 1
             okända = sum(1 for k in kort
                          if k["typ"] == "ord" and k["sedd"] is None
                          and k["koncept"] not in sedda)
-            träffar += okända <= 1 and (nivå is None or använder_nivån(m, nivå))
+            # Konstruktionssteget frågas på SPECEN, böjningssteget på
+            # UPPSLAGEN — se `nivåns_krav`.
+            if konstruktion is not None:
+                bär = använder_nivån(m, konstruktion)
+            elif celler:
+                bär = any(c in celler for _, _, c in uppslag)
+            else:
+                bär = True
+            träffar += okända <= 1 and bär
         return träffar / byggda if byggda else None
 
     def registrera(self, förslag: Förslag, utfall: dict[int, bool],

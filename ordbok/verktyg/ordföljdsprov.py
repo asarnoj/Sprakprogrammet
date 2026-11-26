@@ -73,8 +73,12 @@ def _kopia(mål: Path) -> sqlite3.Connection:
 
 
 def _generator(kort, kurs, språk_db, frö=11):
+    # STEGENS TOPP, inte talet 21. Nivån indexerar den flätade stegen, som är
+    # olika lång i olika språk — se `dimensioner.toppnivå`.
+    from sprakprog.kort.dimensioner import toppnivå
     g = Generator(språk_db, kort, kurs["målspråk"], källspråk=kurs["källspråk"],
-                  nivå=21, cefr="C2", budget=kurs["budget"], frö=frö)
+                  nivå=toppnivå(kurs["målspråk"]), cefr="C2",
+                  budget=kurs["budget"], frö=frö)
     g._läs_kort()
     return g
 

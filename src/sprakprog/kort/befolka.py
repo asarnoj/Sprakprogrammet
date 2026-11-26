@@ -371,7 +371,8 @@ def _cellkort(språk: set[str]) -> list[tuple]:
 
 
 def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
-           kandidater: int = 4000) -> set[tuple]:
+           kandidater: int = 4000,
+           tillåtet: set[str] | None = None) -> set[tuple]:
     """(koncept, variant, cell) som GÅR att möta på den här nivån.
 
     Mätt och inte härledd: samplaren bygger meningar på nivån, renderaren
@@ -396,7 +397,8 @@ def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
                  "es": SpanskRenderare, "it": ItalienskRenderare,
                  "ja": JapanskRenderare}[språk](språk_db)
     validator = Validator(språk_db)
-    samplare = Samplare(Ordförråd(språk_db, språk, cefr), nivå, random.Random(0))
+    samplare = Samplare(Ordförråd(språk_db, språk, cefr), nivå,
+                        random.Random(0), tillåtet=tillåtet)
 
     rörda: list = []
     original = Uppslag.form
@@ -504,6 +506,13 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
     nåbart = None
     if nivå is not None:
         nåbart = {s_: nåbara(språk_db, s_, nivå, cefr) for s_ in sorted(språk)}
+        # BÖJNINGSGRINDEN FÖLJER NIVÅN, och behöver inte anges av anroparen.
+        # Anges den ändå gäller den — det är vägen mätverktygen tar när de
+        # vill se en annan nivå än kursens.
+        if böjningsceller is None:
+            from .dimensioner import upplåst_vid
+            böjningsceller = {(s_, "Verb"): upplåst_vid(s_, nivå)[1]
+                              for s_ in sorted(språk)}
     rader = härled(språk_db, språk, nåbart, böjningsceller)
     före = kort_db.execute("SELECT COUNT(*) FROM Kort").fetchone()[0]
     kort_db.executemany(

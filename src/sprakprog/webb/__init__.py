@@ -48,6 +48,7 @@ from ..kort import (
     upplåsningsläge,
 )
 from ..kort.db import STANDARD_KORT_DB
+from ..kort.dimensioner import toppnivå
 from ..kort.schemalaggning import extranytta, kostnad
 from .lektion import Lektioner
 from .ordbok import Ordbok
@@ -691,7 +692,12 @@ class Övningstjänst:
                 # Att skicka ett tal som är både fel och oanvänt är att bjuda
                 # in att det används igen — vilket det just hade blivit, i
                 # underraden som visade `krävs` mot `kapacitet`.
-                "nivå": {"nu": kurs["nivå"], "av": 21,
+                # ANTALET NIVÅER ÄR PER SPRÅK sedan stegen flätar
+                # konstruktioner och böjning: 22 i svenskan, 24 i japanskan.
+                # Talet 21 var antalet konstruktioner och stämde bara så
+                # länge nivån indexerade dem.
+                "nivå": {"nu": kurs["nivå"],
+                         "av": toppnivå(kurs["målspråk"]),
                          "osedda": u["osedda"], "totalt": u["totalt"],
                          # ORDFÖRRÅDET SOM ÅTERSTÅR, ur SAMMA räkning som
                          # kursvyn visar. De två sa olika saker om samma sak:

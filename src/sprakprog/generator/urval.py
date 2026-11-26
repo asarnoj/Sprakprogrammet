@@ -118,13 +118,19 @@ ANVÄNDER = {
 }
 
 
-def använder_nivån(m, nivå: int) -> bool:
-    """Använder specen den konstruktion `nivå` låser upp?
+def använder_nivån(m, namn: str | None) -> bool:
+    """Använder specen konstruktionen `namn`?
 
-    Nivå 1 har ingen egen konstruktion — den ÄR grundsatsen — så varje mening
-    räknas där.
+    TOG FÖRUT ETT NIVÅTAL, och det gick inte längre. Sedan stegen flätar
+    konstruktioner och böjning i EN numrering är nivå N inte längre samma sak
+    som `NIVÅ[N]` — nivå 11 i franskan är `tempus` plus sex dåtidsceller,
+    nivå 21 är bara `inf`. Vilket krav som gäller avgörs av
+    `dimensioner.nivåns_krav`, och den här funktionen svarar bara på
+    konstruktionsdelen.
+
+    `None` betyder ingen konstruktion att kräva — grundsatsen, eller ett rent
+    böjningssteg som prövas på uppslagen i stället.
     """
-    namn = NIVÅ.get(nivå)
     return True if namn is None else ANVÄNDER[namn](m)
 
 
@@ -231,9 +237,25 @@ class Samplare:
     """Bygger kandidatmeningar, gärna runt ett givet ord."""
 
     def __init__(self, ordförråd: Ordförråd, nivå: int,
-                 rng: random.Random | None = None) -> None:
+                 rng: random.Random | None = None,
+                 tillåtet: set[str] | None = None) -> None:
         self.o = ordförråd
-        self.tillåtet = upplåst(nivå)
+        # NIVÅN INDEXERAR DEN FLÄTADE STEGEN, inte konstruktionslistan.
+        # `upplåst(nivå)` gav de N första konstruktionerna, men nivå N är
+        # numera det N:te steget i en stege där böjning och konstruktion
+        # varvas — franskans nivå 11 är `tempus` plus sex dåtidsceller,
+        # nivå 21 är bara `inf`. Importen är lat därför att `dimensioner`
+        # läser `NIVÅ` härifrån.
+        # `tillåtet` BRYTER ETT CIRKELBEROENDE och är inte en bekvämlighet.
+        # `dimensioner.nåbara_celler` mäter vilka celler någon spec kan
+        # producera, och den mätningen ska ha ALLT upplåst. Frågade den
+        # stegen skulle stegen fråga mätningen som frågar stegen — mätt som
+        # en oändlig rekursion första gången nivån kopplades in.
+        if tillåtet is not None:
+            self.tillåtet = tillåtet
+        else:
+            from ..kort.dimensioner import upplåst_vid
+            self.tillåtet = set(upplåst_vid(self.o.språk, nivå)[0])
         self.rng = rng or random.Random()
         #: Koncept som fyllnaden ska hålla sig till, eller None för alla.
         #: Sätts av `begränsa` när dagens utrymme för nytt är slut.
