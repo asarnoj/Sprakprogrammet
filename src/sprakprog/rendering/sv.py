@@ -198,7 +198,6 @@ class SvenskRenderare:
                                 else "ack_dat")]
 
         self.u.kontrollera_naken(nf)
-        self.u.kontrollera_kvantifikator(nf)
         kontrollera_stöd(nf, "sv", ("demonstrativ", "kvantifikator",
                                     "räkneord", "självständig"))
 
@@ -288,6 +287,9 @@ class SvenskRenderare:
             # och vilket som gäller står i datan och inte i koden.
             if nf.kvantifikator is None:
                 raise RenderingsFel("sv: frasen har ingen kvantifikator")
+            # Läses här och inte i början: kartan grenar på varje fält
+            # renderaren rör, och numeruskravet angår bara den här grenen.
+            self.u.kontrollera_kvantifikator(nf)
             lexem_ = self.u.lexem(nf.kvantifikator)
             cell = _artikelcell(nf.numerus, genus)
             före = [self.u.form(lexem_, cell if self.u.har_form(lexem_, cell)

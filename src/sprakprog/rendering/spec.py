@@ -529,12 +529,21 @@ def kontrollera_stöd(nf: "Nominalfras", språk: str, stöder=()) -> None:
     "böckerna", tyst och trovärdigt. Det är precis den sortens fel hela
     projektet är byggt för att inte göra, så leden räknas upp och den som
     inte hanteras stoppar renderingen.
+
+    ETT LED SPRÅKET STÖDER LÄSES INTE ALLS HÄR. Ordningen i villkoret är
+    inte kosmetisk: kartan grenar på varje fält renderaren rör, så en
+    läsning av alla fyra leden i varje anrop gav 2⁴ gånger fler vägar genom
+    nominalfrasen. Engelskans del växte från 5 124 vägar till 61 464, och
+    `satsled` — som sätter ihop fyra nominalfraser — slutade gå att bygga
+    alls. Läsningen bär ingen kunskap, så den ska inte kosta en gren.
     """
     for led in VALFRIA_LED:
+        if led in stöder:
+            continue
         # Reservvärdet gäller bara nominalfraser som lästs ur ett äldre
         # facit: en `slots`-dataklass saknar de fält som tillkommit sedan
         # den betades. En fras byggd här har alltid alla led.
-        if getattr(nf, led, None) and led not in stöder:
+        if getattr(nf, led, None):
             raise RenderingsFel(
                 f"{språk}: nominalfrasen har {led}, men {språk}-renderaren "
                 f"bygger inte det ledet än och skulle tyst utelämna ordet")

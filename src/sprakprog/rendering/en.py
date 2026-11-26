@@ -131,7 +131,6 @@ class EngelskRenderare:
             return [self.u.form_för(nf.possessiv, "best")]
 
         self.u.kontrollera_naken(nf)
-        self.u.kontrollera_kvantifikator(nf)
         kontrollera_stöd(nf, "en", ("demonstrativ", "kvantifikator",
                                     "räkneord", "självständig"))
 
@@ -206,6 +205,9 @@ class EngelskRenderare:
             # "each book", "all books", "no book".
             if nf.kvantifikator is None:
                 raise RenderingsFel("en: frasen har ingen kvantifikator")
+            # Läses här och inte i början: kartan grenar på varje fält
+            # renderaren rör, och numeruskravet angår bara den här grenen.
+            self.u.kontrollera_kvantifikator(nf)
             if nf.bestämdhet is Bestämdhet.BESTÄMD:
                 # "all the books" kräver att artikeln står KVAR framför
                 # huvudordet, och det är ett förbestämningsled som inte är
