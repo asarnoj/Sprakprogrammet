@@ -38,6 +38,7 @@ from ..db import anslut
 from ..generator import Generator
 from ..kort import anslut_kort, upplåsningsläge
 from ..kort.db import STANDARD_KORT_DB
+from .ordbok import Ordbok
 
 SIDA = Path(__file__).parent / "sida.html"
 
@@ -54,6 +55,7 @@ class Övningstjänst:
         self._generatorer: dict[tuple, Generator] = {}
         self._öppna: dict[int, tuple] = {}
         self._nästa = 1
+        self.ordbok = Ordbok(språk_db, kort_db)
 
     def kurser(self) -> list[dict]:
         return [dict(r) for r in self.kort_db.execute(
@@ -147,6 +149,18 @@ class Övningstjänst:
                     "krävs": u["krävs"], "kapacitet": u["kapacitet"],
                     "plats": u["klar"], "kort": u["totalt"]}
 
+    def ordlista(self, kurs_id: int) -> list | None:
+        with self.lås:
+            k = self.kort_db.execute(
+                "SELECT målspråk FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
+            return self.ordbok.lista(k["målspråk"]) if k else None
+
+    def ordet(self, kurs_id: int, koncept: str) -> dict | None:
+        with self.lås:
+            k = self.kort_db.execute(
+                "SELECT målspråk FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
+            return self.ordbok.ord(k["målspråk"], koncept) if k else None
+
     def nytt_pass(self, kurs_id: int) -> None:
         with self.lås:
             kurs = self.kort_db.execute(
@@ -215,6 +229,15 @@ class Hanterare(BaseHTTPRequestHandler):
             return self._svara(SIDA.read_text(encoding="utf-8"), "text/html")
         if väg == "/api/kurser":
             return self._svara(self.tjänst.kurser())
+        if väg.startswith("/api/ordlista/"):
+            l = self.tjänst.ordlista(int(väg.rsplit("/", 1)[1]))
+            return self._svara(l if l is not None else {"fel": "okänd kurs"},
+                               kod=200 if l is not None else 404)
+        if väg.startswith("/api/ord/"):
+            _, kurs_id, koncept = väg[len("/api/ord/"):].partition("/")[0], *\
+                (väg[len("/api/ord/"):].split("/", 1) + [""])[:2]
+            d = self.tjänst.ordet(int(kurs_id), koncept)
+            return self._svara(d or {"fel": "okänt ord"}, kod=200 if d else 404)
         if väg.startswith("/api/hem/"):
             h = self.tjänst.hem(int(väg.rsplit("/", 1)[1]))
             return self._svara(h or {"fel": "kursen finns inte"},
