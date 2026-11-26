@@ -67,6 +67,13 @@ def _lämplig_batch(antal_celler: int) -> int:
 # ANTHROPIC_API_KEY i miljön — då faktureras API-credits i stället
 # (API-nyckeln vinner tyst över prenumerations-inloggningen).
 
+# Tidsgräns per LLM-anrop. 120 s räckte inte: en batch på nio tyska verb
+# (9 × 31 celler = 279 former) tar flera minuter att skriva ut, och varje
+# sådan batch dog tyst på timeout — körningen malde vidare utan att skriva
+# en enda rad. Sätt ORDBOK_LLM_TIMEOUT för att ändra.
+LLM_TIMEOUT = int(os.environ.get("ORDBOK_LLM_TIMEOUT", "900"))
+
+
 def _anropa_llm(prompt: str, modell: str) -> str:
     """Skicka prompten till Claude via claude-CLI:t, returnera svarstexten."""
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
@@ -74,7 +81,7 @@ def _anropa_llm(prompt: str, modell: str) -> str:
         ["claude", "--model", modell, "-p", prompt],
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=LLM_TIMEOUT,
         env=env,
     )
     if result.returncode != 0:
@@ -459,6 +466,8 @@ def generera_former(
             svar_text = _anropa_llm(prompt, modell)
         except Exception as e:
             stat.fel.append(f"LLM-fel för batch {batch}: {e}")
+            if verbose:
+                print(f"    FEL (LLM): {e}")
             continue
 
         try:
@@ -466,6 +475,7 @@ def generera_former(
         except (ValueError, json.JSONDecodeError) as e:
             stat.fel.append(f"Parse-fel för batch {batch}: {e}")
             if verbose:
+                print(f"    FEL (parse): {e}")
                 print(f"  Råsvar:\n{svar_text[:500]}")
             continue
 
