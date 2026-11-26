@@ -186,7 +186,8 @@ class Passet:
         """Håller budgeten: P(≥2 fel) ≤ τ (6.3)?"""
         return _minst_ett_fel([self.p(k) for k in mål | övriga]) <= self.τ
 
-    def _välj(self, kort: Kort, tillåten, mål_av) -> Uppgift | None:
+    def _välj(self, kort: Kort, tillåten, mål_av,
+              släpp_budget: bool = True) -> Uppgift | None:
         """Den kortaste mening som prövar kortet och ryms i budgeten.
 
         Ryms ingen tas den minst riskabla av dem — reservsteg 2 i 6.3. Det
@@ -241,7 +242,10 @@ class Passet:
             if risk <= self.τ:
                 return uppgift
             bäst = (risk, uppgift)
-        return bäst[1] if bäst else None
+        # Reservsteg 2 tas bara när den som frågar tillåter det. Ordningen i
+        # 6.3 är ensamövningen FÖRST, och den ordningen går förlorad om
+        # budgeten släpps redan här.
+        return bäst[1] if bäst and släpp_budget else None
 
     def uppgift(self, kort: Kort) -> Uppgift | None:
         """En mening som prövar kortet, byggd av tillåtna kort (R1).
@@ -250,8 +254,20 @@ class Passet:
         också mål (6.2).
         """
         tillåtna, svaga = self.tillåtna() | {kort}, self.svaga()
-        return self._välj(kort, lambda k: k in tillåtna,
-                          lambda träff: (träff.kort & svaga) | {kort})
+
+        def mål_av(träff):
+            return (träff.kort & svaga) | {kort}
+
+        # 6.3, i ordning: en mening som ryms i budgeten, annars ensamövningen,
+        # annars den minst riskabla meningen.
+        uppgift = self._välj(kort, lambda k: k in tillåtna, mål_av,
+                             släpp_budget=False)
+        if uppgift is not None:
+            return uppgift
+        ensam = self.ensamövning(kort)
+        if ensam is not None:
+            return ensam
+        return self._välj(kort, lambda k: k in tillåtna, mål_av)
 
     def ställ(self, uppgift: Uppgift, fas: str = "mening") -> Uppgift:
         """Skriv ner uppgiften som ställdes, och ge den med sitt id."""
@@ -335,18 +351,36 @@ class Passet:
                       key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
                                      else (-1, 0.0, 0, str(k))))
 
-    def paket(self, kort: Kort) -> tuple[Uppgift, frozenset] | None:
-        """Kortet och de andra oinförda korten i en minsta mening med det (3.10).
+    def _ensamt_mål(self, kort: Kort, paket: frozenset) -> Uppgift | None:
+        """En övning med kortet som ENDA mål, byggd utan gränsvärde (5.4).
 
-        Ord får vara nya — de är upplåsta från början (3.1) — och de andra korten
-        i kortets egen nivå får vara med, eftersom de kräver varandra. Inget
-        mönsterkort ur en senare nivå tas med.
+        Lånekorten hålls inte mot budgeten: bara det nya kortet är mål, och
+        övningen finns för att just det ska prövas. Samma bygge används av
+        introfasen och av ensamövningen — «samma bygge tre gånger» (6.4).
         """
         införda = self.data.införda()
-        nivå = self.nästa_nivå() if kort in self.nästa_nivå() else frozenset({kort})
-        uppgift = self._välj(kort, lambda k: k in införda or k in nivå or k.familj == "ord",
-                             lambda träff: träff.kort - införda)
-        return None if uppgift is None else (uppgift, uppgift.mål)
+        presenterade = self.data.presenterade()
+
+        def tillåten(k: Kort) -> bool:
+            return (k == kort or k in införda or k in presenterade
+                    or k in paket or k.familj == "ord")
+
+        return self._välj(kort, tillåten, lambda träff: {kort})
+
+    def ensamövning(self, kort: Kort) -> Uppgift | None:
+        """Reservsteg 1 i 6.3: kortet prövas ensamt när ingen mening når det.
+
+        Samma form som introövningen (5.4), men utan att kortet visas först —
+        övningen är provet, ingen förberedelse — och svaret bokförs som en
+        vanlig repetition.
+
+        Den behövs redan dag ett, och det är villkor 5 som gör den nödvändig:
+        när de få korten presenterades samma dag är varje kort svagt, och i
+        «Time stands.» styr alla fem samma två ord. Ingen mening med flera mål
+        är då giltig, och utan ensamövningen fanns ingen uppgift alls — dagen
+        gick inte att komma igenom. Budgeten kan aldrig göra ett kort onåbart.
+        """
+        return self._ensamt_mål(kort, frozenset())
 
     def presentera(self, kort: Kort, paket: frozenset = frozenset()) -> Uppgift | None:
         """Introövningen: en mening med kortet som ENDA mål (5.4).
@@ -360,14 +394,7 @@ class Passet:
         Lånekorten väljs utan gränsvärde (5.4): bara det nya kortet är mål, och
         budgeten gäller därför inte här.
         """
-        införda = self.data.införda()
-        presenterade = self.data.presenterade()
-
-        def tillåten(k: Kort) -> bool:
-            return (k == kort or k in införda or k in presenterade
-                    or k in paket or k.familj == "ord")
-
-        uppgift = self._välj(kort, tillåten, lambda träff: {kort})
+        uppgift = self._ensamt_mål(kort, paket)
         if uppgift is None:
             return None
         self.data.presentera(kort)

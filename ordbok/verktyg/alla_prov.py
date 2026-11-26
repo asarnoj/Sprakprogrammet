@@ -64,6 +64,10 @@ NÄT = [
     ("introduktionsprov.py", True),
     ("indikatorprov.py",     True),
     ("passprov.py",          True),
+    # ~2 min: bygger en färsk kurs per invariant och kör introfasen i var
+    # och en. Reglerna i passet, till skillnad från `passprov` som prövar
+    # tjänsterna runt det.
+    ("passprovet.py",        True),
     ("tjänsteprov.py",       True),
     ("felsvep.py",           True),
 ]
