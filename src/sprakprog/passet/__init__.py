@@ -83,6 +83,65 @@ def _minst_ett_fel(p: list[float]) -> float:
     return max(0.0, 1 - inga - ett)
 
 
+@dataclass(frozen=True, slots=True)
+class Dagsplan:
+    """Dagens kort, och VILKEN MENING som bär vilket (5.1, 3.10).
+
+    «Vilka nya kort dagen har är bestämt innan passet börjar» (5.1). Att
+    bestämma korten räcker inte: villkor 8 i 6.1 säger att en källmening
+    bara får ställas en gång per dag, så MATERIALET FÖRBRUKAS medan dagen
+    går. Ett kort som var prövbart på morgonen kan vara oåtkomligt på
+    eftermiddagen, och det var precis vad som hände — fyra presenterade ord
+    gick inte att pröva alls, och dagen förklarades klar med fulla högar.
+
+    Planen är därför en TILLDELNING: varje nytt kort får sin egen
+    introövning, och huvuddelen får egna meningar reserverade. Alla olika.
+    Ordförrådet är det planen kräver, inte det som råkar dyka upp.
+    """
+    introövningar: tuple[tuple[Kort, Uppgift], ...]
+    meningsfasen: tuple[Uppgift, ...]
+    karantän: tuple[tuple[Kort, str], ...]
+
+    @property
+    def orden(self) -> frozenset:
+        """Ordförrådet planens meningar behöver."""
+        ut: set = set()
+        for _, u in self.introövningar:
+            ut |= {k for k in u.träff.kort if k.familj == "ord"}
+        for u in self.meningsfasen:
+            ut |= {k for k in u.träff.kort if k.familj == "ord"}
+        return frozenset(ut)
+
+    @property
+    def kort(self) -> frozenset:
+        """Allt dagen lär ut: mönsterkorten och orden de behöver."""
+        return frozenset(k for k, _ in self.introövningar) | self.orden
+
+
+def _matcha(kandidater: dict) -> dict:
+    """Ge varje kort en EGEN mening, om det går (en matchning).
+
+    Girigt räcker inte: tar det första kortet den enda mening som passar det
+    andra, blir det andra utan. Augmenterande stigar löser det, och grafen
+    är liten — några kort mot några meningar.
+    """
+    par: dict = {}
+
+    def stig(kort, sedda: set) -> bool:
+        for mening in kandidater[kort]:
+            if mening in sedda:
+                continue
+            sedda.add(mening)
+            if mening not in par or stig(par[mening], sedda):
+                par[mening] = kort
+                return True
+        return False
+
+    for kort in kandidater:
+        stig(kort, set())
+    return {kort: mening for mening, kort in par.items()}
+
+
 class Passet:
     """Dagens pass för en kurs."""
 
@@ -408,6 +467,83 @@ class Passet:
             self._paket[nivå] = (frozenset(uppgift.träff.kort) - införda
                                  if uppgift is not None else nivå)
         return self._paket[nivå]
+
+    def dagsplan(self, rapport=None) -> Dagsplan:
+        """Dagens tilldelning: vilken mening som bär vilket kort (5.1).
+
+        Kandidatmeningar samlas per kort — en genomgång ger flera, så det
+        kostar en sökning per kort och inte en per mening. Sedan matchas de,
+        och det som blir över reserveras åt huvuddelen, där ett kort blir
+        infört genom att gå rätt i en mening.
+
+        MINST 2N MENINGAR SAMLAS för N kort, och talet är inte valt utan
+        följer av vad planen ska räcka till: en egen introövning per kort är
+        N, och huvuddelen behöver på sin höjd N till, eftersom en mening för
+        in varje kort den innehåller. Finns färre tar generatorn slut och
+        planen blir så stor den kan bli.
+
+        Kort som inte får någon mening hamnar i KARANTÄN (3.10) i stället för
+        att presenteras och sedan visa sig oåtkomliga.
+        """
+        nivå = self.nästa_nivå()
+        korten = [k for k in self.kandidater() if k not in self.data.presenterade()]
+        if not korten:
+            return Dagsplan((), (), ())
+        tillåtna = self.data.tillåtna() | nivå
+        ställda = self.data.dagens_källtexter()
+
+        def tillåten(k: Kort) -> bool:
+            return k in tillåtna or self._fritt_ord(k)
+
+        kandidater: dict[Kort, list[str]] = {}
+        per_text: dict[str, Uppgift] = {}
+        for kort in korten:
+            if rapport:
+                rapport(f"    planerar {kort}")
+            texter: list[str] = []
+            for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA,
+                                         per_mall=1, grupperat=True):
+                try:
+                    ut = spåra(self.s.renderare, träff.mening)
+                    källtext = self.s.par.rendera(träff.mening)
+                except RenderingsFel:
+                    continue
+                if källtext in ställda or källtext in texter:
+                    continue
+                per_text.setdefault(källtext, Uppgift(
+                    träff, ut, källtext, frozenset({kort}),
+                    frozenset(träff.kort - {kort})))
+                texter.append(källtext)
+                if len(texter) >= 2 * len(korten):
+                    break
+            if texter:
+                kandidater[kort] = texter
+
+        par = _matcha(kandidater)
+        intro = tuple((k, per_text[par[k]]) for k in korten if k in par)
+        karantän = tuple(
+            (k, "ingen egen mening att öva på i dag") for k in korten if k not in par)
+
+        # Huvuddelen: de meningar som inte gått åt, valda så att varje kort i
+        # planen står i minst en. En mening för in varje kort den innehåller
+        # (5.1), så det är en täckning och inte en tilldelning.
+        använda = {par[k] for k in par}
+        kvar = [per_text[t] for t in per_text if t not in använda]
+        behövs = {k for k, _ in intro}
+        meningsfasen: list[Uppgift] = []
+        while behövs and kvar:
+            bäst = max(kvar, key=lambda u: len(behövs & u.träff.kort))
+            if not (behövs & bäst.träff.kort):
+                break
+            meningsfasen.append(bäst)
+            behövs -= bäst.träff.kort
+            kvar.remove(bäst)
+        # Resten följer med. Täckningen räcker för att INFÖRA varje kort en
+        # gång, men varje fel ger mer arbete (5.3) och då behövs en mening
+        # till. Det som blir över kostar ingenting att ha kvar, och utan det
+        # står dagen still vid första felet.
+        meningsfasen += kvar
+        return Dagsplan(intro, tuple(meningsfasen), karantän)
 
     def att_presentera(self) -> list[Kort]:
         """Nästa nivås kort som inte är införda OCH inte presenterade i dag.

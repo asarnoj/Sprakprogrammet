@@ -298,6 +298,56 @@ def presenterat_betyder_klarat(p: Passet, data: Kursdata) -> list[str]:
             if kort in data.presenterade() else [])
 
 
+def dagsplanen_är_genomförbar(p: Passet, data: Kursdata) -> list[str]:
+    """5.1 och 3.10. Planen läggs innan passet börjar, och den ska hålla.
+
+    Villkor 8 i 6.1 gör att material FÖRBRUKAS medan dagen går: en källmening
+    får ställas en gång. Utan en plan tog det slut mitt i — fyra presenterade
+    ord gick inte att pröva alls, ett nivåkort blev presenterat utan övning,
+    och dagen förklarades klar med fulla högar.
+
+    Planen ska därför ge varje kort sin EGEN introövning, reservera meningar
+    åt huvuddelen, och inte använda samma källmening två gånger.
+    """
+    plan = p.dagsplan()
+    brister = []
+    if not plan.introövningar:
+        return ["dagsplanen är tom"]
+
+    texter = [u.källtext for _, u in plan.introövningar]
+    if len(set(texter)) != len(texter):
+        brister.append("två introövningar delar källmening")
+    delade = set(texter) & {u.källtext for u in plan.meningsfasen}
+    if delade:
+        brister.append(f"samma mening i båda faserna: {sorted(delade)}")
+
+    planerade = {k for k, _ in plan.introövningar}
+    i_karantän = {k for k, _ in plan.karantän}
+    utan = [k for k in p.kandidater()
+            if k not in planerade and k not in i_karantän
+            and k not in data.presenterade()]
+    if utan:
+        brister.append(f"{len(utan)} kort varken planerade eller i karantän: "
+                       f"{sorted(map(str, utan))}")
+
+    if plan.meningsfasen:
+        täckta: set = set()
+        for u in plan.meningsfasen:
+            täckta |= set(u.träff.kort)
+        otäckta = planerade - täckta
+        if otäckta:
+            brister.append(f"{len(otäckta)} kort kan inte införas i huvuddelen: "
+                           f"{sorted(map(str, otäckta))}")
+    elif planerade:
+        brister.append("inga meningar reserverade åt huvuddelen")
+
+    # Orden planen behöver ska räknas med i dagens kortmängd — det var det
+    # Julius frågade om när räknaren sa fem och passet lärde ut tolv.
+    if not plan.orden or not (plan.orden <= plan.kort):
+        brister.append("ordförrådet ingår inte i dagens kortmängd")
+    return brister
+
+
 INVARIANTER = [
     ("introfasen bokför ingenting", introfasen_bokför_ingenting, True),
     ("introövningen har ett enda mål", introövningen_har_ett_mål, False),
@@ -310,6 +360,7 @@ INVARIANTER = [
     ("korten införs när de går rätt", korten_införs_när_de_går_rätt, True),
     ("orden lärs ut före mönstret", orden_lärs_ut_före_mönstret, True),
     ("presenterat betyder klarat", presenterat_betyder_klarat, True),
+    ("dagsplanen är genomförbar", dagsplanen_är_genomförbar, True),
 ]
 
 
