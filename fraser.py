@@ -1,7 +1,7 @@
 from ordklasser import *
 from ordbokläsare import *
 from böjningar import *
-from bitflaggor import Valens
+from bitflaggor import Valens, Kasus
 from functools import partial
 
 def hämta(self, namn: str):
@@ -14,9 +14,11 @@ def skapa(self, namn: str):
 
 class Sats:
     def __init__(self, förälder=None):
-        self.predikatfras = None
-        self.adverbial    = []   # lista: Adverbfras, Prepositionsfras, Nominalfras, Bisatsfras, ...
-        self.förälder     = förälder
+        self.predikatfras  = None
+        self.adverbial     = []   # lista: Adverbfras, Prepositionsfras, Nominalfras, Bisatsfras, Frågadverbfras, ...
+        self.ja_nej_fråga  = False
+        self.negation      = False
+        self.förälder      = förälder
 
     def skapa_predikatfras(self):
         if not self.predikatfras:
@@ -26,10 +28,12 @@ class Sats:
     def skapa_adverbial(self, frastyp='adverbfras'):
         """Lägg till ett adverbial i listan. frastyp styr vilken fras som skapas."""
         klasser = {
-            'adverbfras':       Adverbfras,
-            'prepositionsfras': Prepositionsfras,
-            'bisatsfras':       Bisatsfras,
-            'nominalfras':      Nominalfras,
+            'adverbfras':           Adverbfras,
+            'prepositionsfras':     Prepositionsfras,
+            'bisatsfras':           Bisatsfras,
+            'nominalfras':          Nominalfras,
+            'frågadverbfras':       Frågadverbfras,
+            'negationsadverbfras':  Negationsadverbfras,
         }
         ny = klasser.get(frastyp, Adverbfras)(self)
         self.adverbial.append(ny)
@@ -63,6 +67,7 @@ class Fras:
         self.prepositionsfras = None
         self.infinitivfras = None
         self.bisatsfras = None
+        self.frågepronomensfras = None
         self.förälder = förälder
         self.förälderattribut = förälderattribut
 
@@ -107,6 +112,10 @@ class Nominalfras:
         self.determinant = Determinantiv(input("Ange determinant: "))
         return self
 
+    def skapa_interrogativdeterminant(self):
+        self.determinant = Interrogativdeterminant(hämta_slumpmässigt_koncept_id("Interrogativdeterminant"))
+        return self
+
     def skapa_attribut(self):
         self.attribut = Adjektivfras(self)
         return self
@@ -128,6 +137,7 @@ class Nominalfras:
                 subjekt_dict['determinant'] = (self.determinant, partial(hämta, self, 'determinant'))
             else:
                 subjekt_dict['determinant'] = (None, self.skapa_determinant)
+                subjekt_dict['interrogativ determinant'] = (None, self.skapa_interrogativdeterminant)
 
         if self.huvuddel:
             if self.attribut:
@@ -241,15 +251,15 @@ class Verbfras:
         return self
 
     def skapa_subjektfras(self):
-        self.subjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras"], self, "subjektfras")
+        self.subjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras", "frågepronomensfras"], self, "subjektfras")
         return self.subjektfras
-    
+
     def skapa_direktobjektfras(self):
-        self.direktobjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras"], self, "direktobjektfras")
+        self.direktobjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras", "frågepronomensfras"], self, "direktobjektfras")
         return self.direktobjektfras
-    
+
     def skapa_indirektobjektfras(self):
-        self.indirektobjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras"], self, "indirektobjektfras")
+        self.indirektobjektfras = Fras(["nominalfras", "prepositionsfras", "infinitivfras", "bisatsfras", "frågepronomensfras"], self, "indirektobjektfras")
         return self.indirektobjektfras
     
 
@@ -309,7 +319,7 @@ class Prepositionsfras:
         return self
 
     def skapa_komplementfras(self):
-        self.komplementfras = Fras(["nominalfras", "infinitivfras", "bisatsfras"], self, "komplementfras")
+        self.komplementfras = Fras(["nominalfras", "infinitivfras", "bisatsfras", "frågepronomensfras"], self, "komplementfras")
         return self.komplementfras
 
     def generera_dict(self):
@@ -379,6 +389,76 @@ class Bisatsfras:
             bisatsfras_dict['sats'] = (None, self.skapa_bisats)
 
         return bisatsfras_dict
+
+
+class Frågepronomensfras:
+    def __init__(self, förälder=None):
+        self.frågepronomen = None
+        self.kasus         = None
+        self.förälder      = förälder
+
+    def skapa_frågepronomen(self):
+        self.frågepronomen = Frågepronomen(hämta_slumpmässigt_koncept_id("Frågepronomen"))
+        return self
+
+    def generera_dict(self):
+        fps_dict = {}
+        if self.frågepronomen:
+            fps_dict['frågepronomen'] = (self.frågepronomen, self.skapa_frågepronomen)
+        else:
+            fps_dict['frågepronomen'] = (None, self.skapa_frågepronomen)
+        return fps_dict
+
+    def __str__(self):
+        return "<Frågepronomensfras>"
+
+
+class Frågadverbfras:
+    def __init__(self, förälder=None):
+        self.frågadverb = None
+        self.förälder   = förälder
+
+    def skapa_frågadverb(self):
+        self.frågadverb = Frågadverb(hämta_slumpmässigt_koncept_id("Frågadverb"))
+        return self
+
+    def generera_dict(self):
+        faf_dict = {}
+        if self.frågadverb:
+            faf_dict['frågadverb'] = (self.frågadverb, self.skapa_frågadverb)
+        else:
+            faf_dict['frågadverb'] = (None, self.skapa_frågadverb)
+        return faf_dict
+
+    def __str__(self):
+        return "<Frågadverbfras>"
+
+
+class Negationsadverbfras:
+    """Bär ett negationsadverb (aldrig, jamais, inte längre, plus …).
+
+    I svenska placeras adverbet i satsadverbialspositionen (samma som 'inte').
+    I franska ersätter adverbet 'pas' i ne…X-konstruktionen.
+    Får inte kombineras med sats.negation = True på samma sats.
+    """
+    def __init__(self, förälder=None):
+        self.negationsadverb = None
+        self.förälder        = förälder
+
+    def skapa_negationsadverb(self):
+        self.negationsadverb = Negationsadverb(hämta_slumpmässigt_koncept_id("Negationsadverb"))
+        return self
+
+    def generera_dict(self):
+        naf_dict = {}
+        if self.negationsadverb:
+            naf_dict['negationsadverb'] = (self.negationsadverb, self.skapa_negationsadverb)
+        else:
+            naf_dict['negationsadverb'] = (None, self.skapa_negationsadverb)
+        return naf_dict
+
+    def __str__(self):
+        return "<Negationsadverbfras>"
 
 
 class Samordningsled:

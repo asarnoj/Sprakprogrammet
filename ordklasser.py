@@ -13,6 +13,10 @@ class Ordklass:
         self.konjunktion = None
         self.subjunktion = None
         self.determinantiv = None
+        self.frågepronomen = None
+        self.frågadverb = None
+        self.interrogativdeterminant = None
+        self.negationsadverb = None
         self.förälder = förälder
         self.förälderattribut = förälderattribut
 
@@ -67,5 +71,21 @@ class Subjunktion:
         self.koncept_id = koncept_id
 
 class Determinantiv:
+    def __init__(self, koncept_id: int):
+        self.koncept_id = koncept_id
+
+class Frågepronomen:
+    def __init__(self, koncept_id: int):
+        self.koncept_id = koncept_id
+
+class Frågadverb:
+    def __init__(self, koncept_id: int):
+        self.koncept_id = koncept_id
+
+class Interrogativdeterminant:
+    def __init__(self, koncept_id: int):
+        self.koncept_id = koncept_id
+
+class Negationsadverb:
     def __init__(self, koncept_id: int):
         self.koncept_id = koncept_id

@@ -20,7 +20,11 @@ CREATE TABLE IF NOT EXISTS Koncept (
         'Konjunktion',
         'Subjunktion',
         'Interjektion',
-        'Räkneord'
+        'Räkneord',
+        'Frågepronomen',
+        'Frågadverb',
+        'Interrogativdeterminant',
+        'Negationsadverb'
     ))
 );
 
@@ -82,6 +86,6 @@ CREATE INDEX IF NOT EXISTS idx_former_substantiv ON Former(lexem_id, numerus, sp
 CREATE INDEX IF NOT EXISTS idx_former_verb       ON Former(lexem_id, tempus, person, numerus);
 CREATE INDEX IF NOT EXISTS idx_former_adjektiv   ON Former(lexem_id, grad, genus, numerus, species);
 
-PRAGMA user_version=12;
+PRAGMA user_version=13;
 
 COMMIT;
