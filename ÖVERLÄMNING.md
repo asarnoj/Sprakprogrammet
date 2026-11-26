@@ -216,6 +216,7 @@ beslutar. Ändringar genomförs separat, aldrig direkt.
 | `ordbok/nivålistor/KONVENTIONER.md` | lemmaformat, förenklingsfilosofi §5, beslutsprocess §9 |
 | `RUNBOOK.md` | operativ referens för genereringskörningen |
 | `START_HÄR.md` | kort körinstruktion för den som genererar |
+| `paradigm/RESTRIKTIONER.md` | planen för semantiska restriktioner; scope-beslutet står där |
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
