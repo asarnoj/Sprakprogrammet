@@ -108,9 +108,9 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 `Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
 ```
-sv  3 892 / 4 988   78 %      fr  5 606 /  9 070   62 %
-en  1 802 / 2 293   79 %      it  5 801 / 10 246   57 %
-ja  1 472 / 2 498   59 %      es  6 054 / 10 596   57 %
+sv  3 892 / 4 988   78 %      it  7 877 / 10 246   77 %
+en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
+ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
                               de  8 531 / 23 494   36 %
 ```
 
@@ -143,7 +143,7 @@ Vad som faktiskt är onått, efter de rättelserna:
 | Språk | Block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv + konditionalis | modusrektion i datan, respektive villkorssatser |
+| fr/es/it | konditionalis (6 celler per verb) | villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
@@ -369,23 +369,87 @@ bibliothèque a" ska inte elideras — så villkoret är `que` eller `... que`
 med mellanslag. Alla franska sammansatta subjunktioner är flerordiga, vilket
 gör den avgränsningen exakt.
 
-### Den gräns som återstår
+Konjunktivstyrande subjunktioner vägrades först, och byggdes sedan — se
+nästa avsnitt.
 
-**Konjunktivstyrande subjunktioner vägras i fr/es/it.** "bien qu'il
-vienne", "antes de que venga", "benché venga" — vilka subjunktioner som
-styr konjunktiv är en **lexikal egenskap hos varje subjunktion**, och den
-skiljer sig mellan språken: fr *avant que* tar konjunktiv men *après que*
-indikativ, es *aunque* tar båda och betydelsen ändras med valet.
+---
 
-Det är samma sorts fakta som prepositionernas kasusrektion, och hör hemma
-på subjunktionens eget `Mönster` — inte i en lista i renderaren. `MönsterKrav`
-saknar en moduskolumn, så det kräver en schemaändring i `setup.sql`. Listorna
-som finns i fr/es/it just nu används BARA för att vägra, aldrig för att välja
-form, vilket är ett mycket svagare åtagande.
+## Modusrektionen — schemaändringen
 
-Konjunktivcellerna är fyllda i datan (fr 1 044, es 2 100, it 2 075) och är
-det största onådda blocket i de tre språken. Att rendera dem i indikativ
-vore en tyst felaktig mening.
+**`MönsterKrav.tempus`** bär det modus en bisats måste stå i. 1024 (Vol i
+`_legend.yaml`) betyder konjunktiv; NULL betyder indikativ. Kolumnen är ny i
+`setup.sql`, och `ordbok/migrationer/modusrektion.sql` fyller den.
+
+Mekanismen är **exakt kasusrektionens**: ett `Mönster` med `språk` satt, på
+det STYRANDE ordets koncept. fr *avant que* styr konjunktiv medan *après
+que* inte gör det, precis som de *mit* styr dativ medan *für* styr
+ackusativ. Det är en lexikal egenskap hos varje enskilt ord, per språk — och
+därför data, inte en lista i renderaren.
+
+Rektionen sitter på **två ordklasser**:
+
+- **subjunktioner** — slotten heter `komplement`, satsen de tar. 11 rader.
+- **verb** — slotten är den verbet redan har sin Bisatsfras på (objekt,
+  kommunikat eller komplement), så migrationen slår upp den ur det
+  universella mönstret. 7 rader.
+
+```
+                       fr              es              it
+subj_innan             venga  ✓        venga  ✓        venga  ✓
+subj_för_att           vienne ✓        venga  ✓        venga  ✓
+subj_trots_att         vienne ✓        viene  —        venga  ✓
+subj_ifall             —               venga  ✓        venga  ✓
+subj_tills             vienne ✓        —               —
+gen_önska    (vilja)   vienne ✓        venga  ✓        venga  ✓
+käns_hoppas  (hoppas)  vient  —        venga  ✓        venga  ✓
+kog_tro      (tro)     vient  —        viene  —        venga  ✓
+```
+
+**Att `käns_hoppas` skiljer sig i två av tre språk är hela argumentet för
+att det ligger i datan.** Samma koncept, samma sats, olika modus: franskans
+*espérer que* tar indikativ, spanskans *esperar que* och italienskans
+*sperare che* konjunktiv. Ingen regel härleder det — bara ordet vet.
+
+Tidsföljden avgörs av **bisatsens eget tempus**: presens konjunktiv för
+icke-förfluten sats, imperfekt för förfluten. Franskan har ingen levande
+imperfektkonjunktiv (*qu'il vînt* är litterärt som passé simple) och tar
+alltid presens — och det avgörs av att paradigmet SAKNAR cellerna, inte av
+en regel. Perfekt fungerar av sig självt: hjälpverbet byter modus och
+participet står kvar. *"qu'il ait lu"*, *"que haya leído"*, *"che abbia
+letto"*.
+
+### Fem subjunktioner är medvetet otaggade
+
+De styr konjunktiv bara under villkor specen inte uttrycker, och lämnas i
+indikativ hellre än att gissa. Motiveringarna står i migrationens filhuvud:
+
+| | varför inte |
+|---|---|
+| es *aunque* | tar båda, och valet ÄNDRAR betydelsen: *aunque llueve* (fastän det regnar, faktum) mot *aunque llueva* (även om det skulle regna). Konceptet heter `subj_trots_att` och namnger den faktiska läsningen. |
+| es *hasta que* | konjunktiv om satsen syftar framåt, indikativ om ett inträffat faktum |
+| es *cuando* | samma villkor: *cuando venga* men *cuando vino* |
+| it *finché* | indikativ i normalt bruk; konjunktiven är litterär |
+| fr *au cas où* | styr KONDITIONALIS — ett tredje modus som varken specen eller kolumnen uttrycker än |
+
+De två spanska villkoren går att härleda ur bisatsens tempus, som specen
+faktiskt bär. Det kräver en andra kolumn eller en regel och är inte byggt.
+
+### Ett datahål och en mätartefakt
+
+**Spanskans `haber` saknade hela konjunktiven.** Lexemet genererades som ett
+rent hjälpverb med 27 av 53 celler, och perfekt konjunktiv gick därför inte
+att bygga. 12 former tillagda (haya…hayan, hubiera…hubieran).
+
+**Och mätningen låg för lågt av samma skäl som två gånger förut.** Med
+bisatsens subjekt låst till tredje person singular nåddes bara 2 av 12
+konjunktivceller, och siffrorna stannade på fr 64 %, es 59 %, it 60 %. Med
+personvariation i bisatsen: **fr 73 %, es 67 %, it 77 %**. Italienskan gick
+från näst sämst till näst bäst av de sju språken.
+
+Tredje gången personvariation visar sig vara det som begränsar mätningen —
+först huvudsatsens subjekt, sedan attributets slot, nu bisatsens subjekt.
+Modulhuvudet i `nåbarhet.py` varnar för det, men varningen räcker uppenbart
+inte: **lägg till dimensionen och mät om, varje gång en siffra ser låg ut.**
 
 ---
 
@@ -522,16 +586,13 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
    nu mogen — med 78 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **Modusrektion på subjunktionerna** — se bisatsavsnittet. Låser upp de
-   romanska konjunktiverna (fr 1 044, es 2 100, it 2 075 former) och kräver
-   en moduskolumn på `MönsterKrav`, alltså en ändring i `setup.sql`.
-3. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
+2. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
    allt som återstår (~10 500 tyska former), och billig: graden finns redan
    som `Grad`, den sitter bara på fel ställe.
-4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
+3. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
    indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
    Partikeln ligger i formen och borde ligga i det infinita fältet.
-5. **Appen.** Desktop först, mobil senare.
+4. **Appen.** Desktop först, mobil senare.
 
 **Komplexitetsstegen är slut.** De 21 nivåerna i GENERATOR.md är byggda i
 alla sju språk. Det som återstår ovan är inte fler satstyper utan djup i
@@ -552,6 +613,11 @@ Alla fyra vägrar med ett tydligt besked.
 databasen från CSV och tappar all taggning. Kör alltid
 `for m in ordbok/migrationer/*.sql; do sqlite3 sprak.db < "$m"; done`
 efteråt, sedan `ordbok importera-former ordbok/former.tsv --ersätt`.
+
+**Schemat ägs av `setup.sql`, migrationerna av datan.** Ingen migration gör
+DDL. `MönsterKrav.tempus` tillkom 2026-08-14 och står därför i `setup.sql`;
+`modusrektion.sql` fyller bara kolumnen. En databas byggd före den dagen
+behöver `ALTER TABLE MönsterKrav ADD COLUMN tempus INTEGER;` en gång.
 Migrationerna ska vara idempotenta. `semantik_utökad.sql` var det inte:
 den satte bitar som dess egen villkorsjämförelse sedan läste, så andra
 körningen gav ett annat resultat än första.
@@ -625,6 +691,7 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
 | `src/sprakprog/rendering/spec.py` | meningsspecifikationen — enda källan till vad som går att uttrycka |
 | `ordbok/verktyg/nåbarhet.py` | mäter hur mycket av formbeståndet specen når; modulhuvudet varnar för mätartefakterna |
+| `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
 **Scope-beslutet, ordagrant:** *"Flickan köpte en dörr."* är helt okej trots
