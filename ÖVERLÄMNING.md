@@ -108,10 +108,10 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 `Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
 ```
-sv  3 892 / 4 988   78 %      it  7 877 / 10 246   77 %
+sv  3 988 / 4 988   80 %      it  7 877 / 10 246   77 %
 en  1 802 / 2 293   79 %      fr  6 650 /  9 070   73 %
 ja  1 472 / 2 498   59 %      es  7 114 / 10 608   67 %
-                              de  8 531 / 23 494   36 %
+                              de 14 417 / 23 494   61 %
 ```
 
 Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
@@ -142,17 +142,14 @@ Vad som faktiskt är onått, efter de rättelserna:
 
 | Språk | Block | Vad som krävs |
 |---|---|---|
-| de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
+| de | 39 av 147 adjektivceller — stark deklination | `Bestämdhet` saknar artikellös fras ("roter Wein") |
 | fr/es/it | konditionalis (6 celler per verb) | villkorssatser |
-| de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
 | ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
-**Tyskans 36 % beror på en enda sak.** 16 121 av 23 494 tyska former är
-adjektivformer, och två tredjedelar av det paradigmet är komparativ och
-superlativ i attributiv ställning. `Grad` finns på `Mening` men styr bara
-predikativet. Att flytta graden in i `Nominalfras.attribut` är den enskilt
-största utökningen som återstår — värd omkring 10 500 tyska former, mer än
-alla elva gjorda utökningar tillsammans på det språket.
+**Tyskans siffra styrdes av en enda sak, och den är åtgärdad** — se
+avsnittet om attributiv komparation. Kvar i tyskan är den STARKA
+deklinationen: 39 celler som kräver en fras helt utan determinerare ("roter
+Wein"), och `Bestämdhet` har bara OBESTÄMD och BESTÄMD.
 
 ---
 
@@ -374,6 +371,64 @@ nästa avsnitt.
 
 ---
 
+## Attributiv komparation — den största enskilda utökningen
+
+`Nominalfras.attribut` tog bara konceptnycklar. Graden fanns på `Mening` och
+styrde PREDIKATIVET ("boken är störst"), men attributet sitter inuti en
+nominalfras och kan ha en annan grad än predikativet i samma mening. Nu:
+
+```python
+attribut: tuple[str | Attribut, ...]     # Attribut(koncept, grad)
+```
+
+Naken sträng betyder positiv grad — samma billiga normalfall som `adverbial`
+har med sina strängar. **Tyskan gick 36 → 61 %**, 5 886 former, mer än någon
+annan utökning i projektet gett något språk.
+
+Skälet att den var så stor: tyskans adjektivparadigm har 49 celler per grad
+med IDENTISK struktur, så `pos_stark_m_nom` blir `komp_stark_m_nom` blir
+`superl_stark_m_nom`. Två tredjedelar av 147 celler låg onådda bakom ett
+saknat fält, och det räckte med att byta prefix för att nå dem.
+
+```
+sv  den största boken        de  das größte Buch     dem größten Bruder
+en  the biggest book         fr  le livre le plus intéressant
+es  el libro más interesante it  il libro più interessante
+ja  一番面白い本
+```
+
+### Tre saker som inte är samma i de sju
+
+**Perifrastisk reserv.** sv/en/es/it har suppletiva former för ett fåtal ord
+och bygger resten med mer/more/más/più — datan avgör, precis som för
+predikativet. Franskan är nästan alltid perifrastisk (12 av 444 celler
+fyllda), tyskan aldrig (5 341 av 5 439).
+
+**Komparationen kan FLYTTA adjektivet.** es/it ställer det komparerade efter
+huvudordet oavsett var positiven står: *un libro mayor*, aldrig *un mayor
+libro*. Franskan behåller placeringen — *le plus grand livre* — och markerar
+i stället superlativen med **dubblerad artikel** när adjektivet står efter:
+*le livre le plus intéressant*. Utan den vore komparativ och superlativ
+omöjliga att skilja åt, eftersom *plus* är samma ord i båda.
+
+**Attributiv superlativ kräver en bestämd fras** i sex av sju språk. "En
+störst bok", "a biggest book", "un libro más interesante" som superlativ —
+ingen av dem finns. Superlativen pekar ut ett unikt exemplar. Possessiv och
+genitivägare räknas som bestämda: *mitt största problem*, *mein größtes
+Problem*. Renderarna vägrar den obestämda i sv/en/de/fr/es/it; japanskan
+släpper igenom den, eftersom 一番 markerar graden utan att bry sig om
+bestämdhet — som japanskan inte har.
+
+### En pre-existerande brist som syntes på vägen
+
+**Italienska possessiver saknar sin artikel.** *"suo libro"* ska vara *"il
+suo libro"* — italienskan sätter bestämd artikel före possessiven, utom vid
+oböjda släktskapsord i singular (*mia madre*). Felet finns i positiv grad
+också och är alltså inte nytt, men det syns tydligare nu när frasen blir
+längre.
+
+---
+
 ## Modusrektionen — schemaändringen
 
 **`MönsterKrav.tempus`** bär det modus en bisats måste stå i. 1024 (Vol i
@@ -584,15 +639,18 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
    som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
    förfluten tid. **Den var blockerad av meningskomplexiteten och är det
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
-   nu mogen — med 78 % nåbart avgörs det som övas av strategin, inte av
+   nu mogen — med 59–80 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
-   allt som återstår (~10 500 tyska former), och billig: graden finns redan
-   som `Grad`, den sitter bara på fel ställe.
-3. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
+2. **Artikellös nominalfras.** `Bestämdhet` har bara OBESTÄMD och BESTÄMD.
+   Tyskans starka deklination kräver en fras helt utan determinerare —
+   "roter Wein", "kaltes Wasser" — och det är de sista 39 av 147
+   adjektivceller. Störst avkastning av det som återstår.
+3. **Italienska possessiver saknar artikel** — "suo libro" ska vara "il suo
+   libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
+4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
    indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
    Partikeln ligger i formen och borde ligga i det infinita fältet.
-4. **Appen.** Desktop först, mobil senare.
+5. **Appen.** Desktop först, mobil senare.
 
 **Komplexitetsstegen är slut.** De 21 nivåerna i GENERATOR.md är byggda i
 alla sju språk. Det som återstår ovan är inte fler satstyper utan djup i

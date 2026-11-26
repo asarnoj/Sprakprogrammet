@@ -163,6 +163,24 @@ class Aspekt(StrEnum):
 
 
 @dataclass(frozen=True, slots=True)
+class Attribut:
+    """Ett attributivt adjektiv med sin grad: "den STÖRSTA boken".
+
+    `Nominalfras.attribut` tar antingen en naken konceptnyckel — som betyder
+    positiv grad — eller den här, på samma sätt som `adverbial` tar antingen
+    en sträng eller en fras. Det vanliga fallet ska vara billigt att skriva.
+
+    Graden hörde hemma här och inte på `Mening` från början: `Mening.grad`
+    styr PREDIKATIVET ("boken är störst"), medan attributet sitter inuti en
+    nominalfras och kan ha en annan grad än predikativet i samma mening.
+    Att den saknades gjorde två tredjedelar av tyskans adjektivparadigm
+    onåbart — 96 av 147 celler, ungefär 10 700 former.
+    """
+    koncept: str
+    grad: Grad = Grad.POSITIV
+
+
+@dataclass(frozen=True, slots=True)
 class Nominalfras:
     """En nominalfras: ett huvudord med eventuella bestämningar.
 
@@ -173,7 +191,7 @@ class Nominalfras:
     koncept: str
     bestämdhet: Bestämdhet = Bestämdhet.OBESTÄMD
     numerus: Numerus = Numerus.SG
-    attribut: tuple[str, ...] = ()
+    attribut: "tuple[str | Attribut, ...]" = ()
     possessiv: str | None = None
     possessiv_koreferent: bool = False
     referent: Referentgenus | None = None
@@ -341,6 +359,23 @@ class RenderingsFel(Exception):
     stopp — hela poängen med det här projektet är att det renderade
     resultatet ska gå att lita på.
     """
+
+
+def attribut_med_grad(attribut: "str | Attribut") -> "Attribut":
+    """Naken konceptnyckel → Attribut i positiv grad."""
+    return Attribut(attribut) if isinstance(attribut, str) else attribut
+
+
+def bestämd_fras(nf: "Nominalfras") -> bool:
+    """Pekar frasen ut ett bestämt exemplar?
+
+    Bestämd artikel, possessiv eller genitivägare gör det alla tre — "den
+    största boken", "mitt största problem", "flickans största bok". Bara
+    den nakna obestämda artikeln gör det inte, och det är precis där den
+    attributiva superlativen slutar fungera i fem av sju språk.
+    """
+    return (nf.bestämdhet is Bestämdhet.BESTÄMD
+            or nf.possessiv is not None or nf.ägare is not None)
 
 
 #: De argumentslottar en wh-fråga kan efterfråga. Adverbialfrågor namnger

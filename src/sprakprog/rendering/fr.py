@@ -35,6 +35,8 @@ class FranskRenderare(RomanskRenderare):
     # Franskans imperfektkonjunktiv ("qu'il vînt") är litterär på samma
     # sätt som passé simple, och paradigmet saknar cellerna helt.
     HAR_IMPERFEKTKONJUNKTIV = False
+    KOMPARERAD_EFTERSTÄLLD = False
+    DUBBEL_SUPERLATIVARTIKEL = True
     NEKANDE_FÖRLED = "ne"
     FRÅGEINLEDNING = "est-ce que"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",

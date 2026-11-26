@@ -19,7 +19,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
+    Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
+    Numerus, attribut_med_grad, bestämd_fras,
     Prepositionsfras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
@@ -171,9 +172,7 @@ class SvenskRenderare:
         for attribut in nf.attribut:
             # Genitivattribut styr adjektivet likadant som en possessiv:
             # "flickans röda bok", aldrig "flickans röd bok".
-            ord.append(self.u.form_för(attribut, _adjektivcell(
-                nf.bestämdhet, nf.numerus, genus,
-                efter_possessiv=nf.possessiv is not None or nf.ägare is not None)))
+            ord.extend(self.attribut(attribut, nf, genus))
 
         tabell = SUBSTANTIVCELL_GEN if genitiv else SUBSTANTIVCELL
         cell = tabell[(substantivform, nf.numerus)]
@@ -194,6 +193,42 @@ class SvenskRenderare:
         return ord
 
     # ── sats ─────────────────────────────────────────────────────────
+
+    def attribut(self, a: str | Attribut, nf: Nominalfras, genus: int) -> list[str]:
+        """Attributivt adjektiv i sin grad.
+
+        Komparativen är OBÖJLIG i svenskan — "en större bok", "det större
+        huset", "de större böckerna" är alla samma form. Superlativen böjs
+        däremot, och attributivt tar den ALLTID den bestämda formen:
+        "den största boken", aldrig "en störst bok". Det följer av att
+        superlativen pekar ut ett bestämt exemplar.
+
+        Saknas cellen kompareras ordet perifrastiskt, samma regel som
+        predikativet redan använder — och då är det MARKÖREN som bär graden
+        medan adjektivet står i positiv: "den mest intressanta boken".
+        """
+        a = attribut_med_grad(a)
+        svag = bestämd_fras(nf)
+        if a.grad is Grad.POSITIV:
+            return [self.u.form_för(a.koncept, _adjektivcell(
+                nf.bestämdhet, nf.numerus, genus, efter_possessiv=svag))]
+
+        if a.grad is Grad.SUPERLATIV and not svag:
+            # "en störst bok" finns inte. Attributiv superlativ pekar ut ett
+            # unikt exemplar och är därför alltid bestämd — den obestämda
+            # formen (störst) hör hemma i predikativet, "boken är störst".
+            raise RenderingsFel(
+                f"sv/{a.koncept}: attributiv superlativ kräver bestämd fras "
+                f"— 'den största boken', inte 'en störst bok'")
+        lexem = self.u.lexem(a.koncept)
+        celler = self.u._celler(lexem)
+        cell = "komp" if a.grad is Grad.KOMPARATIV else "best_superl"
+        if celler.get(cell):
+            return [self.u.form(lexem, cell)]
+        markör = "komp_mer" if a.grad is Grad.KOMPARATIV else "komp_mest"
+        return [self.u.form_för(markör, "pos"),
+                self.u.form_för(a.koncept, _adjektivcell(
+                    nf.bestämdhet, nf.numerus, genus, efter_possessiv=svag))]
 
     def adverbial(self, a: str | Prepositionsfras | Bisats) -> list[str]:
         """Adverb, prepositionsfras eller bisats — samma slot, tre frastyper."""

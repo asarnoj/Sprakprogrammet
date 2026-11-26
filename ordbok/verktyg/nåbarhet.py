@@ -26,7 +26,8 @@ from collections import defaultdict
 from sprakprog.generering.granskning import _former_per_cell
 from sprakprog.rendering import (
     Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus,
-    Bisats, Prepositionsfras, RenderingsFel, Satsmodus, Tidsreferens, Uppslag,
+    Attribut, Bisats, Prepositionsfras, RenderingsFel, Satsmodus, Tidsreferens,
+    Uppslag,
 )
 from sprakprog.rendering import (
     EngelskRenderare, FranskRenderare, ItalienskRenderare, JapanskRenderare,
@@ -75,7 +76,7 @@ def specar():
     for huvud in HUVUDORD:
         for best in Bestämdhet:
             for num in Numerus:
-                for attribut in ((), ("färg_röd",)):
+                for attribut in ((), *((Attribut("färg_röd", g),) for g in Grad)):
                     for poss in (None, "poss_3sg_fem"):
                         for ägare in (None, *(Nominalfras(
                                 ä, Bestämdhet.BESTÄMD, attribut=("färg_röd",))
