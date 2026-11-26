@@ -15,7 +15,7 @@ Claude-prenumeration** (Pro/Max) — inga API-credits behövs.
 ```bash
 git clone <repo-url> && cd Språkprogrammet
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e .                       # ger `ordbok`-kommandot + claude-agent-sdk
+pip install -e .                       # ger `ordbok`-kommandot
 npm install -g @anthropic-ai/claude-code
 claude                                 # logga in med DITT Claude-konto, avsluta sen
 ```
@@ -23,6 +23,17 @@ claude                                 # logga in med DITT Claude-konto, avsluta
 **Viktigt:** kontrollera att `ANTHROPIC_API_KEY` INTE är satt
 (`echo $ANTHROPIC_API_KEY` ska vara tomt) — annars faktureras API-credits i
 stället för att prenumerationen används.
+
+**Varför inte `claude-agent-sdk`?** Den var med i ett tidigare utkast av
+den här pipelinen men är enligt Anthropics egen dokumentation designad för
+`ANTHROPIC_API_KEY`-fakturering — dokumentationen ber uttryckligen verktyg
+byggda på Agent SDK:t att INTE erbjuda prenumerationsinloggning utan
+förhandsgodkännande, och en öppen feature-request om just detta
+(Max/Pro-fakturering för SDK:t) är stängd som ej stödd. Pipelinen anropar
+i stället `claude -p` direkt via subprocess — det är den officiellt
+avsedda vägen för att köra Claude Code icke-interaktivt mot en Pro/Max-
+prenumeration, med samma faktureringslogik som interaktiv användning.
+Inget extra Python-paket behövs utöver Node + claude-CLI:t.
 
 Kör allt från en **vanlig terminal**, inte inifrån Claude Code (pipelinen
 vägrar köra där, avsiktligt).
@@ -106,7 +117,6 @@ sqlite3 sprak.db ".dump Former" > former_dump.sql
 `ordbok generera` → [pipeline.py](src/sprakprog/generering/pipeline.py):
 läser inflektionsrummet ur `paradigm/{språk}/{ordklass}.yaml`, injicerar
 språkinstruktionerna ur `paradigm/{språk}/INSTRUKTIONER.md` i prompten,
-skickar batchar om 10 lemman till Claude via **claude-agent-sdk** (nedlåst:
-inga verktyg, ingen projektkontext, 1 tur; faller tillbaka på `claude -p`
-om SDK:t saknas), parsar JSON-svaret, bitmask-kollapsar identiska former
-och skriver till `Former`. Skrivningen är idempotent per lexem.
+skickar batchar om 10 lemman till Claude via `claude -p` (subprocess),
+parsar JSON-svaret, bitmask-kollapsar identiska former och skriver till
+`Former`. Skrivningen är idempotent per lexem.

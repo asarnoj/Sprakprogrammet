@@ -29,54 +29,27 @@ STANDARD_BATCH = 10
 
 # ── LLM-transport ────────────────────────────────────────────────────
 #
-# Båda vägarna använder claude-CLI:ts prenumerations-inloggning (kör
-# `claude` en gång och logga in; sätt INTE ANTHROPIC_API_KEY — då
-# faktureras API-credits i stället).
+# Anropar claude-CLI:t direkt via subprocess — INTE claude-agent-sdk.
+#
+# Bakgrund (2026-07-09): claude-agent-sdk-python är enligt Anthropics egen
+# dokumentation (code.claude.com/docs/en/agent-sdk/overview) designat för
+# ANTHROPIC_API_KEY-fakturering, och dokumentationen ber uttryckligen
+# tredjepartsverktyg byggda på Agent SDK:t att INTE erbjuda claude.ai-inloggning
+# (dvs. prenumerationsfakturering) utan förhandsgodkännande. En stängd
+# GitHub-issue (anthropics/claude-agent-sdk-python#559) bekräftar att SDK:t
+# inte stödjer Max/Pro-fakturering.
+#
+# CLI:t (`claude -p "prompt"`) är däremot den officiellt avsedda vägen för
+# att köra Claude Code icke-interaktivt mot en Pro/Max-prenumeration — det
+# är samma faktureringsväg som interaktiv användning. Därför används den
+# här, utan SDK-beroende.
+#
+# Kör `claude` en gång och logga in innan skarp körning. Sätt INTE
+# ANTHROPIC_API_KEY i miljön — då faktureras API-credits i stället
+# (API-nyckeln vinner tyst över prenumerations-inloggningen).
 
 def _anropa_llm(prompt: str, modell: str) -> str:
-    """Skicka prompten till Claude, returnera svarstexten.
-
-    Provar claude-agent-sdk först (`pip install claude-agent-sdk`);
-    faller tillbaka på `claude -p` via subprocess om SDK:t saknas.
-    """
-    try:
-        import claude_agent_sdk  # noqa: F401
-    except ImportError:
-        return _anropa_cli(prompt, modell)
-    return _anropa_sdk(prompt, modell)
-
-
-def _anropa_sdk(prompt: str, modell: str) -> str:
-    """claude-agent-sdk-vägen. Nedlåst: inga verktyg, ingen projektkontext."""
-    import anyio
-    from claude_agent_sdk import (
-        AssistantMessage,
-        ClaudeAgentOptions,
-        TextBlock,
-        query,
-    )
-
-    options = ClaudeAgentOptions(
-        model=modell,
-        allowed_tools=[],     # ren textgenerering — ingen verktygsanvändning
-        setting_sources=[],   # ladda inte CLAUDE.md/MCP från projektet
-        max_turns=1,
-    )
-
-    async def _kör() -> str:
-        delar: list[str] = []
-        async for msg in query(prompt=prompt, options=options):
-            if isinstance(msg, AssistantMessage):
-                for block in msg.content:
-                    if isinstance(block, TextBlock):
-                        delar.append(block.text)
-        return "".join(delar)
-
-    return anyio.run(_kör)
-
-
-def _anropa_cli(prompt: str, modell: str) -> str:
-    """Fallback: shella ut till claude-CLI:t."""
+    """Skicka prompten till Claude via claude-CLI:t, returnera svarstexten."""
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
     result = subprocess.run(
         ["claude", "--model", modell, "-p", prompt],
