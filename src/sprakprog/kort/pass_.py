@@ -46,7 +46,23 @@ VÄXELVARV = 6
 #: glosa och går inte att svara på ur en mening man inte kan läsa (C2/D3) —
 #: och sedan allt som hör hemma i en mening. Ordningen skrivs EN gång här i
 #: stället för att härledas på nytt vid varje anrop.
-ROLLORDNING = ("glosa", "igen", "förfallen", "ny")
+#:
+#: `övervakad` ligger bland repetitionerna och före det nya, av samma skäl som
+#: `förfallen` gör det: båda är kort användaren redan mött och som säger att
+#: de behöver mötas igen. Skillnaden är VEM som säger det — en förfallodag
+#: eller en rullande andel rätt (`Schemaläggare.i_larm`) — och den skillnaden
+#: är hela anledningen att rollen är egen och inte hopslagen med `förfallen`.
+ROLLORDNING = ("glosa", "igen", "förfallen", "övervakad", "ny")
+
+#: Rollen → nyckeln gränssnittet visar den under. UPPRÄKNINGEN ÄR ETT
+#: PÅSTÅENDE: `läget` lämnar ut `att_göra` som summan av allt som väntar och
+#: `delar` som uppdelningen av samma sak, så en roll som saknas här gör raden
+#: mindre än rubriken utan att något går sönder. Det felet har funnits en
+#: gång — sidan räknade `nya − glosor` och kom fem kort fel — och skillnaden
+#: nu är att det går att PRÖVA: `övervakningsprov` sätter en rad av varje roll
+#: i `ROLLORDNING` och kräver att summan stämmer.
+DELAR = (("glosa", "glosor"), ("igen", "igen"), ("förfallen", "förfallna"),
+         ("övervakad", "övervakade"), ("ny", "nya"))
 
 
 def _lokalt_datum(nu: datetime | None = None) -> str:
@@ -319,6 +335,15 @@ def _rader(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict,
         # som bygger på att rätt kort repeteras i tid.
         for r in s.förfallna(språk, 10_000, nu):
             rader.append((r["id"], "förfallen"))
+        # ÖVERVAKADE KORT SOM GÅR SÖNDER. De står aldrig i `förfallna` —
+        # frågan där kräver `schemalagt = 1` — så utan den här raden fanns
+        # ingen väg alls tillbaka för ett kort som mäts men inte schemaläggs.
+        #
+        # UTAN TAK, av samma skäl som förfallna: listan är kort av
+        # konstruktion. Larmet kräver att felen är osannolikare än systemets
+        # egen tolerans, och mot Julius verkliga logg ger det 1 kort av 24.
+        for r in s.i_larm(språk, nu):
+            rader.append((r["id"], "övervakad"))
     else:
         # EXTRAPASSET har en egen kö: kort som ännu inte förfallit, det som
         # förfaller först först (B6). Inget nytt material — extraövning ska
@@ -437,6 +462,7 @@ def läget(kort_db: sqlite3.Connection, pass_id: int) -> dict:
         "att_göra": väntar,
         "glosor": antal("glosa", "väntar"),
         "förfallna": antal("förfallen", "väntar"),
+        "övervakade": antal("övervakad", "väntar"),
         "nya": antal("ny", "väntar"),
         "igen": antal("igen", "väntar"),
         "gjorda": antal(status="rätt") + antal(status="fel"),
@@ -459,17 +485,14 @@ def läget(kort_db: sqlite3.Connection, pass_id: int) -> dict:
         # API:t, och ingenting prövade vad SIDAN räknade fram ur det.
         #
         # Rollerna är disjunkta och summerar per konstruktion till `väntar`,
-        # eftersom `antal(status="väntar")` går över exakt de fyra. Att lämna
-        # ut listan i stället för fyra lösa tal gör summan till ett faktum
+        # eftersom `antal(status="väntar")` går över exakt de fem. Att lämna
+        # ut listan i stället för fem lösa tal gör summan till ett faktum
         # gränssnittet ärver i stället för ett det räknar om.
         #
         # NYCKELN OCH INTE TEXTEN. All gränssnittstext bor i `T` i sida.html,
         # så att ett andra programspråk är en kolumn där och ingenting här.
         "delar": [{"nyckel": nyckel, "antal": antal(roll, "väntar")}
-                  for roll, nyckel in (("glosa", "glosor"),
-                                       ("igen", "igen"),
-                                       ("förfallen", "förfallna"),
-                                       ("ny", "nya"))
+                  for roll, nyckel in DELAR
                   if antal(roll, "väntar")],
     }
 

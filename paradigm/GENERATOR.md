@@ -329,6 +329,31 @@ kön är fel verktyg för något allestädes närvarande. Därav uppdelningen:
 
 Gränsen sätts på uppmätt exponeringsfrekvens, inte på en tumregel.
 
+**TILLÄGG 2026-09-04: "de står aldrig i kön" gällde ett steg för långt.**
+Uppdelningen ovan är riktig men lämnade de mätta korten utan konsekvens —
+rätt/fel registrerades och ingenting läste det. Ett mätt kort som gick sönder
+kunde därför inte komma tillbaka: `förfallna` kräver `schemalagt = 1`.
+
+Två meningar i texten ovan visade sig dessutom gälla smalare än de lät.
+"Något man möter arton gånger dagligen glöms inte" stämmer — men gränsen för
+att lyftas ur schemat är bara ETT möte om dagen, och listans nedre halva
+ligger nära den. I franskan möts `ordföljd` 20 gånger om dagen och `ord:mère`
+1,1. För det senare är det inte sant att kortet "skulle ha dykt upp ändå".
+
+Och mätt över loggen går mätta kort rätt 88,4 % av gångerna mot schemalagda
+87,8 % — alltså inte bättre, vilket "glöms inte" antydde. Skälet är att korten
+är nyinförda: felen är inlärningsfel och inte avklingning.
+
+Uppdelningen står därför kvar, med en väg tillbaka tillagd:
+
+> **Schemalagda kort** styrs av en förfallodag.
+> **Mätta kort** styrs av en rullande andel rätt. De står inte i kön — förrän
+> andelen sjunker så lågt att slumpen inte förklarar den, och då blir de mål
+> med rollen `övervakad` tills fönstret är rent igen.
+
+Fönstret och tröskeln kommer båda ur retentionsmålet och inte ur ett val — se
+E6:s lösning i `PROBLEM.md` och `Schemaläggare.i_larm`.
+
 ### Misslyckade kort
 
 **Inga relearning-steg behövs.** Ett kort som fallerat får hög prioritet i

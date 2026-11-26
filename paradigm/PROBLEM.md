@@ -3868,7 +3868,7 @@ samma skäl.
 Det kan också vara förklaringen till den rapporterade symtombilden att
 extraövningen fastnade på ett par återförsök som aldrig löste sig.
 
-### E6 ? — Kort som möts i nästan varje mening går inte att schemalägga
+### E6 ✓ — Kort som möts i nästan varje mening går inte att schemalägga
 
 Den bestämda artikeln och 3sg-ändelsen finns i nästan varje mening. Vilket
 intervall FSRS än sätter kommer kortet att mötas långt innan dess. Ett sådant
@@ -4028,6 +4028,80 @@ korrekt att det gör det — det ÄR det man möter mest och bör lära sig för
 Om svaret blir nej frigörs `schemalagt` för A3:s betydelse: kort utan väg till
 någon mening. Det är ett strukturellt faktum som G5:s invariant kan pröva,
 till skillnad från ett statistiskt som måste mätas om.
+
+#### LÖSNING 2026-09-04 — sluta schemalägga, börja övervaka
+
+**Svaret på den öppna frågan är ja, de ska lyftas ut — men att lyfta ut ett
+kort utan att sätta något i stället var halva beslutet, och den saknade halvan
+var felet.** `schemalagt = 0` var formulerat som en negation: kortet möts för
+ofta för att en förfallodag ska betyda något. Följden blev ett kort som
+betygsattes utan att någon läste betygen, och som därför inte kunde komma
+tillbaka i sikte hur illa det än gick. Franskans `form:une` gick fel fyra
+gånger av sex och stod ändå inte i någon kö — `förfallna` kräver
+`schemalagt = 1`.
+
+Mekanismen är därför **rullande andel rätt** i stället för förfallodag:
+
+    Schemaläggare.övervakade(språk)   fönstret per kort: möten och fel
+    Schemaläggare.i_larm(språk)       de vars fel slumpen inte förklarar
+    Passkort.roll = 'övervakad'       vägen tillbaka in i dagens arbete
+
+**TALEN ÄR HÄRLEDDA UR RETENTIONSMÅLET, inte valda.** Fönstret är
+1/(1−R) = 10 möten, alltså den sträcka inom vilken exakt ett fel är väntat —
+samma form som `exponeringsgräns`, som också kommer ur att FSRS kortaste
+meningsfulla intervall är ett dygn. Signifikansnivån är samma 1−R = 0,1:
+systemet tolererar att ha fel om ett kort lika ofta som det tolererar att man
+glömmer det. Att välja ett eget tal här hade satt två oförklarade toleranser i
+samma program.
+
+**ETT MÄTT OCH FÖRKASTAT MÅTT.** Första utkastet larmade på "mer än ett fel i
+fönstret", direkt ur definitionen ovan. Det mättes mot loggen och höll inte:
+
+    övervakade kort     88,4 % rätt    (86 bedömda möten)
+    schemalagda kort    87,8 % rätt    (245)
+
+Båda alltså UNDER målet 0,9 — korten är nyinförda, och felen är inlärningsfel
+snarare än avklingning. En tröskel vid det väntade antalet hade larmat på
+ungefär en tredjedel av beståndet i jämvikt. Måttet är därför ett
+sannolikhetspåstående och inte en andel: larma när felen är osannolikare än
+`FELTOLERANS` givet att kortet låg på målet. Vad som faller ut:
+
+    2–5 möten   2 fel        6–10 möten   3 fel
+
+    kort som verkligen ligger på 88 %   larmar i 10 % av fönstren
+    kort som verkligen ligger på 70 %   larmar i 62 %
+
+Mot Julius verkliga logg larmar **1 av 24** övervakade kort: `form:une` på
+4 fel av 6, P = 0,0013. De fyra felen kom ur genusbuggen (D9), och kortet
+klarar sig ur larmet av sig självt när fönstret fyllts med rena möten.
+
+**ÅTGÄRDEN BITER DÄR DEN BEHÖVS OCH ÄR OSKADLIG DÄR DEN INTE GÖR DET.** Det
+övervakade beståndet spänner två regimer, vilket inte var uppenbart förrän
+exponeringen lades bredvid larmet: franskans `ordföljd` och `ord:le` möts i
+var mening (20,0 respektive 19,5 gånger om dagen), och att göra dem till mål
+ändrar ingenting. Men gränsen för att ÖVERVAKAS är bara ett möte om dagen, så
+listans nedre halva ligger nära den — `form:une` 2,8 gånger, `ord:mère` 1,1.
+För dem är skillnaden mellan att mötas av en slump och att mötas med avsikt
+hela poängen. Att larmet är verkningslöst för de allestädes närvarande korten
+är alltså ingen brist i måttet utan en följd av att de korten inte går att öva
+mer än de redan övas.
+
+**EN FÄLLA SOM STÄNGDES INNAN DEN ÖPPNADES.** E2 ger en bedömning per kort och
+dygn, och bara ett FEL får registreras en gång till. En `övervakad`-rad på ett
+kort som redan mötts idag går därför inte att klarera genom att svara rätt:
+raden står kvar som `väntar`, och passet säger att arbete återstår utan att
+det finns någon väg att göra det. `i_larm` utesluter dagens rörda kort av det
+skälet. Det är samma fälla `kommande` redan undviker, men skarpare — den högen
+vore inte bara verkningslös utan låsande, eftersom passet väntar på den.
+
+`övervakningsprov.py` — sju invarianter, sju sabotage, alla faller. Det
+förkastade måttet ovan är ett av dem: invariant 2 är dess gravsten.
+
+**VAD SOM INTE ÄR LÖST.** De tre iakttagelserna ovan står kvar och hör
+fortfarande till B3 och inte hit: tyskans exponering är omätt, mätningen
+samplar en enda meningsform, och `exponeringsgräns` följer kursens
+`meningar_per_dag` i stället för den uppmätta takten. Det sista är fortfarande
+ett beslut och inte en rättelse.
 
 ### E7 ? — FSRS-parametrarna är biblioteksförval
 

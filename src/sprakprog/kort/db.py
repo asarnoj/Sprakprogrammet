@@ -143,6 +143,13 @@ OMBYGGNADER = (
           AND EXISTS (SELECT 1 FROM pragma_foreign_key_list('Passkort')
                       WHERE "table" = 'Kort' AND "from" = 'kort_id'
                         AND "on_delete" <> 'SET NULL')"""),
+    # FEMTE ROLLEN. CHECK-villkor går inte att ändra med ALTER i SQLite, så
+    # tabellen byggs om. Villkoret läses ur `sql` och inte ur en versionsrad:
+    # frågan "tillåter tabellen rollen" besvaras då av tabellen själv.
+    ("passkort_overvakad.sql",
+     """SELECT 1 FROM sqlite_master
+        WHERE type = 'table' AND name = 'Passkort'
+          AND sql NOT LIKE '%övervakad%'"""),
 )
 
 

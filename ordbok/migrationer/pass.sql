@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS Passkort (
        unik nyckel på (pass_id, kort_id): historiken i passet är en följd av
        rader och inte ett tillstånd per kort. */
     roll    TEXT    NOT NULL
-            CHECK (roll IN ('förfallen', 'ny', 'glosa', 'igen')),
+            CHECK (roll IN ('förfallen', 'ny', 'glosa', 'igen', 'övervakad')),
 
     /* Ordningen bestämd vid konstruktionen. Drillen först, sedan meningarna
        — F4:s ordningsregel, skriven en gång i stället för härledd på nytt

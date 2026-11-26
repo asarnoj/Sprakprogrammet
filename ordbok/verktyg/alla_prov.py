@@ -53,6 +53,10 @@ NÄT = [
     ("strukturprov.py",      False),
     ("dimensionsprov.py",    False),
     ("lektionsprov.py",      False),
+    # Bygger databaskopior men är ändå SNABB — 2 s, inte minuter — därför att
+    # varje invariant skriver sin egen lilla logg i stället för att sampla
+    # meningar. Kolumnen säger körtid och inte metod.
+    ("övervakningsprov.py",  False),
     ("ordföljdsprov.py",     True),
     ("renderarbild.py",      True),
     ("introduktionsprov.py", True),

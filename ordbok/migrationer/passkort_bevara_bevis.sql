@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Passkort_ny (
        nullbar, och det är inte en uppmjukning utan hela poängen. */
     kort_id INTEGER REFERENCES Kort(id) ON DELETE SET NULL,
     roll    TEXT    NOT NULL
-            CHECK (roll IN ('förfallen', 'ny', 'glosa', 'igen')),
+            CHECK (roll IN ('förfallen', 'ny', 'glosa', 'igen', 'övervakad')),
     ordning INTEGER NOT NULL,
     status  TEXT    NOT NULL DEFAULT 'väntar'
             CHECK (status IN ('väntar', 'rätt', 'fel', 'onåbar')),

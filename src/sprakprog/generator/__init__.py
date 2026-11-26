@@ -371,6 +371,29 @@ class Generator:
                 kö += [k for k in self.schemaläggare.osedda(
                            self.språk, plats, uteslut=("ord",))
                        if k["id"] not in {x["id"] for x in kö}]
+        # ÖVERVAKADE KORT I LARM, som aldrig kan stå i `förfallna`: frågan
+        # där kräver `schemalagt = 1`, och de här korten har per definition
+        # 0. Utan raden nedan kunde passet lägga in ett larmat kort som mål
+        # (`pass_._rader`) medan generatorn inte visste om det — och en
+        # `övervakad`-rad som bara kan klareras av en slumpvis träff är
+        # exakt den låsning som `i_larm` utesluter dagens rörda kort för att
+        # undvika. De två sidorna frågar därför SAMMA funktion i stället för
+        # att den ena får listan skickad till sig; då kan de inte gå isär.
+        #
+        # EFTER påfyllningen av nya kort, inte före, så att larmet inte äter
+        # av dagens nykvot. Listan är kort av konstruktion — den kan aldrig
+        # bli längre än antalet övervakade kort, som är 17 i franskan — och
+        # behöver därför inget tak.
+        #
+        # OCKSÅ I EXTRALÄGET, och det är ett val. Extrapasset får inga
+        # `övervakad`-rader — B6 säger att extraövning inte ska öka
+        # morgondagens arbete — men generatorn tar ändå med larmet i kön.
+        # Ett larmat kort är inget NYTT material, och att lägga en extra
+        # repetition på något som faktiskt inte sitter är värt mer än en
+        # tidig repetition på något som gör det. Går det rätt sjunker
+        # morgondagens arbete i stället för att växa.
+        kö += [k for k in self.schemaläggare.i_larm(self.språk, nu)
+               if k["id"] not in {x["id"] for x in kö}]
         # Passkön läggs FÖRST och räknas som täckt, så att poängfunktionen
         # aktivt bygger meningen runt det som nyss gick fel.
         # PASSKÖN KOMMER UTIFRÅN när anroparen har ett PASS. Kön är ett

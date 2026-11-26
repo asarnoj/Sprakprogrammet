@@ -311,6 +311,11 @@
       <div><b id="r-nya">0</b><span>new left</span></div>
       <div><b id="r-igen">0</b><span>to retry</span></div>
       <div><b id="r-förf">0</b><span>due today</span></div>
+      <!-- ÖVERVAKADE KORT I LARM. Dold vid noll, till skillnad från de
+           andra: de tre ovan är dagens normala högar och betyder något även
+           tomma, medan den här bara uppstår när ett kort som möts hela
+           tiden ändå inte sitter. Raden är en flexrad utan radbrytning. -->
+      <div id="r-över-ruta" hidden><b id="r-över">0</b><span>slipping</span></div>
       <div><b id="r-gjort">0</b><span>sentences</span></div>
       <button class="info" id="info-knapp" title="What is in these numbers?"
               aria-label="Details">i</button>
@@ -550,6 +555,7 @@ const T = {
     glosor:    n => `${n} new word${n === 1 ? "" : "s"} to read`,
     igen:      n => `${n} to retry`,
     förfallna: n => `${n} to review`,
+    övervakade: n => `${n} slipping`,
     nya:       n => `${n} new form${n === 1 ? "" : "s"} in sentences`,
   },
   //: Uppdelningen som en rad. Ordningen är serverns — den man möter korten i.
@@ -1068,6 +1074,8 @@ async function nästa() {
   // — den bär även kort som föll i en mening de bara råkade stå i, vilket är
   // själva skälet att den inte går att förutse.
   sätt("r-nya", d.nya); sätt("r-igen", d.igen); sätt("r-förf", d.förfallna);
+  sätt("r-över", d.övervakade || 0);
+  $("r-över-ruta").hidden = !d.övervakade;
   gjortIdag = d.gjort;
   sätt("r-gjort", d.gjort);
   ritaTyper();
@@ -1090,6 +1098,8 @@ async function nästa() {
     typer = om.typer || [];
     sätt("r-nya", om.idag.nya); sätt("r-igen", om.idag.igen);
     sätt("r-förf", om.idag.förfallna); sätt("r-gjort", om.idag.gjort);
+    sätt("r-över", om.idag.övervakade || 0);
+    $("r-över-ruta").hidden = !om.idag.övervakade;
     ritaTyper();
     rensaUtfall();
     return slut(om.idag, u.oåtkomliga);

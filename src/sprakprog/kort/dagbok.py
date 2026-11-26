@@ -113,13 +113,44 @@ def _ordet_sett(kort_db: sqlite3.Connection,
             for k, r in kort.items()}
 
 
+def _rullande(kort_db: sqlite3.Connection, kort: dict) -> dict[int, dict]:
+    """Andelen rätt i fönstret, för de kort som INTE har en förfallodag.
+
+    Ett schemalagt kort bär sitt eget skäl att vara med: `förfaller` står i
+    ögonblicksbilden och går att läsa. Ett övervakat kort har ingen sådan
+    rad — dess skäl är en fråga mot repetitionsloggen, och utan det här
+    fältet hade dagboken visat härkomsten `övervakad` utan att kunna svara
+    på varför just det kortet larmade. Det var exakt vad Julius bad
+    dagboken slippa: att behöva återberätta.
+    """
+    from .schemalaggning import FEL, LARMFÖNSTER
+    idn = [k for k, v in kort.items() if not v["schemalagt"]]
+    if not idn:
+        return {}
+    platser = ",".join("?" * len(idn))
+    return {r["kid"]: {"möten": r["möten"], "fel": r["fel"]}
+            for r in kort_db.execute(
+                f"""WITH senaste AS (
+                        SELECT kort_id AS kid, betyg,
+                               ROW_NUMBER() OVER (PARTITION BY kort_id
+                                                  ORDER BY tidpunkt DESC) AS n
+                        FROM Repetition
+                        WHERE kort_id IN ({platser}) AND betyg IS NOT NULL
+                    )
+                    SELECT kid, COUNT(*) AS möten,
+                           SUM(betyg = {int(FEL)}) AS fel
+                    FROM senaste WHERE n <= ? GROUP BY kid""",
+                (*idn, LARMFÖNSTER))}
+
+
 def före(kort_db: sqlite3.Connection, pass_id: int | None,
          idn: set[int]) -> dict:
     """Ögonblicksbild INNAN bokföringen. Måste tas före `registrera`."""
     kort = _hämta(kort_db, idn)
     pass_ = _passrader(kort_db, pass_id, idn)
     ordet = _ordet_sett(kort_db, kort)
-    return {"kort": {k: _kortrad(v) for k, v in kort.items()},
+    return {"rullande": _rullande(kort_db, kort),
+            "kort": {k: _kortrad(v) for k, v in kort.items()},
             "fast": {k: {"nyckel": v["nyckel"], "typ": v["typ"],
                          "koncept": v["koncept"], "variant": v["variant"],
                          "facit": v["facit"], "ordklass": v["ordklass"],
@@ -137,7 +168,7 @@ def _härkomst(passrader: list | None, snapshot: dict | None) -> str:
     köpet, och då är frågan i stället om det ens var infört.
     """
     if passrader:
-        return passrader[0]["roll"]          # ny · glosa · förfallen · igen
+        return passrader[0]["roll"]   # ny · glosa · förfallen · övervakad · igen
     if snapshot is None:
         return "okänd"
     # `medföljande-ny` OCH INTE `oanmäld`: ordet `oanmäld` är reserverat för
@@ -166,7 +197,13 @@ def _hamnade(efter: dict | None, betyg: int | None, skäl: str | None,
         return "again"
     if efter["sedd"] is None:
         return "ny"
-    return "schemalagd"
+    # ETT ÖVERVAKAT KORT ÄR INTE SCHEMALAGT, och att skriva "schemalagd" om
+    # det vore att bokföra en förfallodag som ingenting läser. Kortet möts
+    # oftare än en gång om dagen, `schemalagt` är 0, och det som styr om det
+    # kommer tillbaka är den rullande andelen rätt (`Schemaläggare.i_larm`)
+    # — inte `förfaller`. Dagboken ska säga vilken av de två mekanismerna
+    # kortet faktiskt lyder under.
+    return "schemalagd" if efter["schemalagt"] else "övervakad"
 
 
 def rad(*, nu: datetime, kurs: sqlite3.Row, pass_rad: sqlite3.Row | None,
@@ -211,6 +248,9 @@ def rad(*, nu: datetime, kurs: sqlite3.Row, pass_rad: sqlite3.Row | None,
                                           or f["typ"] == "ord")),
             # Är ORDET bakom kortet infört? None = kortet hör inte till ett.
             "ordet_infört": ögonblick.get("ordet_sett", {}).get(kid),
+            # Fönstret, för kort utan förfallodag. None = kortet är schemalagt
+            # och bär sitt skäl i `före.förfaller` i stället.
+            "rullande": ögonblick.get("rullande", {}).get(kid),
             # DE TVÅ FEL SOM FAKTISKT KAN HÄNDA, och inga andra:
             #   ett ORDKORT som kom in genom en mening i stället för glosan
             #   ett BÖJNINGSKORT som möttes före sitt ord (A4)

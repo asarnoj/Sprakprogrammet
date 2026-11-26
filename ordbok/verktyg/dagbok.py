@@ -20,6 +20,12 @@ MARKERINGARNA ÄR DE FEL SOM FAKTISKT HÄNT, inte generella varningar:
     ⚠ tomgång         meningen bokförde noll kort (C4)
     ⚠ nödfall         ordagrann upprepning, sista utvägen (B8)
 
+HÄRKOMSTEN `övervakad` betyder att kortet möts för ofta för att schemaläggas
+(`schemalagt = 0`) och att dess rullande andel rätt sjunkit så lågt att
+slumpen inte räcker som förklaring — se `Schemaläggare.i_larm`. Kolumnen som
+annars visar förfallodagen visar då fönstret i stället, eftersom kortet inte
+har någon förfallodag som betyder något.
+
 Larmen är AVSIKTLIGT FÅ. Första versionen flaggade varje kort utan `sedd`
 och passrad, men ett ordföljdskort införs aldrig i glosläget och står aldrig
 i passet — larmet tjöt på var tredje mening. Ett larm som alltid tjuter lär
@@ -43,7 +49,7 @@ sys.path.insert(0, str(ROT / "src"))
 from sprakprog.kort.dagbok import KATALOG, dagböcker, läs   # noqa: E402
 
 #: Härkomster som betyder "kortet stod i dagens plan".
-PLANERADE = {"ny", "glosa", "förfallen", "igen"}
+PLANERADE = {"ny", "glosa", "förfallen", "övervakad", "igen"}
 
 
 def _tid(post: dict) -> str:
@@ -90,7 +96,20 @@ def sammanfatta(poster: list[dict]) -> None:
 
 
 def _pil(k: dict) -> str:
-    """Förfallodagen före → efter. Det är här ett schemaläggningsfel syns."""
+    """Vad som styr kortet: förfallodagen, eller fönstret.
+
+    KOLUMNEN SVARAR PÅ SAMMA FRÅGA FÖR BÅDA SORTERNA — "när kommer det här
+    kortet tillbaka" — men svaret har två olika källor. Ett schemalagt kort
+    styrs av `förfaller`, och det är här ett schemaläggningsfel syns. Ett
+    övervakat kort har ingen förfallodag som betyder något (`schemalagt = 0`,
+    se `exponeringsgräns`); det styrs av andelen rätt i fönstret.
+
+    Att visa datumet för båda vore att rita en spak som inte sitter fast i
+    något — kortet kommer tillbaka när felen blir för många, inte den dagen.
+    """
+    if k.get("rullande"):
+        r = k["rullande"]
+        return f"fönster {r['fel']}/{r['möten']} fel"
     f, e = k["före"], k["efter"]
     def d(x):
         return (x or {}).get("förfaller") or "—"

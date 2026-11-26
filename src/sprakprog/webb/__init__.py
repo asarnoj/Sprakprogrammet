@@ -818,8 +818,14 @@ class Övningstjänst:
                                 inflödestak=p["inflödestak"])
             return {
                 "kurs": dict(kurs),
+                # `övervakade` SKICKAS MED de tre andra högarna och inte
+                # bara i `delar`. Rollerna summerar till `att_göra`, så en
+                # roll som finns i summan men inte bland räknarna gör raden
+                # mindre än rubriken — samma fel som `nya − glosor` en gång
+                # var, fast från andra hållet.
                 "idag": {"att_göra": p["att_göra"], "förfallna": p["förfallna"],
                          "igen": p["igen"], "nya": p["nya"],
+                         "övervakade": p.get("övervakade", 0),
                          "gjort": p["gjort"], "mål": p["mål"], "klar": p["klar"],
                          "finns": p["att_göra"],
                          # UPPDELNINGEN, färdigräknad. Sidan ska inte

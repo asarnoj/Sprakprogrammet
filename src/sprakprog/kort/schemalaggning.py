@@ -126,6 +126,71 @@ def _skapa_schemaläggare(retentionsmål: float | None = None, *,
                         else {"desired_retention": retentionsmål}))
 
 
+#: SYSTEMETS EGEN TOLERANS FÖR ATT HA FEL OM ETT KORT. Det är samma tal som
+#: sannolikheten att glömma ett kort som ligger på målet: schemaläggningen är
+#: byggd för att man ska missa en repetition av tio, och den siffran är därför
+#: redan ett svar på frågan "hur säkert måste något vara innan systemet agerar
+#: på det". Att välja ett eget signifikanstal här vore att sätta två olika
+#: toleranser i samma program utan att kunna säga varför de skiljer sig.
+FELTOLERANS = 1 - _skapa_schemaläggare().desired_retention
+
+#: Fönstret den rullande andelen rätt mäts över, för kort som INTE
+#: schemaläggs. RÄKNAS och står inte i koden: ett kort som möts på sin
+#: förfallodag går rätt med sannolikheten `desired_retention`, alltså ett fel
+#: per 1/(1−R) möten. Fönstret är den sträcka inom vilken exakt ETT fel är
+#: väntat — måttets naturliga enhet.
+#:
+#: Samma härledning som `exponeringsgräns`, och av samma skäl: talet ska följa
+#: inställningen i stället för att vara avskrivet från ett gammalt förval.
+LARMFÖNSTER = round(1 / FELTOLERANS)
+
+
+def _osannolikt_många_fel(fel: int, möten: int) -> bool:
+    """Är felen fler än slumpen bär, om kortet låg på retentionsmålet?
+
+    ETT SCHEMALAGT KORT HAR EN FÖRFALLODAG SOM MÄTER DET. Ett övervakat kort
+    har ingen: `schemalagt = 0` betyder att kortet möts oftare än en gång om
+    dagen, och FSRS kortaste meningsfulla intervall är ett dygn, så spacing
+    har ingen spak att dra i (`exponeringsgräns`). Kortet betygsätts ändå —
+    men ingenting läste betygen, och ett övervakat kort som gick sönder kunde
+    därför aldrig komma tillbaka i sikte. Det här är avläsningen.
+
+    TRÖSKELN ÄR ETT SANNOLIKHETSPÅSTÅENDE OCH INTE EN ANDEL, och det var den
+    inte i första utkastet. Där stod "mer än ett fel i fönstret", direkt ur
+    definitionen ovan. Måttet mättes sedan mot loggen och höll inte:
+    övervakade kort går rätt 88,4 % av gångerna (86 bedömda möten) och
+    schemalagda 87,8 % (245) — alltså BÅDA under målet 0,9, därför att korten
+    är nyinförda och felen är inlärningsfel snarare än avklingning. En
+    tröskel vid det väntade antalet hade larmat på ungefär en tredjedel av
+    beståndet i jämvikt, och ett larm som alltid tjuter lär läsaren bläddra
+    förbi — samma slutsats som dagbokens varningar drog.
+
+    Frågan är alltså inte "ligger kortet under målet" utan "ligger det så
+    mycket under att slumpen inte räcker som förklaring". Svansen räknas
+    exakt; nivån är `FELTOLERANS`, systemets enda tolerans.
+
+    MÄTT, tröskeln som faller ut (fönster 10, mål 0,9):
+
+        2–5 möten   2 fel        6–10 möten   3 fel
+
+    och separationen mellan friskt och trasigt:
+
+        kort som verkligen ligger på 88 %   larmar i 10 % av fönstren
+        kort som verkligen ligger på 70 %   larmar i 62 %
+
+    Mot Julius verkliga logg larmar 1 av 24 övervakade kort: franska
+    `form:une` på 4 fel av 6, P = 0,0013. De fyra felen kom ur genusbuggen
+    (D9) och kortet klarar sig ur larmet av sig självt när fönstret fyllts
+    med rena möten — vilket är precis vad ett rullande mått ska göra.
+    """
+    if möten == 0:
+        return False
+    svans = sum(math.comb(möten, i) * FELTOLERANS**i
+                * (1 - FELTOLERANS)**(möten - i)
+                for i in range(fel, möten + 1))
+    return svans < FELTOLERANS
+
+
 def _till_card(rad: sqlite3.Row) -> Card:
     """Databasrad → fsrs.Card, utan översättningsförlust."""
     return Card(
@@ -189,6 +254,90 @@ class Schemaläggare:
                ORDER BY (julianday(?) - julianday(sedd))
                         / MAX(COALESCE(stabilitet, 0.001), 0.001) DESC
                LIMIT ?""", (språk, tid, tid, gräns)).fetchall()
+
+    def övervakade(self, språk: str) -> list[sqlite3.Row]:
+        """Kort som mäts men inte schemaläggs, med sin rullande andel rätt.
+
+        `schemalagt = 0` togs fram som en NEGATION — kortet möts för ofta för
+        att en förfallodag ska betyda något — och lämnade kortet utan mått.
+        Det här är den positiva sidan av samma beslut: sluta schemalägga,
+        börja övervaka. Kolumnerna `möten` och `fel` gäller de senaste
+        `LARMFÖNSTER` BEDÖMDA mötena.
+
+        BETYGLÖSA RADER RÄKNAS INTE, och det är inte en detalj. En repetition
+        utan betyg är en riktig rad med ett riktigt jobb — den skyddar ett
+        undanhållet kort resten av dygnet (se `Repetition` i kort.sql) — men
+        den är ingen mätning. Att räkna den som ett rätt hade förtunnat varje
+        larm med precis de möten där kortet aldrig prövades. Det är samma
+        felklass som tomgångsspärrens `NULL <> 1`, som var NULL och inte sant.
+        """
+        return self.db.execute(
+            f"""WITH senaste AS (
+                    SELECT r.kort_id AS kid, r.betyg AS betyg,
+                           ROW_NUMBER() OVER (PARTITION BY r.kort_id
+                                              ORDER BY r.tidpunkt DESC) AS n
+                    FROM Repetition r JOIN Kort k ON k.id = r.kort_id
+                    WHERE k.språk = ? AND k.schemalagt = 0
+                      AND r.betyg IS NOT NULL
+                )
+                SELECT k.*, COUNT(*) AS möten,
+                       SUM(s.betyg = {int(FEL)}) AS fel
+                FROM Kort k JOIN senaste s ON s.kid = k.id
+                WHERE s.n <= ?
+                GROUP BY k.id""", (språk, LARMFÖNSTER)).fetchall()
+
+    def i_larm(self, språk: str, nu: datetime | None = None) -> list[sqlite3.Row]:
+        """Övervakade kort vars fel inte går att skylla på slumpen, värst först.
+
+        VAD LARMET FÅR KOSTA är svaret på varför tröskeln får vara mild. Ett
+        kort som larmar blir MÅL i dagens pass och ingenting mer: larmet
+        skriver ingenting, straffar ingenting, och kortet klarar sig ur det av
+        sig självt så snart fönstret fyllts med rena möten.
+
+        S OCH D FORTSÄTTER UPPDATERAS på övervakade kort, som förut — de
+        betygsätts ju. Talen LÄSES bara inte: `förfaller` styr ingenting när
+        `schemalagt` är 0. Att sluta skriva dem vore att kasta en mätning man
+        redan har, och den dagen `exponeringsgräns` följer den uppmätta takten
+        kan ett kort byta sida utan att dess historik behöver återuppfinnas.
+
+        ÅTGÄRDEN BITER DÄR DEN BEHÖVS OCH ÄR OSKADLIG DÄR DEN INTE GÖR DET.
+        Det övervakade beståndet spänner två regimer, och gränsen mellan dem
+        är inte skarp: franskans `ordföljd` och `ord:le` möts i var mening
+        (20,0 respektive 19,5 gånger om dagen), och att göra dem till mål
+        ändrar ingenting — de var redan med. Men gränsen för att övervakas är
+        bara ETT möte om dagen, så listans nedre halva ligger nära den:
+        `form:une` möts 2,8 gånger, `ord:mère` 1,1. För dem är skillnaden
+        mellan att mötas av en slump och att mötas med avsikt hela poängen.
+
+        Att larmet är en no-op för de allestädes närvarande korten är alltså
+        ingen brist i måttet utan en följd av att de korten inte går att öva
+        mer än de redan övas.
+
+        KORT SOM REDAN RÖRTS IDAG STÅR UTANFÖR, och utan det villkoret blir
+        larmet en fälla i stället för en hjälp. En bedömning per kort och dygn
+        gäller (`_redan_idag`), så ett kort som redan mötts kan bara få betyg
+        till om svaret är FEL. En `övervakad`-rad för ett sådant kort går
+        alltså inte att klarera genom att svara rätt: raden står kvar som
+        `väntar`, passet säger att arbete återstår och blir aldrig klart.
+
+        Det är samma fälla `kommande` redan undviker — där mättes att alla 14
+        kort i extraövningens kö var införda samma dag, så hela högen var tom
+        på verkan. Skillnaden är att den här högen inte bara vore verkningslös
+        utan LÅSANDE, eftersom passet väntar på den.
+
+        Villkoret läser varje repetitionsrad och inte bara de betygsatta, av
+        samma skäl som skyddet självt gör det: en betyglös rad betyder att
+        kortet undanhölls, och det undanhålls resten av dygnet.
+        """
+        rörda = {r["kort_id"] for r in self.db.execute(
+            """SELECT DISTINCT r.kort_id FROM Repetition r
+               JOIN Kort k ON k.id = r.kort_id
+               WHERE k.språk = ? AND r.tidpunkt >= ?""",
+            (språk, dygnets_början(nu)))}
+        rader = [r for r in self.övervakade(språk)
+                 if r["id"] not in rörda
+                 and _osannolikt_många_fel(r["fel"], r["möten"])]
+        return sorted(rader, key=lambda r: (-r["fel"] / r["möten"], -r["möten"]))
 
     #: Ordningen nya kort introduceras i. Ordet först, alltid: man kan inte
     #: lära sig att svag maskulin dativ tar -en innan man har ett ord att
