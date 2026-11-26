@@ -2413,6 +2413,81 @@ ingen gemensam fix.
 **Öppet:** om korten för onåbara celler ska finnas kvar (de räknas in i
 upplåsningen — se A3, samma fråga).
 
+### C9 ! — Prövar korten det de utger sig för att pröva?
+
+Julius granskade en hel dag skärmbild för skärmbild och ställde tre frågor
+som alla visade sig ha samma svar: nej, inte alltid.
+
+#### ÄNDELSEKORT KRÄNGS PÅ FORMER SOM SAKNAR ÄNDELSEN
+
+Julius om `J'ai.`: *"vad är ens s för ändelsekort? Prövades det verkligen?"*
+
+`avoir` i presens är `ai, as, a, avons, avez, ont`. K1:s `pres_1sg`-ändelse
+är `s`. Men `j'ai` innehåller inget `s` — formen är suppletiv och går inte
+att dela i stam plus ändelse. Ändelsekortet fick ändå ett ✓.
+
+Orsaken är att `Cellkort` mappar VARJE cell till sin klass ändelsekort, utan
+att fråga om formen faktiskt uppvisar ändelsen. Mätt över franskans hela
+verblexikon: **152 av 2 363 (verb, cell)-par tillskriver en ändelse som inte
+finns i formen.**
+
+    vivre   pret_1sg   form 'vécus'    ändelsekort 'is'
+    tenir   pret_1sg   form 'tins'     ändelsekort 'is'
+    avoir   pres_1sg   form 'ai'       ändelsekort 's'
+
+Sex procent av all ändelseattribution är alltså påhittad. Kortet stiger i
+stabilitet på bevis som aldrig fanns — och det är den enda feltypen som
+FÖRDÄRVAR data i stället för att bara sakna den (D3).
+
+Mekanismen för det rätta finns redan: `form`-kort lagrar hela ordformen när
+den inte går att bygga. `avoir` har ett för `pres_3sg` men inte för
+`pres_1sg`. Regeln som saknas är att en cell vars form inte slutar på
+klassens ändelse ska ha ett formkort i stället för en cellkoppling till
+ändelsen.
+
+#### TVÅ TREDJEDELAR AV STAMKORTEN ÄR SITT EGET ORD
+
+Julius: *"Vi gjorde il i ordglosdelen redan. Är det problematiskt att il är
+identisk som ord och som stem?"* — och senare: *"Jag är generellt sätt lite
+skeptisk till stems."*
+
+Mätt på franskan:
+
+    ordklass      stamkort   identiska med ordkortet
+    Substantiv         136                       133
+    Pronomen            10                         8
+    Verb                70                         0
+
+**141 av 216 stamkort har exakt samma facit som sitt ordkort.** `mère` =
+`mère`, `enfant` = `enfant`, `il` = `il`. De frågar samma sak två gånger.
+
+Verben är undantaget, och det är just där stammen bär betydelse: `exist` mot
+`exister`. För ett oböjt substantiv eller pronomen finns ingen stam att
+skilja från ordet.
+
+Det är samma tomma läromoment som ändelserna hade före hopslagningen (F5b,
+52 %), i en annan korttyp. Åtgärden är sannolikt densamma: ett stamkort ska
+bara finnas när stammen skiljer sig från ordet.
+
+#### RÄKNAREN OCH LISTAN MENAR OLIKA SAKER MED "NEW"
+
+Julius: *"Bild 3 borde ha hoppat ner från 7 till 1 eftersom 6 kort provades
+men den hoppade endast ner till 5."*
+
+Reproducerat med hans egna tal:
+
+    Tu existes.        listan: 5 nya    räknaren −4    1 utan passrad
+    Un enfant coûte.   listan: 6 nya    räknaren −2    4 utan passrad
+                                                       (coût, un, ∅, e)
+
+`new` i dagens räknare är PASSRADER med rollen `ny`. `new` på ett kort i
+listan betyder att kortet aldrig setts. Ett kort som införs utan att ha
+planerats är nytt i listans mening men rör inte räknaren.
+
+**Och det betyder att inflödestaket inte håller.** Mätt på en nollställd
+dag: taket var 25 kort, dagen införde **34**. Nio över den takt FSRS säger
+är hållbar — och räknaren visade aldrig det.
+
 ### C7 ! — Producerar renderarna korrekt språk?
 
 Ett känt fel kvar:
