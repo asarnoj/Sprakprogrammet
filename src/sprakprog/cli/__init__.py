@@ -118,13 +118,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # ── kort och övning ──────────────────────────────────────────────────
     from .kort import lägg_till_parser as _kort_parser
+    from .kurs import lägg_till_parser as _kurs_parser
     from .ova import lägg_till_parser as _ova_parser
     _kort_parser(sub)
     _ova_parser(sub)
+    _kurs_parser(sub)
 
     args = parser.parse_args(argv)
 
-    if args.kommando in ("kort", "öva"):
+    if args.kommando in ("kort", "öva", "kurs", "webb"):
         return args.func(args)
 
 

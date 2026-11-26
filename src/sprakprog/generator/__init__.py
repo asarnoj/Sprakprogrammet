@@ -48,9 +48,13 @@ RENDERARE = {"sv": SvenskRenderare, "en": EngelskRenderare, "de": TyskRenderare,
 @dataclass(frozen=True, slots=True)
 class Förslag:
     mening: Mening
+    #: Meningen på MÅLSPRÅKET — facit.
     text: str
-    kort: list
-    poäng: Poäng
+    #: Samma mening på KÄLLSPRÅKET — uppgiften användaren ser. None när
+    #: kursen saknar källspråk, alltså när systemet provas utan uppgift.
+    uppgift: str | None = None
+    kort: list = None
+    poäng: Poäng = None
     #: (koncept, variant, cell) i den ordning formerna slogs upp. Rättningen
     #: behöver den för att veta vilket ord i facit som kom varifrån.
     uppslag: list = None
@@ -58,13 +62,21 @@ class Förslag:
 
 class Generator:
     def __init__(self, språk_db: sqlite3.Connection, kort_db: sqlite3.Connection,
-                 språk: str, *, nivå: int = 21, cefr: str = "C2",
+                 språk: str, *, källspråk: str | None = None,
+                 nivå: int = 21, cefr: str = "C2",
                  budget: float = 1.5, frö: int | None = None) -> None:
         self.språk = språk
+        self.källspråk = källspråk
         self.språk_db = språk_db
         self.kort_db = kort_db
         self.rng = random.Random(frö)
         self.renderare = RENDERARE[språk](språk_db)
+        # UPPGIFTEN ÄR SAMMA SPEC PÅ ETT ANNAT SPRÅK. Det är hela skälet till
+        # att `Mening` är språkoberoende: frågan och svaret är inte två texter
+        # som råkar höra ihop utan en enda specifikation, renderad två gånger.
+        # Utan den här renderaren finns ingen uppgift att ställa, bara ett
+        # facit att visa.
+        self.källrenderare = RENDERARE[källspråk](språk_db) if källspråk else None
         self.validator = Validator(språk_db)
         self.schemaläggare = Schemaläggare(kort_db)
         self.poängsättare = Poängsättare(kort_db, self.schemaläggare, budget)
@@ -146,12 +158,35 @@ class Generator:
                 continue
             text, kort, uppslag = resultat
             p = self.poängsättare.sätt(kort, förfallna, nu)
-            if bäst is None or p.total > bäst.poäng.total:
-                bäst = Förslag(m, text, kort, p, uppslag)
+            if bäst is not None and p.total <= bäst.poäng.total:
+                continue
+            # Källspråket renderas FÖRST NU och inte för varje kandidat.
+            # Det är samma beslut som allt annat i sökningen: gör det dyra
+            # bara för den kandidat som faktiskt kan vinna. En mening som
+            # inte går att STÄLLA är oanvändbar hur bra den än är, så den
+            # förkastas, men det händer sällan nog att det inte lönar sig
+            # att kontrollera i förväg.
+            uppgift = None
+            if self.källrenderare is not None:
+                uppgift = self._rendera_källa(m)
+                if uppgift is None:
+                    continue
+            bäst = Förslag(m, text, uppgift, kort, p, uppslag)
         if bäst is not None:
             self.poängsättare.minns(
                 {k["koncept"] for k in bäst.kort if k["koncept"]})
         return bäst
+
+    def _rendera_källa(self, m: Mening) -> str | None:
+        """Meningen på källspråket, eller None om det språket inte når den.
+
+        Ingen instrumentering: uppgiftens ord är inte användarens kort. Det
+        är målspråket som övas, källspråket bara ställer frågan.
+        """
+        try:
+            return self.källrenderare.rendera(m)
+        except (RenderingsFel, KeyError, ValueError):
+            return None
 
     def rätta(self, förslag: Förslag, svar: str) -> Rättning:
         """Användarens text → ett betyg per kort."""
@@ -162,14 +197,16 @@ class Generator:
               nu=None) -> Rättning:
         """Rätta OCH registrera — hela slingan i ett anrop."""
         rättning = self.rätta(förslag, svar)
-        self.registrera(förslag, rättning.utfall, källspråk=källspråk, nu=nu)
+        self.registrera(förslag, rättning.utfall,
+                        källspråk=källspråk or self.källspråk, nu=nu)
         return rättning
 
     def registrera(self, förslag: Förslag, utfall: dict[int, bool],
                    *, källspråk: str | None = None, nu=None) -> int:
         return self.schemaläggare.registrera_mening(
             self.språk, spec_json(förslag.mening), förslag.text, utfall,
-            källspråk=källspråk, budget=self.poängsättare.budget, nu=nu)
+            källspråk=källspråk or self.källspråk,
+            budget=self.poängsättare.budget, nu=nu)
 
 
 __all__ = ["Anmärkning", "Förslag", "Generator", "Ordförråd", "Poäng",
