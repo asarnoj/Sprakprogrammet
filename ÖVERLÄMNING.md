@@ -113,8 +113,14 @@ och bär bara det som skiljer. Se `ordbok/migrationer/rektion.sql`.
    objekt, io och adverbial. Negation, frågor, bisatser, komparation och
    modalverb finns som ord i databasen men inte som fält i specen.
 3. **Meningsgeneratorn** — den som löser fram en mening ur repetitionskön.
-4. **Kortmodellen och appen.** Kortnivå (form / mening / kontrast) är ännu
-   inte avgjord.
+   Kortmodellen är utredd och nedskriven i
+   [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
+   som bärare, attribution via renderarens beroendekarta.
+
+   **Men den blockeras av punkt 2.** Bara 40 % av de svenska formerna går
+   att nå med dagens `Mening` — genitiv, perfekt, imperativ och komparation
+   saknar plats i specen. Meningskomplexiteten kommer först.
+4. **Appen.** Desktop först, mobil senare.
 
 Datalagret har inga öppna poster kvar. Sista passet drog ut en princip
 som borde ha dragits ut tidigare: om FSRS spårar per ordform måste **varje**
@@ -220,7 +226,8 @@ beslutar. Ändringar genomförs separat, aldrig direkt.
 | `ordbok/nivålistor/KONVENTIONER.md` | lemmaformat, förenklingsfilosofi §5, beslutsprocess §9 |
 | `RUNBOOK.md` | operativ referens för genereringskörningen |
 | `START_HÄR.md` | kort körinstruktion för den som genererar |
-| `paradigm/RESTRIKTIONER.md` | planen för semantiska restriktioner; scope-beslutet står där |
+| `paradigm/RESTRIKTIONER.md` | semantiska restriktioner; scope-beslutet står där |
+| `paradigm/GENERATOR.md` | kortmodellen och generatorn — alla beslut, med motiveringar |
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
