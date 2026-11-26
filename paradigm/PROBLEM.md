@@ -2975,6 +2975,48 @@ Att det krävdes tre avstängda försvar för att ens nå fram är i sig ett sva
 till Julius: den meningslösa övningen var inte ett hål i en vägg utan ett
 läge kön aldrig skulle ha hamnat i.
 
+#### PRÖVAT ELLER INLÅNAT — SKÄRMEN SÄGER NU VILKET (2026-08-29)
+
+Julius: *"För att få lite transparens och tydlighet i vilka kort som prövas
+och vilka som är inlånade och därmed testas igen."*
+
+En mening rör sju till tio kort men valdes för ett av dem (E4). Resten åker
+med, prövas i meningen, och bokförs inte — och utan att se skillnaden ser
+varje övning ut att pröva tio saker när den bokför en. Mätt på Julius
+faktiska dag:
+
+    #130  Tu existes.          4 av 7 bokförda
+    #133  Elle coûte.          2 av 7
+    #134  Il existe.           1 av 7
+    #138  Un frère coûte.      0 av 10   ← inget alls
+    #142  Tu existes.          0 av 7    ← inget alls
+
+Varje kort visar numera sitt LÄGE, med samma vokabulär som `Spår` skriver —
+`bedömd`, `redan_bedömd`, `redan_fälld`, `undanhållen`, `skyddad`. Det
+inlånade tonas ner i stället för att döljas: det stod i meningen man svarade
+på, och att stryka det vore att visa en annan mening. Sammanfattningen står
+alltid, inte bara när talet är noll.
+
+**Och de två nollraderna är riktiga fynd, inte kosmetik.** `#142` rörde sju
+kort som alla var bedömda tidigare samma dag — generatorn byggde en mening
+som inte kunde bokföra något. Det är precis den egenskap jag försökte skriva
+en invariant för 2026-08-28 och inte kunde falsifiera: *"varje serverad
+mening bokför minst ett kort"* höll i varje konstruerat läge, med tre vakter
+som tog över för varandra. **I drift faller den ändå.** Slutsatsen då — att
+egenskapen var väl försvarad — var för snabb: den var oåtkomlig för mina
+fixturer, inte för verkligheten.
+
+#### JAG LÄSTE INAKTUELLT TILLSTÅND I FLERA MÄTNINGAR (2026-08-29)
+
+`cp kort.db` kopierar inte `kort.db-wal`. Databasen körs i WAL-läge, så de
+senaste skrivningarna ligger där tills en checkpoint sker — och Julius server
+höll dem öppna. Mätt: huvudfilen var daterad 10:52 och WAL-filen 13:35, 2,7
+MB stor.
+
+Varje gång jag i den här sessionen sa "din kurs är nollställd" eller "spåren
+är borta" läste jag alltså ett timmar gammalt läge. `sqlite3 kort.db
+".backup FIL"` tar med WAL:en; `cp` gör det inte.
+
 #### ARBETE SOM INTE SYNS ÄR ARBETE MAN MISSTROR (2026-08-28)
 
 Julius, dag 2: *"en övning som jag gjorde helt korrekt flyttade inga kort.

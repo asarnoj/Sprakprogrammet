@@ -482,9 +482,35 @@ class Övningstjänst:
             # FSRS-faktor 1,0 och gör bokstavligen ingenting — men att den
             # inte SYNS gör arbetet obegripligt. Talet finns här; skärmen
             # säger det när det är noll.
-            graderade, _fällda = g.schemaläggare._redan_idag(r.utfall)
+            graderade, fällda = g.schemaläggare._redan_idag(r.utfall)
             bokförs = sum(1 for k, rätt in r.utfall.items()
                           if k not in skyddade and not (rätt and k in graderade))
+
+            # VILKET KORT SOM PRÖVAS OCH VILKET SOM ÄR INLÅNAT.
+            #
+            # En mening rör sju till tio kort men valdes för ett av dem (E4),
+            # och resten åker med. Utan att se skillnaden ser en övning ut att
+            # pröva tio saker när den bokför en — Julius: *"För att få lite
+            # transparens och tydlighet i vilka kort som prövas och vilka som
+            # är inlånade och därmed testas igen."*
+            #
+            # LÄGET ÄR EXAKT `registrera_mening`s, inte en egen räkning. Går
+            # de isär är det den här raden som är fel, inte bokföringen — och
+            # det är samma vokabulär som `Spår` skriver, så skärmen och
+            # spåret säger alltid samma sak.
+            rörda_ider = {k["id"] for k in f.kort}
+            def läget(kid: int) -> str:
+                if kid not in r.utfall:
+                    return "undanhållen"
+                if kid in skyddade:
+                    return "skyddad"
+                rätt = r.utfall[kid]
+                if rätt and kid in graderade:
+                    return "redan_bedömd"
+                if not rätt and kid in fällda:
+                    return "redan_fälld"
+                return "bedömd"
+            lägen = {kid: läget(kid) for kid in rörda_ider}
             return {"id": id_, "korrekt": r.korrekt, "facit": f.text,
                     "bokförs": bokförs, "rörda": len(f.kort),
                     "igen": self._igen_efter(g, r.utfall),
@@ -504,6 +530,10 @@ class Övningstjänst:
                           "regel": k["egenskap"] if k["typ"] == "ordföljd"
                                    else None,
                           "dom": dom.get(k["id"]),
+                          # `bedömd` = kortet prövades och bokfördes. Allt
+                          # annat är inlånat: redan gjort idag, undanhållet
+                          # eller skyddat. Se `läget` ovan.
+                          "läge": lägen.get(k["id"], "undanhållen"),
                           # Förfallodagen FÖRE prövningen — den nya räknas ut
                           # först vid bokföringen. `null` = kortet är nytt och
                           # har ingen ännu.

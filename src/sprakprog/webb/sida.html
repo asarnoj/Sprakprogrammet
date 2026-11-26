@@ -154,6 +154,11 @@
       flex:none; padding-top:.1rem; }
   ul.kortlista .rad { display:flex; flex-wrap:wrap; gap:.3rem .9rem; flex:1; }
   ul.kortlista .kort { display:inline-flex; gap:.3rem; align-items:baseline; }
+  /* INLÅNAT KORT — prövat i meningen men inte bokfört. Nedtonat och inte
+     dolt: det stod i meningen man svarade på, och att stryka det vore att
+     visa en annan mening. Kursiven skiljer det från domen, som har egen
+     färg. */
+  ul.kortlista .kort.lanad { opacity:.45; font-style:italic; }
   ul.kortlista .fac { font-family:var(--serif); }
   ul.kortlista .när { color:var(--svag); font-size:.74rem;
       font-variant-numeric:tabular-nums; }
@@ -493,6 +498,21 @@ const T = {
   //: Kort som skrevs av för att ingen mening kunde nå dem (B8). De fick
   //: INGET betyg — ett kort utan mätning är ärligt, ett med påhittad
   //: mätning är värre än tomt (D3) — och kommer tillbaka i morgon.
+  //: Vad ett inlånat korts läge betyder. Samma vokabulär som `Spår`
+  //: skriver, så skärmen och spåret aldrig kan säga olika saker.
+  läge: {
+    redan_bedömd: "Already answered correctly today — a second correct answer "
+                  + "on the same day has no effect in FSRS, so this one is "
+                  + "not booked again.",
+    redan_fälld:  "Already failed today. The mistake is real but it is "
+                  + "already recorded, so it is not counted twice.",
+    undanhållen:  "The diff could not tie any part of your answer to this "
+                  + "card, so it was left ungraded rather than guessed at.",
+    skyddad:      "Its word card failed, so this form was never really "
+                  + "tested — grading it would punish you for the wrong thing.",
+  },
+  bokfört: (n, av) => `${n} of ${av} cards counted — the rest were already `
+          + `done today or could not be graded, and rode along for free.`,
   inget_bokfört: n => `All ${n} cards here were already graded today, so nothing moved. A second correct answer on the same day has no effect in FSRS.`,
   en_kurs_per_målspråk: f => `A course into this language already exists (${f}). All courses sharing a target language share one deck, so a second one would practise the same cards and reset the other. Remove the existing course first.`,
   oåtkomliga:   n => `${n} card${n === 1 ? "" : "s"} could not be reached by ` +
@@ -962,6 +982,18 @@ function visaKortutfall(kort, svar) {
       fac.textContent = (k.regel && T.regel[k.regel]) || k.facit || "";
       const när = document.createElement("span");
       när.className = "när"; när.textContent = närText(k);
+      // PRÖVAT ELLER INLÅNAT. En mening rör sju till tio kort men valdes för
+      // ett av dem (E4); resten åker med och bokförs inte. Utan skillnaden
+      // ser övningen ut att pröva tio saker när den bokför en — och när den
+      // bokför NOLL såg den ut att ha gjort tio.
+      //
+      // Det inlånade tonas ner i stället för att döljas: det ÄR prövat i
+      // meningen, det räknas bara inte igen. Att ta bort det vore att visa
+      // en annan mening än den man svarade på.
+      if (k.läge && k.läge !== "bedömd") {
+        box.classList.add("lanad");
+        box.title = T.läge[k.läge] ?? k.läge;
+      }
       box.append(dom, fac, när);
       rad.append(box);
     }
@@ -973,10 +1005,15 @@ function visaKortutfall(kort, svar) {
   // samma dag (E2), så meningen ändrade ingenting. Regeln är riktig: en
   // upprepad rätt samma dygn ger FSRS-faktor 1,0 och gör bokstavligen
   // ingenting. Men arbete som inte syns är arbete man misstror.
-  if (svar && svar.bokförs === 0 && kort.length) {
+  // SAMMANFATTNINGEN STÅR ALLTID, inte bara vid noll. Att bara säga något
+  // när ingenting bokfördes gjorde de vanliga fallen lika ogenomskinliga:
+  // en mening som rörde tio kort och bokförde ett såg ut att ha prövat tio.
+  if (svar && svar.bokförs !== undefined && kort.length) {
     const li = document.createElement("li");
     li.className = "mager";
-    li.textContent = T.inget_bokfört(kort.length);
+    li.textContent = svar.bokförs === 0
+      ? T.inget_bokfört(kort.length)
+      : T.bokfört(svar.bokförs, kort.length);
     ul.append(li);
   }
   ul.hidden = !visaInfo || !ul.children.length;
