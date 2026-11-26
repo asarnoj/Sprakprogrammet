@@ -184,9 +184,20 @@ class Passet:
 
     def __init__(self, data: Kursdata, sammansättare: Sammansättare, lager: Lager,
                  krav: dict[Kort, frozenset], nivåer: list[frozenset],
-                 tidsmodell=None, kort_i_kursen: int | None = None) -> None:
+                 tidsmodell=None, kort_i_kursen: int | None = None,
+                 täckning=None, bevis: dict[Kort, frozenset] | None = None) -> None:
         self.data, self.s, self.lager = data, sammansättare, lager
         self.krav, self.nivåer = krav, nivåer
+        #: `nivaer.tackning.Täckning`, eller None. Ordnar de kort som GRINDAR
+        #: (5.6); för orden ordnar frekvensen, vilket är mätt i
+        #: `ordbok/verktyg/ordvalsmätning.py`.
+        self.täckning = täckning
+        self._täckningscache: dict = {}
+        #: Kort → korten i den mening som bevisar att kortet går att pröva
+        #: (3.10, 4.2), eller None. Injiceras som kraven och nivåerna: passet
+        #: läser inga filer. Utan det söker `paket_för` fram paketet själv,
+        #: vilket är riktigt men dyrt.
+        self.bevis = bevis
         #: `tid.Tidsmodell`, eller None. Injiceras som kraven och nivåerna:
         #: passet läser inga filer. Utan den finns ingen gräns för hur mycket
         #: nytt en dag tar, och `n` är användarens tangenttryckning.
@@ -208,6 +219,9 @@ class Passet:
         dag = self.data.dag()
         self._i_dag = {m.kort: m.betyg for m in self.data.möten()
                        if self.data.dag(m.tid) == dag}
+        # Täckningen räknas mot de införda och upplåsta korten, så den gäller
+        # bara så länge läget står still.
+        self._täckningscache = {}
 
     def tillåtna(self) -> set[Kort]:
         """Vad en mening får använda: införda kort och dagens presenterade (5.2)."""
@@ -579,61 +593,85 @@ class Passet:
 
     # ── introfasen ──
 
-    def nästa_nivå(self) -> frozenset:
-        """Den första nivå vars grind är uppfylld (4.4).
+    def öppna_nivåer(self) -> list[frozenset]:
+        """Varje nivå vars grind är uppfylld (4.4), i nivåordning.
 
+        > Knappen öppnar ALLA nivåer vars grind är uppfylld.
         > En nivå kan öppnas när föregångarnas kort infördes en TIDIGARE dag.
 
-        DAGSVILLKORET ÄR GRINDEN, och det saknades. Utan det öppnade nivå 2 en
-        minut efter att nivå 1:s kort införts, och en användare kunde ta fyra
-        nivåer på fem minuter. Med det gäller 4.4:s följd av sig själv: «längs en
-        kedja öppnas högst en nivå per dygn». Ingen ny regel behövdes — den låg
-        i att införandet måste ha skett en tidigare dag.
+        Upplåsning kostar ingenting och ger en KÖ av kandidater (4.5): «att låsa
+        upp tio nivåer ger en kö av kort, inte tio nivåers arbete samma dag».
+        Det är införandet som kostar minuter, och det taket sätter tidsmodellen
+        (5.5) — inte grinden.
 
-        Korten i en nivå kräver varandra (4.1), så ett enskilt kort går inte att
-        införa först. Nivån öppnas i sin helhet, och dess kort införs sedan i
-        paket (3.10).
-
-        ARBETSBÖRDAN PRÖVAS INTE HÄR. 4.4: «Att öppna en nivå lägger inga kort i
-        passet, bara kandidater… En grind som prövade arbetsbördan vid
-        upplåsningen skulle aldrig spärra.» Taket sätter tidsmodellen när dagens
-        kort väljs (5.5), inte grinden.
+        FÖRUT GAV DEN BARA EN NIVÅ, och det var dyrt: en nivå har median ETT
+        kort i engelskan, så dag 3 och framåt fick ett till tre kort medan takten
+        tillät tjugosju. De 951 korten skulle ta omkring 475 dagar i stället för
+        36. Mätt med kön: från dag 2 står 15–21 nivåer öppna med 26–33
+        mönsterkort.
         """
         införda = self.data.införda()
         i_dag = self.data.dag()
         tidigare = {k for k, dag in self.data.införda_dagar().items() if dag < i_dag}
+        ut = []
         for nivå in self.nivåer:
             if nivå <= införda:
                 continue
             krav = frozenset().union(*(self.krav.get(k, frozenset()) for k in nivå))
             if krav - nivå <= tidigare:
-                return nivå
-        return frozenset()
+                ut.append(nivå)
+        return ut
+
+    def upplåsta(self) -> frozenset[Kort]:
+        """Korten i alla öppna nivåer — kandidatkön (4.5)."""
+        öppna = self.öppna_nivåer()
+        return frozenset().union(*öppna) if öppna else frozenset()
+
+    def nästa_nivå(self) -> frozenset:
+        """Den första öppna nivån. Kvar för det som behöver EN nivå."""
+        öppna = self.öppna_nivåer()
+        return öppna[0] if öppna else frozenset()
 
     def kandidater(self) -> list[Kort]:
-        """Korten i nästa nivå som inte är införda (4.5), mönsterkorten först.
+        """De upplåsta korten som inte är införda (4.5, 5.6), bäst först.
 
-        DET HÄR ÄR INTE 5.6. Där är kandidaterna «upplåsta, inte införda och
-        prövbara», vilket med nivåerna som grindar (4.5) betyder VARJE ordkort
-        från dag ett — orden är upplåsta (3.1). Ordningen som ska sålla dem är
-        täckningen, och den är inte räknad.
+        > Kandidaterna är de kort som är upplåsta, inte införda och prövbara nu
+        > (3.10), ensamma eller i ett paket.
 
-        Öppnas mängden innan täckningen finns väljer kursen på frekvens
-        ensamt, och kan lära ut femtio substantiv innan den rör grammatiken.
-        Därför den avsmalnade mängden, med mönsterkorten före orden: ett
-        mönsterkort behövs av varje mening och har hög ny täckning, vilket är
-        ett grovt närmevärde för det 5.6 vill mäta.
+        MÄNGDEN ÄR HELA KÖN, inte nästa nivå. Version ett smalnade av den för
+        att täckningen inte var räknad, och priset visade sig vara högt: dag 3
+        och framåt fick ett till tre kort medan takten tillät tjugosju.
 
-        Orden kommer ändå med, som lånekort till mönstren, och lärs ut som
-        glosor innan kortet som kräver dem (5.4). Priset är att ett mycket
-        vanligt ord kan komma senare än ett sällsynt mönster.
+        ORDNINGEN ÄR MÄTT FRAM och skiljer på två slags kort. För de kort som
+        GRINDAR — regler, ändelser, funktionsord — ordnar den nya täckningen
+        per kort (5.6), och den vann stort i `ordningsmätning.py`. För ORDEN
+        ordnar frekvensen, och där gav täckningen ingenting: `ordvalsmätning.py`
+        mätte 17,19 % mot 16,97 %, eftersom ett ords värde ligger i alla dess
+        former och de flesta cellerna inte är upplåsta än.
 
-        När täckningen finns ersätter den både mängden och ordningen
-        (KÄRNAN 5.6, noteringen om version 1).
+        Mönsterkorten går före orden. Ett ord kommer ändå med som lånekort och
+        lärs ut som glosa innan kortet som kräver det (5.4).
         """
-        return sorted(self.nästa_nivå() - self.data.införda(),
-                      key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
-                                     else (-1, 0.0, 0, str(k))))
+        return sorted(self.upplåsta() - self.data.införda(),
+                      key=self._införandeordning)
+
+    def _införandeordning(self, kort: Kort) -> tuple:
+        """Sorteringsnyckeln i 5.6. Minst först.
+
+        Mönsterkort före ord; mönsterkorten efter ny täckning per kort, orden
+        efter frekvens. Utan en uppmätt täckning faller mönsterkorten tillbaka
+        på kortets namn, vilket bara är determinism — det är version ett i
+        5.6:s notering.
+        """
+        vikt = self.s._ordvikt(kort.nyckel[0])
+        if kort.familj == "ord" and self._fritt_ord(kort):
+            return (0, 0.0, *vikt)
+        if self.täckning is None:
+            return (-1, 0.0, 0, str(kort))
+        if kort not in self._täckningscache:
+            self._täckningscache[kort] = self.täckning.per_kort(
+                {kort}, self.data.införda() | self.upplåsta())
+        return (-1, -self._täckningscache[kort], 0, str(kort))
 
     def tempo(self, minuter: float):
         """5.5: hur många nya kort dagen tål, och budgeten med sparat inräknat.
@@ -672,30 +710,110 @@ class Passet:
         sparat = min(i_går[1], float(t.nya)) if i_går else 0.0
         return t, t.nya + sparat
 
-    def paket(self) -> frozenset[Kort]:
-        """Nivåns kort OCH de ord de behöver — dagens kortmängd (3.10).
+    def paket_för(self, kort: Kort, valda: frozenset = frozenset()) -> frozenset:
+        """Kortets paket: de oinförda korten i en minsta mening för det (3.10).
 
         «Paketet är de oinförda korten i en minsta mening för kortet», räknat
         över alla kort, ord inräknade. En minsta mening för nivå 1 är «Time
         stands.», och dess oinförda kort är nivåns fem plus `tid` och `stå`:
-        sju kort, inte fem. Räknaren sa förut fem och lärde sedan ut tolv.
+        sju kort, inte fem.
 
-        En sökning räcker, eftersom nivåns kort kräver varandra (4.1) och
-        därför står i samma mening.
+        `valda` är dagens redan valda kort, som får vara lånekort — 3.10 räknar
+        paketet «med de införda korten tillåtna», och dagens valda är tillåtna
+        på samma sätt (5.2). KORTETS EGEN NIVÅ får också vara lånekort, eftersom
+        nivåns kort kräver varandra (4.1) och annars inte går att införa alls.
+
+        MEN INTE HELA KÖN. Först tilläts varje upplåst kort, och då räknades
+        paket som planen sedan inte kunde bygga: planen tillåter bara dagens
+        valda (4.5), så paketet vilade på kort som inte var med. Av
+        tjugofem valda kort fick ETT en egen introövning och trettioåtta hamnade
+        i karantän.
         """
-        nivå = self.nästa_nivå()
-        if not nivå:
-            return frozenset()
-        if nivå not in self._paket:
-            införda = self.data.införda()
-            uppgift = None
-            for kort in self.kandidater():
-                uppgift = self._ensamt_mål(kort, nivå)
-                if uppgift is not None:
-                    break
-            self._paket[nivå] = (frozenset(uppgift.träff.kort) - införda
-                                 if uppgift is not None else nivå)
-        return self._paket[nivå]
+        # BEVISET SVARAR UTAN SÖKNING när det finns (3.10, 4.2): «meningen
+        # sparas som dess bevis», och paketet är bevisets kort minus de
+        # införda. Beviset vilar bara på kortets krav, och grinden (4.4) har
+        # redan sett kravet infört — annars stod kortet inte i kön.
+        #
+        # Svaret beror då inte på `valda`, och det är hela vinsten. Sökningen
+        # lät dagens redan valda kort vara lånekort, vilket 3.10 tillåter, och
+        # varje valt kort gjorde nästa fråga dyrare:
+        # `regel:ordning/hjälpverb_före_huvudverb` togs på 5,3 s ensamt och på
+        # över två minuter med dagens tjugo valda tillåtna. Dag fyras plan blev
+        # aldrig klar.
+        nyckel = (kort, valda)
+        if nyckel in self._paket:
+            return self._paket[nyckel]
+        tillåtna = self.data.tillåtna() | valda | self._nivån_för(kort) | {kort}
+
+        # FRÅGAN ÄR «FINNS EN MINSTA MENING», INTE «GÅR EN ÖVNING ATT STÄLLA».
+        # Förut byggdes paketet med `_ensamt_mål`, alltså med hela
+        # övningsbygget och 6.1:s giltighetsvillkor. Det svarar på en strängare
+        # fråga, och när svaret blev nej kostade nejet en uttömmande genomgång
+        # vars pris växte med den tillåtna mängden:
+        # `regel:ordning/hjälpverb_före_huvudverb` togs på 5,3 s med bara de
+        # införda tillåtna och på över två minuter med dagens tjugo valda
+        # inräknade, och dag fyras plan blev aldrig klar. Samma kort, samma
+        # mängd: `finns` ger «Möss ska se.» på 0,8 s.
+        #
+        # Och ett nej kan inte hända här. Kortet står i kön, alltså är dess
+        # krav infört (4.4), och då finns beviset (4.2) — en mening byggd av
+        # kravet, kortet och fria ord, alla tillåtna. Sökningen letar kortaste
+        # först, så den hittar något litet direkt.
+        träff = self.s.finns(kort, lambda k: k in tillåtna or self._fritt_ord(k))
+        if träff is not None:
+            self._paket[nyckel] = frozenset(träff.kort) - self.data.införda()
+        elif self.bevis is not None and kort in self.bevis:
+            # Nejet ska inte kunna inträffa, och beviset är svaret när det ändå
+            # gör det: 4.2:s «meningen sparas som dess bevis (3.10)». Att falla
+            # tillbaka hit är billigare än att stå utan paket, men det betyder
+            # att något inte stämmer — kravet, kartan eller villkoren.
+            self._paket[nyckel] = self.bevis[kort] - self.data.införda()
+        else:
+            self._paket[nyckel] = frozenset()
+        return self._paket[nyckel]
+
+    def _nivån_för(self, kort: Kort) -> frozenset[Kort]:
+        """Nivån kortet hör till, eller tomt för ett ord som ingen nivå äger.
+
+        Korten i en nivå kräver varandra (4.1), så de måste få vara lånekort åt
+        varandra — annars går det första kortet i nivån inte att införa.
+        """
+        for nivå in self.nivåer:
+            if kort in nivå:
+                return nivå
+        return frozenset()
+
+    def paket(self) -> frozenset[Kort]:
+        """Nästa paket att ta — det bästa kandidatens (3.10, 5.6)."""
+        for kort in self.kandidater():
+            p = self.paket_för(kort)
+            if p:
+                return p
+        return frozenset()
+
+    def dagens_kort(self, budget: float | None = None) -> frozenset[Kort]:
+        """Dagens kortmängd: paket ur kön tills takten är förbrukad.
+
+        > Korten väljs ett i taget, och varje val ändrar vad nästa kort ger
+        > (5.6). … Ett paket (3.10) tas med helt, så en dag kan ge färre kort än
+        > n. Det som inte används sparas till nästa dag (5.5).
+
+        DET FÖRSTA PAKETET TAS ALLTID, även om det är större än budgeten. Annars
+        skulle en liten budget ge en tom dag i all evighet, och 5.5:s «en dag kan
+        ge färre kort än n» blir «ingen dag kan ge något». Att det tas HELT är
+        3.10:s regel: «paketet väljs helt eller inte alls».
+        """
+        valda: set[Kort] = set()
+        for kort in self.kandidater():
+            if kort in valda:
+                continue
+            nya = self.paket_för(kort, frozenset(valda))
+            if not nya:
+                continue
+            if valda and budget is not None and len(valda) + len(nya - valda) > budget:
+                break
+            valda |= nya
+        return frozenset(valda)
 
     def lånevikt(self, per_text: dict):
         """5.4:s lånekortsregel som en sorteringsnyckel: minst först är bäst.
@@ -808,7 +926,8 @@ class Passet:
         return {ok: sorted(v, key=lambda k: self.s._ordvikt(k.nyckel[0]))
                 for ok, v in funna.items()}
 
-    def _ordförråd(self, korten: list[Kort], tillåtna: set) -> frozenset[Kort]:
+    def _ordförråd(self, korten: list[Kort], tillåtna: set,
+                   frö: frozenset = frozenset()) -> frozenset[Kort]:
         """Dagens ORD — planens dyraste val, och därför ett eget (5.6).
 
         Varje ord en mening använder och användaren inte kan är ett KORT som
@@ -844,7 +963,7 @@ class Passet:
         bidrar med paketets egna och inget mer.
         """
         klasser: dict[str, set[Kort]] = {}
-        for k in self.paket():
+        for k in frö:
             if k.familj == "ord":
                 klasser.setdefault(self._ordklass(k), set()).add(k)
         öppna = {ok: frön for ok, frön in klasser.items()
@@ -899,7 +1018,7 @@ class Passet:
             ut |= valda
         return frozenset(ut)
 
-    def dagsplan(self, rapport=None) -> Dagsplan:
+    def dagsplan(self, rapport=None, budget: float | None = None) -> Dagsplan:
         """Dagens tilldelning: vilken mening som bär vilket kort (5.1).
 
         Kandidatmeningar samlas per kort — en genomgång ger flera, så det
@@ -918,13 +1037,21 @@ class Passet:
         Kort som inte får någon mening hamnar i KARANTÄN (3.10) i stället för
         att presenteras och sedan visa sig oåtkomliga.
         """
-        nivå = self.nästa_nivå()
-        korten = [k for k in self.kandidater() if k not in self.data.presenterade()]
+        # DAGENS KORT, inte nästa nivås. `dagens_kort` tar paket ur kön tills
+        # takten är förbrukad (5.5, 5.6); `budget` kommer utifrån, eftersom
+        # minuterna är användarens inställning.
+        valda = self.dagens_kort(budget)
+        korten = [k for k in self.kandidater()
+                  if k in valda and k not in self.data.presenterade()]
         if not korten:
             return Dagsplan({}, (), (), ())
-        tillåtna = self.data.tillåtna() | nivå
+        # Vad meningarna får använda: infört, dagens presenterade, och dagens
+        # VALDA — «de kort som redan valts för dagen» (3.10). Inte hela kön: ett
+        # upplåst kort som varken är infört eller presenterat i dag får aldrig
+        # stå i en mening (4.5, R1).
+        tillåtna = self.data.tillåtna() | valda
         ställda = self.data.dagens_källtexter()
-        ordförråd = self._ordförråd(korten, tillåtna)
+        ordförråd = self._ordförråd(korten, tillåtna, frö=valda)
         # De kort som övas med en MENING (5.4) — funktionsorden inräknade.
         mönster = sum(1 for k in korten if self._övas_med_mening(k))
         # Mer än så kan planen inte förbruka: en lektion och en övning per

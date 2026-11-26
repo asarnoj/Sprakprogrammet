@@ -26,15 +26,41 @@ from . import Passet
 ROT = Path(__file__).resolve().parents[3]
 
 
-def _nivåfil(fil: str) -> tuple[dict[Kort, frozenset], list[frozenset]]:
-    """Kraven per kort och nivåerna i öppningsordning (4.2)."""
+def _nivåfil(fil: str, källspråk: str, språk: str) -> tuple[
+        dict[Kort, frozenset], list[frozenset], dict[Kort, frozenset]]:
+    """Kraven per kort och nivåerna i öppningsordning (4.2).
+
+    FILEN MÅSTE VARA BYGGD FÖR KURSENS PAR. 4.2: «Kraven räknas per språkpar …
+    Om ett kort kan prövas beror på vad källspråket kan visa och på vilka
+    varianter som finns, så nivåerna är desamma för alla användare av samma
+    kurs men inte för alla kurser med samma målspråk.»
+
+    Utan kontrollen tog passet emot krav räknade utan något par, och de var
+    falska: kravet för `ord:interr_det_hur_mycket` var läst ur «How much dog
+    sees.», och med paret `sv` finns ingen mening alls med det kravet. Mätt
+    2026-09-27: elva av dag fyras trettiotvå köade kort hade ett falskt krav.
+    Grinden (4.4) öppnade dem ändå, och passet betalade en uttömmande
+    nej-sökning för var och en — fyra till åttio sekunder styck, varje dag,
+    eftersom kortet aldrig kunde införas.
+    """
     data = json.loads(Path(fil).read_text(encoding="utf-8"))
+    if data.get("språk") != språk or data.get("källspråk") != källspråk:
+        raise SystemExit(
+            f"{fil} är byggd för "
+            + (f"kursen {data.get('källspråk')}–{data.get('språk')}"
+               if data.get("källspråk") else
+               f"målspråket {data.get('språk')} utan något källspråk")
+            + f", inte för {källspråk}–{språk}. Kraven gäller per språkpar "
+              "(4.2). Bygg om:\n"
+              f"    python -m sprakprog.nivaer KARTA --källspråk {källspråk} "
+              f"--spara {fil}")
 
     def kort(rad) -> Kort:
         return Kort(rad[0], rad[1], tuple(rad[2]))
 
     krav = {kort(k): frozenset(map(kort, m)) for k, m in data["krav"]}
-    return krav, [frozenset(map(kort, n)) for n in data["nivåer"]]
+    bevis = {kort(k): frozenset(map(kort, m)) for k, m in data.get("bevis", [])}
+    return krav, [frozenset(map(kort, n)) for n in data["nivåer"]], bevis
 
 
 #: Hur långt fram arbetsprofilen räknas. Ett kort kostar arbete i över ett år
@@ -383,13 +409,13 @@ def main() -> None:
     språk = karta["språk"]
     sprak = sqlite3.connect(ROT / "sprak.db")
     data = Kursdata(sqlite3.connect(a.kurs), a.källspråk, språk)
-    krav, nivåer = _nivåfil(a.nivåer)
+    krav, nivåer, bevis = _nivåfil(a.nivåer, a.källspråk, språk)
     lager = Lager(data)
     sam = Sammansättare(sprak, karta, par=a.källspråk)
     passet = Passet(data, sam,
                     lager, krav, nivåer,
                     tidsmodell=_tidsmodell(data, lager.retention, a.meningstid),
-                    kort_i_kursen=_kort_i_kursen(sam, nivåer))
+                    kort_i_kursen=_kort_i_kursen(sam, nivåer), bevis=bevis)
 
     print(f"{a.källspråk} → {språk}.  [enter] öva · n nästa nivå · q sluta")
     print("  när en mening ställs: skriv översättningen, "
@@ -444,7 +470,8 @@ def main() -> None:
                 print(f"  {a.minuter:.0f} min om dagen räcker till "
                       f"{tempot.nya} nya kort{extra}.")
             print("  lägger dagens plan …")
-            plan = passet.dagsplan(rapport=lambda r: print(r, flush=True))
+            plan = passet.dagsplan(rapport=lambda r: print(r, flush=True),
+                                   budget=budget if svar else None)
             planens_dag = data.dag()
             nya = len(plan.kort - data.införda())
             if svar is not None:

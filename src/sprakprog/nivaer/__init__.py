@@ -98,13 +98,29 @@ class Krav:
     def _nivåkorten(self, träff: Träff, mål: Kort) -> frozenset:
         return frozenset(k for k in träff.kort if self.nivå(k)) - {mål}
 
-    def mängd(self, mål: Kort, krymp: bool = False) -> frozenset | None:
-        """Kortets krav, eller None om ingen giltig mening prövar kortet.
+    def mängd(self, mål: Kort,
+              krymp: bool = False) -> tuple[frozenset, frozenset] | None:
+        """Kortets krav OCH beviset, eller None om ingen mening prövar kortet.
 
         Den första mening sammansättningen hittar ger mängden (version 1, 4.2).
         Med `krymp` förbjuds ett kort i taget, och går det fortfarande att bygga
         en mening tas den mindre mängden. När inget kort går att ta bort är
         mängden bevisat minst, men varje nej kostar en uttömmande genomgång.
+
+        BEVISET ÄR MENINGENS KORT, och det är 4.2:s egen andra halva: «Kortet
+        går att pröva när kravet är infört, och meningen sparas som dess bevis
+        (3.10).» Förut kastades meningen och bara kraven behölls, och då fick
+        passet söka fram paketet (3.10) själv — en gång per kort och dag, med
+        allt dagen redan valt tillåtet. Kostnaden växte med den tillåtna
+        mängden: `regel:ordning/hjälpverb_före_huvudverb` togs på 5,3 s ensamt
+        och på över två minuter när dagens tjugo valda kort var lånekort
+        (mätt 2026-09-27). Beviset gör sökningen onödig: paketet är bevisets
+        kort minus de införda, och beviset vilar bara på kravet, som grinden
+        (4.4) redan har sett infört.
+
+        MENINGEN SJÄLV SPARAS INTE, bara dess kort. Paketet är precis den
+        mängden, och `Mening` har ingen serialisering. Den behövs först för
+        3.10:s omkontroll mot entydighetsfiltret (6.5), som inte är byggt.
         """
         träff = self._finns(mål, None)
         if träff is None:
@@ -114,12 +130,12 @@ class Krav:
         while krympte:
             krympte = False
             for kort in sorted(mängd, key=str):
-                träff = self._finns(mål, mängd - {kort})
-                if träff is not None:
-                    mängd = self._nivåkorten(träff, mål)
+                mindre = self._finns(mål, mängd - {kort})
+                if mindre is not None:
+                    träff, mängd = mindre, self._nivåkorten(mindre, mål)
                     krympte = True
                     break
-        return mängd
+        return mängd, frozenset(träff.kort)
 
 
 def starka_komponenter(noder: Iterable, kanter: dict) -> list[frozenset]:
@@ -167,6 +183,7 @@ class Nivåkarta:
     krav: dict          # kort → dess minsta mängd
     nivåer: list        # starka komponenter, i den ordning de kan öppnas
     oprövbara: list     # kort utan någon giltig mening
+    bevis: dict         # kort → korten i den mening som bevisar det (3.10)
 
 
 def rita_nivåer(krav: Krav, kort: Iterable[Kort],
@@ -180,9 +197,13 @@ def rita_nivåer(krav: Krav, kort: Iterable[Kort],
     innan användningarna är mätta.
     """
     mängder: dict = {}
+    bevis: dict = {}
     for k in sorted(kort, key=str):
         t, frågor = time.perf_counter(), krav.frågor
-        mängder[k] = krav.mängd(k, krymp)
+        svar = krav.mängd(k, krymp)
+        mängder[k] = None if svar is None else svar[0]
+        if svar is not None:
+            bevis[k] = svar[1]
         if rapport:
             text = ("inte prövbart" if mängder[k] is None
                     else "{" + ", ".join(sorted(map(str, mängder[k]))) + "}")
@@ -195,4 +216,5 @@ def rita_nivåer(krav: Krav, kort: Iterable[Kort],
         from .tackning import ordna_nivåer
         nivåer = ordna_nivåer(nivåer, valda, täckning)
     return Nivåkarta(valda, nivåer,
-                     sorted((k for k, m in mängder.items() if m is None), key=str))
+                     sorted((k for k, m in mängder.items() if m is None), key=str),
+                     bevis)

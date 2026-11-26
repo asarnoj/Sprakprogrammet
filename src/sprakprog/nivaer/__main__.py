@@ -27,6 +27,14 @@ def main() -> None:
     p.add_argument("kort", nargs="*")
     p.add_argument("--spara", metavar="FIL",
                    help="skriv kraven och nivåerna som JSON, för dagspasset")
+    p.add_argument("--källspråk", metavar="SPRÅK",
+                   help="kursens källspråk. KÄRNAN 4.2: «kraven räknas per "
+                        "språkpar … nivåerna är desamma för alla användare av "
+                        "samma kurs men inte för alla kurser med samma "
+                        "målspråk». Utan det räknas kraven ur meningar som inte "
+                        "håller i någon kurs: «How much dog sees.» gav kravet "
+                        "för `interr_det_hur_mycket`, och med paret «sv» finns "
+                        "ingen mening alls med det kravet")
     p.add_argument("--krymp", action="store_true",
                    help="krymp varje krav till en bevisat minsta mängd (dyrt, 4.2)")
     p.add_argument("--kontroll", action="store_true",
@@ -39,7 +47,7 @@ def main() -> None:
 
     karta = ladda(a.karta)
     språk = karta["språk"]
-    s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), karta)
+    s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), karta, a.källspråk)
     s.kontroll = a.kontroll
     nivå = Nivåkort(s.tabell)
     alla = sorted(nivå.alla(karta), key=str)
@@ -53,7 +61,10 @@ def main() -> None:
         kort = [namn[text] for text in a.kort]
     else:
         kort = alla
-    print(f"{språk}: {len(kort)} nivåkort", flush=True)
+    print(f"{språk}: {len(kort)} nivåkort"
+          + (f", kurs {a.källspråk}–{språk}" if a.källspråk
+             else ", INGET KÄLLSPRÅK — kraven gäller då ingen kurs (4.2)"),
+          flush=True)
 
     krav = Krav(s, nivå)
     t = time.perf_counter()
@@ -75,9 +86,16 @@ def main() -> None:
             return [k.språk, k.typ, list(k.nyckel)]
         Path(a.spara).write_text(json.dumps({
             "språk": språk,
+            "källspråk": a.källspråk,
             "krav": [[rad(k), [rad(d) for d in sorted(m, key=str)]]
                      for k, m in sorted(karta_.krav.items(), key=lambda x: str(x[0]))],
             "nivåer": [[rad(k) for k in sorted(n, key=str)] for n in karta_.nivåer],
+            # Beviset: korten i den mening som visar att kortet går att pröva
+            # (3.10, 4.2). Passet läser paketet ur den här mängden i stället
+            # för att söka fram det.
+            "bevis": [[rad(k), [rad(b) for b in sorted(m, key=str)]]
+                      for k, m in sorted(karta_.bevis.items(),
+                                         key=lambda x: str(x[0]))],
             "oprövbara": [rad(k) for k in karta_.oprövbara],
         }, ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"sparat: {a.spara}")

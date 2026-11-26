@@ -67,6 +67,10 @@ NÄT = [
     ("ordföljdsprov.py",     True),
     ("renderarbild.py",      True),
     ("introduktionsprov.py", True),
+    # Kravens löfte: grinden får inte släppa upp ett kort passet inte kan
+    # införa. Tung, för ett nej kostar en uttömmande genomgång — men det var
+    # elva sådana nej som gjorde dag fyras plan omöjlig.
+    ("kravprov.py",          True),
     ("indikatorprov.py",     True),
     ("passprov.py",          True),
     # ~2 min: bygger en färsk kurs per invariant och kör introfasen i var
