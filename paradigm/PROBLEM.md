@@ -4278,6 +4278,52 @@ med en ändelse har ett kort att peka på.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 
+#### INKOPPLAD: NIVÅN INDEXERAR DEN FLÄTADE STEGEN (2026-08-28)
+
+`Kurs.nivå` betyder inte längre "den N:te konstruktionen" utan "det N:te
+steget". Tre kopplingar bytte:
+
+    Samplare.tillåtet   upplåst_vid(språk, nivå) i stället för upplåst(nivå)
+    byggbarhet          frågar OLIKA saker beroende på stegets sort
+    befolka             härleder böjningscellerna ur nivån
+
+**Grinden frågar olika saker om de två sorterna.** Ett konstruktionssteg
+prövas på SPECEN — `ANVÄNDER` svarar utan att rendera, och de celler som
+slagits ihop med konstruktionen kommer med på köpet. Ett rent böjningssteg
+har ingen konstruktion att fråga om; kravet är i stället att meningen
+faktiskt SLÅR UPP en av cellerna, och det syns bara i renderingen.
+`byggbarhet` har uppslagen redan, så det kostar ingenting extra.
+
+**Nivå 1 kräver ingenting.** Den är grundböjningen, som varje mening
+använder — att kräva den vore att kräva att meningen har ett verb.
+
+**Tre fel på vägen, alla självförvållade:**
+
+*Oändlig rekursion.* `stege` → `nåbara_celler` → `Samplare` → `upplåst_vid`
+→ `stege`. Mätningen av vilka celler specen kan producera ska ha ALLT
+upplåst, inte fråga stegen. `Samplare` tar numera emot en färdig mängd, och
+parametern finns just för att bryta cirkeln.
+
+*`upplåst_vid` räknade celler som konstruktioner.* Ett hopslaget steg bär
+både konstruktionsnamnet och cellerna; att läsa hela tupeln gav 33
+"konstruktioner" av tjugo möjliga, och `Samplare.tillåtet` fick namn som
+`pret_1sg` som ingen `ANVÄNDER`-post känner.
+
+*Talet 21 var hårdkodat.* `ordföljdsprov` byggde sin generator på nivå 21 och
+fick tre ordföljdsregler som inte gick att möta — `est_ce_que` och japanskans
+bisatsregler ligger på steg 22 och senare. `toppnivå(språk)` härleds nu, och
+gränssnittet visar 22 för franskan och 24 för japanskan i stället för alltid
+21.
+
+**Verifierat på `kort.db`:** nivå 1 ger grundböjningens åtta franska
+ändelsekort, och meningarna attribuerar dem — `J'ai.` prövar `s` och `∅`.
+
+**NIVÅTALET HAR BYTT INNEBÖRD I BEFINTLIGA KURSER.** Tyskans "nivå 4" betydde
+`numerus` förut och betyder nu det fjärde steget i den flätade stegen. Ingen
+översättningstabell är skriven: kurserna är testdata, och en nollställning
+bygger om kortleken med den nya grinden. Skulle en riktig kurs finnas när
+det här läses är en migration det första som måste göras.
+
 ### F3 ? — Två oberoende tak, och ett tredje som inte styrs
 
 **Komplexitetsstegen** (21 nivåer) styr konstruktioner: objekt, bisatser,
