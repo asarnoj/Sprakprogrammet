@@ -1,6 +1,7 @@
 # Paradigm-katalog — schemaspecifikation
 
 *Version 2. Fastställd 2026-05-04 efter arkitektur-pivot från klassifikations-modellen.*
+*Reviderad 2026-07-09: LLM är primär datakälla; kaikki degraderas till valideringsfacit.*
 
 Denna fil är auktoritativ för formatet på slot-filer i `paradigm/`. Pipelinen
 i Fas B3 vägrar köra mot filer som inte följer schemat.
@@ -13,9 +14,15 @@ Paradigm-katalogen specificerar **inflektionsrummet** för varje (språk, ordkla
 det vill säga, vilka celler som *kan* existera. Vilka celler som faktiskt fylls
 för ett enskilt lexem avgörs reaktivt av två datakällor:
 
-1. **Kaikki-dumpar** (Wiktionarys strukturerade böjningstabeller, lokalt i
-   `gammal/datafiler/kaikki/`) — primär källa, human-curated ground truth.
-2. **LLM** — fyller endast i celler som saknas i kaikki.
+1. **LLM** (Claude, via `ordbok generera`) — primär källa. Genererar alla
+   celler för alla lexem. Motivering: externa bibliotek och databaser har
+   visat sig inkonsekventa mellan språk; LLM ger en enhetlig pipeline för
+   alla 7 språk med samma schema och felhantering.
+2. **Kaikki-dumpar** (Wiktionarys strukturerade böjningstabeller, lokalt i
+   `gammal/datafiler/kaikki/`, finns för sv/de/es/fr/it) — valideringsfacit.
+   Används för stickprovskontroll av LLM-utdata, inte som datakälla.
+   Uppmätt felfrekvens per (språk, ordklass) avgör om en omkörning med
+   starkare modell behövs. en/ja saknar dumpar och valideras manuellt.
 
 Slot-filerna gör **ingen klassifikation av lexem**. Ett AR-verb och ett starkt
 verb läggs in i `paradigm/sv/verb.yaml` på exakt samma sätt; skillnaden är
@@ -184,10 +191,10 @@ existera. Migrationsregeln är: **radera och bygg om i v2**. Inget innehåll
 ## 9. Vad slot-filerna *inte* hanterar
 
 - **Hur** former bildas — slot-filerna specificerar VAD som kan existera, inte
-  HUR. Generering är kaikki/LLM:s ansvar.
+  HUR. Generering är LLM:s ansvar (kaikki validerar).
 - **Klassifikation av lexem** — ingen verbgrupp, ingen deklinationsklass.
-- **Suppletion / oregelbundenhet** — kaikki har redan formerna; LLM hanterar
-  saknade fall. Inga per-lexem paradigm-filer.
+- **Suppletion / oregelbundenhet** — LLM genererar formerna direkt; kaikki
+  används som facit vid stickprov. Inga per-lexem paradigm-filer.
 - **Defektiva paradigm** — hanteras via lexem-modifierare (§6).
 - **Ordbildning, sammansättning, derivation** — slot-filerna täcker bara
   böjningsmorfologi, inte derivationsmorfologi.

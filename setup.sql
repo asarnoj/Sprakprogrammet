@@ -88,6 +88,15 @@ CREATE INDEX idx_koncept_källa    ON Koncept(källa);
                 de: 1=Maskulin  2=Feminin  3=Neutrum
                 en/ja: NULL (genus saknas)
    prenominal : adjektiv — 1=före substantiv (default/NULL)  0=efter substantiv
+   ja_adjektiv_typ : ENDAST ja + ordklass Adjektiv. Japanska "adjektiv" är
+                fyra grammatiskt olika typer med olika böjning/attribuering:
+                  'i'        — i-adjektiv, böjs syntetiskt (安い → 安くない)
+                  'na'       — na-adjektiv, attribueras med な (簡単な)
+                  'no'       — substantiviskt, attribueras med の (灰色の)
+                  'verbfras' — verbform/fras (疲れた, 開いている); böjs som
+                               verb eller inte alls — hoppas över av
+                               adjektiv-böjningspipelinen
+                Taggas av ordbok/migrationer/ja_adjektiv_typ.sql efter import.
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Lexem (
     id          INTEGER PRIMARY KEY,
@@ -95,7 +104,8 @@ CREATE TABLE Lexem (
     språk       TEXT    NOT NULL CHECK (språk IN ('sv', 'en', 'fr', 'de', 'es', 'it', 'ja')),
     lemma       TEXT    NOT NULL,
     genus       INTEGER,
-    prenominal  INTEGER CHECK (prenominal IN (0, 1))
+    prenominal  INTEGER CHECK (prenominal IN (0, 1)),
+    ja_adjektiv_typ TEXT CHECK (ja_adjektiv_typ IN ('i', 'na', 'no', 'verbfras'))
     /* Ingen UNIQUE på (koncept_id, språk): ett koncept kan ha flera
        lemman per språk när språket har genuint distinkta former för
        samma begrepp (t.ex. ja: 私/僕, es: ser/estar, de: dann/damals).

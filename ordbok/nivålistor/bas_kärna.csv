@@ -108,10 +108,10 @@ frågepronomen_person,Frågepronomen,A1,it,chi
 frågepronomen_person,Frågepronomen,A1,ja,誰
 frågepronomen_sak,Frågepronomen,A1,sv,vad
 frågepronomen_sak,Frågepronomen,A1,en,what
-frågepronomen_sak,Frågepronomen,A1,fr,quoi
+frågepronomen_sak,Frågepronomen,A1,fr,que
 frågepronomen_sak,Frågepronomen,A1,de,was
 frågepronomen_sak,Frågepronomen,A1,es,qué
-frågepronomen_sak,Frågepronomen,A1,it,che
+frågepronomen_sak,Frågepronomen,A1,it,cosa
 frågepronomen_sak,Frågepronomen,A1,ja,何
 # ── Relativpronomen ───────────────────────────────────────────────────────────
 # Inleder relativa bisatser: "mannen som bor här", "the book that I read"
@@ -145,6 +145,7 @@ frågadverb_plats,Frågadverb,A1,ja,どこ
 # sv/de/ja särskiljer riktning; fr/es/it använder samma ord
 frågadverb_riktning,Frågadverb,A1,sv,vart
 frågadverb_riktning,Frågadverb,A1,de,wohin
+frågadverb_riktning,Frågadverb,A1,es,adónde
 frågadverb_riktning,Frågadverb,A1,ja,どこへ
 frågadverb_ursprung,Frågadverb,A1,sv,varifrån
 frågadverb_ursprung,Frågadverb,A1,en,where from
@@ -167,7 +168,7 @@ frågadverb_sätt,Frågadverb,A1,de,wie
 frågadverb_sätt,Frågadverb,A1,es,cómo
 frågadverb_sätt,Frågadverb,A1,it,come
 frågadverb_sätt,Frågadverb,A1,ja,どう
-frågadverb_sätt,Frågadverb,A1,ja,どう やって
+frågadverb_sätt,Frågadverb,A1,ja,どうやって
 frågadverb_orsak,Frågadverb,A1,sv,varför
 frågadverb_orsak,Frågadverb,A1,en,why
 frågadverb_orsak,Frågadverb,A1,fr,pourquoi
@@ -732,7 +733,7 @@ verb_ha,Verb,A1,de,haben
 # es: "tener" = innehav (ha en bok); "haber" = temporalt hjälpverb (ha gjort) — reserveras för perfekt
 verb_ha,Verb,A1,es,tener
 verb_ha,Verb,A1,it,avere
-verb_ha,Verb,A1,ja,ある
+verb_ha,Verb,A1,ja,持っている
 verb_bli,Verb,A1,sv,bli
 verb_bli,Verb,A1,en,become
 verb_bli,Verb,A1,fr,devenir
@@ -1168,7 +1169,7 @@ interj_hello,Interjektion,A1,ja,こんにちは
 interj_goodbye,Interjektion,A1,sv,hej då
 interj_goodbye,Interjektion,A1,en,goodbye
 interj_goodbye,Interjektion,A1,fr,au revoir
-interj_goodbye,Interjektion,A1,de,auf wiedersehen
+interj_goodbye,Interjektion,A1,de,auf Wiedersehen
 interj_goodbye,Interjektion,A1,es,adiós
 interj_goodbye,Interjektion,A1,it,arrivederci
 interj_goodbye,Interjektion,A1,ja,さようなら
@@ -1189,10 +1190,10 @@ interj_please,Interjektion,A1,es,por favor
 interj_please,Interjektion,A1,it,per favore
 interj_please,Interjektion,A1,ja,ください
 # interj_sorry: ursäkt/beklagan
-interj_sorry,Interjektion,A1,sv,ursäkt
+interj_sorry,Interjektion,A1,sv,förlåt
 interj_sorry,Interjektion,A1,en,sorry
 interj_sorry,Interjektion,A1,fr,désolé
-interj_sorry,Interjektion,A1,de,entschuldigung
+interj_sorry,Interjektion,A1,de,Entschuldigung
 interj_sorry,Interjektion,A1,es,perdón
 interj_sorry,Interjektion,A1,it,mi dispiace
 interj_sorry,Interjektion,A1,ja,すみません
@@ -1215,7 +1216,7 @@ komp_som,Subjunktion,A1,fr,comme
 komp_som,Subjunktion,A1,de,wie
 komp_som,Subjunktion,A1,es,como
 komp_som,Subjunktion,A1,it,come
-komp_som,Subjunktion,A1,ja,ほど
+komp_som,Subjunktion,A1,ja,と同じくらい
 # komp_än: komparativ-markör (than construction)
 komp_än,Subjunktion,A1,sv,än
 komp_än,Subjunktion,A1,en,than

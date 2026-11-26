@@ -83,7 +83,7 @@ rör_falla,Verb,A2,ja,落ちる
 rör_stanna,Verb,A2,sv,stanna
 rör_stanna,Verb,A2,en,stop
 rör_stanna,Verb,A2,fr,s'arrêter
-rör_stanna,Verb,A2,de,stoppen
+rör_stanna,Verb,A2,de,anhalten
 rör_stanna,Verb,A2,es,parar
 rör_stanna,Verb,A2,it,fermarsi
 rör_stanna,Verb,A2,ja,止まる
@@ -214,7 +214,7 @@ kog_förstå,Verb,A1,de,verstehen
 kog_förstå,Verb,A1,es,entender
 kog_förstå,Verb,A1,it,capire
 kog_förstå,Verb,A1,ja,わかる
-kog_lära,Verb,A1,sv,lära
+kog_lära,Verb,A1,sv,lära sig
 kog_lära,Verb,A1,en,learn
 kog_lära,Verb,A1,fr,apprendre
 kog_lära,Verb,A1,de,lernen
@@ -227,7 +227,7 @@ kog_minnas,Verb,A2,fr,se souvenir
 kog_minnas,Verb,A2,de,sich erinnern
 kog_minnas,Verb,A2,es,recordar
 kog_minnas,Verb,A2,it,ricordare
-kog_minnas,Verb,A2,ja,覚える
+kog_minnas,Verb,A2,ja,思い出す
 kog_glömma,Verb,A2,sv,glömma
 kog_glömma,Verb,A2,en,forget
 kog_glömma,Verb,A2,fr,oublier
@@ -490,7 +490,7 @@ fys_bära,Verb,A2,fr,porter
 fys_bära,Verb,A2,de,tragen
 fys_bära,Verb,A2,es,llevar
 fys_bära,Verb,A2,it,portare
-fys_bära,Verb,A2,ja,持つ
+fys_bära,Verb,A2,ja,運ぶ
 fys_bygga,Verb,A2,sv,bygga
 fys_bygga,Verb,A2,en,build
 fys_bygga,Verb,A2,fr,construire
@@ -649,13 +649,6 @@ arb_betala,Verb,A2,ja,払う
 # Existens och livscykel: finnas, leva, dö, verka
 # ja=ある (icke-animat finnas); いる (animat finnas) — lemma: ある (generellt koncept)
 # ext_verka: fr=sembler / es=parecer / it=sembrare — alla betyder "verka/tyckas"
-ext_finnas,Verb,A1,sv,finnas
-ext_finnas,Verb,A1,en,exist
-ext_finnas,Verb,A1,fr,exister
-ext_finnas,Verb,A1,de,existieren
-ext_finnas,Verb,A1,es,existir
-ext_finnas,Verb,A1,it,esistere
-ext_finnas,Verb,A1,ja,ある
 ext_leva,Verb,A1,sv,leva
 ext_leva,Verb,A1,en,live
 ext_leva,Verb,A1,fr,vivre
@@ -844,7 +837,7 @@ eko_v_äga,Verb,A2,fr,posséder
 eko_v_äga,Verb,A2,de,besitzen
 eko_v_äga,Verb,A2,es,poseer
 eko_v_äga,Verb,A2,it,possedere
-eko_v_äga,Verb,A2,ja,持つ
+eko_v_äga,Verb,A2,ja,所有する
 
 # ── 14. Prestation och resultat ───────────────────────────────────────────────
 # Prefix: gen_ (fortsätter generella handlingsverb)
@@ -1302,6 +1295,13 @@ rör_skynda,Verb,A2,de,sich beeilen
 rör_skynda,Verb,A2,es,apurarse
 rör_skynda,Verb,A2,it,sbrigarsi
 rör_skynda,Verb,A2,ja,急ぐ
+rör_snubbla,Verb,A2,sv,snubbla
+rör_snubbla,Verb,A2,en,stumble
+rör_snubbla,Verb,A2,fr,trébucher
+rör_snubbla,Verb,A2,de,stolpern
+rör_snubbla,Verb,A2,es,tropezar
+rör_snubbla,Verb,A2,it,inciampare
+rör_snubbla,Verb,A2,ja,つまずく
 # kom_meddela: fr=informer / de=benachrichtigen = meddela/underrätta
 kom_meddela,Verb,A2,sv,meddela
 kom_meddela,Verb,A2,en,notify
@@ -1435,17 +1435,10 @@ fam_maka,Substantiv,A2,de,Frau
 fam_maka,Substantiv,A2,es,esposa
 fam_maka,Substantiv,A2,it,moglie
 fam_maka,Substantiv,A2,ja,妻
-fam_kollega,Substantiv,A2,sv,kollega
-fam_kollega,Substantiv,A2,en,colleague
-fam_kollega,Substantiv,A2,fr,collègue
-fam_kollega,Substantiv,A2,de,Kollege
-fam_kollega,Substantiv,A2,es,colega
-fam_kollega,Substantiv,A2,it,collega
-fam_kollega,Substantiv,A2,ja,同僚
 fam_bekant,Substantiv,A2,sv,bekant
 fam_bekant,Substantiv,A2,en,acquaintance
 fam_bekant,Substantiv,A2,fr,connaissance
-fam_bekant,Substantiv,A2,de,Bekannte
+fam_bekant,Substantiv,A2,de,Bekannter
 fam_bekant,Substantiv,A2,es,conocido
 fam_bekant,Substantiv,A2,it,conoscente
 fam_bekant,Substantiv,A2,ja,知り合い
@@ -1677,7 +1670,7 @@ mat_frukt,Substantiv,A1,en,fruit
 mat_frukt,Substantiv,A1,fr,fruit
 mat_frukt,Substantiv,A1,de,Obst
 mat_frukt,Substantiv,A1,es,fruta
-mat_frukt,Substantiv,A1,it,frutto
+mat_frukt,Substantiv,A1,it,frutta
 mat_frukt,Substantiv,A1,ja,果物
 mat_grönsak,Substantiv,A1,sv,grönsak
 mat_grönsak,Substantiv,A1,en,vegetable
@@ -1796,7 +1789,7 @@ kläd_kläder,Substantiv,A1,en,clothes
 kläd_kläder,Substantiv,A1,fr,vêtement
 kläd_kläder,Substantiv,A1,de,Kleidung
 kläd_kläder,Substantiv,A1,es,ropa
-kläd_kläder,Substantiv,A1,it,vestito
+kläd_kläder,Substantiv,A1,it,vestiti
 kläd_kläder,Substantiv,A1,ja,服
 kläd_tshirt,Substantiv,A1,sv,t-shirt
 kläd_tshirt,Substantiv,A1,en,t-shirt
@@ -3060,7 +3053,7 @@ abs_framtid,Substantiv,A2,it,futuro
 abs_framtid,Substantiv,A2,ja,未来
 abs_nyhet,Substantiv,A2,sv,nyhet
 abs_nyhet,Substantiv,A2,en,news
-abs_nyhet,Substantiv,A2,fr,nouvelles
+abs_nyhet,Substantiv,A2,fr,nouvelle
 abs_nyhet,Substantiv,A2,de,Nachricht
 abs_nyhet,Substantiv,A2,es,noticia
 abs_nyhet,Substantiv,A2,it,notizia
@@ -3540,7 +3533,7 @@ adj_es_ledsen,Adjektiv,A1,it,triste
 adj_es_ledsen,Adjektiv,A1,ja,悲しい
 adj_es_arg,Adjektiv,A1,sv,arg
 adj_es_arg,Adjektiv,A1,en,angry
-adj_es_arg,Adjektiv,A1,fr,en colère
+adj_es_arg,Adjektiv,A1,fr,fâché
 adj_es_arg,Adjektiv,A1,de,wütend
 adj_es_arg,Adjektiv,A1,es,enfadado
 adj_es_arg,Adjektiv,A1,it,arrabbiato
@@ -3582,7 +3575,7 @@ adj_es_sjuk,Adjektiv,A1,it,malato
 adj_es_sjuk,Adjektiv,A1,ja,病気
 adj_es_frisk,Adjektiv,A1,sv,frisk
 adj_es_frisk,Adjektiv,A1,en,healthy
-adj_es_frisk,Adjektiv,A1,fr,en bonne santé
+adj_es_frisk,Adjektiv,A1,fr,sain
 adj_es_frisk,Adjektiv,A1,de,gesund
 adj_es_frisk,Adjektiv,A1,es,sano
 adj_es_frisk,Adjektiv,A1,it,sano
@@ -3663,7 +3656,7 @@ adj_ev_snäll,Adjektiv,A1,ja,優しい
 adj_ev_elak,Adjektiv,A2,sv,elak
 adj_ev_elak,Adjektiv,A2,en,mean
 adj_ev_elak,Adjektiv,A2,fr,méchant
-adj_ev_elak,Adjektiv,A2,de,böse
+adj_ev_elak,Adjektiv,A2,de,gemein
 # es=malo täcker adj_ev_elak och adj_k_dålig (polysemi)
 adj_ev_elak,Adjektiv,A2,es,malo
 # it=cattivo täcker adj_ev_elak och adj_k_dålig (polysemi)
@@ -4081,7 +4074,7 @@ adj_es_skamsen,Adjektiv,A2,en,ashamed
 adj_es_skamsen,Adjektiv,A2,fr,honteux
 adj_es_skamsen,Adjektiv,A2,de,beschämt
 adj_es_skamsen,Adjektiv,A2,es,avergonzado
-adj_es_skamsen,Adjektiv,A2,it,vergognoso
+adj_es_skamsen,Adjektiv,A2,it,imbarazzato
 adj_es_skamsen,Adjektiv,A2,ja,恥ずかしい
 # adj_ev_oväntad: ja=予想外 (na-adj, lemma utan な)
 adj_ev_oväntad,Adjektiv,A2,sv,oväntad
@@ -4132,13 +4125,6 @@ adj_m_olik,Adjektiv,A2,ja,違う
 # Prefix: adv2_
 # Adverb som modifierar grad eller intensitet
 # inte ingår här fastän det är i bas_kärna — hoppas över (dubblett)
-adv2_väldigt,Adverb,A1,sv,väldigt
-adv2_väldigt,Adverb,A1,en,very
-adv2_väldigt,Adverb,A1,fr,très
-adv2_väldigt,Adverb,A1,de,sehr
-adv2_väldigt,Adverb,A1,es,muy
-adv2_väldigt,Adverb,A1,it,molto
-adv2_väldigt,Adverb,A1,ja,とても
 adv2_ganska,Adverb,A1,sv,ganska
 adv2_ganska,Adverb,A1,en,quite
 adv2_ganska,Adverb,A1,fr,assez
@@ -4160,34 +4146,6 @@ adv2_för,Adverb,A1,de,zu
 adv2_för,Adverb,A1,es,demasiado
 adv2_för,Adverb,A1,it,troppo
 adv2_för,Adverb,A1,ja,すぎる
-adv2_också,Adverb,A1,sv,också
-adv2_också,Adverb,A1,en,also
-adv2_också,Adverb,A1,fr,aussi
-adv2_också,Adverb,A1,de,auch
-adv2_också,Adverb,A1,es,también
-adv2_också,Adverb,A1,it,anche
-adv2_också,Adverb,A1,ja,も
-adv2_bara,Adverb,A1,sv,bara
-adv2_bara,Adverb,A1,en,just
-adv2_bara,Adverb,A1,fr,juste
-adv2_bara,Adverb,A1,de,nur
-adv2_bara,Adverb,A1,es,solo
-adv2_bara,Adverb,A1,it,solo
-adv2_bara,Adverb,A1,ja,だけ
-adv2_redan,Adverb,A2,sv,redan
-adv2_redan,Adverb,A2,en,already
-adv2_redan,Adverb,A2,fr,déjà
-adv2_redan,Adverb,A2,de,schon
-adv2_redan,Adverb,A2,es,ya
-adv2_redan,Adverb,A2,it,già
-adv2_redan,Adverb,A2,ja,もう
-adv2_ännu,Adverb,A2,sv,ännu
-adv2_ännu,Adverb,A2,en,still
-adv2_ännu,Adverb,A2,fr,encore
-adv2_ännu,Adverb,A2,de,noch
-adv2_ännu,Adverb,A2,es,todavía
-adv2_ännu,Adverb,A2,it,ancora
-adv2_ännu,Adverb,A2,ja,まだ
 adv2_ungefär,Adverb,A2,sv,ungefär
 adv2_ungefär,Adverb,A2,en,about
 adv2_ungefär,Adverb,A2,fr,environ
@@ -4199,41 +4157,6 @@ adv2_ungefär,Adverb,A2,ja,だいたい
 # ── 29. Sällskaplig och modal ─────────────────────────────────────────────────
 # Prefix: adv2_
 # Frekvens- och modaladverb för vardaglig kommunikation
-adv2_alltid,Adverb,A1,sv,alltid
-adv2_alltid,Adverb,A1,en,always
-adv2_alltid,Adverb,A1,fr,toujours
-adv2_alltid,Adverb,A1,de,immer
-adv2_alltid,Adverb,A1,es,siempre
-adv2_alltid,Adverb,A1,it,sempre
-adv2_alltid,Adverb,A1,ja,いつも
-adv2_aldrig,Adverb,A1,sv,aldrig
-adv2_aldrig,Adverb,A1,en,never
-adv2_aldrig,Adverb,A1,fr,jamais
-adv2_aldrig,Adverb,A1,de,nie
-adv2_aldrig,Adverb,A1,es,nunca
-adv2_aldrig,Adverb,A1,it,mai
-adv2_aldrig,Adverb,A1,ja,決して
-adv2_ofta,Adverb,A1,sv,ofta
-adv2_ofta,Adverb,A1,en,often
-adv2_ofta,Adverb,A1,fr,souvent
-adv2_ofta,Adverb,A1,de,oft
-adv2_ofta,Adverb,A1,es,a menudo
-adv2_ofta,Adverb,A1,it,spesso
-adv2_ofta,Adverb,A1,ja,よく
-adv2_ibland,Adverb,A1,sv,ibland
-adv2_ibland,Adverb,A1,en,sometimes
-adv2_ibland,Adverb,A1,fr,parfois
-adv2_ibland,Adverb,A1,de,manchmal
-adv2_ibland,Adverb,A1,es,a veces
-adv2_ibland,Adverb,A1,it,a volte
-adv2_ibland,Adverb,A1,ja,ときどき
-adv2_snart,Adverb,A1,sv,snart
-adv2_snart,Adverb,A1,en,soon
-adv2_snart,Adverb,A1,fr,bientôt
-adv2_snart,Adverb,A1,de,bald
-adv2_snart,Adverb,A1,es,pronto
-adv2_snart,Adverb,A1,it,presto
-adv2_snart,Adverb,A1,ja,もうすぐ
 adv2_kanske,Adverb,A1,sv,kanske
 adv2_kanske,Adverb,A1,en,maybe
 adv2_kanske,Adverb,A1,fr,peut-être
@@ -4299,7 +4222,7 @@ adv2_alltså,Adverb,A2,sv,alltså
 adv2_alltså,Adverb,A2,en,so
 adv2_alltså,Adverb,A2,fr,donc
 adv2_alltså,Adverb,A2,de,also
-adv2_alltså,Adverb,A2,es,entonces
+adv2_alltså,Adverb,A2,es,por lo tanto
 adv2_alltså,Adverb,A2,it,quindi
 adv2_alltså,Adverb,A2,ja,つまり
 adv2_tillsammans,Adverb,A2,sv,tillsammans
@@ -4368,7 +4291,7 @@ adv2_fram,Adverb,A2,it,avanti
 adv2_fram,Adverb,A2,ja,前に
 adv2_tillbaka,Adverb,A2,sv,tillbaka
 adv2_tillbaka,Adverb,A2,en,back
-adv2_tillbaka,Adverb,A2,fr,en retour
+adv2_tillbaka,Adverb,A2,fr,de retour
 adv2_tillbaka,Adverb,A2,de,zurück
 adv2_tillbaka,Adverb,A2,es,de vuelta
 adv2_tillbaka,Adverb,A2,it,indietro
