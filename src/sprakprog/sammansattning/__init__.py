@@ -36,11 +36,13 @@ hoppas över, också i senare frågor där samma kort är förbjudet.
 
 from __future__ import annotations
 
+import csv
 import itertools
 import math
 import sqlite3
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable, Iterator
 
 from ..kortmodell import Formtabell, Kort, meningens_kort
@@ -151,6 +153,7 @@ class Sammansättare:
         self.conn = conn
         self._rader: dict[str, list] = {}
         self._nivåtabell: dict[str, str] = {}
+        self._vikter: dict[str, float] | None = None
         self._kandidatcache: dict = {}
         self._signaturer: dict = {}
         self._nåcache: dict = {}
@@ -925,17 +928,27 @@ class Sammansättare:
                        if v.get(f"{rot}.subjunktion") == "symbol" else None)
         return S.Bisats(subjunktion, self._mening(v, f"{rot}.sats", ordet))
 
-    #: Ordens ordning tills frekvenserna finns (5.6): CEFR-nivån i databasen,
-    #: och sedan konceptets nyckel, så att ordningen blir densamma varje gång.
+    #: Frekvenstabellen (5.6, P2), mätt en gång av
+    #: `ordbok/verktyg/frekvensmätning.py`. Saknas den ordnas orden efter
+    #: CEFR-nivån i databasen, som specen tillåter så länge.
+    FREKVENSFIL = Path(__file__).resolve().parents[3] / "ordbok" / "nivålistor" / "frekvens.csv"
     NIVÅER = ("A1", "A2", "B1")
 
-    def _nivå(self, koncept: str) -> int:
-        """Hur grundläggande ordet är. Ett ord utan nivå kommer sist."""
-        if not self._nivåtabell:
+    def _ordvikt(self, koncept: str) -> tuple:
+        """Ordningen mellan ord: det vanligaste först, och sedan nyckeln, så att
+        ordningen blir densamma varje gång."""
+        if self._vikter is None:
+            self._vikter = {}
+            if self.FREKVENSFIL.exists():
+                with self.FREKVENSFIL.open(encoding="utf-8") as f:
+                    self._vikter = {r["koncept"]: float(r["zipf"])
+                                    for r in csv.DictReader(f)}
             self._nivåtabell = {r[0]: r[1] for r in self.conn.execute(
                 "SELECT nyckel, nivå FROM Koncept")}
         nivå = self._nivåtabell.get(koncept)
-        return self.NIVÅER.index(nivå) if nivå in self.NIVÅER else len(self.NIVÅER)
+        return (-self._vikter.get(koncept, 0.0),
+                self.NIVÅER.index(nivå) if nivå in self.NIVÅER else len(self.NIVÅER),
+                koncept)
 
     def _lexemen(self, ordklass: str) -> list:
         if ordklass not in self._rader:
@@ -999,7 +1012,7 @@ class Sammansättare:
             self._kandidatcache[nyckel] = sorted(
                 (lexem for ordklass in klasser for lexem in self._lexemen(ordklass)
                  if all(self._uppfyller(lexem, vad, svar) for vad, svar in krav)),
-                key=lambda lexem: (self._nivå(lexem["nyckel"]), lexem["nyckel"]))
+                key=lambda lexem: self._ordvikt(lexem["nyckel"]))
         kandidater = self._kandidatcache[nyckel]
         if tillåten is None:
             return kandidater

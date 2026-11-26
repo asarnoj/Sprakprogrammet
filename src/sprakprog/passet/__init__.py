@@ -224,13 +224,13 @@ class Passet:
     def kandidater(self) -> list[Kort]:
         """Korten i nästa nivå som inte är införda (4.5), de vanligaste först.
 
-        Täckningen (5.6) avgör ordningen när frekvenserna finns. Tills dess
-        kommer mönsterkorten först — varje mening behöver dem — och orden i
-        CEFR-ordning, som specen tillåter så länge.
+        Täckningen (5.6) avgör ordningen när den är räknad. Tills dess kommer
+        mönsterkorten först — varje mening behöver dem — och orden i
+        frekvensordning.
         """
         return sorted(self.nästa_nivå() - self.data.införda(),
-                      key=lambda k: (self.s._nivå(k.nyckel[0]) if k.familj == "ord" else -1,
-                                     str(k)))
+                      key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
+                                     else (-1, 0.0, 0, str(k))))
 
     def paket(self, kort: Kort) -> tuple[Uppgift, frozenset] | None:
         """Kortet och de andra oinförda korten i en minsta mening med det (3.10).

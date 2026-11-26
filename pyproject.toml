@@ -9,6 +9,12 @@ description = "Universellt språkinlärningssystem — ordbokskärna och CLI"
 requires-python = ">=3.13"
 dependencies = ["anthropic>=0.40", "fsrs>=6.3"]
 
+# Verktyg som körs för hand och vars resultat sparas i repot, inte beroenden i
+# kärnan: `wordfreq` mäter frekvensen per koncept en gång
+# (ordbok/verktyg/frekvensmätning.py → ordbok/nivålistor/frekvens.csv).
+[project.optional-dependencies]
+verktyg = ["wordfreq>=3.1"]
+
 [project.scripts]
 ordbok = "sprakprog.cli:main"
 
