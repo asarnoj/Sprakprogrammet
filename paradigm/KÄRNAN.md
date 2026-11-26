@@ -725,8 +725,9 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-*Omgång 1–6 avklarade. En ny punkt föddes när Julius upptäckte att punkt 2
-aldrig uppdaterats efter omgång 3.*
+*Omgång 1–6 avklarade. Punkt 1 föddes när Julius upptäckte att korttabellen
+aldrig uppdaterats efter omgång 3; punkt 2 när hans krav «täcka ALLA
+inlärningsmoment» prövades mot renderarna.*
 
 ---
 
@@ -781,7 +782,54 @@ och talet faller ut. Inte förr.
 
 ---
 
-### 2 · Korttypernas mix skiljer sig mellan språken
+### 2 · Aspektvalet är ett läromoment utanför systemet
+
+*Ny 2026-09-11. Hittad när Julius krav 2 — «kortsystemet ska täcka ALLA möjliga
+inlärningsmoment för meningen» — prövades mot renderarna.*
+
+**Idag.** Renderaren tar aspekten som **indata**, den härleder den inte:
+
+    ENKELT_TEMPUS = {
+        (NUTID,     PERFEKTIV):   "pres",
+        (NUTID,     IMPERFEKTIV): "pres",
+        (FÖRFLUTEN, IMPERFEKTIV): "imperf",     <- imparfait
+        (FRAMTID,   PERFEKTIV):   "fut",
+        ...
+    }
+
+`(FÖRFLUTEN, PERFEKTIV)` saknas i tabellen och faller därför till den
+sammansatta dåtiden — passé composé. Aspekten är alltså ett **val generatorn
+gör och talar om**, inte något användaren avgör.
+
+**Luckan.** Systemet lär ut *«producera imperfekt när imperfekt efterfrågas»*.
+Det lär aldrig ut *«den här situationen kräver imperfekt»* — och för franskan,
+italienskan och spanskan är det ett av de svåraste momenten som finns.
+
+**Och det är inget förbiseende — det följer ur injektiviteten.** Skulle samma
+svenska mening kunna bli både imparfait och passé composé hade uppgiften inte
+haft exakt ett rätt svar, vilket axiomets syskonregel förbjuder. Så länge
+uppgiften är «översätt den här svenska meningen» **måste** aspekten ges bort.
+
+**Alternativ.**
+
+- **a) Lämna det utanför.** Scopet är grammatisk produktion, inte aspektval.
+  Då ska specen säga det rakt ut i stället för att kravet tros vara uppfyllt.
+- **b) En egen uppgiftstyp.** Aspektvalet prövas i en uppgift som inte är en
+  översättning — ett tvåval på svensk kontext, likt genuskortets införande.
+  Då blir det ett kort, men det bryter formen «en mening, ett facit».
+- **c) Källspråket bär aspekten synligt.** «jag arbetade varje dag» mot «jag
+  arbetade igår» — svenskan har adverbialen som avgör. Då blir aspektvalet
+  lärbart *inom* översättningen, men bara när generatorn kan garantera att
+  adverbialet finns, och det är en ny grind.
+
+*Samma fråga finns för de sammansatta tiderna och för modus där modusvalet inte
+styrs av ett regerande ord. `rektion` täcker det som **styrs** — `vouloir` +
+infinitiv, konjunktionen som kräver konjunktiv. Det som styrs av betydelsen
+täcks inte.*
+
+---
+
+### 3 · Korttypernas mix skiljer sig mellan språken
 
 **Idag.** Två av tre grundtyper går att räkna direkt. `ord` är ett per lexem i
 `sprak.db`; `ändelse` är en rad i `ordbok/ändelser.tsv`, alltså ett mönster per
