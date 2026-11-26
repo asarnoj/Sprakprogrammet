@@ -1,6 +1,32 @@
-# Överlämning — Språkprogrammet, 2026-08-14
+# Arbetslogg — Språkprogrammet, till och med 2026-08-15
 
-Klistra in det här i en ny chatt.
+> **DET HÄR ÄR EN HISTORISK LOGG, INTE EN BESKRIVNING AV SYSTEMET IDAG.**
+> Klistra INTE in den i en ny chatt — läs `paradigm/PROBLEM.md` i stället.
+>
+> Filen hette "Överlämning" och var skriven för att vara startpunkt i en ny
+> session. Den rollen togs över av `PROBLEM.md` den 2026-08-19, och skillnaden
+> är inte bara att den här är äldre: de två är ORGANISERADE olika.
+> `PROBLEM.md` är ordnad efter FRÅGOR systemet måste kunna svara på, och varje
+> post bär sin egen status. Den här filen är ordnad efter DATUM, och en post
+> säger vad som var sant den dagen.
+>
+> **Vad som är föråldrat här.** Allt om passets uppbyggnad, dagens tal,
+> arbetsbördan, upplåsningen och rättningens undanhållande skrevs före
+> passlagret (B5), inflödesstyrningen (B2), minutratten (B4) och
+> uppskjutningen (D3), alltså före allt som byggdes 19–26 augusti. Avsnitten
+> "Var vi står", "Vad som återstår" och "Kommandon" beskriver ett annat
+> system, och `ordbok öva` som de hänvisar till är borttaget (se G6 i
+> PROBLEM.md).
+>
+> **Vad som fortfarande är sant och inte står någon annanstans.** De
+> språkspecifika avsnitten — passivbuggen, imperativen, bisatserna, den
+> artikellösa nominalfrasen, den attributiva komparationen, modusrektionen,
+> wh-frågorna, de tre språkfelen — är renderarkunskap som `PROBLEM.md` inte
+> upprepar, eftersom den handlar om systemets frågor och inte om enskilda
+> språks morfologi. Det är därför filen står kvar i stället för att raderas.
+>
+> Texten nedan är oförändrad, av samma skäl som `PROBLEM.md` aldrig skriver
+> om en problemtext: den är skälet till att koden ser ut som den gör.
 
 ---
 

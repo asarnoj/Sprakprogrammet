@@ -61,7 +61,7 @@ class Uppslag:
 
         # Etiketten 'neutral' betyder omarkerad form: ja 私 mot 僕, あなた mot
         # 君. Skillnaden är register, som ligger utanför projektets scope
-        # (se ÖVERLÄMNING.md), så den omarkerade formen är rätt default när
+        # (se ARBETSLOGG_till_2026-08-15.md), så den omarkerade formen är rätt default när
         # meningen inte säger något annat.
         if variant is None:
             neutrala = [r for r in rader if r["variant"] == "neutral"]

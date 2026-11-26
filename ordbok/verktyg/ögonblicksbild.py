@@ -1,7 +1,7 @@
 """Ta en ögonblicksbild av cell → form för varje lexem.
 
 Används före och efter tillämpa-granskning för att se exakt vad som ändrades,
-i stället för att lita på statistikraderna (ÖVERLÄMNING.md: tre buggar under
+i stället för att lita på statistikraderna (ARBETSLOGG_till_2026-08-15.md: tre buggar under
 förra sessionen rapporterade '0 saknade, 0 tomma' och såg lyckade ut).
 """
 import json

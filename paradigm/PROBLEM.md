@@ -2567,6 +2567,11 @@ takten är användarens val måste gränsen följa den"), vilket gör den till e
 påstående i koden som koden inte håller. Sådana kort får `schemalagt = 0` och
 lyfts ur kön.
 
+*(2026-08-26: `MIN` går numera över kursen för SPRÅKET i fråga och inte över
+alla kurser, och skrivningen har `WHERE språk` — se punkt 3 nedan. Talet är
+fortfarande 20 och gränsen fortfarande fast på 0,05, så stycket ovan gäller i
+allt utom vilka kurser `MIN` läser.)*
+
 **Men de ska fortfarande INTRODUCERAS.** Flaggan säger att spacing saknar
 spak, inte att användaren kan ordet. Att låta den grinda introduktionen
 gjorde `un`, `avoir` och `coûter` till ord som aldrig lärdes ut och som
@@ -3953,3 +3958,27 @@ nedströms budgeten.
     G5 (invariant) ──►  A3, B8        — samma saknade kontroll
     C8 (riktning)  ──►  D5            — variantproblemet löses av riktningen
     E7 (loggen)    ──►  E3            — binärt mot fyrgradigt är empiriskt
+
+**Och en post som inte blockerar utan SAMLAR (tillagd 2026-08-26).** Fem
+poster i olika delar av dokumentet visade sig vara samma sak, och att de står
+på fem ställen är skälet till att var och en lagats för sig, om och om igen:
+
+    A3   ett schemalagt kort utan väg till någon mening
+    B8   ett köat kort ingen mening kan byggas kring
+    G5   en koppling som försvunnit utan att något sagt ifrån
+    G6   en ändpunkt som räknar själv i stället för att fråga `dagsplan`
+    I3   en skrivning som sträcker sig utanför språket den bads om
+    C5b  ett `None` som ett anropsställe tar emot och elva inte
+
+Formen är densamma i alla sex:
+
+> **Ett villkor som är sant på ett ställe och oläst — eller olikt läst — på
+> ett annat.**
+
+G5 föreslår redan svaret för datans del ("varje schemalagt kort ska vara
+nåbart via minst en väg") och G6 för anropens. Det som saknas är att någon
+STÄLLER frågorna automatiskt i stället för att de upptäcks en i taget när ett
+symptom råkar bli synligt. Fem av de sex hittades av en människa som märkte
+något konstigt; den sjätte hittades av ett prov.
+
+    G5 + G6  ──►  A3, B8, I3, C5b   — en invariant i stället för sex lagningar
