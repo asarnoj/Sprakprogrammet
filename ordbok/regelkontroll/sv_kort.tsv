@@ -1,0 +1,413 @@
+ordklass	koncept	variant	lemma	cell	form	sort	anmärkning
+Verb	fys_använda		använda	pres	använder	undantag	
+Verb	kom_beskriva		beskriva	pres	beskriver	undantag	
+Verb	kom_beskriva		beskriva	pret	beskrev	undantag	
+Verb	kom_beskriva		beskriva	sup	beskrivit	undantag	
+Verb	kog_bestämma		bestämma	pres	bestämmer	undantag	
+Verb	soc_besöka		besöka	pres	besöker	undantag	
+Verb	arb_betala		betala	sup	betalt	undantag	
+Verb	arb_betala		betala	perfpart_obest_utr_sg	betald	undantag	
+Verb	soc_bjuda		bjuda	pres	bjuder	undantag	
+Verb	soc_bjuda		bjuda	pret	bjöd	undantag	
+Verb	soc_bjuda		bjuda	sup	bjudit	undantag	
+Verb	verb_bli		bli	pret	blev	undantag	
+Verb	verb_bli		bli	sup	blivit	undantag	
+Verb	fys_bryta		bryta	pres	bryter	undantag	
+Verb	fys_bryta		bryta	pret	bröt	undantag	
+Verb	fys_bryta		bryta	sup	brutit	undantag	
+Verb	fys_bygga		bygga	pres	bygger	undantag	
+Verb	rör_byta		byta	pres	byter	undantag	
+Verb	rör_byta		byta	inf_passiv	byts	datafel	passiv ≠ aktiv form + s (byta → bytas)
+Verb	fys_bära		bära	pres	bär	undantag	
+Verb	fys_bära		bära	pret	bar	undantag	
+Verb	fys_bära		bära	sup	burit	undantag	
+Verb	modal_bör		bör	pres	bör	undantag	
+Verb	modal_bör		bör	pret	borde	undantag	
+Verb	fys_dra		dra	pret	drog	undantag	
+Verb	fys_dra		dra	sup	dragit	undantag	
+Verb	krop_v_dricka		dricka	pres	dricker	undantag	
+Verb	krop_v_dricka		dricka	pret	drack	undantag	
+Verb	krop_v_dricka		dricka	sup	druckit	undantag	
+Verb	kog_drömma		drömma	pres	drömmer	undantag	
+Verb	kog_drömma		drömma	pres_passiv	drömms	undantag	
+Verb	ext_dö		dö	pret	dog	undantag	
+Verb	ext_dö		dö	sup	dött	undantag	
+Verb	ext_dö		dö	perfpart_obest_utr_sg	död	undantag	
+Verb	gen_erbjuda		erbjuda	pres	erbjuder	undantag	
+Verb	gen_erbjuda		erbjuda	pret	erbjöd	undantag	
+Verb	gen_erbjuda		erbjuda	sup	erbjudit	undantag	
+Verb	rör_falla		falla	pres	faller	undantag	
+Verb	rör_falla		falla	pret	föll	undantag	
+Verb	rör_falla		falla	sup	fallit	undantag	
+Verb	verb_finnas		finnas	pres_passiv	finns	undantag	
+Verb	verb_finnas		finnas	pret_passiv	fanns	undantag	
+Verb	verb_finnas		finnas	sup_passiv	funnits	undantag	
+Verb	rör_flyga		flyga	pres	flyger	undantag	
+Verb	rör_flyga		flyga	pret	flög	undantag	
+Verb	rör_flyga		flyga	sup	flugit	undantag	
+Verb	asp_fortsätta		fortsätta	pres	fortsätter	undantag	
+Verb	asp_fortsätta		fortsätta	pret	fortsatte	undantag	
+Verb	fys_fylla		fylla	pres	fyller	undantag	
+Verb	modal_får		får	pret	fick	undantag	
+Verb	modal_får		får	sup	fått	undantag	
+Verb	modal_får		får	perfpart_obest_utr_sg	fådd	undantag	
+Verb	rör_följa		följa	pres	följer	undantag	
+Verb	gen_förbereda		förbereda	pres	förbereder	undantag	
+Verb	gen_förbereda		förbereda	pret_passiv	förberedades	datafel	passiv ≠ aktiv form + s (förberedde → förbereddes)
+Verb	kog_föreställa		föreställa sig	pres	föreställer	undantag	
+Verb	soc_förlåta		förlåta	pres	förlåter	undantag	
+Verb	soc_förlåta		förlåta	pret	förlät	undantag	
+Verb	soc_förlåta		förlåta	sup	förlåtit	undantag	
+Verb	kog_förstå		förstå	pret	förstod	undantag	
+Verb	kog_förstå		förstå	sup	förstått	undantag	
+Verb	kog_förstå		förstå	perfpart_obest_utr_sg	förstådd	undantag	
+Verb	gen_försöka		försöka	pres	försöker	undantag	
+Verb	gen_försöka		försöka	inf_passiv	försöks	datafel	passiv ≠ aktiv form + s (försöka → försökas)
+Verb	fys_ge		ge	pret	gav	undantag	
+Verb	fys_ge		ge	sup	gett	undantag	
+Verb	fys_ge		ge	perfpart_obest_utr_sg	given	undantag	
+Verb	soc_gifta_sig		gifta sig	pres	gifter	undantag	
+Verb	kog_glömma		glömma	pres	glömmer	undantag	
+Verb	kog_glömma		glömma	imp	glömma	undantag	
+Verb	kog_glömma		glömma	pres_passiv	glömmas	undantag	
+Verb	käns_gråta		gråta	pres	gråter	undantag	
+Verb	käns_gråta		gråta	pret	grät	undantag	
+Verb	käns_gråta		gråta	sup	gråtit	undantag	
+Verb	käns_gråta		gråta	perfpart_obest_utr_sg	gråtad	undantag	
+Verb	käns_gråta		gråta	perfpart_obest_neu_sg	gråtat	undantag	
+Verb	käns_gråta		gråta	perfpart_a	gråtade	undantag	
+Verb	käns_gråta		gråta	inf_passiv	gråts	datafel	passiv ≠ aktiv form + s (gråta → gråtas)
+Verb	rör_gå		gå	pret	gick	undantag	
+Verb	rör_gå		gå	sup	gått	undantag	
+Verb	rör_gå		gå	perfpart_obest_utr_sg	gången	undantag	
+Verb	fys_göra		göra	pres	gör	undantag	
+Verb	fys_göra		göra	pret	gjorde	undantag	
+Verb	verb_ha		ha	sup	haft	undantag	
+Verb	arb_hjälpa		hjälpa	pres	hjälper	undantag	
+Verb	ext_hända		hända	pres	händer	undantag	
+Verb	fys_hålla		hålla	pres	håller	undantag	
+Verb	fys_hålla		hålla	pret	höll	undantag	
+Verb	fys_hålla		hålla	sup	hållit	undantag	
+Verb	kom_hålla_med		hålla med	pres	håller	undantag	
+Verb	kom_hålla_med		hålla med	pret	höll	undantag	
+Verb	kom_hålla_med		hålla med	sup	hållit	undantag	
+Verb	per_höra		höra	pres	hör	undantag	
+Verb	gen_jämföra		jämföra	pres	jämför	undantag	
+Verb	modal_kan		kan	pres	kan	undantag	
+Verb	modal_kan		kan	pret	kunde	undantag	
+Verb	modal_kan		kan	sup	kunnat	undantag	
+Verb	rör_komma		komma	pres	kommer	undantag	
+Verb	rör_komma		komma	pret	kom	undantag	
+Verb	rör_komma		komma	sup	kommit	undantag	
+Verb	rör_krypa		krypa	pres	kryper	undantag	
+Verb	rör_krypa		krypa	pret	kröp	undantag	
+Verb	rör_krypa		krypa	sup	krupit	undantag	
+Verb	rör_krypa		krypa	sup_passiv	krypits	datafel	passiv ≠ aktiv form + s (krupit → krupits)
+Verb	per_känna		känna	pres	känner	undantag	
+Verb	fys_köpa		köpa	pres	köper	undantag	
+Verb	rör_köra		köra	pres	kör	undantag	
+Verb	soc_le		le	pret	log	undantag	
+Verb	soc_le		le	sup	lett	undantag	
+Verb	soc_le		le	perfpart_obest_utr_sg	legen	undantag	
+Verb	soc_le		le	perfpart_obest_neu_sg	legit	undantag	
+Verb	arb_leka		leka	pres	leker	undantag	
+Verb	ext_leva		leva	pres	lever	undantag	
+Verb	ext_leva		leva	inf_passiv	levs	datafel	passiv ≠ aktiv form + s (leva → levas)
+Verb	pos_ligga		ligga	pres	ligger	undantag	
+Verb	pos_ligga		ligga	pret	låg	undantag	
+Verb	pos_ligga		ligga	sup	legat	undantag	
+Verb	fys_lyfta		lyfta	pres	lyfter	undantag	
+Verb	fys_lyfta		lyfta	inf_passiv	lyfts	datafel	passiv ≠ aktiv form + s (lyfta → lyftas)
+Verb	fys_lägga		lägga	pres	lägger	undantag	
+Verb	fys_lägga		lägga	pret	la	undantag	
+Verb	fys_lägga		lägga	sup	lagt	undantag	
+Verb	fys_lägga		lägga	perfpart_obest_utr_sg	lagd	undantag	
+Verb	fys_lägga		lägga	pret_passiv	lades	datafel	passiv ≠ aktiv form + s (la → las)
+Verb	kog_lära		lära sig	pres	lär	undantag	
+Verb	kom_läsa		läsa	pres	läser	undantag	
+Verb	gen_lösa		lösa	pres	löser	undantag	
+Verb	kog_minnas		minnas	pres_passiv	minns	undantag	
+Verb	kog_minnas		minnas	sup_passiv	minnits	undantag	
+Verb	kog_märka		märka	pres	märker	undantag	
+Verb	modal_måste		måste	pres	måste	undantag	
+Verb	modal_måste		måste	pret	måste	undantag	
+Verb	käns_njuta		njuta	pres	njuter	undantag	
+Verb	käns_njuta		njuta	pret	njöt	undantag	
+Verb	käns_njuta		njuta	sup	njutit	undantag	
+Verb	rör_resa		resa	pres	reser	undantag	
+Verb	kom_ringa		ringa	pres	ringer	undantag	
+Verb	fys_röra		röra	pres	rör	undantag	
+Verb	fys_röra		röra	inf_passiv	rörs	datafel	passiv ≠ aktiv form + s (röra → röras)
+Verb	per_se		se	pret	såg	undantag	
+Verb	per_se		se	sup	sett	undantag	
+Verb	per_se		se	perfpart_obest_utr_sg	sedd	undantag	
+Verb	pos_sitta		sitta	pres	sitter	undantag	
+Verb	pos_sitta		sitta	pret	satt	undantag	
+Verb	pos_sitta		sitta	sup	suttit	undantag	
+Verb	kom_sjunga		sjunga	pres	sjunger	undantag	
+Verb	kom_sjunga		sjunga	pret	sjöng	undantag	
+Verb	kom_sjunga		sjunga	sup	sjungit	undantag	
+Verb	modal_ska		ska	pres	ska	undantag	
+Verb	modal_ska		ska	pret	skulle	undantag	
+Verb	kom_skriva		skriva	pres	skriver	undantag	
+Verb	kom_skriva		skriva	pret	skrev	undantag	
+Verb	kom_skriva		skriva	sup	skrivit	undantag	
+Verb	fys_skära		skära	pres	skär	undantag	
+Verb	fys_skära		skära	pret	skar	undantag	
+Verb	fys_skära		skära	sup	skurit	undantag	
+Verb	fys_slå		slå	pret	slog	undantag	
+Verb	fys_slå		slå	sup	slagit	undantag	
+Verb	krop_v_sova		sova	pres	sover	undantag	
+Verb	krop_v_sova		sova	pret	sov	undantag	
+Verb	krop_v_sova		sova	sup	sovit	undantag	
+Verb	krop_v_sova		sova	pres_passiv	sovas	undantag	
+Verb	rör_springa		springa	pres	springer	undantag	
+Verb	rör_springa		springa	pret	sprang	undantag	
+Verb	rör_springa		springa	sup	sprungit	undantag	
+Verb	fys_stänga		stänga	pres	stänger	undantag	
+Verb	pos_stå		stå	pret	stod	undantag	
+Verb	pos_stå		stå	sup	stått	undantag	
+Verb	kom_säga		säga	pres	säger	undantag	
+Verb	kom_säga		säga	pret	sade	undantag	
+Verb	kom_säga		säga	sup	sagt	undantag	
+Verb	kom_säga		säga	perfpart_obest_utr_sg	sagd	undantag	
+Verb	fys_sälja		sälja	pres	säljer	undantag	
+Verb	fys_sälja		sälja	pret	sålde	undantag	
+Verb	fys_sälja		sälja	sup_passiv	sålt	datafel	passiv ≠ aktiv form + s (sålt → sålts)
+Verb	gen_söka		söka	pres	söker	undantag	
+Verb	gen_söka		söka	sup_passiv	sökt	datafel	passiv ≠ aktiv form + s (sökt → sökts)
+Verb	fys_ta		ta	pret	tog	undantag	
+Verb	fys_ta		ta	sup	tagit	undantag	
+Verb	soc_tacka		tacka	sup_passiv	tackat	datafel	passiv ≠ aktiv form + s (tackat → tackats)
+Verb	per_titta		titta	sup_passiv	tittat	datafel	passiv ≠ aktiv form + s (tittat → tittats)
+Verb	eko_v_tjäna		tjäna	sup_passiv	tjänat	datafel	passiv ≠ aktiv form + s (tjänat → tjänats)
+Verb	kog_tro		tro	sup_passiv	trott	datafel	passiv ≠ aktiv form + s (trott → trotts)
+Verb	fys_trycka		trycka	pres	trycker	undantag	
+Verb	fys_trycka		trycka	sup_passiv	tryckt	datafel	passiv ≠ aktiv form + s (tryckt → tryckts)
+Verb	soc_träffa		träffa	sup_passiv	träffat	datafel	passiv ≠ aktiv form + s (träffat → träffats)
+Verb	fys_tvätta		tvätta	sup_passiv	tvättat	datafel	passiv ≠ aktiv form + s (tvättat → tvättats)
+Verb	gen_tycka		tycka	pres	tycker	undantag	
+Verb	kog_tänka		tänka	pres	tänker	undantag	
+Verb	gen_undvika		undvika	pres	undviker	undantag	
+Verb	gen_undvika		undvika	pret	undvek	undantag	
+Verb	gen_undvika		undvika	sup	undvikit	undantag	
+Verb	krop_v_vakna		vakna	perfpart_obest_utr_sg	vaken	undantag	
+Verb	verb_vara		vara	pres	är	undantag	
+Verb	verb_vara		vara	pret	var	undantag	
+Verb	verb_vara		vara	sup	varit	undantag	
+Verb	verb_vara		vara	imp	var	undantag	
+Verb	kog_veta		veta	pres	vet	undantag	
+Verb	kog_veta		veta	pret	visste	undantag	
+Verb	kog_veta		veta	sup	vetat	undantag	
+Verb	modal_vill		vill	pres	vill	undantag	
+Verb	modal_vill		vill	pret	ville	undantag	
+Verb	modal_vill		vill	sup	velat	undantag	
+Verb	gen_vinna		vinna	pres	vinner	undantag	
+Verb	gen_vinna		vinna	pret	vann	undantag	
+Verb	gen_vinna		vinna	sup	vunnit	undantag	
+Verb	kog_välja		välja	pres	väljer	undantag	
+Verb	kog_välja		välja	pret	valde	undantag	
+Verb	rör_vända		vända	pres	vänder	undantag	
+Verb	gen_växa		växa	pres	växer	undantag	
+Verb	gen_växa		växa	sup	vuxit	undantag	
+Verb	gen_växa		växa	pres_passiv	växs	undantag	
+Verb	eko_v_äga		äga	pres	äger	undantag	
+Verb	eko_v_äga		äga	inf_passiv	ägs	datafel	passiv ≠ aktiv form + s (äga → ägas)
+Verb	krop_v_äta		äta	pres	äter	undantag	
+Verb	krop_v_äta		äta	pret	åt	undantag	
+Verb	krop_v_äta		äta	sup	ätit	undantag	
+Verb	rör_åka		åka	pres	åker	undantag	
+Substantiv	krop_arm		arm	obest_pl_ack_dat_nom	armar	undantag	
+Substantiv	hem_badrum		badrum	best_sg_ack_dat_nom	badrummet	undantag	
+Substantiv	plats_bar		bar	obest_pl_ack_dat_nom	barer	undantag	
+Substantiv	fam_bekant		bekant	obest_pl_ack_dat_nom	bekanta	undantag	
+Substantiv	fam_bekant		bekant	best_pl_ack_dat_nom	bekanta	undantag	
+Substantiv	fam_bekant		bekant	best_sg_ack_dat_nom	bekanta	datafel	bestämd form stämmer inte med genus (utrum i datan)
+Substantiv	fam_bekant		bekant	best_sg_gen	bekantas	datafel	följer av bestämd singular, som är misstänkt fel
+Substantiv	trans_bil		bil	obest_pl_ack_dat_nom	bilar	undantag	
+Substantiv	trans_biljett		biljett	obest_pl_ack_dat_nom	biljetter	undantag	
+Substantiv	skol_bok		bok	obest_pl_ack_dat_nom	böcker	undantag	
+Substantiv	yrke_bonde		bonde	obest_pl_ack_dat_nom	bönder	undantag	
+Substantiv	yrke_brandman		brandman	best_sg_ack_dat_nom	brandmannen	undantag	
+Substantiv	yrke_brandman		brandman	obest_pl_ack_dat_nom	brandmän	undantag	
+Substantiv	yrke_brandman		brandman	best_pl_ack_dat_nom	brandmännen	undantag	
+Substantiv	fam_bror		bror	best_sg_ack_dat_nom	brodern	undantag	
+Substantiv	fam_bror		bror	obest_pl_ack_dat_nom	bröder	undantag	
+Substantiv	trans_buss		buss	obest_pl_ack_dat_nom	bussar	undantag	
+Substantiv	trans_busshållplats		busshållplats	obest_pl_ack_dat_nom	busshållplatser	undantag	
+Substantiv	plats_by		by	obest_pl_ack_dat_nom	byar	undantag	
+Substantiv	hem_byrå		byrå	obest_pl_ack_dat_nom	byråer	undantag	
+Substantiv	hem_byrå		byrå	obest_sg_gen	byråns	datafel	genitiv ≠ form + s (byrå → byrås)
+Substantiv	trans_båt		båt	obest_pl_ack_dat_nom	båtar	undantag	
+Substantiv	plats_café		café	best_sg_ack_dat_nom	caféet	undantag	
+Substantiv	plats_café		café	obest_pl_ack_dat_nom	cafés	undantag	
+Substantiv	plats_café		café	best_pl_ack_dat_nom	caféerna	undantag	
+Substantiv	yrke_chef		chef	obest_pl_ack_dat_nom	chefer	undantag	
+Substantiv	tid_dag		dag	obest_pl_ack_dat_nom	dagar	undantag	
+Substantiv	abs_del		del	obest_pl_ack_dat_nom	delar	undantag	
+Substantiv	fam_dotter		dotter	obest_pl_ack_dat_nom	döttrar	undantag	
+Substantiv	hem_dörr		dörr	obest_pl_ack_dat_nom	dörrar	undantag	
+Substantiv	tid_eftermiddag		eftermiddag	obest_pl_ack_dat_nom	eftermiddagar	undantag	
+Substantiv	nat_eld		eld	obest_pl_ack_dat_nom	eldar	undantag	
+Substantiv	skol_elev		elev	obest_pl_ack_dat_nom	elever	undantag	
+Substantiv	abs_exempel		exempel	obest_sg_gen	exempel	datafel	genitiv ≠ form + s (exempel → exempels)
+Substantiv	abs_exempel		exempel	obest_pl_gen	exempel	datafel	genitiv ≠ form + s (exempel → exempels)
+Substantiv	fam_familj		familj	obest_pl_ack_dat_nom	familjer	undantag	
+Substantiv	krop_finger		finger	obest_pl_ack_dat_nom	fingrar	undantag	
+Substantiv	djur_fisk		fisk	obest_pl_ack_dat_nom	fiskar	undantag	
+Substantiv	mat_fisk		fisk	obest_pl_ack_dat_nom	fiskar	undantag	
+Substantiv	nat_flod		flod	obest_pl_ack_dat_nom	floder	undantag	
+Substantiv	trans_flygplats		flygplats	obest_pl_ack_dat_nom	flygplatsers	undantag	
+Substantiv	trans_flygplats		flygplats	best_pl_ack_dat_nom	flygplatserna	undantag	
+Substantiv	abs_form		form	obest_pl_ack_dat_nom	former	undantag	
+Substantiv	krop_fot		fot	obest_pl_ack_dat_nom	fötter	undantag	
+Substantiv	abs_framtid		framtid	obest_pl_ack_dat_nom	framtider	undantag	
+Substantiv	fam_maka		fru	obest_pl_ack_dat_nom	fruar	undantag	
+Substantiv	mat_frukt		frukt	obest_pl_ack_dat_nom	frukter	undantag	
+Substantiv	hem_frys		frys	obest_pl_ack_dat_nom	frysar	undantag	
+Substantiv	skol_fråga		fråga	obest_sg_gen	frågans	datafel	genitiv ≠ form + s (fråga → frågas)
+Substantiv	skol_fråga		fråga	best_pl_gen	frågorna	datafel	genitiv ≠ form + s (frågorna → frågornas)
+Substantiv	djur_får		får	obest_sg_gen	får	datafel	genitiv ≠ form + s (får → fårs)
+Substantiv	djur_får		får	best_sg_gen	farens	datafel	genitiv ≠ form + s (fåren → fårens)
+Substantiv	djur_får		får	obest_pl_gen	får	datafel	genitiv ≠ form + s (får → fårs)
+Substantiv	djur_får		får	best_pl_gen	farens	datafel	genitiv ≠ form + s (fåren → fårens)
+Substantiv	djur_får		får	best_sg_ack_dat_nom	fåren	datafel	bestämd form stämmer inte med genus (neutrum i datan)
+Substantiv	djur_gris		gris	obest_pl_ack_dat_nom	grisar	undantag	
+Substantiv	mat_grönsak		grönsak	obest_pl_ack_dat_nom	grönsaker	undantag	
+Substantiv	mat_grönsak		grönsak	best_sg_gen	grönsaksens	datafel	genitiv ≠ form + s (grönsaken → grönsakens)
+Substantiv	pers_gäst		gäst	obest_pl_ack_dat_nom	gäster	undantag	
+Substantiv	väd_hagel		hagel	best_pl_ack_dat_nom	hagelen	undantag	
+Substantiv	krop_hals		hals	obest_pl_ack_dat_nom	halsar	undantag	
+Substantiv	kläd_halsduk		halsduk	obest_pl_ack_dat_nom	halsdukar	undantag	
+Substantiv	krop_hand		hand	obest_pl_ack_dat_nom	händer	undantag	
+Substantiv	kläd_hatt		hatt	obest_pl_ack_dat_nom	hattar	undantag	
+Substantiv	plats_hem		hem	best_sg_ack_dat_nom	hemmet	undantag	
+Substantiv	abs_historia		historia	best_sg_ack_dat_nom	historien	undantag	
+Substantiv	abs_historia		historia	obest_pl_ack_dat_nom	historier	undantag	
+Substantiv	djur_hund		hund	obest_pl_ack_dat_nom	hundar	undantag	
+Substantiv	krop_huvud		huvud	obest_pl_ack_dat_nom	huvuden	undantag	
+Substantiv	djur_häst		häst	obest_pl_ack_dat_nom	hästar	undantag	
+Substantiv	djur_häst		häst	best_pl_gen	hästarna	datafel	genitiv ≠ form + s (hästarna → hästarnas)
+Substantiv	krop_hår		hår	obest_pl_gen	hår	datafel	genitiv ≠ form + s (hår → hårs)
+Substantiv	nat_jord		jord	obest_pl_ack_dat_nom	jordar	undantag	
+Substantiv	mat_juice		juice	obest_pl_ack_dat_nom	juicer	undantag	
+Substantiv	mat_kaffe		kaffe	obest_pl_ack_dat_nom	kaffe	undantag	
+Substantiv	mat_kaffe		kaffe	best_pl_ack_dat_nom	kaffena	undantag	
+Substantiv	mat_kaffe		kaffe	obest_pl_gen	kaffe	datafel	genitiv ≠ form + s (kaffe → kaffes)
+Substantiv	kläd_kalsong		kalsong	obest_pl_ack_dat_nom	kalsonger	undantag	
+Substantiv	djur_katt		katt	obest_pl_ack_dat_nom	katter	undantag	
+Substantiv	kläd_kjol		kjol	obest_pl_ack_dat_nom	kjolar	undantag	
+Substantiv	skol_klass		klass	obest_pl_ack_dat_nom	klasser	undantag	
+Substantiv	djur_ko		ko	obest_pl_ack_dat_nom	kor	undantag	
+Substantiv	yrke_kock		kock	obest_pl_ack_dat_nom	kockar	undantag	
+Substantiv	tid_kväll		kväll	obest_pl_ack_dat_nom	kvällar	undantag	
+Substantiv	abs_kärlek		kärlek	obest_pl_ack_dat_nom	kärlekar	undantag	
+Substantiv	plats_land		land	obest_pl_ack_dat_nom	länder	undantag	
+Substantiv	fam_lillebror		lillebror	obest_pl_ack_dat_nom	lillebröder	undantag	
+Substantiv	nat_luft		luft	obest_pl_ack_dat_nom	lufter	undantag	
+Substantiv	abs_makt		makt	obest_pl_ack_dat_nom	makter	undantag	
+Substantiv	fam_make		man	best_sg_ack_dat_nom	mannen	undantag	
+Substantiv	fam_make		man	obest_pl_ack_dat_nom	män	undantag	
+Substantiv	fam_make		man	best_pl_ack_dat_nom	männen	undantag	
+Substantiv	pers_man		man	best_sg_ack_dat_nom	mannen	undantag	
+Substantiv	pers_man		man	obest_pl_ack_dat_nom	män	undantag	
+Substantiv	pers_man		man	best_pl_ack_dat_nom	männen	undantag	
+Substantiv	plats_marknad		marknad	obest_pl_ack_dat_nom	marknader	undantag	
+Substantiv	tid_middag		middag	obest_pl_ack_dat_nom	middagar	undantag	
+Substantiv	abs_miljö		miljö	obest_pl_ack_dat_nom	miljöer	undantag	
+Substantiv	tid_minut		minut	obest_pl_ack_dat_nom	minuter	undantag	
+Substantiv	tid_morgon		morgon	obest_pl_ack_dat_nom	morgnar	undantag	
+Substantiv	krop_mun		mun	best_sg_ack_dat_nom	munnen	undantag	
+Substantiv	krop_mun		mun	obest_pl_ack_dat_nom	munnar	undantag	
+Substantiv	djur_mus		mus	obest_pl_ack_dat_nom	möss	undantag	
+Substantiv	tid_månad		månad	obest_pl_ack_dat_nom	månader	undantag	
+Substantiv	tid_natt		natt	obest_pl_ack_dat_nom	nätter	undantag	
+Substantiv	djur_orm		orm	obest_pl_ack_dat_nom	ormar	undantag	
+Substantiv	mat_ost		ost	obest_pl_ack_dat_nom	ostar	undantag	
+Substantiv	plats_park		park	obest_pl_ack_dat_nom	parker	undantag	
+Substantiv	pers_person		person	obest_pl_ack_dat_nom	personer	undantag	
+Substantiv	yrke_polis		polis	obest_pl_ack_dat_nom	poliser	undantag	
+Substantiv	mat_potatis		potatis	obest_pl_ack_dat_nom	potatisar	undantag	
+Substantiv	eko_pris		pris	obest_pl_ack_dat_nom	priser	undantag	
+Substantiv	plats_restaurang		restaurang	obest_pl_ack_dat_nom	restauranger	undantag	
+Substantiv	hem_rum		rum	best_sg_ack_dat_nom	rummet	undantag	
+Substantiv	krop_rygg		rygg	obest_pl_ack_dat_nom	ryggar	undantag	
+Substantiv	nat_rök		rök	obest_pl_ack_dat_nom	rök	undantag	
+Substantiv	mat_salt		salt	obest_pl_ack_dat_nom	salter	undantag	
+Substantiv	nat_sand		sand	obest_pl_ack_dat_nom	sand	undantag	
+Substantiv	tid_sekund		sekund	obest_pl_ack_dat_nom	sekunder	undantag	
+Substantiv	nat_sjö		sjö	obest_pl_ack_dat_nom	sjöar	undantag	
+Substantiv	hem_skafferi		skafferi	best_sg_ack_dat_nom	skafferiet	undantag	
+Substantiv	kläd_sko		sko	obest_pl_ack_dat_nom	skor	undantag	
+Substantiv	nat_skog		skog	obest_pl_ack_dat_nom	skogar	undantag	
+Substantiv	abs_smak		smak	obest_pl_ack_dat_nom	smakar	undantag	
+Substantiv	väd_sol		sol	obest_pl_ack_dat_nom	solar	undantag	
+Substantiv	fam_son		son	obest_pl_ack_dat_nom	söner	undantag	
+Substantiv	plats_stad		stad	obest_pl_ack_dat_nom	städer	undantag	
+Substantiv	nat_sten		sten	obest_pl_ack_dat_nom	stenar	undantag	
+Substantiv	hem_stol		stol	obest_pl_ack_dat_nom	stolar	undantag	
+Substantiv	fam_storebror		storebror	best_sg_ack_dat_nom	storebrodern	undantag	
+Substantiv	fam_storebror		storebror	obest_pl_ack_dat_nom	storebröder	undantag	
+Substantiv	väd_storm		storm	obest_pl_ack_dat_nom	stormar	undantag	
+Substantiv	nat_strand		strand	obest_pl_ack_dat_nom	stränder	undantag	
+Substantiv	hem_säng		säng	obest_pl_ack_dat_nom	sängar	undantag	
+Substantiv	kläd_tshirt		t-shirt	obest_pl_ack_dat_nom	t-shirtar	undantag	
+Substantiv	krop_tand		tand	obest_pl_ack_dat_nom	tänder	undantag	
+Substantiv	trans_taxi		taxi	obest_pl_ack_dat_nom	taxiar	undantag	
+Substantiv	mat_te		te	best_sg_ack_dat_nom	teet	undantag	
+Substantiv	skol_telefon		telefon	obest_pl_ack_dat_nom	telefoner	undantag	
+Substantiv	tid_tid		tid	obest_pl_ack_dat_nom	tider	undantag	
+Substantiv	hem_toalett		toalett	obest_pl_ack_dat_nom	toaletter	undantag	
+Substantiv	abs_typ		typ	obest_pl_ack_dat_nom	typer	undantag	
+Substantiv	hem_ugn		ugn	obest_pl_ack_dat_nom	ugnar	undantag	
+Substantiv	mat_vin		vin	obest_pl_ack_dat_nom	viner	undantag	
+Substantiv	väd_vind		vind	obest_pl_ack_dat_nom	vindar	undantag	
+Substantiv	pers_vuxen		vuxen	best_sg_ack_dat_nom	vuxnen	undantag	
+Substantiv	pers_vuxen		vuxen	obest_pl_ack_dat_nom	vuxna	undantag	
+Substantiv	pers_vuxen		vuxen	best_pl_ack_dat_nom	vuxna	undantag	
+Substantiv	plats_väg		väg	obest_pl_ack_dat_nom	vägar	undantag	
+Substantiv	hem_vägg		vägg	obest_pl_ack_dat_nom	väggar	undantag	
+Substantiv	fam_vän		vän	best_sg_ack_dat_nom	vännen	undantag	
+Substantiv	fam_vän		vän	obest_pl_ack_dat_nom	vänner	undantag	
+Substantiv	abs_värld		värld	obest_pl_ack_dat_nom	världar	undantag	
+Substantiv	nat_växt		växt	obest_pl_ack_dat_nom	växter	undantag	
+Substantiv	krop_öga		öga	obest_pl_ack_dat_nom	ögon	undantag	
+Substantiv	mat_öl		öl	obest_pl_ack_dat_nom	öl	undantag	
+Substantiv	mat_öl		öl	best_sg_ack_dat_nom	ölet	datafel	bestämd form stämmer inte med genus (utrum i datan)
+Substantiv	mat_öl		öl	best_sg_gen	ölets	datafel	följer av bestämd singular, som är misstänkt fel
+Substantiv	krop_öra		öra	obest_pl_ack_dat_nom	öron	undantag	
+Adjektiv	adj_k_bra		bra	komp	bättre	undantag	
+Adjektiv	adj_k_bra		bra	obest_superl	bäst	undantag	
+Adjektiv	adj_ev_dum		dum	komp	dummare	datafel	plural och komparativ har olika stam (duma / dummare)
+Adjektiv	adj_ev_dum		dum	obest_superl	dummast	datafel	plural och komparativ har olika stam (duma / dummare)
+Adjektiv	adj_ev_dum		dum	best_superl	dummaste	datafel	plural och komparativ har olika stam (duma / dummare)
+Adjektiv	adj_k_dålig		dålig	komp	sämre	undantag	
+Adjektiv	adj_k_fel		fel	obest_f_sg_pos	fel	undantag	
+Adjektiv	adj_k_fel		fel	obest_a_pl_pos	fel	undantag	
+Adjektiv	adj_k_gammal		gammal	obest_a_pl_pos	gamla	undantag	
+Adjektiv	adj_k_gammal		gammal	komp	äldre	undantag	
+Adjektiv	adj_eko_fri		gratis	obest_f_sg_pos	gratis	undantag	
+Adjektiv	adj_eko_fri		gratis	obest_a_pl_pos	gratis	undantag	
+Adjektiv	adj_eko_fri		gratis	komp	gratis	datafel	gradform lika med grundformen
+Adjektiv	adj_eko_fri		gratis	obest_superl	gratis	datafel	gradform lika med grundformen
+Adjektiv	adj_eko_fri		gratis	best_superl	gratis	datafel	gradform lika med grundformen
+Adjektiv	adj_s_hög		hög	komp	högre	undantag	
+Adjektiv	adj_ev_lat		lat	obest_f_sg_pos	lat	undantag	
+Adjektiv	adj_s_liten		liten	obest_a_pl_pos	små	undantag	
+Adjektiv	adj_s_liten		liten	best_a_sg_pos	lilla	undantag	
+Adjektiv	adj_s_liten		liten	komp	mindre	undantag	
+Adjektiv	adj_s_liten		liten	obest_superl	minst	undantag	
+Adjektiv	adj_s_lång		lång	komp	längre	undantag	
+Adjektiv	adj_ev_nyfiken		nyfiken	komp	nyfikenare	datafel	plural och komparativ har olika stam (nyfikna / nyfikenare)
+Adjektiv	adj_ev_nyfiken		nyfiken	obest_superl	nyfikenast	datafel	plural och komparativ har olika stam (nyfikna / nyfikenare)
+Adjektiv	adj_ev_nyfiken		nyfiken	best_superl	nyfikenaste	datafel	plural och komparativ har olika stam (nyfikna / nyfikenare)
+Adjektiv	färg_orange		orange	komp	orange	datafel	gradform lika med grundformen
+Adjektiv	färg_orange		orange	obest_superl	orange	datafel	gradform lika med grundformen
+Adjektiv	färg_orange		orange	best_superl	orange	datafel	gradform lika med grundformen
+Adjektiv	adj_m_privat		privat	obest_f_sg_pos	privat	undantag	
+Adjektiv	färg_rosa		rosa	komp	rosa	datafel	gradform lika med grundformen
+Adjektiv	färg_rosa		rosa	obest_superl	rosa	datafel	gradform lika med grundformen
+Adjektiv	färg_rosa		rosa	best_superl	rosa	datafel	gradform lika med grundformen
+Adjektiv	adj_s_stor		stor	komp	större	undantag	
+Adjektiv	adj_k_tom		tom	obest_a_pl_pos	tomma	undantag	
+Adjektiv	adj_k_ung		ung	komp	yngre	undantag	
