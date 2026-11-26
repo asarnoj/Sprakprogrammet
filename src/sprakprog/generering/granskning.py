@@ -28,13 +28,12 @@ from ..kaikki_mappning.paradigm import (
 )
 from .pipeline import (
     _anropa_llm, _beskriv_cell, _bygg_invers_legend, _ladda_instruktioner,
-    _språknamn,
+    _lämplig_batch, _språknamn,
 )
 
 # Poängen med granskningen är att fånga det generatorn missade — därför en
 # klart starkare modell än genereringens standard. --modell för att sänka.
 STANDARD_GRANSKNINGSMODELL = "claude-opus-5"
-STANDARD_BATCH = 5
 
 RAPPORT_KOLUMNER = (
     "språk", "ordklass", "koncept", "lemma", "cell",
@@ -199,7 +198,7 @@ def granska_former(
     rapport: Path,
     *,
     lemman: list[str] | None = None,
-    batch_storlek: int = STANDARD_BATCH,
+    batch_storlek: int | None = None,
     modell: str = STANDARD_GRANSKNINGSMODELL,
     fortsätt: bool = False,
     verbose: bool = False,
@@ -214,6 +213,13 @@ def granska_former(
     except FileNotFoundError as e:
         stat.fel.append(str(e))
         return stat
+
+    # Samma uträkning som genereringen: en granskningsprompt med 720 tyska
+    # adjektivformer (5 lexem × 144 celler) är för mycket att kontrollera
+    # noggrant. Adaptiv batch ger dessutom färre anrop totalt, eftersom de
+    # lätta jobben höjs till 10.
+    if batch_storlek is None:
+        batch_storlek = _lämplig_batch(len(slot.celler))
 
     instruktioner = _ladda_instruktioner(språk, ordklass)
 
