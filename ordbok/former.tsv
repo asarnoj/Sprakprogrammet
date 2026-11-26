@@ -10540,6 +10540,380 @@ adj_t_våt	sv	våt	våtare						2
 adj_t_våt	sv	våt	våtast						3		
 adj_t_våt	sv	våt	våtaste		2				3		
 adj_t_våt	sv	våt	vått	1	1		2		1		
+adv2_alltså	de	also	also								
+adv2_alltså	en	so	so						1		
+adv2_alltså	es	por lo tanto	por lo tanto								
+adv2_alltså	fr	donc	donc								
+adv2_alltså	it	quindi	quindi								
+adv2_alltså	ja	つまり	つまり								
+adv2_alltså	sv	alltså	alltså						1		
+adv2_annars	de	sonst	sonst								
+adv2_annars	en	otherwise	otherwise						1		
+adv2_annars	es	si no	si no								
+adv2_annars	fr	sinon	sinon								
+adv2_annars	it	altrimenti	altrimenti								
+adv2_annars	ja	そうじゃないと	そうじゃないと								
+adv2_annars	sv	annars	annars						1		
+adv2_bort	de	weg	weg								
+adv2_bort	en	away	away						1		
+adv2_bort	es	lejos	lejos								
+adv2_bort	fr	loin	loin								
+adv2_bort	it	via	via								
+adv2_bort	ja	遠くへ	遠くへ								
+adv2_bort	sv	bort	bort						1		
+adv2_dessutom	de	außerdem	außerdem								
+adv2_dessutom	en	besides	besides						1		
+adv2_dessutom	es	además	además								
+adv2_dessutom	fr	de plus	de plus								
+adv2_dessutom	it	inoltre	inoltre								
+adv2_dessutom	ja	それに	それに								
+adv2_dessutom	sv	dessutom	dessutom						1		
+adv2_direkt	de	direkt	direkt								
+adv2_direkt	en	directly	directly						1		
+adv2_direkt	es	directamente	directamente								
+adv2_direkt	fr	directement	directement								
+adv2_direkt	it	direttamente	direttamente								
+adv2_direkt	ja	直接	直接								
+adv2_direkt	sv	direkt	direkt						1		
+adv2_faktiskt	de	eigentlich	eigentlich								
+adv2_faktiskt	en	actually	actually						1		
+adv2_faktiskt	es	en realidad	en realidad								
+adv2_faktiskt	fr	en fait	en fait								
+adv2_faktiskt	it	in realtà	in realtà								
+adv2_faktiskt	ja	実は	実は								
+adv2_faktiskt	sv	faktiskt	faktiskt						1		
+adv2_fram	de	vorwärts	vorwärts								
+adv2_fram	en	forward	forward						1		
+adv2_fram	es	adelante	adelante								
+adv2_fram	fr	en avant	en avant								
+adv2_fram	it	avanti	avanti								
+adv2_fram	ja	前に	前に								
+adv2_fram	sv	fram	fram						1		
+adv2_för	de	zu	zu								
+adv2_för	en	too	too						1		
+adv2_för	es	demasiado	demasiado								
+adv2_för	fr	trop	trop								
+adv2_för	it	troppo	troppo								
+adv2_för	ja	すぎる	すぎる								
+adv2_för	sv	för	för						1		
+adv2_ganska	de	ziemlich	ziemlich								
+adv2_ganska	en	quite	quite						1		
+adv2_ganska	es	bastante	bastante								
+adv2_ganska	fr	assez	assez								
+adv2_ganska	it	abbastanza	abbastanza								
+adv2_ganska	ja	けっこう	けっこう								
+adv2_ganska	sv	ganska	ganska						1		
+adv2_gärna	de	gern	gern								
+adv2_gärna	en	gladly	gladly						1		
+adv2_gärna	es	con gusto	con gusto								
+adv2_gärna	fr	volontiers	volontiers								
+adv2_gärna	it	volentieri	volentieri								
+adv2_gärna	ja	喜んで	喜んで								
+adv2_gärna	sv	gärna	gärna						1		
+adv2_gärna	sv	gärna	hellre						2		
+adv2_gärna	sv	gärna	helst						3		
+adv2_inne	de	drinnen	drinnen								
+adv2_inne	en	inside	inside						1		
+adv2_inne	es	adentro	adentro								
+adv2_inne	fr	dedans	dedans								
+adv2_inne	it	dentro	dentro								
+adv2_inne	ja	中に	中に								
+adv2_inne	sv	inne	inne						1		
+adv2_istället	de	stattdessen	stattdessen								
+adv2_istället	en	instead	instead						1		
+adv2_istället	es	en cambio	en cambio								
+adv2_istället	fr	plutôt	plutôt								
+adv2_istället	it	invece	invece								
+adv2_istället	ja	代わりに	代わりに								
+adv2_istället	sv	istället	istället						1		
+adv2_kanske	de	vielleicht	vielleicht								
+adv2_kanske	en	maybe	maybe						1		
+adv2_kanske	es	quizás	quizás								
+adv2_kanske	fr	peut-être	peut-être								
+adv2_kanske	it	forse	forse								
+adv2_kanske	ja	たぶん	たぶん								
+adv2_kanske	sv	kanske	kanske						1		
+adv2_lite	de	ein bisschen	ein bisschen								
+adv2_lite	en	a little	a little						1		
+adv2_lite	es	un poco	un poco								
+adv2_lite	fr	un peu	un peu								
+adv2_lite	it	un po'	un po'								
+adv2_lite	ja	少し	少し								
+adv2_lite	sv	lite	lite						1		
+adv2_lite	sv	lite	mindre						2		
+adv2_lite	sv	lite	minst						3		
+adv2_länge	de	lange	lange								
+adv2_länge	en	long	long						1		
+adv2_länge	en	long	longer						2		
+adv2_länge	en	long	longest						3		
+adv2_länge	es	mucho tiempo	mucho tiempo								
+adv2_länge	fr	longtemps	longtemps								
+adv2_länge	it	a lungo	a lungo								
+adv2_länge	ja	長い間	長い間								
+adv2_länge	sv	länge	länge						1		
+adv2_länge	sv	länge	längre						2		
+adv2_länge	sv	länge	längst						3		
+adv2_mest	de	meistens	meistens								
+adv2_mest	en	mostly	mostly						1		
+adv2_mest	es	principalmente	principalmente								
+adv2_mest	fr	surtout	surtout								
+adv2_mest	it	principalmente	principalmente								
+adv2_mest	ja	主に	主に								
+adv2_mest	sv	mest	mest						1		
+adv2_naturligtvis	de	natürlich	natürlich								
+adv2_naturligtvis	en	of course	of course						1		
+adv2_naturligtvis	es	por supuesto	por supuesto								
+adv2_naturligtvis	fr	bien sûr	bien sûr								
+adv2_naturligtvis	it	certo	certo								
+adv2_naturligtvis	ja	もちろん	もちろん								
+adv2_naturligtvis	sv	naturligtvis	naturligtvis						1		
+adv2_ner	de	hinunter	hinunter								
+adv2_ner	en	down	down						1		
+adv2_ner	es	abajo	abajo								
+adv2_ner	fr	en bas	en bas								
+adv2_ner	it	giù	giù								
+adv2_ner	ja	下に	下に								
+adv2_ner	sv	ner	ner						1		
+adv2_nästan	de	fast	fast								
+adv2_nästan	en	almost	almost						1		
+adv2_nästan	es	casi	casi								
+adv2_nästan	fr	presque	presque								
+adv2_nästan	it	quasi	quasi								
+adv2_nästan	ja	ほとんど	ほとんど								
+adv2_nästan	sv	nästan	nästan						1		
+adv2_okej	de	okay	okay								
+adv2_okej	en	okay	okay						1		
+adv2_okej	es	de acuerdo	de acuerdo								
+adv2_okej	fr	d'accord	d'accord								
+adv2_okej	it	va bene	va bene								
+adv2_okej	ja	わかった	わかった								
+adv2_okej	sv	okej	okej						1		
+adv2_plötsligt	de	plötzlich	plötzlich								
+adv2_plötsligt	en	suddenly	suddenly						1		
+adv2_plötsligt	es	de repente	de repente								
+adv2_plötsligt	fr	soudainement	soudainement								
+adv2_plötsligt	it	all'improvviso	all'improvviso								
+adv2_plötsligt	ja	突然	突然								
+adv2_plötsligt	sv	plötsligt	plötsligt						1		
+adv2_precis	de	genau	genau								
+adv2_precis	en	exactly	exactly						1		
+adv2_precis	es	exactamente	exactamente								
+adv2_precis	fr	exactement	exactement								
+adv2_precis	it	esattamente	esattamente								
+adv2_precis	ja	ちょうど	ちょうど								
+adv2_precis	sv	precis	precis						1		
+adv2_säkert	de	sicher	sicher								
+adv2_säkert	en	certainly	certainly						1		
+adv2_säkert	es	seguramente	seguramente								
+adv2_säkert	fr	certainement	certainement								
+adv2_säkert	it	certamente	certamente								
+adv2_säkert	ja	きっと	きっと								
+adv2_säkert	sv	säkert	säkert						1		
+adv2_tillbaka	de	zurück	zurück								
+adv2_tillbaka	en	back	back						1		
+adv2_tillbaka	es	de vuelta	de vuelta								
+adv2_tillbaka	fr	de retour	de retour								
+adv2_tillbaka	it	indietro	indietro								
+adv2_tillbaka	ja	戻って	戻って								
+adv2_tillbaka	sv	tillbaka	tillbaka						1		
+adv2_tillsammans	de	zusammen	zusammen								
+adv2_tillsammans	en	together	together						1		
+adv2_tillsammans	es	juntos	juntos								
+adv2_tillsammans	fr	ensemble	ensemble								
+adv2_tillsammans	it	insieme	insieme								
+adv2_tillsammans	ja	一緒に	一緒に								
+adv2_tillsammans	sv	tillsammans	tillsammans						1		
+adv2_troligen	de	wahrscheinlich	wahrscheinlich								
+adv2_troligen	en	probably	probably						1		
+adv2_troligen	es	probablemente	probablemente								
+adv2_troligen	fr	probablement	probablement								
+adv2_troligen	it	probabilmente	probabilmente								
+adv2_troligen	ja	おそらく	おそらく								
+adv2_troligen	sv	troligen	troligen						1		
+adv2_tyvärr	de	leider	leider								
+adv2_tyvärr	en	unfortunately	unfortunately						1		
+adv2_tyvärr	es	desafortunadamente	desafortunadamente								
+adv2_tyvärr	fr	malheureusement	malheureusement								
+adv2_tyvärr	it	purtroppo	purtroppo								
+adv2_tyvärr	ja	残念ながら	残念ながら								
+adv2_tyvärr	sv	tyvärr	tyvärr						1		
+adv2_ungefär	de	ungefähr	ungefähr								
+adv2_ungefär	en	about	about						1		
+adv2_ungefär	es	aproximadamente	aproximadamente								
+adv2_ungefär	fr	environ	environ								
+adv2_ungefär	it	circa	circa								
+adv2_ungefär	ja	だいたい	だいたい								
+adv2_ungefär	sv	ungefär	ungefär						1		
+adv2_upp	de	hinauf	hinauf								
+adv2_upp	en	up	up						1		
+adv2_upp	es	arriba	arriba								
+adv2_upp	fr	en haut	en haut								
+adv2_upp	it	su	su								
+adv2_upp	ja	上に	上に								
+adv2_upp	sv	upp	upp						1		
+adv2_ute	de	draußen	draußen								
+adv2_ute	en	outside	outside						1		
+adv2_ute	es	afuera	afuera								
+adv2_ute	fr	dehors	dehors								
+adv2_ute	it	fuori	fuori								
+adv2_ute	ja	外に	外に								
+adv2_ute	sv	ute	ute						1		
+adv2_verkligen	de	wirklich	wirklich								
+adv2_verkligen	en	really	really						1		
+adv2_verkligen	es	realmente	realmente								
+adv2_verkligen	fr	vraiment	vraiment								
+adv2_verkligen	it	davvero	davvero								
+adv2_verkligen	ja	本当に	本当に								
+adv2_verkligen	sv	verkligen	verkligen						1		
+adv2_ändå	de	trotzdem	trotzdem								
+adv2_ändå	en	anyway	anyway						1		
+adv2_ändå	es	de todas formas	de todas formas								
+adv2_ändå	fr	quand même	quand même								
+adv2_ändå	it	comunque	comunque								
+adv2_ändå	ja	とにかく	とにかく								
+adv2_ändå	sv	ändå	ändå						1		
+adv2_åtminstone	de	wenigstens	wenigstens								
+adv2_åtminstone	en	at least	at least						1		
+adv2_åtminstone	es	al menos	al menos								
+adv2_åtminstone	fr	au moins	au moins								
+adv2_åtminstone	it	almeno	almeno								
+adv2_åtminstone	ja	少なくとも	少なくとも								
+adv2_åtminstone	sv	åtminstone	åtminstone						1		
+adv_alltid	de	immer	immer								
+adv_alltid	en	always	always						1		
+adv_alltid	es	siempre	siempre								
+adv_alltid	fr	toujours	toujours								
+adv_alltid	it	sempre	sempre								
+adv_alltid	ja	いつも	いつも								
+adv_alltid	sv	alltid	alltid						1		
+adv_bara	de	nur	nur								
+adv_bara	en	only	only						1		
+adv_bara	es	solo	solo								
+adv_bara	fr	seulement	seulement								
+adv_bara	it	solo	solo								
+adv_bara	ja	だけ	だけ								
+adv_bara	sv	bara	bara						1		
+adv_där	de	dort	dort								
+adv_där	en	there	there						1		
+adv_där	es	allí	allí								
+adv_där	fr	là	là								
+adv_där	it	là	là								
+adv_där	ja	そこ	そこ								
+adv_där	sv	där	där						1		
+adv_då	de	damals	damals								
+adv_då	de	dann	dann								
+adv_då	en	then	then						1		
+adv_då	es	entonces	entonces								
+adv_då	fr	alors	alors								
+adv_då	it	allora	allora								
+adv_då	ja	その時	その時								
+adv_då	sv	då	då						1		
+adv_fortfarande	de	noch	noch								
+adv_fortfarande	en	still	still						1		
+adv_fortfarande	es	todavía	todavía								
+adv_fortfarande	fr	encore	encore								
+adv_fortfarande	it	ancora	ancora								
+adv_fortfarande	ja	まだ	まだ								
+adv_fortfarande	sv	fortfarande	fortfarande						1		
+adv_här	de	hier	hier								
+adv_här	en	here	here						1		
+adv_här	es	aquí	aquí								
+adv_här	fr	ici	ici								
+adv_här	it	qui	qui								
+adv_här	ja	ここ	ここ								
+adv_här	sv	här	här						1		
+adv_ibland	de	manchmal	manchmal								
+adv_ibland	en	sometimes	sometimes						1		
+adv_ibland	es	a veces	a veces								
+adv_ibland	fr	parfois	parfois								
+adv_ibland	it	a volte	a volte								
+adv_ibland	ja	時々	時々								
+adv_ibland	sv	ibland	ibland						1		
+adv_idag	de	heute	heute								
+adv_idag	en	today	today						1		
+adv_idag	es	hoy	hoy								
+adv_idag	fr	aujourd'hui	aujourd'hui								
+adv_idag	it	oggi	oggi								
+adv_idag	ja	今日	今日								
+adv_idag	sv	idag	idag						1		
+adv_igen	de	wieder	wieder								
+adv_igen	en	again	again						1		
+adv_igen	es	otra vez	otra vez								
+adv_igen	fr	encore	encore								
+adv_igen	it	di nuovo	di nuovo								
+adv_igen	ja	また	また								
+adv_igen	sv	igen	igen						1		
+adv_igår	de	gestern	gestern								
+adv_igår	en	yesterday	yesterday						1		
+adv_igår	es	ayer	ayer								
+adv_igår	fr	hier	hier								
+adv_igår	it	ieri	ieri								
+adv_igår	ja	昨日	昨日								
+adv_igår	sv	igår	igår						1		
+adv_imorgon	de	morgen	morgen								
+adv_imorgon	en	tomorrow	tomorrow						1		
+adv_imorgon	es	mañana	mañana								
+adv_imorgon	fr	demain	demain								
+adv_imorgon	it	domani	domani								
+adv_imorgon	ja	明日	明日								
+adv_imorgon	sv	imorgon	imorgon						1		
+adv_mycket	de	sehr	sehr								
+adv_mycket	en	very	very						1		
+adv_mycket	es	muy	muy								
+adv_mycket	fr	très	très								
+adv_mycket	it	molto	molto								
+adv_mycket	ja	とても	とても								
+adv_mycket	sv	mycket	mer						2		
+adv_mycket	sv	mycket	mest						3		
+adv_mycket	sv	mycket	mycket						1		
+adv_nu	de	jetzt	jetzt								
+adv_nu	en	now	now						1		
+adv_nu	es	ahora	ahora								
+adv_nu	fr	maintenant	maintenant								
+adv_nu	it	adesso	adesso								
+adv_nu	ja	今	今								
+adv_nu	sv	nu	nu						1		
+adv_också	de	auch	auch								
+adv_också	en	also	also						1		
+adv_också	es	también	también								
+adv_också	fr	aussi	aussi								
+adv_också	it	anche	anche								
+adv_också	ja	も	も								
+adv_också	sv	också	också						1		
+adv_ofta	de	oft	oft								
+adv_ofta	en	often	often						1		
+adv_ofta	es	a menudo	a menudo								
+adv_ofta	fr	souvent	souvent								
+adv_ofta	it	spesso	spesso								
+adv_ofta	ja	よく	よく								
+adv_ofta	sv	ofta	ofta						1		
+adv_ofta	sv	ofta	oftare						2		
+adv_ofta	sv	ofta	oftast						3		
+adv_redan	de	schon	schon								
+adv_redan	en	already	already						1		
+adv_redan	es	ya	ya								
+adv_redan	fr	déjà	déjà								
+adv_redan	it	già	già								
+adv_redan	ja	もう	もう								
+adv_redan	sv	redan	redan						1		
+adv_snart	de	bald	bald								
+adv_snart	en	soon	soon						1		
+adv_snart	en	soon	sooner						2		
+adv_snart	en	soon	soonest						3		
+adv_snart	es	pronto	pronto								
+adv_snart	fr	bientôt	bientôt								
+adv_snart	it	presto	presto								
+adv_snart	ja	もうすぐ	もうすぐ								
+adv_snart	sv	snart	snarare						2		
+adv_snart	sv	snart	snarast						3		
+adv_snart	sv	snart	snart						1		
+adv_sällan	de	selten	selten								
+adv_sällan	en	rarely	rarely						1		
+adv_sällan	es	raramente	raramente								
+adv_sällan	fr	rarement	rarement								
+adv_sällan	it	raramente	raramente								
+adv_sällan	ja	めったに	めったに								
+adv_sällan	sv	sällan	sällan						1		
 arb_arbeta	de	arbeiten	Arbeiten Sie!	1				16		3	1
 arb_arbeta	de	arbeiten	Arbeiten wir!	2				16		1	1
 arb_arbeta	de	arbeiten	arbeite	1				1024		3	1
@@ -14900,6 +15274,47 @@ fam_vän	sv	vän	vännerna	2	2	7
 fam_vän	sv	vän	vännernas	2	2	8					
 fam_vän	sv	vän	vänners	2	1	8					
 fam_vän	sv	vän	väns	1	1	8					
+frågadverb_orsak	de	warum	warum								
+frågadverb_orsak	en	why	why								
+frågadverb_orsak	es	por qué	por qué								
+frågadverb_orsak	fr	pourquoi	pourquoi								
+frågadverb_orsak	it	perché	perché								
+frågadverb_orsak	ja	なぜ	なぜ								
+frågadverb_orsak	ja	なんで	なんで								
+frågadverb_orsak	sv	varför	varför								
+frågadverb_plats	de	wo	wo								
+frågadverb_plats	en	where	where								
+frågadverb_plats	es	dónde	dónde								
+frågadverb_plats	fr	où	où								
+frågadverb_plats	it	dove	dove								
+frågadverb_plats	ja	どこ	どこ								
+frågadverb_plats	sv	var	var								
+frågadverb_riktning	de	wohin	wohin								
+frågadverb_riktning	es	adónde	adónde								
+frågadverb_riktning	ja	どこへ	どこへ								
+frågadverb_riktning	sv	vart	vart								
+frågadverb_sätt	de	wie	wie								
+frågadverb_sätt	en	how	how								
+frågadverb_sätt	es	cómo	cómo								
+frågadverb_sätt	fr	comment	comment								
+frågadverb_sätt	it	come	come								
+frågadverb_sätt	ja	どう	どう								
+frågadverb_sätt	ja	どうやって	どうやって								
+frågadverb_sätt	sv	hur	hur								
+frågadverb_tid	de	wann	wann								
+frågadverb_tid	en	when	when								
+frågadverb_tid	es	cuándo	cuándo								
+frågadverb_tid	fr	quand	quand								
+frågadverb_tid	it	quando	quando								
+frågadverb_tid	ja	いつ	いつ								
+frågadverb_tid	sv	när	när								
+frågadverb_ursprung	de	woher	woher								
+frågadverb_ursprung	en	where from	where from								
+frågadverb_ursprung	es	de dónde	de dónde								
+frågadverb_ursprung	fr	d'où	d'où								
+frågadverb_ursprung	it	da dove	da dove								
+frågadverb_ursprung	ja	どこから	どこから								
+frågadverb_ursprung	sv	varifrån	varifrån								
 frågepronomen_person	de	wer	wem			4					
 frågepronomen_person	de	wer	wen			2					
 frågepronomen_person	de	wer	wer			1					
@@ -26725,6 +27140,62 @@ häls_smärta	sv	smärta	smärtor	2	1	7
 häls_smärta	sv	smärta	smärtorna	2	2	7					
 häls_smärta	sv	smärta	smärtornas	2	2	8					
 häls_smärta	sv	smärta	smärtors	2	1	8					
+interj_goodbye	de	auf Wiedersehen	auf Wiedersehen								
+interj_goodbye	en	goodbye	goodbye								
+interj_goodbye	es	adiós	adiós								
+interj_goodbye	fr	au revoir	au revoir								
+interj_goodbye	it	arrivederci	arrivederci								
+interj_goodbye	ja	さようなら	さようなら								
+interj_goodbye	sv	hej då	hej då								
+interj_hello	de	hallo	hallo								
+interj_hello	en	hello	hello								
+interj_hello	es	hola	hola								
+interj_hello	fr	bonjour	bonjour								
+interj_hello	it	ciao	ciao								
+interj_hello	ja	こんにちは	こんにちは								
+interj_hello	sv	hej	hej								
+interj_no	de	nein	nein								
+interj_no	en	no	no								
+interj_no	es	no	no								
+interj_no	fr	non	non								
+interj_no	it	no	no								
+interj_no	ja	いいえ	いいえ								
+interj_no	sv	nej	nej								
+interj_oh	de	oh	oh								
+interj_oh	en	oh	oh								
+interj_oh	es	oh	oh								
+interj_oh	fr	oh	oh								
+interj_oh	it	oh	oh								
+interj_oh	ja	あ	あ								
+interj_oh	sv	åh	åh								
+interj_please	de	bitte	bitte								
+interj_please	en	please	please								
+interj_please	es	por favor	por favor								
+interj_please	fr	s'il vous plaît	s'il vous plaît								
+interj_please	it	per favore	per favore								
+interj_please	ja	ください	ください								
+interj_please	sv	var god	var god								
+interj_sorry	de	Entschuldigung	Entschuldigung								
+interj_sorry	en	sorry	sorry								
+interj_sorry	es	perdón	perdón								
+interj_sorry	fr	désolé	désolé								
+interj_sorry	it	mi dispiace	mi dispiace								
+interj_sorry	ja	すみません	すみません								
+interj_sorry	sv	förlåt	förlåt								
+interj_thanks	de	danke	danke								
+interj_thanks	en	thank you	thank you								
+interj_thanks	es	gracias	gracias								
+interj_thanks	fr	merci	merci								
+interj_thanks	it	grazie	grazie								
+interj_thanks	ja	ありがとう	ありがとう								
+interj_thanks	sv	tack	tack								
+interj_yes	de	ja	ja								
+interj_yes	en	yes	yes								
+interj_yes	es	sí	sí								
+interj_yes	fr	oui	oui								
+interj_yes	it	sì	sì								
+interj_yes	ja	はい	はい								
+interj_yes	sv	ja	ja								
 interr_det_hur_mycket	de	wie viel	wie viel								
 interr_det_hur_mycket	en	how much	how much								
 interr_det_hur_mycket	es	cuánto	cuánta	1			2				
@@ -32198,6 +32669,60 @@ kom_säga	sv	säga	säga					1			1
 kom_säga	sv	säga	sägas					1			2
 kom_säga	sv	säga	säger					2			1
 kom_säga	sv	säga	sägs					2			2
+komp_som	de	wie	wie								
+komp_som	en	as	as								
+komp_som	es	como	como								
+komp_som	fr	comme	comme								
+komp_som	it	come	come								
+komp_som	ja	と同じくらい	と同じくらい								
+komp_som	sv	som	som								
+komp_än	de	als	als								
+komp_än	en	than	than								
+komp_än	es	que	que								
+komp_än	fr	que	que								
+komp_än	it	di	di								
+komp_än	ja	より	より								
+komp_än	sv	än	än								
+konj_eller	de	oder	oder								
+konj_eller	en	or	or								
+konj_eller	es	o	o								
+konj_eller	fr	ou	ou								
+konj_eller	it	o	o								
+konj_eller	ja	または	または								
+konj_eller	sv	eller	eller								
+konj_för	de	denn	denn								
+konj_för	en	for	for								
+konj_för	es	pues	pues								
+konj_för	fr	car	car								
+konj_för	it	perché	perché								
+konj_för	sv	för	för								
+konj_men	de	aber	aber								
+konj_men	en	but	but								
+konj_men	es	pero	pero								
+konj_men	fr	mais	mais								
+konj_men	it	ma	ma								
+konj_men	ja	でも	でも								
+konj_men	sv	men	men								
+konj_och	de	und	und								
+konj_och	en	and	and								
+konj_och	es	y	y								
+konj_och	fr	et	et								
+konj_och	it	e	e								
+konj_och	ja	そして	そして								
+konj_och	sv	och	och								
+konj_så	de	daher	daher								
+konj_så	en	so	so								
+konj_så	es	así que	así que								
+konj_så	fr	donc	donc								
+konj_så	it	quindi	quindi								
+konj_så	ja	だから	だから								
+konj_så	sv	så	så								
+konj_utan	de	sondern	sondern								
+konj_utan	en	but rather	but rather								
+konj_utan	es	sino	sino								
+konj_utan	fr	mais	mais								
+konj_utan	it	bensì	bensì								
+konj_utan	sv	utan	utan								
 krop_ansikte	de	Gesicht	Gesicht	1		7					
 krop_ansikte	de	Gesicht	Gesichter	2		11					
 krop_ansikte	de	Gesicht	Gesichtern	2		4					
@@ -37820,6 +38345,34 @@ nat_växt	sv	växt	växterna	2	2	7
 nat_växt	sv	växt	växternas	2	2	8					
 nat_växt	sv	växt	växters	2	1	8					
 nat_växt	sv	växt	växts	1	1	8					
+neg_aldrig	de	nie	nie								
+neg_aldrig	en	never	never								
+neg_aldrig	es	nunca	nunca								
+neg_aldrig	fr	jamais	jamais								
+neg_aldrig	it	mai	mai								
+neg_aldrig	ja	決して	決して								
+neg_aldrig	sv	aldrig	aldrig								
+neg_heller	de	auch nicht	auch nicht								
+neg_heller	en	not either	not either								
+neg_heller	es	tampoco	tampoco								
+neg_heller	fr	non plus	non plus								
+neg_heller	it	neanche	neanche								
+neg_heller	ja	も～ない	も～ない								
+neg_heller	sv	inte heller	inte heller								
+neg_inte	de	nicht	nicht								
+neg_inte	en	not	not								
+neg_inte	es	no	no								
+neg_inte	fr	pas	pas								
+neg_inte	it	non	non								
+neg_inte	ja	ない	ない								
+neg_inte	sv	inte	inte								
+neg_inte_längre	de	nicht mehr	nicht mehr								
+neg_inte_längre	en	no longer	no longer								
+neg_inte_längre	es	ya no	ya no								
+neg_inte_längre	fr	plus	plus								
+neg_inte_längre	it	non più	non più								
+neg_inte_längre	ja	もう～ない	もう～ない								
+neg_inte_längre	sv	inte längre	inte längre								
 per_höra	de	hören	gehört					8			1
 per_höra	de	hören	hör	1				16		2	1
 per_höra	de	hören	höre	1				1024		3	1
@@ -40531,6 +41084,188 @@ poss_3sg_neutr	sv	dess	dess	2			3
 poss_3sg_neutr	sv	sin	sin	1			1				
 poss_3sg_neutr	sv	sin	sina	2			3				
 poss_3sg_neutr	sv	sin	sitt	1			2				
+prep_av	de	von	von								
+prep_av	en	of	of								
+prep_av	es	de	de								
+prep_av	fr	de	de								
+prep_av	it	di	di								
+prep_av	ja	の	の								
+prep_av	sv	av	av								
+prep_bakom	de	hinter	hinter								
+prep_bakom	en	behind	behind								
+prep_bakom	es	detrás de	detrás de								
+prep_bakom	fr	derrière	derrière								
+prep_bakom	it	dietro	dietro								
+prep_bakom	ja	の後ろに	の後ろに								
+prep_bakom	sv	bakom	bakom								
+prep_bland	de	unter	unter								
+prep_bland	en	among	among								
+prep_bland	es	entre	entre								
+prep_bland	fr	parmi	parmi								
+prep_bland	it	tra	tra								
+prep_bland	ja	の中で	の中で								
+prep_bland	sv	bland	bland								
+prep_bredvid	de	neben	neben								
+prep_bredvid	en	next to	next to								
+prep_bredvid	es	al lado de	al lado de								
+prep_bredvid	fr	à côté de	à côté de								
+prep_bredvid	it	accanto a	accanto a								
+prep_bredvid	ja	の隣に	の隣に								
+prep_bredvid	sv	bredvid	bredvid								
+prep_efter	de	nach	nach								
+prep_efter	en	after	after								
+prep_efter	es	después de	después de								
+prep_efter	fr	après	après								
+prep_efter	it	dopo	dopo								
+prep_efter	ja	の後に	の後に								
+prep_efter	sv	efter	efter								
+prep_emot	de	gegen	gegen								
+prep_emot	en	against	against								
+prep_emot	es	contra	contra								
+prep_emot	fr	contre	contre								
+prep_emot	it	contro	contro								
+prep_emot	ja	に対して	に対して								
+prep_emot	sv	emot	emot								
+prep_framför	de	vor	vor								
+prep_framför	en	in front of	in front of								
+prep_framför	es	delante de	delante de								
+prep_framför	fr	devant	devant								
+prep_framför	it	davanti a	davanti a								
+prep_framför	ja	の前に	の前に								
+prep_framför	sv	framför	framför								
+prep_från	de	von	von								
+prep_från	en	from	from								
+prep_från	es	de	de								
+prep_från	fr	de	de								
+prep_från	it	da	da								
+prep_från	ja	から	から								
+prep_från	sv	från	från								
+prep_för	de	für	für								
+prep_för	en	for	for								
+prep_för	es	para	para								
+prep_för	fr	pour	pour								
+prep_för	it	per	per								
+prep_för	ja	のために	のために								
+prep_för	sv	för	för								
+prep_före	de	vor	vor								
+prep_före	en	before	before								
+prep_före	es	antes de	antes de								
+prep_före	fr	avant	avant								
+prep_före	it	prima di	prima di								
+prep_före	ja	の前に	の前に								
+prep_före	sv	före	före								
+prep_genom	de	durch	durch								
+prep_genom	en	through	through								
+prep_genom	es	a través de	a través de								
+prep_genom	fr	à travers	à travers								
+prep_genom	it	attraverso	attraverso								
+prep_genom	ja	を通して	を通して								
+prep_genom	sv	genom	genom								
+prep_i	de	in	in								
+prep_i	en	in	in								
+prep_i	es	en	en								
+prep_i	fr	dans	dans								
+prep_i	it	in	in								
+prep_i	ja	に	に								
+prep_i	sv	i	i								
+prep_innanför	de	innerhalb	innerhalb								
+prep_innanför	en	inside	inside								
+prep_innanför	es	dentro de	dentro de								
+prep_innanför	fr	à l'intérieur de	à l'intérieur de								
+prep_innanför	it	dentro di	dentro di								
+prep_innanför	ja	の中に	の中に								
+prep_innanför	sv	innanför	innanför								
+prep_längs	de	entlang	entlang								
+prep_längs	en	along	along								
+prep_längs	es	a lo largo de	a lo largo de								
+prep_längs	fr	le long de	le long de								
+prep_längs	it	lungo	lungo								
+prep_längs	ja	に沿って	に沿って								
+prep_längs	sv	längs	längs								
+prep_med	de	mit	mit								
+prep_med	en	with	with								
+prep_med	es	con	con								
+prep_med	fr	avec	avec								
+prep_med	it	con	con								
+prep_med	ja	と	と								
+prep_med	sv	med	med								
+prep_mellan	de	zwischen	zwischen								
+prep_mellan	en	between	between								
+prep_mellan	es	entre	entre								
+prep_mellan	fr	entre	entre								
+prep_mellan	it	tra	tra								
+prep_mellan	ja	の間に	の間に								
+prep_mellan	sv	mellan	mellan								
+prep_mot	de	in Richtung	in Richtung								
+prep_mot	en	toward	toward								
+prep_mot	es	hacia	hacia								
+prep_mot	fr	vers	vers								
+prep_mot	it	verso	verso								
+prep_mot	ja	に向かって	に向かって								
+prep_mot	sv	mot	mot								
+prep_om	de	über	über								
+prep_om	en	about	about								
+prep_om	es	sobre	sobre								
+prep_om	fr	sur	sur								
+prep_om	it	su	su								
+prep_om	ja	について	について								
+prep_om	sv	om	om								
+prep_på	de	auf	auf								
+prep_på	en	on	on								
+prep_på	es	sobre	sobre								
+prep_på	fr	sur	sur								
+prep_på	it	su	su								
+prep_på	ja	の上に	の上に								
+prep_på	sv	på	på								
+prep_till	de	zu	zu								
+prep_till	en	to	to								
+prep_till	es	a	a								
+prep_till	fr	à	à								
+prep_till	it	a	a								
+prep_till	ja	へ	へ								
+prep_till	sv	till	till								
+prep_trots	de	trotz	trotz								
+prep_trots	en	despite	despite								
+prep_trots	es	a pesar de	a pesar de								
+prep_trots	fr	malgré	malgré								
+prep_trots	it	nonostante	nonostante								
+prep_trots	ja	にもかかわらず	にもかかわらず								
+prep_trots	sv	trots	trots								
+prep_under	de	unter	unter								
+prep_under	en	under	under								
+prep_under	es	bajo	bajo								
+prep_under	fr	sous	sous								
+prep_under	it	sotto	sotto								
+prep_under	ja	の下に	の下に								
+prep_under	sv	under	under								
+prep_utan	de	ohne	ohne								
+prep_utan	en	without	without								
+prep_utan	es	sin	sin								
+prep_utan	fr	sans	sans								
+prep_utan	it	senza	senza								
+prep_utan	ja	なしで	なしで								
+prep_utan	sv	utan	utan								
+prep_utanför	de	außerhalb	außerhalb								
+prep_utanför	en	outside	outside								
+prep_utanför	es	fuera de	fuera de								
+prep_utanför	fr	en dehors de	en dehors de								
+prep_utanför	it	fuori di	fuori di								
+prep_utanför	ja	の外に	の外に								
+prep_utanför	sv	utanför	utanför								
+prep_vid	de	bei	bei								
+prep_vid	en	at	at								
+prep_vid	es	en	en								
+prep_vid	fr	à	à								
+prep_vid	it	a	a								
+prep_vid	ja	で	で								
+prep_vid	sv	vid	vid								
+prep_över	de	über	über								
+prep_över	en	over	over								
+prep_över	es	encima de	encima de								
+prep_över	fr	au-dessus de	au-dessus de								
+prep_över	it	sopra	sopra								
+prep_över	ja	の上に	の上に								
+prep_över	sv	över	över								
 pronomen_1pl	de	wir	uns			6					
 pronomen_1pl	de	wir	unser			8					
 pronomen_1pl	de	wir	wir			1					
@@ -40741,49 +41476,275 @@ rel_sak	es	que	que
 rel_sak	fr	que	que								
 rel_sak	it	che	che								
 rel_sak	sv	som	som								
+räkn_0	de	null	null								
+räkn_0	en	zero	zero								
+räkn_0	es	cero	cero								
+räkn_0	fr	zéro	zéro								
+räkn_0	it	zero	zero								
+räkn_0	ja	ゼロ	ゼロ								
 räkn_0	sv	noll	noll								
+räkn_1	de	ein	ein	1			1				
+räkn_1	de	ein	ein	1			3				
+räkn_1	de	ein	eine	1			2				
+räkn_1	en	one	one								
+räkn_1	es	uno	una	1			2				
+räkn_1	es	uno	uno	1			1				
+räkn_1	fr	un	un	1			1				
+räkn_1	fr	un	une	1			2				
+räkn_1	it	uno	una	1			2				
+räkn_1	it	uno	uno	1			1				
+räkn_1	ja	一	一								
 räkn_1	sv	en	en	1			1				
 räkn_1	sv	en	ett	1			2				
+räkn_10	de	zehn	zehn								
+räkn_10	en	ten	ten								
+räkn_10	es	diez	diez								
+räkn_10	fr	dix	dix								
+räkn_10	it	dieci	dieci								
+räkn_10	ja	十	十								
 räkn_10	sv	tio	tio								
+räkn_100	de	hundert	hundert								
+räkn_100	en	hundred	hundred								
+räkn_100	es	cien	cien								
+räkn_100	fr	cent	cent								
+räkn_100	it	cento	cento								
+räkn_100	ja	百	百								
 räkn_100	sv	hundra	hundra								
+räkn_1000	de	tausend	tausend								
+räkn_1000	en	thousand	thousand								
+räkn_1000	es	mil	mil								
+räkn_1000	fr	mille	mille								
+räkn_1000	it	mille	mille								
+räkn_1000	ja	千	千								
 räkn_1000	sv	tusen	tusen								
+räkn_11	de	elf	elf								
+räkn_11	en	eleven	eleven								
+räkn_11	es	once	once								
+räkn_11	fr	onze	onze								
+räkn_11	it	undici	undici								
+räkn_11	ja	十一	十一								
 räkn_11	sv	elva	elva								
+räkn_12	de	zwölf	zwölf								
+räkn_12	en	twelve	twelve								
+räkn_12	es	doce	doce								
+räkn_12	fr	douze	douze								
+räkn_12	it	dodici	dodici								
+räkn_12	ja	十二	十二								
 räkn_12	sv	tolv	tolv								
+räkn_13	de	dreizehn	dreizehn								
+räkn_13	en	thirteen	thirteen								
+räkn_13	es	trece	trece								
+räkn_13	fr	treize	treize								
+räkn_13	it	tredici	tredici								
+räkn_13	ja	十三	十三								
 räkn_13	sv	tretton	tretton								
+räkn_14	de	vierzehn	vierzehn								
+räkn_14	en	fourteen	fourteen								
+räkn_14	es	catorce	catorce								
+räkn_14	fr	quatorze	quatorze								
+räkn_14	it	quattordici	quattordici								
+räkn_14	ja	十四	十四								
 räkn_14	sv	fjorton	fjorton								
+räkn_15	de	fünfzehn	fünfzehn								
+räkn_15	en	fifteen	fifteen								
+räkn_15	es	quince	quince								
+räkn_15	fr	quinze	quinze								
+räkn_15	it	quindici	quindici								
+räkn_15	ja	十五	十五								
 räkn_15	sv	femton	femton								
+räkn_16	de	sechzehn	sechzehn								
+räkn_16	en	sixteen	sixteen								
+räkn_16	es	dieciséis	dieciséis								
+räkn_16	fr	seize	seize								
+räkn_16	it	sedici	sedici								
+räkn_16	ja	十六	十六								
 räkn_16	sv	sexton	sexton								
+räkn_17	de	siebzehn	siebzehn								
+räkn_17	en	seventeen	seventeen								
+räkn_17	es	diecisiete	diecisiete								
+räkn_17	fr	dix-sept	dix-sept								
+räkn_17	it	diciassette	diciassette								
+räkn_17	ja	十七	十七								
 räkn_17	sv	sjutton	sjutton								
+räkn_18	de	achtzehn	achtzehn								
+räkn_18	en	eighteen	eighteen								
+räkn_18	es	dieciocho	dieciocho								
+räkn_18	fr	dix-huit	dix-huit								
+räkn_18	it	diciotto	diciotto								
+räkn_18	ja	十八	十八								
 räkn_18	sv	arton	arton								
+räkn_19	de	neunzehn	neunzehn								
+räkn_19	en	nineteen	nineteen								
+räkn_19	es	diecinueve	diecinueve								
+räkn_19	fr	dix-neuf	dix-neuf								
+räkn_19	it	diciannove	diciannove								
+räkn_19	ja	十九	十九								
 räkn_19	sv	nitton	nitton								
+räkn_2	de	zwei	zwei								
+räkn_2	en	two	two								
+räkn_2	es	dos	dos								
+räkn_2	fr	deux	deux								
+räkn_2	it	due	due								
+räkn_2	ja	二	二								
 räkn_2	sv	två	två								
+räkn_20	de	zwanzig	zwanzig								
+räkn_20	en	twenty	twenty								
+räkn_20	es	veinte	veinte								
+räkn_20	fr	vingt	vingt								
+räkn_20	it	venti	venti								
+räkn_20	ja	二十	二十								
 räkn_20	sv	tjugo	tjugo								
+räkn_3	de	drei	drei								
+räkn_3	en	three	three								
+räkn_3	es	tres	tres								
+räkn_3	fr	trois	trois								
+räkn_3	it	tre	tre								
+räkn_3	ja	三	三								
 räkn_3	sv	tre	tre								
+räkn_30	de	dreißig	dreißig								
+räkn_30	en	thirty	thirty								
+räkn_30	es	treinta	treinta								
+räkn_30	fr	trente	trente								
+räkn_30	it	trenta	trenta								
+räkn_30	ja	三十	三十								
 räkn_30	sv	trettio	trettio								
+räkn_4	de	vier	vier								
+räkn_4	en	four	four								
+räkn_4	es	cuatro	cuatro								
+räkn_4	fr	quatre	quatre								
+räkn_4	it	quattro	quattro								
+räkn_4	ja	四	四								
 räkn_4	sv	fyra	fyra								
+räkn_40	de	vierzig	vierzig								
+räkn_40	en	forty	forty								
+räkn_40	es	cuarenta	cuarenta								
+räkn_40	fr	quarante	quarante								
+räkn_40	it	quaranta	quaranta								
+räkn_40	ja	四十	四十								
 räkn_40	sv	fyrtio	fyrtio								
+räkn_5	de	fünf	fünf								
+räkn_5	en	five	five								
+räkn_5	es	cinco	cinco								
+räkn_5	fr	cinq	cinq								
+räkn_5	it	cinque	cinque								
+räkn_5	ja	五	五								
 räkn_5	sv	fem	fem								
+räkn_50	de	fünfzig	fünfzig								
+räkn_50	en	fifty	fifty								
+räkn_50	es	cincuenta	cincuenta								
+räkn_50	fr	cinquante	cinquante								
+räkn_50	it	cinquanta	cinquanta								
+räkn_50	ja	五十	五十								
 räkn_50	sv	femtio	femtio								
+räkn_6	de	sechs	sechs								
+räkn_6	en	six	six								
+räkn_6	es	seis	seis								
+räkn_6	fr	six	six								
+räkn_6	it	sei	sei								
+räkn_6	ja	六	六								
 räkn_6	sv	sex	sex								
+räkn_60	de	sechzig	sechzig								
+räkn_60	en	sixty	sixty								
+räkn_60	es	sesenta	sesenta								
+räkn_60	fr	soixante	soixante								
+räkn_60	it	sessanta	sessanta								
+räkn_60	ja	六十	六十								
 räkn_60	sv	sextio	sextio								
+räkn_7	de	sieben	sieben								
+räkn_7	en	seven	seven								
+räkn_7	es	siete	siete								
+räkn_7	fr	sept	sept								
+räkn_7	it	sette	sette								
+räkn_7	ja	七	七								
 räkn_7	sv	sju	sju								
+räkn_70	de	siebzig	siebzig								
+räkn_70	en	seventy	seventy								
+räkn_70	es	setenta	setenta								
+räkn_70	fr	soixante-dix	soixante-dix								
+räkn_70	it	settanta	settanta								
+räkn_70	ja	七十	七十								
 räkn_70	sv	sjuttio	sjuttio								
+räkn_8	de	acht	acht								
+räkn_8	en	eight	eight								
+räkn_8	es	ocho	ocho								
+räkn_8	fr	huit	huit								
+räkn_8	it	otto	otto								
+räkn_8	ja	八	八								
 räkn_8	sv	åtta	åtta								
+räkn_80	de	achtzig	achtzig								
+räkn_80	en	eighty	eighty								
+räkn_80	es	ochenta	ochenta								
+räkn_80	fr	quatre-vingts	quatre-vingts								
+räkn_80	it	ottanta	ottanta								
+räkn_80	ja	八十	八十								
 räkn_80	sv	åttio	åttio								
+räkn_9	de	neun	neun								
+räkn_9	en	nine	nine								
+räkn_9	es	nueve	nueve								
+räkn_9	fr	neuf	neuf								
+räkn_9	it	nove	nove								
+räkn_9	ja	九	九								
 räkn_9	sv	nio	nio								
+räkn_90	de	neunzig	neunzig								
+räkn_90	en	ninety	ninety								
+räkn_90	es	noventa	noventa								
+räkn_90	fr	quatre-vingt-dix	quatre-vingt-dix								
+räkn_90	it	novanta	novanta								
+räkn_90	ja	九十	九十								
 räkn_90	sv	nittio	nittio								
+räkn_ord_1	de	erste	erste								
+räkn_ord_1	en	first	first								
+räkn_ord_1	es	primero	primera	1			2				
+räkn_ord_1	es	primero	primero	1			1				
+räkn_ord_1	fr	premier	premier	1			1				
+räkn_ord_1	fr	premier	première	1			2				
+räkn_ord_1	it	primo	prima	1			2				
+räkn_ord_1	it	primo	primo	1			1				
+räkn_ord_1	ja	第一	第一								
 räkn_ord_1	sv	första	första	1	1		3				
 räkn_ord_1	sv	första	första	1	2		3				
 räkn_ord_1	sv	första	första	2			3				
+räkn_ord_2	de	zweite	zweite								
+räkn_ord_2	en	second	second								
+räkn_ord_2	es	segundo	segunda	1			2				
+räkn_ord_2	es	segundo	segundo	1			1				
+räkn_ord_2	fr	deuxième	deuxième								
+räkn_ord_2	it	secondo	seconda	1			2				
+räkn_ord_2	it	secondo	secondo	1			1				
+räkn_ord_2	ja	第二	第二								
 räkn_ord_2	sv	andra	andra	1	1		3				
 räkn_ord_2	sv	andra	andra	1	2		3				
 räkn_ord_2	sv	andra	andra	2			3				
+räkn_ord_3	de	dritte	dritte								
+räkn_ord_3	en	third	third								
+räkn_ord_3	es	tercero	tercera	1			2				
+räkn_ord_3	es	tercero	tercero	1			1				
+räkn_ord_3	fr	troisième	troisième								
+räkn_ord_3	it	terzo	terza	1			2				
+räkn_ord_3	it	terzo	terzo	1			1				
+räkn_ord_3	ja	第三	第三								
 räkn_ord_3	sv	tredje	tredje	1	1		3				
 räkn_ord_3	sv	tredje	tredje	1	2		3				
 räkn_ord_3	sv	tredje	tredje	2			3				
+räkn_ord_4	de	vierte	vierte								
+räkn_ord_4	en	fourth	fourth								
+räkn_ord_4	es	cuarto	cuarta	1			2				
+räkn_ord_4	es	cuarto	cuarto	1			1				
+räkn_ord_4	fr	quatrième	quatrième								
+räkn_ord_4	it	quarto	quarta	1			2				
+räkn_ord_4	it	quarto	quarto	1			1				
+räkn_ord_4	ja	第四	第四								
 räkn_ord_4	sv	fjärde	fjärde	1	1		3				
 räkn_ord_4	sv	fjärde	fjärde	1	2		3				
 räkn_ord_4	sv	fjärde	fjärde	2			3				
+räkn_ord_5	de	fünfte	fünfte								
+räkn_ord_5	en	fifth	fifth								
+räkn_ord_5	es	quinto	quinta	1			2				
+räkn_ord_5	es	quinto	quinto	1			1				
+räkn_ord_5	fr	cinquième	cinquième								
+räkn_ord_5	it	quinto	quinta	1			2				
+räkn_ord_5	it	quinto	quinto	1			1				
+räkn_ord_5	ja	第五	第五								
 räkn_ord_5	sv	femte	femte	1	1		3				
 räkn_ord_5	sv	femte	femte	1	2		3				
 räkn_ord_5	sv	femte	femte	2			3				
@@ -46737,6 +47698,91 @@ soc_vänta	sv	vänta	väntas					3			2
 soc_vänta	sv	vänta	väntat					8			1
 soc_vänta	sv	vänta	väntat	1	1		2	8			1
 soc_vänta	sv	vänta	väntats					8			2
+subj_att	de	dass	dass								
+subj_att	en	that	that								
+subj_att	es	que	que								
+subj_att	fr	que	que								
+subj_att	it	che	che								
+subj_att	ja	ということ	ということ								
+subj_att	sv	att	att								
+subj_efter_att	de	nachdem	nachdem								
+subj_efter_att	en	after	after								
+subj_efter_att	es	después de que	después de que								
+subj_efter_att	fr	après que	après que								
+subj_efter_att	it	dopo che	dopo che								
+subj_efter_att	ja	後で	後で								
+subj_efter_att	sv	efter att	efter att								
+subj_eftersom	de	weil	weil								
+subj_eftersom	en	because	because								
+subj_eftersom	es	porque	porque								
+subj_eftersom	fr	parce que	parce que								
+subj_eftersom	it	perché	perché								
+subj_eftersom	ja	から	から								
+subj_eftersom	sv	eftersom	eftersom								
+subj_för_att	de	damit	damit								
+subj_för_att	en	so that	so that								
+subj_för_att	es	para que	para que								
+subj_för_att	fr	pour que	pour que								
+subj_för_att	it	affinché	affinché								
+subj_för_att	ja	ために	ために								
+subj_för_att	sv	för att	för att								
+subj_ifall	de	falls	falls								
+subj_ifall	en	in case	in case								
+subj_ifall	es	en caso de que	en caso de que								
+subj_ifall	fr	au cas où	au cas où								
+subj_ifall	it	nel caso che	nel caso che								
+subj_ifall	ja	場合に	場合に								
+subj_ifall	sv	ifall	ifall								
+subj_innan	de	bevor	bevor								
+subj_innan	en	before	before								
+subj_innan	es	antes de que	antes de que								
+subj_innan	fr	avant que	avant que								
+subj_innan	it	prima che	prima che								
+subj_innan	ja	前に	前に								
+subj_innan	sv	innan	innan								
+subj_medan	de	während	während								
+subj_medan	en	while	while								
+subj_medan	es	mientras	mientras								
+subj_medan	fr	pendant que	pendant que								
+subj_medan	it	mentre	mentre								
+subj_medan	ja	ながら	ながら								
+subj_medan	sv	medan	medan								
+subj_när	de	als	als								
+subj_när	de	wenn	wenn								
+subj_när	en	when	when								
+subj_när	es	cuando	cuando								
+subj_när	fr	quand	quand								
+subj_när	it	quando	quando								
+subj_när	ja	ときに	ときに								
+subj_när	sv	när	när								
+subj_om_huruvida	de	ob	ob								
+subj_om_huruvida	en	whether	whether								
+subj_om_huruvida	es	si	si								
+subj_om_huruvida	fr	si	si								
+subj_om_huruvida	it	se	se								
+subj_om_huruvida	ja	かどうか	かどうか								
+subj_om_huruvida	sv	om	om								
+subj_om_konditional	de	wenn	wenn								
+subj_om_konditional	en	if	if								
+subj_om_konditional	es	si	si								
+subj_om_konditional	fr	si	si								
+subj_om_konditional	it	se	se								
+subj_om_konditional	ja	もし	もし								
+subj_om_konditional	sv	om	om								
+subj_tills	de	bis	bis								
+subj_tills	en	until	until								
+subj_tills	es	hasta que	hasta que								
+subj_tills	fr	jusqu'à ce que	jusqu'à ce que								
+subj_tills	it	finché	finché								
+subj_tills	ja	まで	まで								
+subj_tills	sv	tills	tills								
+subj_trots_att	de	obwohl	obwohl								
+subj_trots_att	en	although	although								
+subj_trots_att	es	aunque	aunque								
+subj_trots_att	fr	bien que	bien que								
+subj_trots_att	it	benché	benché								
+subj_trots_att	ja	けれど	けれど								
+subj_trots_att	sv	trots att	trots att								
 tid_dag	de	Tag	Tag	1		7					
 tid_dag	de	Tag	Tage	2		11					
 tid_dag	de	Tag	Tagen	2		4					

@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: ja
+  ordklass: Adverb
+  beskrivning: >
+    Adverb. De flesta är oböjliga och fyller bara pos. Svenskan och engelskan har syntetisk komparation för en handfull (ofta/oftare/oftast, long/longer/longest); övriga språk kompareras analytiskt och behöver inga komp/superl-celler.
+
+celler:
+  - id: inv

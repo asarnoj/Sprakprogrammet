@@ -26,7 +26,7 @@ som styr vilka ord som får kombineras.
 ```
 Koncept        733        Mönster        197   (174 universella
 Lexem        5 130        MönsterKrav    329    + 23 språkspecifika)
-Former      48 573        genus        1 295/1 295
+Former      49 619        genus        1 295/1 295
                           prenominal     777/777
                           gradbarhet     111/111
                           räknebar       259/259
@@ -34,7 +34,12 @@ Former      48 573        genus        1 295/1 295
                           hjälpverb    522/522
                           variant        42/42
                           determinerare 117/117
+                          lexem m. former 5 094/5 130
 ```
+
+De 36 lexem som saknar former är japanska adjektiv av typ `no` och
+`verbfras` — de renderas med の eller som verbfraser och har ett eget
+dokumenterat skäl att sakna böjning.
 
 **Alla 1 043 fel granskningen hittade är åtgärdade.** `ordbok
 tillämpa-granskning --torkörning` ger noll satser att köra. Alla sju språk är
@@ -107,9 +112,14 @@ och bär bara det som skiljer. Se `ordbok/migrationer/rektion.sql`.
 4. **Ordföljd** (§3.10) — de V2/verbfinal, TeKaMoLo, ja SOV, fr klitikaordning.
    Ingenting av det är representerat. Största enskilda posten.
 
-Kvar i datan finns bara två småposter, båda nyfunna: räkneord i sex språk
-(sv är klart) och adverb i alla sju — 358 lexem utan former, varav bara
-sv/en syntetiska komparativer (fort/fortare) faktiskt behöver böjas.
+Datalagret har inga öppna poster kvar. Sista passet drog ut en princip
+som borde ha dragits ut tidigare: om FSRS spårar per ordform måste **varje**
+lexem ha minst en Former-rad, annars kan det inte övas. Det gällde inte bara
+adverben och räkneorden utan alla oböjda ordklasser — preposition,
+konjunktion, subjunktion, interjektion, frågadverb, negationsadverb. 1 014
+lexem fick en `inv`-cell med lemmat. Där det faktiskt finns böjning fångas
+den: sv/en adverbkomparation (ofta/oftare/oftast, long/longer/longest),
+kardinaltalet 1 efter genus i de/fr/es/it, romanska ordinaltal.
 
 Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
 

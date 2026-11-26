@@ -1,0 +1,10 @@
+---
+meta:
+  version: 1
+  språk: it
+  ordklass: Konjunktion
+  beskrivning: >
+    Oböjlig ordklass. Cellen finns för att varje lexem ska ha en Former-rad och därmed kunna spåras och övas av FSRS — inte för att det finns någon böjning att fånga.
+
+celler:
+  - id: inv
