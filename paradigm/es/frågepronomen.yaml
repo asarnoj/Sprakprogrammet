@@ -20,33 +20,33 @@ celler:
   - id: quien_sg
     kasus: [Nom, Ack, Dat]
     numerus: Sg
-    # "quién" — animate, singular. Ej genus-distinktion i spanska.
+    not: "'quién' — animate, singular. Ej genus-distinktion i spanska."
 
   - id: quien_pl
     kasus: [Nom, Ack, Dat]
     numerus: Pl
-    # "quiénes".
+    not: "'quiénes'."
 
   - id: que
     kasus: [Nom, Ack, Dat]
-    # "qué" — inanimate, invariant. Ingen numerus-/genus-variation.
+    not: "'qué' — inanimate, invariant. Ingen numerus-/genus-variation."
 
   - id: cuanto_msc_sg
     genus: UtrMask
     numerus: Sg
-    # "cuánto".
+    not: "'cuánto'."
 
   - id: cuanto_fem_sg
     genus: NeuFem
     numerus: Sg
-    # "cuánta".
+    not: "'cuánta'."
 
   - id: cuanto_msc_pl
     genus: UtrMask
     numerus: Pl
-    # "cuántos".
+    not: "'cuántos'."
 
   - id: cuanto_fem_pl
     genus: NeuFem
     numerus: Pl
-    # "cuántas".
+    not: "'cuántas'."

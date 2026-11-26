@@ -19,9 +19,8 @@ meta:
 celler:
   - id: sg
     numerus: Sg
-    # "gato", "casa", "ciudad".
+    not: "'gato', 'casa', 'ciudad'."
 
   - id: pl
     numerus: Pl
-    # Regelbundet: +s ("gatos") / +es ("ciudades").
-    # Oregelbundet: "régimen → regímenes", invariant: "lunes", "crisis".
+    not: "Regelbundet: +s ('gatos') / +es ('ciudades'). Oregelbundet: 'régimen → regímenes', invariant: 'lunes', 'crisis'."

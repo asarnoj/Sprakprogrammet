@@ -23,52 +23,50 @@ celler:
     genus: UtrMask
     numerus: Sg
     grad: Pos
-    # "grand", "petit", "beau" (prenominal), "bon".
+    not: "'grand', 'petit', 'beau' (prenominal), 'bon'."
 
   - id: pos_fem_sg
     genus: NeuFem
     numerus: Sg
     grad: Pos
-    # "grande", "petite", "belle" (prenominal), "bonne".
-    # OBS: många adjektiv har oregelbunden femininum (beau→belle, vieux→vieille,
-    # nouveau→nouvelle, doux→douce, faux→fausse, etc.).
+    not: "'grande', 'petite', 'belle' (prenominal), 'bonne'. OBS: många adjektiv har oregelbunden femininum (beau→belle, vieux→vieille, nouveau→nouvelle, doux→douce, faux→fausse, etc.)."
 
   - id: pos_msc_pl
     genus: UtrMask
     numerus: Pl
     grad: Pos
-    # "grands", "petits", "beaux", "bons".
+    not: "'grands', 'petits', 'beaux', 'bons'."
 
   - id: pos_fem_pl
     genus: NeuFem
     numerus: Pl
     grad: Pos
-    # "grandes", "petites", "belles", "bonnes".
+    not: "'grandes', 'petites', 'belles', 'bonnes'."
 
   # ── Komparativ (bara oregelbundna) ─────────────────────────────────
   - id: komp_msc_sg
     genus: UtrMask
     numerus: Sg
     grad: Komp
-    # "meilleur", "pire", "moindre". Tom för analytiska adjektiv.
+    not: "'meilleur', 'pire', 'moindre'. Tom för analytiska adjektiv."
 
   - id: komp_fem_sg
     genus: NeuFem
     numerus: Sg
     grad: Komp
-    # "meilleure", "pire" (invariant), "moindre" (invariant).
+    not: "'meilleure', 'pire' (invariant), 'moindre' (invariant)."
 
   - id: komp_msc_pl
     genus: UtrMask
     numerus: Pl
     grad: Komp
-    # "meilleurs", "pires", "moindres".
+    not: "'meilleurs', 'pires', 'moindres'."
 
   - id: komp_fem_pl
     genus: NeuFem
     numerus: Pl
     grad: Komp
-    # "meilleures", "pires", "moindres".
+    not: "'meilleures', 'pires', 'moindres'."
 
   # ── Superlativ (bara oregelbundna) ─────────────────────────────────
   # Superlativ bildas analytiskt (le/la/les + komparativform för oregelbundna).
@@ -77,22 +75,22 @@ celler:
     genus: UtrMask
     numerus: Sg
     grad: Superl
-    # "meilleur", "pire". Tom för analytiska adjektiv.
+    not: "'meilleur', 'pire'. Tom för analytiska adjektiv."
 
   - id: superl_fem_sg
     genus: NeuFem
     numerus: Sg
     grad: Superl
-    # "meilleure", "pire".
+    not: "'meilleure', 'pire'."
 
   - id: superl_msc_pl
     genus: UtrMask
     numerus: Pl
     grad: Superl
-    # "meilleurs", "pires".
+    not: "'meilleurs', 'pires'."
 
   - id: superl_fem_pl
     genus: NeuFem
     numerus: Pl
     grad: Superl
-    # "meilleures", "pires".
+    not: "'meilleures', 'pires'."

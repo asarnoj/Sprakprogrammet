@@ -17,10 +17,8 @@ meta:
 celler:
   - id: sg
     numerus: Sg
-    # "gatto", "casa", "città".
+    not: "'gatto', 'casa', 'città'."
 
   - id: pl
     numerus: Pl
-    # Maschile: -o → -i ("gatti"), -e → -i ("fiori").
-    # Femminile: -a → -e ("case"), -e → -i ("chiavi").
-    # Oregelbundet: "uomo → uomini", "mano → mani" (fem pl trots mask sg).
+    not: "Maschile: -o → -i ('gatti'), -e → -i ('fiori'). Femminile: -a → -e ('case'), -e → -i ('chiavi'). Oregelbundet: 'uomo → uomini', 'mano → mani' (fem pl trots mask sg)."

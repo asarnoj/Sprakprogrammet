@@ -177,47 +177,43 @@ celler:
     person: P2
     numerus: Sg
     diates: Aktiv
-    # "komm!", "lies!", "sei!" (oregelbundet).
+    not: "'komm!', 'lies!', 'sei!' (oregelbundet)."
 
   - id: imp_1pl
     tempus: [Imp]
     person: P1
     numerus: Pl
     diates: Aktiv
-    # "Gehen wir!", "Kommen wir!" — = Präsens P1pl.
-    # Bitmask-OR-kollaps vid identisk form.
+    not: "'Gehen wir!', 'Kommen wir!' — = Präsens P1pl. Bitmask-OR-kollaps vid identisk form."
 
   - id: imp_2pl
     tempus: [Imp]
     person: P2
     numerus: Pl
     diates: Aktiv
-    # "kommt!", "lest!" — = Präsens P2pl. Bitmask-OR-kollaps.
+    not: "'kommt!', 'lest!' — = Präsens P2pl. Bitmask-OR-kollaps."
 
   - id: imp_3sg
     tempus: [Imp]
     person: P3
     numerus: Sg
     diates: Aktiv
-    # Sie-imperativ: "Kommen Sie!" = Konjunktiv I P3pl + Sie.
-    # Formen är identisk med konj1_3pl → bitmask-OR-kollaps.
+    not: "Sie-imperativ: 'Kommen Sie!' = Konjunktiv I P3pl + Sie. Formen är identisk med konj1_3pl → bitmask-OR-kollaps."
 
   # ── Infinitiv ──────────────────────────────────────────────────────
   - id: inf
     tempus: [Inf]
     diates: Aktiv
-    # "kommen", "lesen", "sein".
+    not: "'kommen', 'lesen', 'sein'."
 
   # ── Partizip I (Präsenspartizip) ───────────────────────────────────
   - id: part1
     tempus: [Te]
     diates: Aktiv
-    # "kommend", "lesend". Invariant grundform.
-    # Attributiv används det som adjektiv med deklination — hanteras ej här.
+    not: "'kommend', 'lesend'. Invariant grundform. Attributiv används det som adjektiv med deklination — hanteras ej här."
 
   # ── Partizip II ────────────────────────────────────────────────────
   - id: part2
     tempus: [Sup]
     diates: Aktiv
-    # "gekommen", "gelesen", "gewesen". Invariant i predikatisk användning.
-    # Predikatisk form: "Er ist gekommen" / "Das Buch wurde gelesen".
+    not: "'gekommen', 'gelesen', 'gewesen'. Invariant i predikatisk användning. Predikatisk form: 'Er ist gekommen' / 'Das Buch wurde gelesen'."

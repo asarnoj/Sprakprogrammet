@@ -22,9 +22,8 @@ meta:
 celler:
   - id: nom
     kasus: [Nom]
-    # "I", "you", "he", "she", "it", "we", "they".
+    not: "'I', 'you', 'he', 'she', 'it', 'we', 'they'."
 
   - id: obl
     kasus: [Ack, Dat]
-    # Oblique/objektsform: "me", "you", "him", "her", "it", "us", "them".
-    # Engelska särskiljer inte ackusativ och dativ morfologiskt.
+    not: "Oblique/objektsform: 'me', 'you', 'him', 'her', 'it', 'us', 'them'. Engelska särskiljer inte ackusativ och dativ morfologiskt."

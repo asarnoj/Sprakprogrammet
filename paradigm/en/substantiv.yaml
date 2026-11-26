@@ -18,21 +18,19 @@ celler:
   - id: sg
     numerus: Sg
     kasus: [Nom, Ack, Dat]
-    # "dog", "house", "information". Täcker alla icke-genitiv-användningar.
+    not: "'dog', 'house', 'information'. Täcker alla icke-genitiv-användningar."
 
   - id: pl
     numerus: Pl
     kasus: [Nom, Ack, Dat]
-    # Regelbundet: +s/"es ("dogs", "boxes"). Oregelbundet: "children", "feet".
-    # Saknas för oräknebara substantiv.
+    not: "Regelbundet: +s/'es ('dogs', 'boxes'). Oregelbundet: 'children', 'feet'. Saknas för oräknebara substantiv."
 
   - id: sg_gen
     numerus: Sg
     kasus: [Gen]
-    # "dog's", "child's". Regelbundet +apostrophe-s.
+    not: "'dog's', 'child's'. Regelbundet +apostrophe-s."
 
   - id: pl_gen
     numerus: Pl
     kasus: [Gen]
-    # "dogs'", "children's". Regelbundet: apostrophe efter s-final plural.
-    # Oregelbundet plural: +'s ("children's", "feet's" → men "feet's" är ovanligt).
+    not: "'dogs'', 'children's'. Regelbundet: apostrophe efter s-final plural. Oregelbundet plural: +'s ('children's', 'feet's' → men 'feet's' är ovanligt)."

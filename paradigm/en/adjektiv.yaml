@@ -24,14 +24,12 @@ meta:
 celler:
   - id: pos
     grad: Pos
-    # Grundform: "fast", "beautiful", "good".
+    not: "Grundform: 'fast', 'beautiful', 'good'."
 
   - id: komp
     grad: Komp
-    # Morfologisk komparativ: "faster", "better".
-    # Tom för långa adjektiv (analytisk: "more beautiful").
+    not: "Morfologisk komparativ: 'faster', 'better'. Tom för långa adjektiv (analytisk: 'more beautiful')."
 
   - id: superl
     grad: Superl
-    # Morfologisk superlativ: "fastest", "best".
-    # Tom för långa adjektiv (analytisk: "most beautiful").
+    not: "Morfologisk superlativ: 'fastest', 'best'. Tom för långa adjektiv (analytisk: 'most beautiful')."

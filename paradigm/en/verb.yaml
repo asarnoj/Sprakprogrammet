@@ -24,32 +24,26 @@ celler:
   - id: inf_imp
     tempus: [Inf, Imp]
     diates: Aktiv
-    # Bitmask-OR-kollaps: imperativ = infinitiv för alla engelska verb.
+    not: "Bitmask-OR-kollaps: imperativ = infinitiv för alla engelska verb."
 
   - id: pres_3sg
     tempus: [Pres]
     person: P3
     numerus: Sg
     diates: Aktiv
-    # "speaks", "runs", "does" — den enda person-/numerus-markerade formen.
+    not: "'speaks', 'runs', 'does' — den enda person-/numerus-markerade formen."
 
   - id: pret
     tempus: [Pret]
     diates: Aktiv
-    # Regelbundet: +ed ("walked"). Oregelbundet: "spoke", "went", "was/were".
-    # OBS: vara har två preteritumformer (was/were). Lagras som två Lexem-rader
-    # om båda ska finnas, eller som ett med den vanligaste formen.
+    not: "Regelbundet: +ed ('walked'). Oregelbundet: 'spoke', 'went', 'was/were'. OBS: vara har två preteritumformer (was/were). Lagras som två Lexem-rader om båda ska finnas, eller som ett med den vanligaste formen."
 
   - id: sup
     tempus: [Sup]
     diates: Aktiv
-    # Past participle: "spoken", "walked", "gone".
-    # Renderaren bildar perfekt analytiskt: "has spoken".
-    # Samma form används för passiv: "is spoken".
+    not: "Past participle: 'spoken', 'walked', 'gone'. Renderaren bildar perfekt analytiskt: 'has spoken'. Samma form används för passiv: 'is spoken'."
 
   - id: gerund
     tempus: [Te]
     diates: Aktiv
-    # Present participle / gerund: "speaking", "running".
-    # Te-axeln används (legend: Te=128, "Gerundium").
-    # Renderaren bildar progressiv analytiskt: "is speaking".
+    not: "Present participle / gerund: 'speaking', 'running'. Te-axeln används (legend: Te=128, 'Gerundium'). Renderaren bildar progressiv analytiskt: 'is speaking'."

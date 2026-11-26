@@ -19,10 +19,8 @@ meta:
 celler:
   - id: sg
     numerus: Sg
-    # "chat", "maison", "eau". Täcker alla syntaktiska positioner.
+    not: "'chat', 'maison', 'eau'. Täcker alla syntaktiska positioner."
 
   - id: pl
     numerus: Pl
-    # Regelbundet: +s ("chats", "maisons").
-    # Oregelbundet: "yeux" (pl av "œil"), "travaux" (pl av "travail").
-    # Oförändrad i skrift men ej uttal: "bras", "voix", "nez".
+    not: "Regelbundet: +s ('chats', 'maisons'). Oregelbundet: 'yeux' (pl av 'œil'), 'travaux' (pl av 'travail'). Oförändrad i skrift men ej uttal: 'bras', 'voix', 'nez'."

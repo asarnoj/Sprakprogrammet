@@ -212,36 +212,42 @@ celler:
     person: P1
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — yo hable. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_1sg."
 
   - id: subj_2sg
     tempus: [Vol]
     person: P2
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — tú hables. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_2sg."
 
   - id: subj_3sg
     tempus: [Vol]
     person: P3
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — él hable. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_3sg."
 
   - id: subj_1pl
     tempus: [Vol]
     person: P1
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — nosotros hablemos. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_1pl."
 
   - id: subj_2pl
     tempus: [Vol]
     person: P2
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — vosotros habléis. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_2pl."
 
   - id: subj_3pl
     tempus: [Vol]
     person: P3
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO PRESENTE — ellos hablen. INTE imperfekt konjunktiv (hablara), den hör hemma i subj_imperf_3pl."
 
   # ── Subjuntivo imperfecto (-ra-form) ──────────────────────────────
   # tempus = Imperf|Vol = 4096|1024 = 5120. Bara -ra-varianten lagras.
@@ -250,36 +256,42 @@ celler:
     person: P1
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — yo hablara."
 
   - id: subj_imperf_2sg
     tempus: [Imperf, Vol]
     person: P2
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — tú hablaras."
 
   - id: subj_imperf_3sg
     tempus: [Imperf, Vol]
     person: P3
     numerus: Sg
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — él hablara."
 
   - id: subj_imperf_1pl
     tempus: [Imperf, Vol]
     person: P1
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — nosotros habláramos."
 
   - id: subj_imperf_2pl
     tempus: [Imperf, Vol]
     person: P2
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — vosotros hablarais."
 
   - id: subj_imperf_3pl
     tempus: [Imperf, Vol]
     person: P3
     numerus: Pl
     diates: Aktiv
+    not: "SUBJUNTIVO IMPERFECTO, -ra-formen — ellos hablaran."
 
   # ── Imperativo afirmativo ─────────────────────────────────────────
   # P2sg, P3sg (Ud.), P1pl, P2pl (vosotros), P3pl (Uds.).
@@ -322,7 +334,7 @@ celler:
   - id: gerundio
     tempus: [Te]
     diates: Aktiv
-    # "hablando", "comiendo". Invariant.
+    not: "'hablando', 'comiendo'. Invariant."
 
   # ── Participio pasado ─────────────────────────────────────────────
   - id: pp_msc_sg
@@ -330,25 +342,25 @@ celler:
     genus: UtrMask
     numerus: Sg
     diates: Aktiv
-    # "hablado", "comido", "hecho".
+    not: "'hablado', 'comido', 'hecho'."
 
   - id: pp_fem_sg
     tempus: [Sup]
     genus: NeuFem
     numerus: Sg
     diates: Aktiv
-    # "hablada", "comida", "hecha".
+    not: "'hablada', 'comida', 'hecha'."
 
   - id: pp_msc_pl
     tempus: [Sup]
     genus: UtrMask
     numerus: Pl
     diates: Aktiv
-    # "hablados", "comidos", "hechos".
+    not: "'hablados', 'comidos', 'hechos'."
 
   - id: pp_fem_pl
     tempus: [Sup]
     genus: NeuFem
     numerus: Pl
     diates: Aktiv
-    # "habladas", "comidas", "hechas".
+    not: "'habladas', 'comidas', 'hechas'."

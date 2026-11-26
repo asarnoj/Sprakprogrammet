@@ -16,37 +16,36 @@ meta:
 celler:
   - id: chi
     kasus: [Nom, Ack, Dat]
-    # "chi" — animate, invariant för alla kasus och numerus.
-    # "Chi sei?" / "Chi vedi?" / "A chi parli?"
+    not: "'chi' — animate, invariant för alla kasus och numerus. 'Chi sei?' / 'Chi vedi?' / 'A chi parli?'"
 
   - id: cosa
     kasus: [Nom, Ack, Dat]
-    # "che / cosa / che cosa" — inanimate, invariant.
+    not: "'che / cosa / che cosa' — inanimate, invariant."
 
   - id: quale_sg
     numerus: Sg
-    # "quale" — m+f sg (genusneutralt).
+    not: "'quale' — m+f sg (genusneutralt)."
 
   - id: quale_pl
     numerus: Pl
-    # "quali" — m+f pl.
+    not: "'quali' — m+f pl."
 
   - id: quanto_msc_sg
     genus: UtrMask
     numerus: Sg
-    # "quanto".
+    not: "'quanto'."
 
   - id: quanto_fem_sg
     genus: NeuFem
     numerus: Sg
-    # "quanta".
+    not: "'quanta'."
 
   - id: quanto_msc_pl
     genus: UtrMask
     numerus: Pl
-    # "quanti".
+    not: "'quanti'."
 
   - id: quanto_fem_pl
     genus: NeuFem
     numerus: Pl
-    # "quante".
+    not: "'quante'."

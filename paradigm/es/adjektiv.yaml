@@ -23,25 +23,25 @@ celler:
     genus: UtrMask
     numerus: Sg
     grad: Pos
-    # "grande", "pequeño", "bueno", "fácil".
+    not: "'grande', 'pequeño', 'bueno', 'fácil'."
 
   - id: pos_fem_sg
     genus: NeuFem
     numerus: Sg
     grad: Pos
-    # "grande" (identisk), "pequeña", "buena", "fácil" (identisk).
+    not: "'grande' (identisk), 'pequeña', 'buena', 'fácil' (identisk)."
 
   - id: pos_msc_pl
     genus: UtrMask
     numerus: Pl
     grad: Pos
-    # "grandes", "pequeños", "buenos", "fáciles".
+    not: "'grandes', 'pequeños', 'buenos', 'fáciles'."
 
   - id: pos_fem_pl
     genus: NeuFem
     numerus: Pl
     grad: Pos
-    # "grandes" (identisk), "pequeñas", "buenas", "fáciles" (identisk).
+    not: "'grandes' (identisk), 'pequeñas', 'buenas', 'fáciles' (identisk)."
 
   # ── Komparativ (bara oregelbundna) ─────────────────────────────────
   - id: komp_msc_sg

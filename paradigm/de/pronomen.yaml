@@ -19,17 +19,16 @@ meta:
 celler:
   - id: nom
     kasus: [Nom]
-    # ich, du, er, sie, es, wir, ihr, sie, Sie.
+    not: "ich, du, er, sie, es, wir, ihr, sie, Sie."
 
   - id: akk
     kasus: [Ack]
-    # mich, dich, ihn, sie, es, uns, euch, sie, Sie.
+    not: "mich, dich, ihn, sie, es, uns, euch, sie, Sie."
 
   - id: dat
     kasus: [Dat]
-    # mir, dir, ihm, ihr, ihm, uns, euch, ihnen, Ihnen.
+    not: "mir, dir, ihm, ihr, ihm, uns, euch, ihnen, Ihnen."
 
   - id: gen
     kasus: [Gen]
-    # meiner, deiner, seiner, ihrer, seiner, unser, euer, ihrer, Ihrer.
-    # Arkaiskt/formellt — förekommer i fasta fraser och litterär stil.
+    not: "meiner, deiner, seiner, ihrer, seiner, unser, euer, ihrer, Ihrer. Arkaiskt/formellt — förekommer i fasta fraser och litterär stil."

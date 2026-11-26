@@ -78,9 +78,41 @@ grad om sådana celler finns.
   2. e-bortfall: teuer→teur- (teure), dunkel→dunkl- (dunkle);
   3. suppletiva: gut→besser→best-, viel→mehr→meist-, hoch→höher→höchst-
      (obs stamväxling hoch/hoh-: das hohe Haus), nah→näher→nächst-.
-- Stark deklination = pronominal ändelse (guter Mann, gutem Mann); svag =
-  -e/-en (der gute Mann, dem guten Mann); blandad efter ein/kein/possessiv
-  (ein guter Mann, ein gutes Kind).
+
+**Ändelsetabellerna — följ dem exakt.** Stam + ändelse, inget annat.
+
+Stark (utan artikel):
+
+| | m | f | n | pl |
+|---|---|---|---|---|
+| Nom | -er | -e | -es | -e |
+| Akk | -en | -e | -es | -e |
+| Dat | **-em** | -er | **-em** | -en |
+| Gen | -en | -er | -en | -er |
+
+Svag (efter der/die/das):
+
+| | m | f | n | pl |
+|---|---|---|---|---|
+| Nom | -e | -e | -e | -en |
+| Akk | -en | -e | -e | -en |
+| Dat | -en | -en | -en | -en |
+| Gen | -en | -en | -en | -en |
+
+Blandad (efter ein/kein/possessiv):
+
+| | m | f | n | pl |
+|---|---|---|---|---|
+| Nom | -er | -e | -es | -en |
+| Akk | -en | -e | -es | -en |
+| Dat | -en | -en | -en | -en |
+| Gen | -en | -en | -en | -en |
+
+Vanligaste felet: **stark dativ maskulinum och neutrum är -em.** Skriv
+alltid ut e:t och använd aldrig -en där. På komparativstammen blir det
+alt → älter- → **älterem** (inte "älterm", inte "älteren"). Samma i
+superlativ: **ältestem**.
+
 - **mehr** (komparativ av viel) är OBÖJLIGT: alla mehr-celler = "mehr".
 - Oböjliga färger: rosa, lila, orange — samma form i alla celler.
 
