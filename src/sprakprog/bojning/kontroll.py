@@ -29,9 +29,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..rendering.uppslag import Uppslag
-from . import Spår, sv
+from . import Spår, en, sv
 
-SPRÅK = {"sv": sv}
+SPRÅK = {"sv": sv, "en": en}
 ROT = Path(__file__).resolve().parents[3]
 
 
@@ -44,6 +44,7 @@ class Utfall:
     kort: dict[str, str]
     datafel: dict[str, tuple[str, str]]          # cell -> (form i datan, skäl)
     regler: set[str] = field(default_factory=set)
+    saknas: dict[str, str] = field(default_factory=dict)   # cell -> form reglerna ger
 
 
 def huvudformer(ok, info: dict, prövas: dict) -> tuple[dict, Spår]:
@@ -78,9 +79,12 @@ def kör(språk: str, conn: sqlite3.Connection) -> list[Utfall]:
             for cell, namn in spår.per_cell.items():
                 if cell in prövas and cell not in kort:
                     använda |= namn
+            förutsagt = ok.förutsäg(info, kort, Spår())
+            saknas = {c: förutsagt[c] for c in ok.saknad
+                      if förutsagt.get(c) and not facit.get(c) and c not in fel}
             ut.append(Utfall(ordklass, lex["nyckel"], lex["variant"] or "", lex["lemma"],
                              kort, {c: (facit[c], skäl) for c, skäl in fel.items()},
-                             använda))
+                             använda, saknas))
     return ut
 
 
@@ -128,6 +132,16 @@ def rapport(språk: str, utfall: list[Utfall]) -> str:
         for x in med:
             kort = " · ".join(f"{namn(c)} **{f}**" for c, f in x.kort.items())
             r.append(f"| {visa(x)} | {kort} |")
+
+    saknas = [(x, c, form) for x in utfall for c, form in x.saknas.items()]
+    if saknas:
+        r += ["", f"## Former som reglerna ger men datan saknar ({len(saknas)})", "",
+              "Här betyder en saknad form något: ordet uttrycks med ett annat ord "
+              "(`mer`, `more`) eller böjs inte så. Antingen avviker ordet från "
+              "reglerna — och det är kunskap om ordet — eller så saknas formen i datan.",
+              "", "| ord | cell | reglerna ger |", "|---|---|---|"]
+        for x, c, form in saknas:
+            r.append(f"| {visa(x)} | {namn(c)} | {form} |")
 
     fel = [(x, c, form, skäl) for x in utfall for c, (form, skäl) in x.datafel.items()]
     r += ["", f"## Misstänkta datafel ({len(fel)})", "",

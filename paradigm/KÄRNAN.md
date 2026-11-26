@@ -4,10 +4,10 @@ Den fullständiga specifikationen av kärnan — korten, nivåerna, dagspasset,
 meningsbygget och bedömningen — så som den ska byggas. Filen beskriver målet,
 inte ändringar i den kod som finns.
 
-> **Läge 2026-09-14.** Designen är avgjord utom frågorna i punkt 10. Steg 0 är gjort för
-> svenskan utom komparationen, och steg 1 är byggt och mätt för svenskan (8.3). Kartan
-> (steg 1b) är klar för svenskan. Kärnan byggs först för ett språkpar, svenska och
-> engelska (9), så nästa arbete är steg 0, 1 och 1b för engelskan.
+> **Läge 2026-09-14.** Designen är avgjord utom frågorna i punkt 10. Steg 0, 1 och 1b är
+> gjorda för det första språkparet, svenska och engelska (8.3, 6.7). Kvar i dem är
+> granskningen av komparationen och de godtagbara utfallen. Nästa steg är
+> sammansättningen (steg 2).
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -1179,26 +1179,29 @@ i sin helhet.
 #### Delarna
 
 **Hela satsen går inte att gå igenom, men dess delar gör det.** Mätt 2026-09-14 med
-`rendering/karta.py` på den svenska renderaren:
+`rendering/karta.py` på den svenska och den engelska renderaren:
 
-    del                        vägar          olika utfall
-    hela satsen, odelad        ≈ 70 000 000   (skattat)
-    satsled                       117 504     9 206
-    nominalfras                     5 532        98
-    verbfras                          258        34
-    attribut                          164        14
-    predikativ                        107        36
-    reflexivpronomen                   52         7
-    frågeord                           19         8
-    rendera, komplement,              ≤ 8       ≤ 3
+                               svenska              engelska
+    del                        vägar     utfall     vägar     utfall
+    hela satsen, odelad        ≈ 70 000 000 (skattat, svenska)
+    satsled                    87 570    8 052      34 569    3 444
+    nominalfras                 5 532       98       5 124      128
+    verbfras                      258       38       5 688      124
+    attribut                      164       14           —        —
+    predikativ                    107       36          12       10
+    reflexivpronomen               52        7           —        —
+    frågeord                       19        8          19        8
+    rendera, komplement,          ≤ 8      ≤ 3         ≤ 8      ≤ 3
     adverbial, bisats
 
 Satsens oberoende val — negation, tempus, fråga, adverbial — multipliceras med
-varandra, men varje frasfunktion läser bara en liten del av specen. Hela svenskan tar
-506 sekunder, mest för att satsen gås igenom igen när delarna under den ändras. Ingen
-väg går förbi gränssnittet, kraschar eller blir stående och vänta. Antalet olika utfall
-är det sökningen kombinerar. Satsens 9 206 är åtta gånger fler än en tidig prototyps,
-och sökningens svarstid mäts därför i steg 2.
+varandra, men varje frasfunktion läser bara en liten del av specen. Svenskan tar 569
+sekunder och engelskan 374, mest för att satsen gås igenom igen när delarna under den
+ändras. Ingen väg går förbi gränssnittet, kraschar eller blir stående och vänta.
+Engelskans verbfras är större än svenskans, eftersom do-omskrivningen, kongruensen och
+passivens be ligger i den. Antalet olika utfall är det sökningen kombinerar. Svenskans
+8 052 satsutfall är sju gånger fler än en tidig prototyps, och sökningens svarstid mäts
+därför i steg 2.
 
 **En dels listor sammanfattas bara så noga som anroparna läser dem.** Satsen läser
 bara bisatsens första ord, så det räcker att veta att bisatsen inte är tom. Annars får
@@ -1207,8 +1210,8 @@ och genomgången tar aldrig slut. Läser en anropare hela längden av en sådan 
 stoppar kartan med ett fel.
 
 Kartan är en övermängd. Ordens egenskaper tas per ordklass ur databasen utan samband
-mellan dem, och sökningen binder sedan orden till verkliga lexem. Bara svenskan är mätt;
-de andra språken mäts i steg 1b.
+mellan dem, och sökningen binder sedan orden till verkliga lexem. Svenskan och engelskan
+är mätta; de andra språken mäts i steg 1b.
 
 **En del** är en frasfunktion med uttryckliga indata: de fält den läser och det
 sammanhang den får som argument (kasus, roll, bisats). Läser två delar samma fält i
@@ -1579,13 +1582,59 @@ alla kongruens där genuset bara syns på det kongruerande ordet: «ölet … bl
 kan vara substantivets genus eller participformen. Där hindrar villkor 7 att båda är
 svaga samtidigt.
 
+#### Engelskan, 2026-09-14
+
+Byggd och mätt (`rendering/en.py`). Besluten redovisas som 10 val med 33 utfall, 19
+ordningsregler, en egenskap (komparationen) och två rektioner: infinitivmarkören och
+komplementets form (`stop reading`, TYSTA_BESLUT A10).
+
+Tre saker är gjorda annorlunda än i svenskan:
+
+- **Ordets första ljud och om ett verb tar do är vanliga läsningar** (`Uppslag.förljud`,
+  `Uppslag.operator`), inte egenskaper. Båda syns i ordet självt. Lästa som egenskaper
+  gick de inte att skilja från artikelvalet och do-valet, eftersom båda ger samma
+  felaktiga mening.
+- **Passiven är inget val.** Engelskan har bara en, och den syns i be:s tempus och
+  kongruens och i participet.
+- **Attributet är ingen egen del för kartan**, eftersom artikeln framför det väljs på dess
+  första ljud.
+
+Resultat:
+
+- **Texten skiljer sig för 8 934 av 100 000 specar, och alla skillnader är rättelser:**
+  - futurum perfekt: «will have read», förut «has read» och nekat «will not read» (5 546)
+  - motsägelsefulla specar vägras: både ja/nej-fråga och frågeordsfråga, eller uppmaning
+    och fråga (1 590)
+  - ett frågeord som subjekt tappade tempus: «who will discuss», förut «who discusses» (936)
+  - modalverben renderas i alla personer och nekade: «we may solve», förut vägrat (610)
+  - ett frågeord som subjekt kongruerar i tredje person singular och renderar inte svaret:
+    «what was learned», förut «what were learned» (210)
+  - «how much» och «which» med superlativ vägras (42)
+
+  Svenskan har samma två första rättelser: «ska ha läst», förut «har läst» (5 549), och
+  motsägelsefulla specar vägras (1 617). Spåret håller där för alla 86 718 renderbara
+  meningar.
+- **Spåret håller** för alla 87 084 renderbara meningar.
+- **Kartan** går igenom på 374 sekunder, utan förbigångar, krascher eller väntande
+  vägar (6.7).
+
+**Steg 1:s prov** (5 000 meningar):
+
+    ord per mening                             5,8
+    kort per mening, ord och former inräknade  20,2
+    högst samtidigt svaga kort (6.2)           11,7
+    förväxlingsbara beslut (villkor 7)         0,5 %
+
+De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens bestämning:
+«she is doctor» kan vara båda.
+
 ---
 
 ## 9 · Byggordningen
 
-    0   böjningsreglerna per språk         svenskan gjord utom komparationen; slutna ordklasser och sex språk kvar
-    1   renderarna redovisar sina beslut   svenskan byggd och mätt (8.3), utom godtagbara utfall; sex språk kvar, inventerade i TYSTA_BESLUT.md
-    1b  kartan                             kräver 1; rendering/karta.py; svenskan klar (6.7)
+    0   böjningsreglerna per språk         svenskan och engelskan gjorda, granskning av komparationen kvar; slutna ordklasser och fem språk kvar
+    1   renderarna redovisar sina beslut   svenskan och engelskan byggda och mätta (8.3), utom godtagbara utfall; fem språk kvar, inventerade i TYSTA_BESLUT.md
+    1b  kartan                             kräver 1; rendering/karta.py; svenskan och engelskan klara (6.7)
     2   sammansättningen                   kräver 1b och 3; delarna kombineras till meningar med ord ur det tillåtna (6.7) — sökningens kärna, utan värde och budget
     3   kortmodellen                       kräver 0; tabellen från form till kort (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
@@ -1669,7 +1718,7 @@ Frågorna väntar på Julius. Lektionerna och frekvenserna behövs först i steg
 |---|---|---|
 | kort i en mening som varken är införda eller presenterade i dag | 4 | 0 |
 | paket som blivit delvis införda | ej mätt | 0 |
-| läsningar i renderarna som går förbi kartan | 24 kända i sex språk; svenskans karta hittar 0 | 0 — genomgången stoppar på dem (6.7) |
+| läsningar i renderarna som går förbi kartan | 22 kända i fem språk; svenskans och engelskans kartor hittar 0 | 0 — genomgången stoppar på dem (6.7) |
 | meningar som inte är bevisat bäst | ej styrt | 0 |
 | källmeningar som ställs två gånger samma dag | ej styrt | 0 |
 | införda kort som inte är prövbara | ej mätt | 0 |
@@ -1784,7 +1833,7 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | en kommentar i uppgiften om vilken synonym som inte söks | visar ett ord på målspråket varje gång, även när användaren aldrig hade tänkt på synonymen (7.4) |
 | sampla kandidater och poängsätt dem (det gamla systemets generator) | upptäcker meningens innehåll i efterhand, hittar inte den bästa, och poängens vikter är valda (6.7) |
 | krav och byggvillkor skrivna för hand i ett register | kan glida isär från renderaren; kartan läser av dem (6.7) |
-| en karta över hela satsen i ett stycke | ≈ 70 miljoner vägar i svenskan; delarna har högst 117 504 (6.7) |
+| en karta över hela satsen i ett stycke | ≈ 70 miljoner vägar i svenskan; delarna har högst 87 570 (6.7) |
 | samma mening igen samma dag, när den är den bästa | användaren har just sett facit; svaret mäter minnet av facit och inte kortet (6.1 punkt 8) |
 | kärnan byggd på ett enda språk först | en kurs har två språk; entydighetsfiltret behöver källspråkets karta (9) |
 | nivåerna före sammansättningen | kraven är kortens minsta meningar, och de hittas genom att sätta samman delarna (9) |

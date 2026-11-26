@@ -126,6 +126,11 @@ precis det täckningskravet i KÄRNAN 3.8 förbjuder.
 
 ### Engelska
 
+*Redovisat 2026-09-14 i `rendering/en.py` (KÄRNAN 8.3).* G-besluten, E1, E2, E4 och E5
+är val (`regel`), E3 och dativväxlingen ordningsregler (`ordning`), A6 och A10 rektion.
+Artikelns ljud och om ett verb tar do läses som ordets egna drag, inte som egenskaper.
+Passiven är inget val, eftersom engelskan bara har en.
+
 | id | beslut | exempel | språk | blir |
 |---|---|---|---|---|
 | E1 | a eller an | an apple | en | regel |

@@ -54,7 +54,7 @@ from enum import Enum
 from . import RENDERARE
 from . import spec as S
 from .spec import RenderingsFel
-from .uppslag import MÄNSKLIG, REFLEXIVT_LEMMA, TILLTAL, Uppslag, Val
+from .uppslag import MÄNSKLIG, TILLTAL, Uppslag, Val
 
 # ── sådant som stoppar en väg ────────────────────────────────────────────
 
@@ -254,6 +254,8 @@ class SymOrd(str):
     nr: int
     längder: frozenset | None = None     # bara för ett ord som står för en dels okända ord
     del_: str | None = None              # den delen
+    koncept = None                       # för ett uppslaget ord, som `Ord.koncept`
+    variant = None
 
 
 # En mängd listlängder innehåller exakta tal och högst en undre gräns
@@ -439,15 +441,14 @@ class Lexikon:
             sort = vad[0]
             if sort == "har":
                 mängd = {bool(self.u._celler(r).get(vad[1])) for r in rader}
-            elif sort == "egenskap" and vad[1] == "reflexiv":
-                mängd = {REFLEXIVT_LEMMA[self.u.språk](r["lemma"]) for r in rader}
-            elif sort == "egenskap" and vad[1] == "komparation":
-                mängd = {"syntetisk" if self.u._celler(r).get("komp") else
-                         "perifrastisk" for r in rader}
             elif sort == "egenskap":
-                mängd = {r[vad[1]] for r in rader}
+                mängd = {self.u._egenskapsvärde(r, vad[1]) for r in rader}
             elif sort == "koncept":
                 mängd = {self.u.koncept(r["nyckel"], vad[1]) for r in rader}
+            elif sort == "förljud":
+                mängd = {self.u.förljud(r) for r in rader}
+            elif sort == "operator":
+                mängd = {self.u.operator(r) for r in rader}
             elif sort == "mänsklig":
                 mängd = {self.u.mänsklig(r["nyckel"]) for r in rader}
             elif sort == "tilltal":
@@ -526,6 +527,16 @@ class SymUppslag:
             return self._lexvärde(koncept, ("tilltal",))
         return self._verklig.tilltal(koncept)
 
+    def förljud(self, lexem):
+        if isinstance(lexem, SymLexem):
+            return self._lexvärde(lexem.koncept, ("förljud",))
+        return self._verklig.förljud(lexem)
+
+    def operator(self, lexem):
+        if isinstance(lexem, SymLexem):
+            return self._lexvärde(lexem.koncept, ("operator",))
+        return self._verklig.operator(lexem)
+
     def kontrollera_naken(self, nf):
         return Uppslag.kontrollera_naken(self, nf)
 
@@ -543,6 +554,10 @@ class SymUppslag:
             self._verklig.form(lexem, cell)
             koncept = lexem["nyckel"]
         ord = self._körning.nytt_ord(f"<{koncept}:{cell}>")
+        if isinstance(lexem, SymLexem):
+            ord.koncept, ord.variant = lexem.koncept, lexem.variant
+        else:
+            ord.koncept, ord.variant = lexem["nyckel"], lexem["variant"]
         self._händelse("form", koncept, cell, ord.nr)
         return ord
 
@@ -575,6 +590,14 @@ class SymUppslag:
         else:
             markör = self._verklig.infinitivmarkör(verb)
         return self.rektion(verb, "komplement", "infinitivmarkör", markör)
+
+    def komplementform(self, verb):
+        if isinstance(verb, Symbol):
+            form = self._välj(("lex", verb.text, "komplementform"),
+                              self._verklig.rektionsdomän("komplement", "verbform"))
+        else:
+            form = self._verklig.komplementform(verb)
+        return self.rektion(verb, "komplement", "verbform", form)
 
     def regel(self, val: Val, utfall: str) -> str:
         if utfall not in val.utfall:
@@ -855,6 +878,11 @@ class Kartritare:
         karta = Delkarta(del_, genomgångar=self.kartor.get(del_, Delkarta(del_)).genomgångar + 1)
         start = time.perf_counter()
         djup = self.djup[del_]
+        if djup > self.sammanfattat.get(del_, 0):
+            # En noggrannare sammanfattning räknas från början. Annars lever
+            # den grövre kvar i delens anrop till sig själv — passivens be i
+            # verbfrasen — och blir aldrig exakt.
+            self.utdata[del_] = []
         nya_utdata: list = []
         nya_anrop: list = []
         prefix: list[int] | None = []

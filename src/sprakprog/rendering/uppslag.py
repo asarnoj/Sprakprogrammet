@@ -18,7 +18,8 @@ som kan bli kort:
     regel      ett val mellan namngivna utfall (bestämning, tempusform)
     ordning    att ett led står före ett annat (svo, adverbial_sist)
 
-Övriga läsningar — ordklass, lemma, om en cell finns, konceptets person — bär
+Övriga läsningar — ordklass, lemma, om en cell finns, konceptets person, ordets
+första ljud — bär
 ingen kunskap i sig, men måste ändå gå hit så att kartan (KÄRNAN 6.7) ser dem.
 
 När ett `Spår` är satt loggas varje kunskapsanrop, och ett beslut kan tvingas
@@ -49,6 +50,22 @@ KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik")
 #: Hur ett reflexivt verb syns i lemmat (KÄRNAN 3.5, TYSTA_BESLUT A8). Bara de
 #: språk vars renderare läser egenskapen genom `egenskap` står här.
 REFLEXIVT_LEMMA = {"sv": lambda lemma: lemma.endswith(" sig")}
+
+#: Ett ords första ljud, läst ur lemmat (TYSTA_BESLUT E1). Engelskans a/an går
+#: på ljudet och inte på bokstaven — "an hour", "a university" — men databasen
+#: har bara stavningen, och inget ord i ordförrådet faller på skillnaden.
+FÖRLJUD = {"en": lambda lemma: "vokal" if lemma[:1].lower() in "aeiou" else "konsonant"}
+
+#: Engelskans operatorer: verb som negeras och inverteras själva, utan do — be
+#: och modalverben. Båda syns i paradigmet: be är det enda verb som böjs efter
+#: person, och modalverben saknar infinitiv.
+OPERATOR = {"en": lambda u, lexem: (u.har_form(lexem, "pres_1sg")
+                                    or not u.har_form(lexem, "inf_imp"))}
+
+#: Verb vars infinitivkomplement står i en annan form än infinitiv
+#: (TYSTA_BESLUT A10): "stop reading". Står här tills MönsterKrav bär formen
+#: bredvid markören.
+KOMPLEMENTFORM = {"en": {"asp_sluta": "gerundium"}}
 
 
 def frasdel(metod):
@@ -222,6 +239,23 @@ class Uppslag:
         eller None. Renderaren jämför aldrig konceptnycklar själv (KÄRNAN 6.7)."""
         return TILLTAL.get(koncept)
 
+    def förljud(self, lexem: sqlite3.Row) -> str:
+        """Ordets första ljud, vokal eller konsonant — engelskans a/an.
+
+        Ingen egen kunskap: ljudet hör till ordet självt, som användaren redan
+        kan (KÄRNAN 3.4). Läst som en egenskap blev det omöjligt att skilja
+        från artikelvalet, eftersom båda ger samma felaktiga mening.
+        """
+        return FÖRLJUD[self.språk](lexem["lemma"])
+
+    def operator(self, lexem: sqlite3.Row) -> bool:
+        """Negeras och inverteras verbet självt, utan do?
+
+        Ingen egen kunskap: det syns i verbets egna former (`OPERATOR`), och
+        kunskapen att be och modalverben inte tar do är do-valets utfall.
+        """
+        return OPERATOR[self.språk](self, lexem)
+
     # ── former ───────────────────────────────────────────────────────
 
     def _celler(self, lexem: sqlite3.Row) -> dict[str, str]:
@@ -251,6 +285,15 @@ class Uppslag:
             (verb, self.språk)).fetchone()
         return self.rektion(verb, "komplement", "infinitivmarkör",
                             rad["nyckel"] if rad else None)
+
+    def komplementform(self, verb: str) -> str:
+        """Infinitivkomplementets form: infinitiv, eller gerundium efter "stop".
+
+        Går genom `rektion` av samma skäl som markören: formen är kunskap om
+        det styrande verbet.
+        """
+        return self.rektion(verb, "komplement", "verbform",
+                            KOMPLEMENTFORM.get(self.språk, {}).get(verb, "infinitiv"))
 
     def kontrollera_naken(self, nf) -> None:
         """En naken SINGULAR kräver ett oräknebart huvudord.
@@ -389,6 +432,8 @@ class Uppslag:
                        WHERE m.språk = ? AND mk.slot = 'komplement'
                        ORDER BY p.nyckel""", (self.språk,))))
             return self._domän[k]
+        if (slot, namn) == ("komplement", "verbform"):
+            return ("infinitiv", "gerundium")
         return None
 
     def regel(self, val: Val, utfall: str) -> str:

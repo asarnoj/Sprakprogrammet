@@ -59,9 +59,10 @@ SUPERLATIVFORM = Val("superlativform", ("bestämd", "obestämd"))
 PREDIKATIVT_SUBSTANTIV = Val("predikativt_substantiv",
                              ("utan_artikel", "med_artikel"))
 
-#: G16, G17. "läser", "läste", "ska läsa", "har läst", "hade läst".
+#: G16, G17. "läser", "läste", "ska läsa", "har läst", "hade läst", "ska ha läst".
 TEMPUSFORM = Val("tempusform", (
-    "presens", "preteritum", "futurum", "perfekt", "pluskvamperfekt"))
+    "presens", "preteritum", "futurum", "perfekt", "pluskvamperfekt",
+    "futurum_perfekt"))
 
 #: G18. "boken lästes" eller "boken blev läst".
 PASSIVFORM = Val("passivform", ("s_passiv", "bli_passiv"))
@@ -462,8 +463,8 @@ class SvenskRenderare:
         # ligger som egna celler i Former, inte som en konstruktion.
         suffix = "_passiv" if passiv == "s_passiv" or self._deponens(lexem) else ""
         if m.aspekt is Aspekt.PERFEKT:
-            naturlig = ("pluskvamperfekt" if m.tid is Tidsreferens.FÖRFLUTEN
-                        else "perfekt")
+            naturlig = {Tidsreferens.FÖRFLUTEN: "pluskvamperfekt",
+                        Tidsreferens.FRAMTID: "futurum_perfekt"}.get(m.tid, "perfekt")
         elif m.tid is Tidsreferens.FRAMTID:
             naturlig = "futurum"
         elif m.tid is Tidsreferens.FÖRFLUTEN:
@@ -477,6 +478,14 @@ class SvenskRenderare:
             hjälp = self.u.form_för(
                 "verb_ha", "pret" if tempus == "pluskvamperfekt" else "pres")
             huvud = self.u.form(lexem, "sup" + suffix)
+        elif tempus == "futurum_perfekt":
+            # "ska ha läst" — förut blev det "har läst".
+            ska = self.u.form_för("modal_ska", "pres")
+            ha = self.u.form_för("verb_ha", "inf")
+            huvud = self.u.form(lexem, "sup" + suffix)
+            self.u.ordning("hjälpverb_före_huvudverb", [ska], [ha])
+            self.u.ordning("hjälpverb_före_huvudverb", [ha], [huvud])
+            return [ska, ha, huvud]
         elif tempus == "futurum":
             hjälp = self.u.form_för("modal_ska", "pres")
             huvud = self.u.form(lexem, "inf" + suffix)
@@ -544,6 +553,11 @@ class SvenskRenderare:
         och bisatsordföljd: satsadverbialet står FÖRE det finita verbet i
         bisats — "att han inte kom" mot "han kom inte". BIFF-regeln.
         """
+        if m.fråga and m.fråga_om is not None:
+            raise RenderingsFel("sv: en sats kan inte vara både ja/nej-fråga "
+                                "och frågeordsfråga")
+        if m.modus is Satsmodus.IMPERATIV and (m.fråga or m.fråga_om is not None):
+            raise RenderingsFel("sv: en uppmaning kan inte samtidigt vara en fråga")
         satsart = self.u.regel(SATSART, "imperativ"
                                if m.modus is Satsmodus.IMPERATIV else "indikativ")
         with self.u.led("verb"):

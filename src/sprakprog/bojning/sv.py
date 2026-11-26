@@ -394,8 +394,8 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
     spår.cell = "komp"
     if "komp" in k:
         komp = k["komp"]
-    elif oböjligt:
-        komp = None
+    elif oböjligt or (bas.endswith("ad") and _stavelser(bas) >= 2):
+        komp = None                                # mer förvånad — participen kompareras med mer
     else:
         komp = (pl[:-1] if pl.endswith("a") else pl) + "are"
     ut["komp"] = komp
@@ -437,7 +437,7 @@ def _adjdatafel(facit: dict, info: dict) -> dict:
 ORDKLASSER = {
     "Verb": Ordklass(VERBORDNING, _verbbas, verb, _verbdatafel),
     "Substantiv": Ordklass(SUBSTORDNING, _substbas, substantiv, _substdatafel),
-    "Adjektiv": Ordklass(ADJORDNING, _adjbas, adjektiv, _adjdatafel),
+    "Adjektiv": Ordklass(ADJORDNING, _adjbas, adjektiv, _adjdatafel, saknad=("komp",)),
 }
 
 CELLNAMN = {

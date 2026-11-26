@@ -47,8 +47,12 @@ class Ordklass:
     förutsäg   (info, kända kort, spår) -> cell -> form, eller None
     datafel    (facit, info) -> cell -> skäl, för former som bryter mot en
                regel utan undantag
+    saknad     celler där en form som saknas betyder något: ordet uttrycks
+               med ett annat ord (`mer`, `more`) eller böjs inte så. Där
+               reglerna ger en form som datan saknar visar kontrollen det.
     """
     ordning: tuple[str, ...]
     bas: Callable
     förutsäg: Callable
     datafel: Callable
+    saknad: tuple[str, ...] = ()

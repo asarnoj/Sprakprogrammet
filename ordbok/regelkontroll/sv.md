@@ -280,6 +280,22 @@ En ljudanpassning som beror på ljudet och inte på klassen är ett eget regelko
 | tom | plural **tomma** |
 | ung | komparativ **yngre** |
 
+## Former som reglerna ger men datan saknar (9)
+
+Här betyder en saknad form något: ordet uttrycks med ett annat ord (`mer`, `more`) eller böjs inte så. Antingen avviker ordet från reglerna — och det är kunskap om ordet — eller så saknas formen i datan.
+
+| ord | cell | reglerna ger |
+|---|---|---|
+| besviken | komparativ | besviknare |
+| död | komparativ | dödare |
+| fel | komparativ | felare |
+| halv | komparativ | halvare |
+| hel | komparativ | helare |
+| lik | komparativ | likare |
+| officiell | komparativ | officiellare |
+| speciell | komparativ | speciellare |
+| stängd | komparativ | stängdare |
+
 ## Misstänkta datafel (52)
 
 | ord | cell | i datan | skäl |
