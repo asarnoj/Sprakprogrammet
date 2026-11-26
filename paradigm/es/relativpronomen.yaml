@@ -1,0 +1,22 @@
+---
+meta:
+  version: 1
+  språk: es
+  ordklass: Relativpronomen
+  beskrivning: >
+    Spanska determinerare böjs i genus och numerus: el/la/los/las, este/esta/estos/estas. De indefinita pronomenen (nadie, nada, alguien, algo) är oböjliga.
+
+celler:
+  - id: inv
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+  - id: m_pl
+    genus: UtrMask
+    numerus: Pl
+  - id: f_pl
+    genus: NeuFem
+    numerus: Pl

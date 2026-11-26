@@ -12166,6 +12166,20 @@ artikel_bestamd	de	der	die	1		1	2
 artikel_bestamd	de	der	die	1		2	2				
 artikel_bestamd	de	der	die	2		1					
 artikel_bestamd	de	der	die	2		2					
+artikel_bestamd	en	the	the								
+artikel_bestamd	es	el	el	1			1				
+artikel_bestamd	es	el	la	1			2				
+artikel_bestamd	es	el	las	2			2				
+artikel_bestamd	es	el	los	2			1				
+artikel_bestamd	fr	le	la	1			2				
+artikel_bestamd	fr	le	le	1	1		1				
+artikel_bestamd	fr	le	les	2							
+artikel_bestamd	it	il	gli	2	2		1				
+artikel_bestamd	it	il	i	2	1		1				
+artikel_bestamd	it	il	il	1	1		1				
+artikel_bestamd	it	il	la	1			2				
+artikel_bestamd	it	il	le	2			2				
+artikel_bestamd	it	il	lo	1	2		1				
 artikel_obestamd	de	ein	ein	1		1	1				
 artikel_obestamd	de	ein	ein	1		1	3				
 artikel_obestamd	de	ein	ein	1		2	3				
@@ -12178,6 +12192,17 @@ artikel_obestamd	de	ein	einer	1		4	2
 artikel_obestamd	de	ein	einer	1		8	2				
 artikel_obestamd	de	ein	eines	1		8	1				
 artikel_obestamd	de	ein	eines	1		8	3				
+artikel_obestamd	en	a	a								
+artikel_obestamd	es	un	un	1			1				
+artikel_obestamd	es	un	una	1			2				
+artikel_obestamd	es	un	unas	2			2				
+artikel_obestamd	es	un	unos	2			1				
+artikel_obestamd	fr	un	des	2							
+artikel_obestamd	fr	un	un	1	1		1				
+artikel_obestamd	fr	un	une	1			2				
+artikel_obestamd	it	un	un	1	1		1				
+artikel_obestamd	it	un	una	1			2				
+artikel_obestamd	it	un	uno	1	2		1				
 artikel_obestamd	sv	en	en	1			1				
 artikel_obestamd	sv	en	ett	1			2				
 asp_börja	de	anfangen	Fangen Sie an!	1				16		3	1
@@ -12733,6 +12758,21 @@ demonstrativ_fjärran	de	jener	jenes	1		1	3
 demonstrativ_fjärran	de	jener	jenes	1		2	3				
 demonstrativ_fjärran	de	jener	jenes	1		8	1				
 demonstrativ_fjärran	de	jener	jenes	1		8	3				
+demonstrativ_fjärran	en	that	that	1							
+demonstrativ_fjärran	en	that	those	2							
+demonstrativ_fjärran	es	ese	esa	1			2				
+demonstrativ_fjärran	es	ese	esas	2			2				
+demonstrativ_fjärran	es	ese	ese	1			1				
+demonstrativ_fjärran	es	ese	esos	2			1				
+demonstrativ_fjärran	fr	cela	cela								
+demonstrativ_fjärran	it	quello	quegli	2	2		1				
+demonstrativ_fjärran	it	quello	quei	2	1		1				
+demonstrativ_fjärran	it	quello	quel	1	1		1				
+demonstrativ_fjärran	it	quello	quella	1			2				
+demonstrativ_fjärran	it	quello	quelle	2			2				
+demonstrativ_fjärran	it	quello	quello	1	2		1				
+demonstrativ_fjärran	ja	あの	あの								
+demonstrativ_fjärran	ja	その	その								
 demonstrativ_fjärran	sv	den där	de där	2							
 demonstrativ_fjärran	sv	den där	den där	1			1				
 demonstrativ_fjärran	sv	den där	det där	1			2				
@@ -12752,6 +12792,21 @@ demonstrativ_nara	de	dieser	dieses	1		1	3
 demonstrativ_nara	de	dieser	dieses	1		2	3				
 demonstrativ_nara	de	dieser	dieses	1		8	1				
 demonstrativ_nara	de	dieser	dieses	1		8	3				
+demonstrativ_nara	en	this	these	2							
+demonstrativ_nara	en	this	this	1							
+demonstrativ_nara	es	este	esta	1			2				
+demonstrativ_nara	es	este	estas	2			2				
+demonstrativ_nara	es	este	este	1			1				
+demonstrativ_nara	es	este	estos	2			1				
+demonstrativ_nara	fr	ce	ce	1	1		1				
+demonstrativ_nara	fr	ce	ces	2							
+demonstrativ_nara	fr	ce	cet	1	2		1				
+demonstrativ_nara	fr	ce	cette	1			2				
+demonstrativ_nara	it	questo	questa	1			2				
+demonstrativ_nara	it	questo	queste	2			2				
+demonstrativ_nara	it	questo	questi	2	1		1				
+demonstrativ_nara	it	questo	questo	1	1		1				
+demonstrativ_nara	ja	この	この								
 demonstrativ_nara	sv	den här	de här	2							
 demonstrativ_nara	sv	den här	den här	1			1				
 demonstrativ_nara	sv	den här	det här	1			2				
@@ -26671,8 +26726,26 @@ häls_smärta	sv	smärta	smärtorna	2	2	7
 häls_smärta	sv	smärta	smärtornas	2	2	8					
 häls_smärta	sv	smärta	smärtors	2	1	8					
 interr_det_hur_mycket	de	wie viel	wie viel								
+interr_det_hur_mycket	en	how much	how much								
+interr_det_hur_mycket	es	cuánto	cuánta	1			2				
+interr_det_hur_mycket	es	cuánto	cuántas	2			2				
+interr_det_hur_mycket	es	cuánto	cuánto	1			1				
+interr_det_hur_mycket	es	cuánto	cuántos	2			1				
+interr_det_hur_mycket	fr	combien de	combien de								
+interr_det_hur_mycket	it	quanto	quanta	1			2				
+interr_det_hur_mycket	it	quanto	quante	2			2				
+interr_det_hur_mycket	it	quanto	quanti	2	1		1				
+interr_det_hur_mycket	it	quanto	quanto	1	1		1				
+interr_det_hur_mycket	ja	いくら	いくら								
 interr_det_hur_mycket	sv	hur mycket	hur mycket								
 interr_det_hur_många	de	wie viele	wie viele								
+interr_det_hur_många	en	how many	how many								
+interr_det_hur_många	es	cuántos	cuántas	2			2				
+interr_det_hur_många	es	cuántos	cuántos	2			1				
+interr_det_hur_många	fr	combien de	combien de								
+interr_det_hur_många	it	quanti	quante	2			2				
+interr_det_hur_många	it	quanti	quanti	2	1		1				
+interr_det_hur_många	ja	いくつ	いくつ								
 interr_det_hur_många	sv	hur många	hur många								
 interr_det_vilken	de	welcher	welche	1		1	2				
 interr_det_vilken	de	welcher	welche	1		2	2				
@@ -26690,6 +26763,15 @@ interr_det_vilken	de	welcher	welches	1		1	3
 interr_det_vilken	de	welcher	welches	1		2	3				
 interr_det_vilken	de	welcher	welches	1		8	1				
 interr_det_vilken	de	welcher	welches	1		8	3				
+interr_det_vilken	en	which	which								
+interr_det_vilken	es	qué	qué								
+interr_det_vilken	fr	quel	quel	1	1		1				
+interr_det_vilken	fr	quel	quelle	1			2				
+interr_det_vilken	fr	quel	quelles	2			2				
+interr_det_vilken	fr	quel	quels	2			1				
+interr_det_vilken	it	quale	quale	1	1		1				
+interr_det_vilken	it	quale	quali	2							
+interr_det_vilken	ja	どの	どの								
 interr_det_vilken	sv	vilken	vilka	2							
 interr_det_vilken	sv	vilken	vilken	1			1				
 interr_det_vilken	sv	vilken	vilket	1			2				
@@ -33865,30 +33947,73 @@ kvant_alla	de	alle	alle	2		1
 kvant_alla	de	alle	alle	2		2					
 kvant_alla	de	alle	allen	2		4					
 kvant_alla	de	alle	aller	2		8					
+kvant_alla	en	all	all								
+kvant_alla	es	todos	todas	2			2				
+kvant_alla	es	todos	todos	2			1				
+kvant_alla	fr	tous	tous	2			1				
+kvant_alla	fr	tous	toutes	2			2				
+kvant_alla	it	tutti	tutte	2			2				
+kvant_alla	it	tutti	tutti	2	1		1				
+kvant_alla	ja	すべて	すべて								
+kvant_alla	ja	みんな	みんな								
 kvant_alla	sv	alla	alla								
 kvant_båda	de	beide	beide	2		1					
 kvant_båda	de	beide	beide	2		2					
 kvant_båda	de	beide	beiden	2		4					
 kvant_båda	de	beide	beider	2		8					
+kvant_båda	en	both	both								
+kvant_båda	es	ambos	ambas	2			2				
+kvant_båda	es	ambos	ambos	2			1				
+kvant_båda	fr	tous les deux	tous les deux								
+kvant_båda	it	entrambi	entrambe	2			2				
+kvant_båda	it	entrambi	entrambi	2	1		1				
+kvant_båda	ja	両方	両方								
 kvant_båda	sv	båda	båda								
 kvant_ingen	de	niemand	niemand			1					
 kvant_ingen	de	niemand	niemandem			4					
 kvant_ingen	de	niemand	niemanden			2					
 kvant_ingen	de	niemand	niemandes			8					
+kvant_ingen	en	nobody	nobody								
+kvant_ingen	es	nadie	nadie								
+kvant_ingen	fr	personne	personne								
+kvant_ingen	it	nessuno	nessuno								
+kvant_ingen	ja	誰も	誰も								
 kvant_ingen	sv	ingen	ingen								
 kvant_inget	de	nichts	nichts								
+kvant_inget	en	nothing	nothing								
+kvant_inget	es	nada	nada								
+kvant_inget	fr	rien	rien								
+kvant_inget	it	niente	niente								
+kvant_inget	ja	何も	何も								
 kvant_inget	sv	inget	inget								
 kvant_någon	de	jemand	jemand			1					
 kvant_någon	de	jemand	jemandem			4					
 kvant_någon	de	jemand	jemanden			2					
 kvant_någon	de	jemand	jemandes			8					
+kvant_någon	en	someone	someone								
+kvant_någon	es	alguien	alguien								
+kvant_någon	fr	quelqu'un	quelqu'un								
+kvant_någon	it	qualcuno	qualcuno								
+kvant_någon	ja	誰か	誰か								
 kvant_någon	sv	någon	någon								
 kvant_något	de	etwas	etwas								
+kvant_något	en	something	something								
+kvant_något	es	algo	algo								
+kvant_något	fr	quelque chose	quelque chose								
+kvant_något	it	qualcosa	qualcosa								
+kvant_något	ja	何か	何か								
 kvant_något	sv	något	något								
 kvant_några	de	einige	einige	2		1					
 kvant_några	de	einige	einige	2		2					
 kvant_några	de	einige	einigen	2		4					
 kvant_några	de	einige	einiger	2		8					
+kvant_några	en	some	some								
+kvant_några	es	algunos	algunas	2			2				
+kvant_några	es	algunos	algunos	2			1				
+kvant_några	fr	quelques	quelques								
+kvant_några	it	alcuni	alcune	2			2				
+kvant_några	it	alcuni	alcuni	2	1		1				
+kvant_några	ja	いくつか	いくつか								
 kvant_några	sv	några	några								
 kvant_varje	de	jeder	jede	1		1	2				
 kvant_varje	de	jeder	jede	1		2	2				
@@ -33902,6 +34027,11 @@ kvant_varje	de	jeder	jedes	1		1	3
 kvant_varje	de	jeder	jedes	1		2	3				
 kvant_varje	de	jeder	jedes	1		8	1				
 kvant_varje	de	jeder	jedes	1		8	3				
+kvant_varje	en	each	each								
+kvant_varje	es	cada	cada								
+kvant_varje	fr	chaque	chaque								
+kvant_varje	it	ogni	ogni								
+kvant_varje	ja	それぞれ	それぞれ								
 kvant_varje	sv	varje	varje								
 käns_fira	de	feiern	feiere	1				16		2	1
 käns_fira	de	feiern	feiere	1				1024		3	1
@@ -40583,6 +40713,12 @@ rel_person	de	der	die	1		1	2
 rel_person	de	der	die	1		2	2				
 rel_person	de	der	die	2		1					
 rel_person	de	der	die	2		2					
+rel_person	en	who	who			1					
+rel_person	en	who	whom			2					
+rel_person	en	who	whose			8					
+rel_person	es	que	que								
+rel_person	fr	qui	qui								
+rel_person	it	che	che								
 rel_person	sv	som	som								
 rel_sak	de	das	das	1		1	3				
 rel_sak	de	das	das	1		2	3				
@@ -40600,6 +40736,10 @@ rel_sak	de	das	die	1		1	2
 rel_sak	de	das	die	1		2	2				
 rel_sak	de	das	die	2		1					
 rel_sak	de	das	die	2		2					
+rel_sak	en	which	which								
+rel_sak	es	que	que								
+rel_sak	fr	que	que								
+rel_sak	it	che	che								
 rel_sak	sv	som	som								
 räkn_0	sv	noll	noll								
 räkn_1	sv	en	en	1			1				

@@ -1,0 +1,20 @@
+---
+meta:
+  version: 1
+  språk: en
+  ordklass: Kvantifikator
+  beskrivning: >
+    Engelska determinerare böjs nästan inte. this/that böjs i numerus (these/those); relativpronomenet who har who/whom/whose. Resten fyller bara inv. a/an är fonologiskt betingat och görs i renderaren.
+
+celler:
+  - id: inv
+  - id: sg
+    numerus: Sg
+  - id: pl
+    numerus: Pl
+  - id: nom
+    kasus: [Nom]
+  - id: akk
+    kasus: [Ack]
+  - id: gen
+    kasus: [Gen]

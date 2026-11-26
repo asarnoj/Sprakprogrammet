@@ -1,0 +1,34 @@
+---
+meta:
+  version: 1
+  språk: it
+  ordklass: Kvantifikator
+  beskrivning: >
+    Italienska determinerare böjs i genus och numerus, och maskulinum har dessutom en fonologiskt betingad allomorf: il/lo och i/gli. Den lagras med species som diskriminator (Obest = il/i, Best = lo/gli) eftersom formerna är något en inlärare måste kunna, inte något renderaren kan räkna ut ur genus och numerus ensamt.
+
+celler:
+  - id: inv
+  - id: m_sg
+    genus: UtrMask
+    numerus: Sg
+    species: Obest
+  - id: m_sg_lo
+    genus: UtrMask
+    numerus: Sg
+    species: Best
+  - id: f_sg
+    genus: NeuFem
+    numerus: Sg
+  - id: m_pl
+    genus: UtrMask
+    numerus: Pl
+    species: Obest
+  - id: m_pl_gli
+    genus: UtrMask
+    numerus: Pl
+    species: Best
+  - id: f_pl
+    genus: NeuFem
+    numerus: Pl
+  - id: pl
+    numerus: Pl
