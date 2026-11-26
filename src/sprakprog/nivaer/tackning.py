@@ -58,8 +58,14 @@ from itertools import product
 from ..kortmodell import Formtabell, Kort
 
 
-def väljare_ur_karta(karta: dict) -> dict[str, dict[str, frozenset]]:
-    """cell → {valets namn: de utfall som väljer cellen}.
+def väljare_ur_karta(karta: dict) -> dict[tuple[str, str], dict[str, frozenset]]:
+    """(ordklass, cell) → {valets namn: de utfall som väljer cellen}.
+
+    ORDKLASSEN MÅSTE VARA MED. Cellen `inv` är en jättehink: prepositioner,
+    konjunktioner, artiklar och adverb använder alla den, och tillsammans är
+    de nära halva engelskan. Nycklades tabellen på cellnamnet ensamt ärvde
+    `Interrogativdeterminant/inv` vikt från varenda preposition, och «hur
+    mycket» blev kursens fjärde nivå.
 
     Beslut och former matchas på LED, så att ett beslut om verbet bara
     kopplas till verbets form. Ett val räknas som väljare bara när en
@@ -67,9 +73,12 @@ def väljare_ur_karta(karta: dict) -> dict[str, dict[str, frozenset]]:
     valet ingenting om cellen.
     """
     alla_utfall: dict[str, set] = {}
-    sedda: dict[str, dict[str, set]] = {}
+    sedda: dict[tuple, dict[str, set]] = {}
     for vägar in karta["vägar"].values():
         for väg in vägar:
+            # Ordklassen för ett symboliskt koncept står bland vägens villkor.
+            klass = {k[1]: v for k, v in väg.villkor
+                     if isinstance(k, tuple) and k[0] == "ordklass"}
             per_led: dict = {}
             for h in väg.händelser:
                 if h[0] == "regel":
@@ -78,11 +87,37 @@ def väljare_ur_karta(karta: dict) -> dict[str, dict[str, frozenset]]:
             for h in väg.händelser:
                 if h[0] != "form":
                     continue
+                koncept = h[2]
+                ok = (klass.get(koncept[1]) if isinstance(koncept, tuple)
+                      else None)
+                if ok is None:
+                    continue
+                nyckel = (ok.split("/")[0], h[3])
                 for namn, utfall in per_led.get(h[1], ()):
-                    sedda.setdefault(h[3], {}).setdefault(namn, set()).add(utfall)
-    return {cell: {namn: frozenset(u) for namn, u in valen.items()
-                   if len(u) < len(alla_utfall[namn])}
-            for cell, valen in sedda.items()}
+                    sedda.setdefault(nyckel, {}).setdefault(namn, set()).add(utfall)
+    # Ett val VÄLJER cellen bara om någon systercell får en DISJUNKT
+    # utfallsmängd. Att utfallen bara delvis förekommer med cellen räcker
+    # inte: `bestämning` ses med nästan vartenda utfall för både `sg` och
+    # `pl`, och skiljer dem alltså inte åt — men testet släppte igenom det,
+    # och då ärvde varje determinerare en andel av allt substantivbruk.
+    # Pronomenet «jag» sjönk från plats 4 till 60 av just det skälet.
+    #
+    # Tempus klarar testet med 39 disjunkta cellpar, kongruens med 32,
+    # pronomenform med ett — och `bestämning` med ett enda, mellan
+    # determinerarens EGNA former (`inv` mot `obest`), vilket är riktigt.
+    per_val: dict[str, dict[str, frozenset]] = {}
+    for cell, valen in sedda.items():
+        for namn, utfall in valen.items():
+            per_val.setdefault(namn, {})[cell] = frozenset(utfall)
+    ut: dict[tuple, dict[str, frozenset]] = {}
+    for namn, celler in per_val.items():
+        for nyckel, utfall in celler.items():
+            # Bara systerceller i SAMMA ordklass jämförs.
+            syskon = [a for (ok, c), a in celler.items()
+                      if ok == nyckel[0] and c != nyckel[1]]
+            if any(not (utfall & a) for a in syskon):
+                ut.setdefault(nyckel, {})[namn] = utfall
+    return ut
 
 
 def läs_användningar(fil: str | Path, språk: str) -> dict[tuple[str, str], float]:
@@ -100,7 +135,8 @@ class Täckning:
 
     def __init__(self, tabell: Formtabell,
                  användningar: dict[tuple[str, str], float],
-                 väljare: dict[str, dict[str, frozenset]] | None = None) -> None:
+                 väljare: dict[tuple[str, str], dict[str, frozenset]] | None = None
+                 ) -> None:
         self.tabell = tabell
         self.väljare = väljare or {}
         #: krav → den sammanlagda vikten av de användningar som har just de kraven.
@@ -116,15 +152,16 @@ class Täckning:
                 continue
             # Formen kräver också besluten som väljer dess cell. Väljer flera
             # utfall samma cell delas vikten mellan kombinationerna.
-            valen = [sorted(u) for u in self.väljare.get(cell, {}).values()]
+            ok = self.tabell.u.lexem(koncept)["ordklass"]
+            väljarna = self.väljare.get((ok, cell), {})
+            valen = [sorted(u) for u in väljarna.values()]
             if not valen:
                 self.vikt[krav] += andel
                 continue
             kombinationer = list(product(*valen))
             for kombination in kombinationer:
                 beslut = {Kort(tabell.språk, "regel", ("val", namn, utfall))
-                          for namn, utfall in zip(
-                              self.väljare[cell], kombination)}
+                          for namn, utfall in zip(väljarna, kombination)}
                 self.vikt[krav | frozenset(beslut)] += andel / len(kombinationer)
 
     def _krav(self, koncept: str, cell: str) -> frozenset | None:
