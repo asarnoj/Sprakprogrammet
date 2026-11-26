@@ -109,7 +109,15 @@ def _glosor(passet: Passet, kö: list) -> bool:
     """
     if not kö:
         return True
+    # VISA FÖRST, FRÅGA SEDAN. En glosa på ett ord användaren aldrig sett är
+    # inte en övning utan ett prov före undervisningen — och introfasen finns
+    # för att ingen ska möta ny kunskap oförberedd (5.4). Alla ordparen visas
+    # därför först, och frågas sedan i samma ordning: de som visades tidigast
+    # hinner sjunka undan innan de efterfrågas.
     print(f"    orden först ({len(kö)} st):")
+    for glosa in kö:
+        print(f"      {glosa.källtext}  =  {glosa.facit}")
+    _fråga("      [enter] när du sett dem\n      ")
     envis = 0
     while kö:
         glosa = kö.pop(0)
@@ -190,7 +198,9 @@ def _introfas(passet: Passet) -> None:
               "i meningar nu ([enter]).")
         return
     nivån = frozenset(kö)
-    print(f"  introfasen: {len(kö)} kort i nästa nivå. Inget bokförs här.")
+    paket = passet.paket() - passet.data.införda() - passet.data.presenterade()
+    print(f"  introfasen: {len(paket)} kort — {len(kö)} mönsterkort och "
+          f"{len(paket) - len(kö)} ord. Inget bokförs här.")
     kvar = list(kö)
     envis = 0
     while kvar:
@@ -249,7 +259,7 @@ def main() -> None:
         läge = passet.läge()
         print(f"\n[{läge['dag']} {läge['tid']}]  införda {läge['införda']} · "
               f"presenterade {läge['presenterade']} · svaga {läge['svaga']} · "
-              f"att presentera {läge['att_presentera']}")
+              f"att lära in {läge['i_paketet']}")
         val = _fråga("> ")
         if val == "q":
             return

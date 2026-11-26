@@ -201,21 +201,30 @@ def dag_ett_går_att_komma_igenom(p: Passet, data: Kursdata) -> list[str]:
              f"{sorted(map(str, utan))}"] if utan else [])
 
 
-def meningen_använder_bara_tillåtet(p: Passet) -> list[str]:
-    """6.1 punkt 1. Ett kort som inte är infört eller presenterat får inte stå
-    i en mening — utom målet självt och orden, som är upplåsta (3.1)."""
+def slutna_ordklasser_är_grindade(p: Passet, data: Kursdata) -> list[str]:
+    """4.5 och 3.10. Bara ord ur ÖPPNA ordklasser får fylla ut en övning.
+
+    När ingen övning går att bygga av kända kort får nya ord komma med — de
+    lärs ut som glosor först. Men `familj == "ord"` rymmer också artiklar,
+    pronomen, kvantifikatorer och räkneord, och de är NIVÅKORT, grindade av
+    sin nivå. Utan gränsen lärdes «man» ut i första lektionen fast det hör
+    till nivå 81, och «någon» fast det hör till nivå 28.
+
+    Grinden prövas direkt i stället för genom en övning. Att nå fram till
+    läckan den vägen krävde tre introrundor — villkor 8 måste först ha
+    förbrukat varje mening som går att bygga av de kända orden — och ett
+    prov som tar tretton minuter körs inte.
+    """
+    fall = [("pronomen_impersonal", False), ("kvant_någon", False),
+            ("artikel_bestamd", False), ("räkn_2", False),
+            ("tid_tid", True), ("pos_stå", True), ("pers_flicka", True)]
     brister = []
-    tillåtna = p.tillåtna()
-    for kort in p.kandidater()[:3]:
-        uppgift = p.presentera(kort, paket=p.nästa_nivå())
-        if uppgift is None:
-            continue
-        otillåtna = {k for k in uppgift.träff.kort
-                     if k != kort and k not in tillåtna and k.familj != "ord"
-                     and k not in p.nästa_nivå()}
-        if otillåtna:
-            brister.append(f"{kort}: «{uppgift.facit}» använder otillåtna kort "
-                           f"{sorted(map(str, otillåtna))}")
+    for nyckel, väntat in fall:
+        fick = p._fritt_ord(Kort(p.s.språk, "ord", (nyckel, "")))
+        if fick != väntat:
+            brister.append(
+                f"{nyckel}: {'släpps in' if fick else 'stängs ute'} men skulle "
+                f"{'släppas in' if väntat else 'stängas ute'}")
     return brister
 
 
@@ -297,7 +306,7 @@ INVARIANTER = [
     ("uppgiften väljs i tid", uppgiften_väljs_i_tid, False),
     ("paketet införs helt eller inte alls", paketet_införs_helt, True),
     ("dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True),
-    ("meningen använder bara tillåtet", meningen_använder_bara_tillåtet, False),
+    ("slutna ordklasser är grindade", slutna_ordklasser_är_grindade, True),
     ("korten införs när de går rätt", korten_införs_när_de_går_rätt, True),
     ("orden lärs ut före mönstret", orden_lärs_ut_före_mönstret, True),
     ("presenterat betyder klarat", presenterat_betyder_klarat, True),
@@ -322,6 +331,9 @@ def _falsifiera(mapp: Path) -> list[str]:
         ("paketet infördes kort för kort",
          "paketet införs helt eller inte alls", paketet_införs_helt, True,
          (Passet, "bokför", None)),
+        ("reservtillåtelsen släppte in varje ordkort",
+         "slutna ordklasser är grindade", slutna_ordklasser_är_grindade, True,
+         (Passet, "_fritt_ord", lambda self, kort: kort.familj == "ord")),
         ("ensamövningen fanns inte",
          "dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True,
          (Passet, "ensamövning", lambda self, kort: None)),

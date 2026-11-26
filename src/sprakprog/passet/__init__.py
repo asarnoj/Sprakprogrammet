@@ -93,6 +93,8 @@ class Passet:
         self.τ = 1 - lager.retention
         self._tillstånd: dict = {}
         self._i_dag: dict = {}
+        self._öppen: dict[str, bool] = {}
+        self._paket: dict[frozenset, frozenset] = {}
         self.uppdatera()
 
     # ── läget ──
@@ -382,6 +384,31 @@ class Passet:
                       key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
                                      else (-1, 0.0, 0, str(k))))
 
+    def paket(self) -> frozenset[Kort]:
+        """Nivåns kort OCH de ord de behöver — dagens kortmängd (3.10).
+
+        «Paketet är de oinförda korten i en minsta mening för kortet», räknat
+        över alla kort, ord inräknade. En minsta mening för nivå 1 är «Time
+        stands.», och dess oinförda kort är nivåns fem plus `tid` och `stå`:
+        sju kort, inte fem. Räknaren sa förut fem och lärde sedan ut tolv.
+
+        En sökning räcker, eftersom nivåns kort kräver varandra (4.1) och
+        därför står i samma mening.
+        """
+        nivå = self.nästa_nivå()
+        if not nivå:
+            return frozenset()
+        if nivå not in self._paket:
+            införda = self.data.införda()
+            uppgift = None
+            for kort in self.kandidater():
+                uppgift = self._ensamt_mål(kort, nivå)
+                if uppgift is not None:
+                    break
+            self._paket[nivå] = (frozenset(uppgift.träff.kort) - införda
+                                 if uppgift is not None else nivå)
+        return self._paket[nivå]
+
     def att_presentera(self) -> list[Kort]:
         """Nästa nivås kort som inte är införda OCH inte presenterade i dag.
 
@@ -455,8 +482,27 @@ class Passet:
 
         # Går det inte — och dag ett gör det aldrig, då inget är känt — får
         # nya ord komma med. De lärs ut som glosor innan övningen (`introsteg`).
-        return self._välj(kort, lambda k: k in tillåtna or k.familj == "ord",
+        #
+        # BARA ÖPPNA ORDKLASSER. `familj == "ord"` rymmer också artiklar,
+        # pronomen och kvantifikatorer, och de är NIVÅKORT — grindade av
+        # sin nivå (4.5). Utan den här gränsen lärdes «man» ut i första
+        # lektionen fast det hör till nivå 81, och «någon» fast det hör till
+        # nivå 28. 3.10 säger vad som får fylla ut: «alla kort i de öppna
+        # nivåerna och hela ordförrådet».
+        return self._välj(kort, lambda k: k in tillåtna or self._fritt_ord(k),
                           lambda t: {kort})
+
+    def _fritt_ord(self, kort: Kort) -> bool:
+        """Ett ord ur en öppen ordklass, alltså upplåst från början (3.1)."""
+        if kort.familj != "ord":
+            return False
+        if kort.nyckel[0] not in self._öppen:
+            rad = self.s.u.conn.execute(
+                "SELECT ordklass FROM Koncept WHERE nyckel = ?",
+                (kort.nyckel[0],)).fetchone()
+            self._öppen[kort.nyckel[0]] = bool(
+                rad and rad["ordklass"] not in SLUTNA_ORDKLASSER)
+        return self._öppen[kort.nyckel[0]]
 
     def ensamövning(self, kort: Kort) -> Uppgift | None:
         """Reservsteg 1 i 6.3: kortet prövas ensamt när ingen mening når det.
@@ -505,7 +551,7 @@ class Passet:
 
         Ger (glosor, övning), eller None när ingen övning går att bygga.
         """
-        uppgift = self.presentera(kort, paket, markera=False)
+        uppgift = self.presentera(kort, paket or self.paket(), markera=False)
         if uppgift is None:
             return None
         kända = self.data.införda() | self.data.presenterade()
@@ -533,4 +579,6 @@ class Passet:
                 "presenterade": len(self.data.presenterade()),
                 "svaga": len(self.svaga()),
                 "att_presentera": len(self.att_presentera()),
+                "i_paketet": len(self.paket() - self.data.presenterade()
+                                 - self.data.införda()),
                 "kandidater": len(self.kandidater())}
