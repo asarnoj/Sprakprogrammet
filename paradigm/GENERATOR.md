@@ -249,8 +249,9 @@ utökningarna flyttar bara taket.
  8  ... igår                        + adverbial
  9  gav / ska ge                    + tempus
 10  flickans bok                    + genitiv          ✅ 2026-08-13
+11  hon är glad / hon är läkare     + predikativ       ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
-11  flickan läser inte              + negation
+12  flickan läser inte              + negation
 12  har gett                        + perfekt
 13  läser flickan?                  + frågor
 14  större än                       + komparation
@@ -258,6 +259,50 @@ utökningarna flyttar bara taket.
 16  läs!                            + imperativ
 17  i huset, när hon kom, vill läsa  + fraser, bisatser, modalverb
 ```
+
+## Nivåerna härleds ur slot × frastyp
+
+Den ursprungliga ordningen var min rangordning på känsla. En bättre metod:
+läs `MönsterKrav.slot` och `MönsterKrav.frastyp` — kolumnen som legat
+ifylld sedan mönstertaggningen utan att någon läst den — och låt datan
+säga vad som är möjligt.
+
+```
+slot         frastyp             antal   läge
+subjekt      Nominalfras          174    ✅
+objekt       Nominalfras           93    ✅
+io           Nominalfras            5    ✅
+predikativ   Adjektivfras           4    ✅ 2026-08-13
+predikativ   Nominalfras            3    ✅ 2026-08-13
+──────────────────────────────────────────────
+komplement   Infinitivfras         12    ✗   hon börjar springa
+objekt       Bisatsfras            11    ✗   hon vet att han kom
+kommunikat   Bisatsfras            10    ✗   hon säger att han kom
+kommunikat   Nominalfras            6    ✗
+objekt       Infinitivfras          6    ✗   hon vill springa
+adverbial    Prepositionsfras       3    ✗   hon är i skolan
+io           Prepositionsfras       1    ✗
+komplement   Bisatsfras             1    ✗
+adverbial    Adverbfras             1    ✗
+kommunikat   Infinitivfras          1    ✗
+```
+
+Det avslöjade att nivåerna har **fyra dimensioner**, inte en:
+
+| Dimension | Vad det är | Exempel |
+|---|---|---|
+| A | slot × frastyp | objekt kan vara bisats |
+| B | vad som fyller frasen | bestämdhet, numerus, attribut, ägare |
+| C | verbparametrar | tempus, aspekt, modus, diates |
+| D | satstyp | nekande, frågande |
+
+Den första listan — negation, perfekt, frågor, komparation, passiv,
+imperativ — var nästan bara C och D. **Hela dimension A saknades.**
+
+Och den innehöll de två viktigaste posterna: `predikativ` har bara fyra
+verbmönster men två av dem är `vara` och `bli`, och `komplement`
++ Infinitivfras rymmer alla sju modalverb. Metoden flyttade dem från sist
+till först.
 
 ## Utökningarnas avkastning
 

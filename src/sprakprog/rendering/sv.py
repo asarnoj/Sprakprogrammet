@@ -67,6 +67,18 @@ def _adjektivcell(bestämdhet: Bestämdhet, numerus: Numerus, genus: int,
     return "obest_m_sg_pos" if genus == UTRUM else "obest_f_sg_pos"
 
 
+def _predikativcell(numerus: Numerus, genus: int) -> str:
+    """Predikativt adjektiv tar OBESTÄMD form och kongruerar med subjektet.
+
+    "hon är glad", "barnet är glatt", "de är glada". Aldrig den bestämda
+    formen — "hon är glada" finns inte. Det skiljer predikativet från
+    attributet, som styrs av frasens bestämdhet.
+    """
+    if numerus is Numerus.PL:
+        return "obest_a_pl_pos"
+    return "obest_m_sg_pos" if genus == UTRUM else "obest_f_sg_pos"
+
+
 def _artikelcell(numerus: Numerus, genus: int) -> str:
     """Fristående bestämd artikel: den / det / de."""
     if numerus is Numerus.PL:
@@ -174,6 +186,17 @@ class SvenskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str):
+            huvud = self.u.lexem(m.subjekt.koncept)
+            genus = huvud["genus"] or UTRUM
+            return [self.u.form_för(
+                m.predikativ, _predikativcell(m.subjekt.numerus, genus))]
+        # Predikativt substantiv står utan artikel: "hon är läkare".
+        return [self.u.form(
+            self.u.lexem(m.predikativ.koncept),
+            SUBSTANTIVCELL[(Bestämdhet.OBESTÄMD, m.predikativ.numerus)])]
+
     def verbfras(self, m: Mening) -> list[str]:
         """Verbet, som ett eller flera ord.
 
@@ -213,6 +236,8 @@ class SvenskRenderare:
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord.extend(self.nominalfras(nf))
+        if m.predikativ is not None:
+            ord.extend(self.predikativ(m))
         for adverbial in m.adverbial:
             ord.append(self.u.form_för(adverbial, "pos"))
 

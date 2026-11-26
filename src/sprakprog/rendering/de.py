@@ -187,6 +187,16 @@ class TyskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str):
+            # Tyskan böjer inte predikativa adjektiv: "sie ist glücklich".
+            # Formen ligger i den egna cellen `pred`, tillagd 2026-08-13 —
+            # de 144 attributiva cellerna är alla böjda.
+            return [self.u.form_för(m.predikativ, "pred")]
+        # Predikativt substantiv utan artikel: "sie ist Ärztin".
+        huvud = self.u.lexem(m.predikativ.koncept)
+        return [self.u.form(huvud, _substantivcell(1, m.predikativ.numerus))]
+
     def rendera(self, m: Mening) -> str:
         """Tysk huvudsats med V2 och satsklammer.
 
@@ -207,6 +217,9 @@ class TyskRenderare:
             mittelfeld.append(self.u.form_för(adverbial, "inv"))
         if m.objekt is not None:
             mittelfeld += self.nominalfras(m.objekt, self.kasus_för(m.verb, "objekt"))
+
+        if m.predikativ is not None:
+            mittelfeld += self.predikativ(m)
 
         ord = [*vorfeld, finit, *mittelfeld, *infinit]
         mening = " ".join(ord)

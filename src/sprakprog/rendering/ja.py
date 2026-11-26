@@ -104,6 +104,39 @@ class JapanskRenderare:
         # framtid, och tidsadverbialet gör skillnaden.
         return masu
 
+    def predikativ(self, m: Mening) -> list[str]:
+        """Predikativ i japanskan — och tempus hamnar på ADJEKTIVET.
+
+        彼女は嬉しいです / 彼女は嬉しかったです. Kopulan です böjs inte i
+        adjektivsatser; det är adjektivet som bär tempus. Att skriva
+        嬉しいでした är fel. Med substantiv är det tvärtom: 医者です blir
+        医者でした, och där bär kopulan tempus.
+
+        na-adjektiv tar INTE な här. な är attributivt (簡単な本) medan
+        predikativet är bart (簡単です).
+        """
+        if not isinstance(m.predikativ, str):
+            return [self.u.form(self.u.lexem(m.predikativ.koncept), "jisho")]
+        adjektiv = self.u.lexem(m.predikativ)
+        typ = adjektiv["ja_adjektiv_typ"]
+
+        # "bli glad" är inte kopula utan なる, och adjektivet står i ku-form:
+        # 嬉しくなりました. En helt annan konstruktion än 嬉しいです.
+        if m.verb == "verb_bli":
+            if typ != "i":
+                raise RenderingsFel(
+                    f"ja/{adjektiv['lemma']}: なる med {typ}-adjektiv kräver "
+                    f"に i stället för く — inte byggt")
+            return [self.u.form(adjektiv, "ku")]
+        if typ == "i":
+            cell = "ta" if m.tid is Tidsreferens.FÖRFLUTEN else "jisho"
+            return [self.u.form(adjektiv, cell)]
+        if typ in ("na", "no", "verbfras"):
+            return [self.u.form(adjektiv, "jisho") if typ == "na"
+                    else adjektiv["lemma"]]
+        raise RenderingsFel(
+            f"ja/{adjektiv['lemma']}: ja_adjektiv_typ saknas")
+
     def rendera(self, m: Mening) -> str:
         """SOV: ämne, adverbial, indirekt objekt, objekt, verb."""
         delar = [self.nominalfras(m.subjekt) + TOPIK]
@@ -113,5 +146,13 @@ class JapanskRenderare:
             delar.append(self.nominalfras(m.io) + DATIV)
         if m.objekt is not None:
             delar.append(self.nominalfras(m.objekt) + OBJEKT)
+        if m.predikativ is not None:
+            delar.append("".join(self.predikativ(m)))
+            # I-adjektivet bär tempus i KOPULASATSER (嬉しかったです), men
+            # inte med なる — där är det verbet som böjs (嬉しくなりました).
+            if (m.verb == "verb_vara" and isinstance(m.predikativ, str)
+                    and self.u.lexem(m.predikativ)["ja_adjektiv_typ"] == "i"):
+                delar.append(self.u.form_för(m.verb, "masu"))
+                return "".join(delar) + "。"
         delar.append(self.verbform(m))
         return "".join(delar) + "。"

@@ -33,6 +33,19 @@ meta:
 # ══════════════════════════════════════════════════════════════════════
 
 celler:
+  # ── Predikativ: OBÖJD ──
+  #
+  # "sie ist glücklich", "das Kind ist glücklich", "sie sind glücklich" —
+  # tyskan böjer inte predikativa adjektiv alls. Formen är identisk med
+  # lemmat, men den behöver ändå vara en Former-rad: den är övningsbar och
+  # ska därmed vara ett kort, precis som determinerarna.
+  #
+  # Koordinaten är grad ensam, utan species/genus/numerus/kasus, vilket
+  # skiljer den från alla 144 attributiva celler.
+  - id: pred
+    grad: Pos
+    not: "Oböjd predikativform: 'sie ist glücklich'."
+
   # ── Pos / Stark / Mask sg ──────────────────────────────────────────
   - id: pos_stark_m_nom
     grad: Pos

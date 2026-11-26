@@ -96,8 +96,18 @@ class EngelskRenderare:
                  and ord[i + 1][:1].lower() in VOKAL else o)
                 for i, o in enumerate(ord)]
 
+    def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str):
+            # Engelska predikativa adjektiv böjs inte: "she is happy".
+            return [self.u.form_för(m.predikativ, "pos")]
+        # Till skillnad från de andra sex KRÄVER engelskan artikel här:
+        # "she is a doctor", aldrig "she is doctor".
+        return self.nominalfras(m.predikativ)
+
     def rendera(self, m: Mening) -> str:
         ord = [*self.nominalfras(m.subjekt, "subjekt"), *self.verbdelar(m)]
+        if m.predikativ is not None:
+            ord += self.predikativ(m)
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord += self.nominalfras(nf)
