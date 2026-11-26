@@ -59,10 +59,12 @@ def kör(args: argparse.Namespace) -> int:
 
 def kör_webb(args: argparse.Namespace) -> int:
     from ..webb import starta
-    if not STANDARD_KORT_DB.exists():
+    if not args.db and not STANDARD_KORT_DB.exists():
         print("kort.db finns inte — kör `ordbok kort --återinitiera` först.")
         return 1
-    starta(args.port, kandidater=args.kandidater)
+    from pathlib import Path
+    starta(args.port, kandidater=args.kandidater,
+           kort_sökväg=Path(args.db) if args.db else None)
     return 0
 
 
@@ -84,4 +86,6 @@ def lägg_till_parser(sub) -> None:
     w.add_argument("--port", type=int, default=8765)
     w.add_argument("--kandidater", type=int, default=800,
                    help="antal kandidatmeningar per uppgift")
+    w.add_argument("--db", help="annan inlärardatabas än kort.db — för att "
+                                "prova utan att röra den riktiga")
     w.set_defaults(func=kör_webb)

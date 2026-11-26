@@ -23,7 +23,11 @@
          display:flex; flex-direction:column; }
   header { border-bottom:1px solid var(--linje); padding:.6rem 1.2rem;
            display:flex; gap:.3rem; align-items:center; }
-  header .titel { font-weight:600; margin-right:auto; letter-spacing:.01em; }
+  header .titel { font-weight:600; margin-right:auto; letter-spacing:.01em;
+      font-family:inherit; font-size:1rem; color:var(--text); background:none;
+      border:none; padding:.35rem .5rem; border-radius:6px; cursor:pointer; }
+  header .titel:hover { background:var(--spår); }
+  header .titel::after { content:" ▾"; color:var(--svag); font-size:.8rem; }
   nav button { font:inherit; font-size:.88rem; color:var(--svag);
                background:none; border:none; padding:.35rem .7rem;
                border-radius:6px; cursor:pointer; }
@@ -177,7 +181,7 @@
 </head>
 <body>
 <header>
-  <span class="titel" id="titel">…</span>
+  <button class="titel kursknapp" id="titel">…</button>
   <nav>
     <button id="nav-hem" aria-current="page">Home</button>
     <button id="nav-ord" disabled>Dictionary</button>
@@ -188,6 +192,31 @@
 
 <main><div class="kort">
 
+  <section id="vy-kurs" hidden>
+    <p class="rubrik">Your courses</p>
+    <ul class="ordlista" id="kurslistan"></ul>
+
+    <p class="rubrik" style="margin-top:2rem">Start a new course</p>
+    <div class="filter">
+      <select id="k-källa"></select>
+      <span style="align-self:center;color:var(--svag)">→</span>
+      <select id="k-mål"></select>
+      <button class="stor" id="k-skapa">Create</button>
+    </div>
+    <p class="delar" id="k-varning" style="border:none;padding:.2rem 0"></p>
+
+    <p class="rubrik" style="margin-top:2rem">Reset a course</p>
+    <p class="delar" style="border:none;padding:0">
+      This deletes every repetition you have made in that course. It is the
+      only thing in the program that cannot be rebuilt.</p>
+    <div class="filter">
+      <select id="k-nollställ"></select>
+      <input type="text" id="k-bekräfta" placeholder="Type RESET to confirm">
+      <button class="andra" id="k-kör">Reset</button>
+    </div>
+    <p class="delar" id="k-svar" style="border:none;padding:.2rem 0"></p>
+  </section>
+
   <section id="vy-hem" hidden>
     <div class="nivåkort">
       <div class="nivårad">
@@ -197,6 +226,9 @@
       </div>
       <div class="spår"><i id="stapel" style="width:0"></i></div>
       <p class="spårtext" id="spårtext"></p>
+      <div id="upplåsning" hidden style="margin-top:1rem">
+        <button class="stor" id="lås-upp">See the next step</button>
+      </div>
     </div>
 
     <p class="rubrik">Today</p>
@@ -259,6 +291,9 @@
       <div id="l-exempel"></div>
       <p class="rubrik" style="margin-top:1.6rem">What this step unlocks</p>
       <p id="l-nytt" class="delar" style="border:none;padding:0"></p>
+      <div id="l-aktivera" hidden style="margin-top:1.4rem">
+        <button class="stor" id="l-aktivera-knapp">Add this step to my course</button>
+      </div>
     </div>
   </section>
 
@@ -313,12 +348,15 @@ const $ = id => document.getElementById(id);
 let kurs = null, uppgift = null, gjort = 0, extraläge = false;
 
 async function hämta(v, i) {
+  // Servern svarar med JSON även på fel, och `fel`-fältet är avsett att
+  // visas. Att kasta på statuskoden skulle svälja just det meddelandet —
+  // vilket den gjorde för nollställning utan bekräftelseord.
   const r = await fetch(v, i);
-  if (!r.ok && ![404, 410, 503].includes(r.status)) throw new Error(r.status);
-  return r.json();
+  try { return await r.json(); }
+  catch { throw new Error(`${r.status} ${r.statusText}`); }
 }
 const visa = (...vyer) => {
-  for (const v of ["hem", "ord", "lekt", "öva"])
+  for (const v of ["kurs", "hem", "ord", "lekt", "öva"])
     $("vy-" + v).hidden = !vyer.includes(v);
   for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"], ["nav-lekt","lekt"]])
     $(id).setAttribute("aria-current", vyer.includes(v) ? "page" : "false");
@@ -334,6 +372,8 @@ async function hem() {
   $("spårtext").innerHTML = h.krävs === null ? T.oövad
     : h.plats ? `<span class="klar">${T.plats(h.krävs.toFixed(0), h.kapacitet)}</span>`
               : T.belastning(`<b>${h.krävs.toFixed(0)}</b>`, h.kapacitet);
+  // Systemet säger bara att det FINNS plats. Användaren klickar när hen vill.
+  $("upplåsning").hidden = !(h.plats && h.nivå < h.nivåer);
 
   const kropp = $("räknare");
   kropp.innerHTML = "";
@@ -361,6 +401,52 @@ async function hem() {
   visa("hem");
 }
 
+// ── kurserna ──────────────────────────────────────────────────────
+let språk = null, väntandeNivå = null;
+
+async function kursvy() {
+  if (!språk) språk = await hämta("/api/språk");
+  const kurser = await hämta("/api/kurser");
+  const ul = $("kurslistan");
+  ul.innerHTML = "";
+  for (const k of kurser) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="lem"></span><span class="kl"></span>`;
+    li.querySelector(".lem").textContent = `${k.källnamn} → ${k.målnamn}`;
+    li.querySelector(".kl").textContent = `step ${k.nivå}, ${k.cefr}`;
+    li.addEventListener("click", () => byt(k.id));
+    ul.append(li);
+  }
+  if (!kurser.length) ul.innerHTML = '<li style="color:var(--svag)">None yet</li>';
+  for (const [id, tom] of [["k-källa", "From…"], ["k-mål", "To…"]]) {
+    const sel = $(id);
+    if (sel.options.length) continue;
+    sel.add(new Option(tom, ""));
+    for (const s of språk) sel.add(new Option(s.namn, s.kod));
+  }
+  const ns = $("k-nollställ");
+  ns.innerHTML = "";
+  ns.add(new Option("Choose a course…", ""));
+  for (const k of kurser) ns.add(new Option(`${k.källnamn} → ${k.målnamn}`, k.id));
+  visa("kurs");
+}
+
+async function byt(id) {
+  kurs = await hämta(`/api/välj/${id}`, {method: "POST",
+    headers: {"Content-Type": "application/json"}, body: "{}"});
+  ordlista = null;
+  const alla = await hämta("/api/kurser");
+  const full = alla.find(k => k.id === id) || kurs;
+  $("titel").textContent = `${full.källnamn ?? kurs.källspråk} → ${full.målnamn ?? kurs.målspråk}`;
+  await hem();
+}
+
+function visaVarning() {
+  const valda = [$("k-källa").value, $("k-mål").value];
+  const varningar = språk.filter(s => valda.includes(s.kod) && s.varning);
+  $("k-varning").textContent = varningar.map(s => s.varning).join(" ");
+}
+
 // ── lektionerna ───────────────────────────────────────────────────
 async function lektioner() {
   const steg = await hämta(`/api/lektioner/${kurs.id}`);
@@ -381,8 +467,10 @@ async function lektioner() {
   visa("lekt");
 }
 
-async function lektion(nivå) {
+async function lektion(nivå, aktiverbar) {
   const d = await hämta(`/api/lektion/${kurs.id}/${nivå}`);
+  väntandeNivå = aktiverbar ? nivå : null;
+  $("l-aktivera").hidden = !aktiverbar;
   $("l-titel").textContent = d.titel;
   $("l-nr").textContent = `step ${d.nivå} of 21`;
   $("l-vad").textContent = d.vad;
@@ -567,6 +655,46 @@ $("starta").addEventListener("click", () => startaPass(false));
 $("extra").addEventListener("click", () => startaPass(true));
 $("tillbaka").addEventListener("click", () => hem());
 $("nav-hem").addEventListener("click", () => hem());
+$("titel").addEventListener("click", () => kursvy());
+for (const id of ["k-källa", "k-mål"])
+  $(id).addEventListener("change", visaVarning);
+$("k-skapa").addEventListener("click", async () => {
+  const [a, b] = [$("k-källa").value, $("k-mål").value];
+  if (!a || !b || a === b) { $("k-varning").textContent =
+    "Pick two different languages."; return; }
+  const ny = await hämta("/api/kurs", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({källspråk: a, målspråk: b})});
+  if (ny.fel) { $("k-varning").textContent = ny.fel; return; }
+  await byt(ny.id);
+});
+$("k-kör").addEventListener("click", async () => {
+  const id = $("k-nollställ").value;
+  if (!id) { $("k-svar").textContent = "Pick a course first."; return; }
+  const r = await hämta(`/api/nollställ/${id}`, {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({bekräftelse: $("k-bekräfta").value})});
+  $("k-bekräfta").value = "";
+  $("k-svar").textContent = r.fel
+    ? "Type RESET exactly to confirm — nothing was deleted."
+    : `Reset done. ${r.nollställd} is back at step 1.`;
+  if (r.fel) return;
+  ordlista = null;
+  await kursvy();
+});
+$("lås-upp").addEventListener("click", async () => {
+  // Lektionen FÖRST, sedan korten — Julius val. Nivån ändras när han
+  // klickar på aktivera, inte när han läser.
+  const h = await hämta(`/api/hem/${kurs.id}`);
+  await lektion(h.nivå + 1, true);
+});
+$("l-aktivera-knapp").addEventListener("click", async () => {
+  const r = await hämta(`/api/lås-upp/${kurs.id}`, {method: "POST",
+    headers: {"Content-Type": "application/json"}, body: "{}"});
+  if (r.fel) return;
+  kurs.nivå = r.nivå; ordlista = null;
+  await hem();
+});
 $("nav-ord").addEventListener("click", () => ordbok());
 $("nav-ord").disabled = false;
 $("nav-lekt").addEventListener("click", () => lektioner());

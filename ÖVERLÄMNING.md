@@ -667,6 +667,41 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Kurserna och upplåsningen i gränssnittet
+
+*Byggt 2026-08-15.* Programmet startar i den kurs som användes sist
+(`Kurs.senast_öppnad`), och kursnamnet i huvudet är knappen som byter.
+
+**Att skapa en kurs** är att välja käll- och målspråk. Alla 42 par erbjuds,
+men italienskan bär en mätt varning: den misslyckas på 32 % av alla meningar,
+nästan alla på obestämd artikel i plural som språket inte har. Varningen
+försvinner när partitiven är löst.
+
+**Upplåsningen är två klick, inte ett.** Systemet säger bara att det FINNS
+plats (kapacitetsmodellen); användaren klickar "See the next step", läser
+lektionen, och klickar sedan "Add this step to my course". Lektionen kommer
+alltså FÖRE korten, vilket var Julius val, och nivån ändras när han aktiverar
+den — inte när han läser om den.
+
+**Nollställning är den enda oåterkalleliga knappen** och kräver ordet RESET
+skrivet, inte ett klick. Allt annat går att bygga om ur `former.tsv`;
+repetitionshistoriken gör det inte. Korten TAS BORT och byggs om i stället för
+att bara nollställas — en kurs som stod på nivå 21 har kort som inte går att
+möta på nivå 1, och att lämna dem vore att återskapa de spökkort nivåspärren
+finns för. Det är tryggt just här: all historik är redan raderad.
+
+Två fel som föll ut vid provningen: `hämta` kastade på statuskoden och svalde
+därmed serverns eget felmeddelande, så en felstavad bekräftelse gav ingen
+återkoppling alls; och nollställningen lämnade 1 112 kort kvar på nivå 1 där
+864 hör hemma.
+
+`ordbok webb --db X` kör mot en annan inlärardatabas. Det finns för att kunna
+prova kursskapande och nollställning utan att röra den riktiga — och en kopia
+måste tas med SQLites backup-API, inte med `cp`: en WAL-databas är inte en
+enda fil, och en `cp` mitt i gav "database disk image is malformed".
+
+---
+
 ## Lektionsvyn — och fem döda steg den avslöjade
 
 *Byggt 2026-08-15.* Tre delar med helt olika kostnad, vilket är hela skälet
