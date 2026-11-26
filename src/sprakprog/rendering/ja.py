@@ -31,7 +31,7 @@ from .spec import (
     FRÅGESLOTTAR, Aspekt, Attribut, Bisats, Diates, Grad, Mening, Nominalfras,
     attribut_med_grad,
     RenderingsFel, Satsmodus,
-    Tidsreferens, tilltal,
+    Tidsreferens, tilltal, kontrollera_stöd,
 )
 from .uppslag import Uppslag
 
@@ -50,6 +50,7 @@ class JapanskRenderare:
         self.u = Uppslag(conn, "ja")
 
     def nominalfras(self, nf: Nominalfras) -> str:
+        kontrollera_stöd(nf, "ja")
         huvud = self.u.lexem(nf.koncept)
         ord = ""
 

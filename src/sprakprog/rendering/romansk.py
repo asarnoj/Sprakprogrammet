@@ -35,7 +35,8 @@ from dataclasses import replace
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
     NAKEN, Numerus, Referentgenus, attribut_med_grad, bestämd_fras,
-    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, kontrollera_stöd,
+    slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -140,6 +141,7 @@ class RomanskRenderare:
 
     def nominalfras(self, nf: Nominalfras, roll: str = "objekt", *,
                     negerad: bool = False) -> list[str]:
+        kontrollera_stöd(nf, self.SPRÅK)
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 

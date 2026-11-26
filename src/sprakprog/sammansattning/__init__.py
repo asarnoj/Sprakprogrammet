@@ -49,6 +49,7 @@ from ..kortmodell import Formtabell, Kort, meningens_kort
 from ..rendering import RENDERARE, RenderingsFel, spåra
 from ..rendering import spec as S
 from ..rendering.karta import FÄLTKLASSER
+from ..rendering.uppslag import dela_klass
 from ..rendering.restriktioner import TIDSBIT, Validator
 from .forklaring import (Bevisfel, Nod, absolut, bevisa, bevisa_osynligt,
                          uppfyller)
@@ -339,7 +340,7 @@ class Sammansättare:
             kort = Kort(self.språk, "regel", ("ljud", regel))
             celler = set()
             for rad in self.conn.execute(
-                    """SELECT l.*, k.ordklass, k.nyckel FROM Lexem l
+                    """SELECT l.*, k.ordklass, k.roll, k.nyckel FROM Lexem l
                        JOIN Koncept k ON k.id = l.koncept_id WHERE l.språk = ?""",
                     (self.språk,)).fetchall():
                 celler.update(c for c, k in self.tabell.former(rad).items() if kort in k)
@@ -953,14 +954,17 @@ class Sammansättare:
                 self.NIVÅER.index(nivå) if nivå in self.NIVÅER else len(self.NIVÅER),
                 koncept)
 
-    def _lexemen(self, ordklass: str) -> list:
-        if ordklass not in self._rader:
-            self._rader[ordklass] = self.conn.execute(
-                """SELECT l.*, k.ordklass, k.nyckel FROM Lexem l
-                   JOIN Koncept k ON k.id = l.koncept_id
-                   WHERE l.språk = ? AND k.ordklass = ? ORDER BY l.id""",
-                (self.språk, ordklass)).fetchall()
-        return self._rader[ordklass]
+    def _lexemen(self, klass: str) -> list:
+        """Lexemen i en klass. `klass` kan bära en roll: "Räkneord/grundtal"."""
+        if klass not in self._rader:
+            ordklass, roll = dela_klass(klass)
+            self._rader[klass] = self.conn.execute(
+                f"""SELECT l.*, k.ordklass, k.roll, k.nyckel FROM Lexem l
+                    JOIN Koncept k ON k.id = l.koncept_id
+                    WHERE l.språk = ? AND k.ordklass = ?
+                      AND k.roll IS {'?' if roll else 'NULL'} ORDER BY l.id""",
+                (self.språk, ordklass, *((roll,) if roll else ()))).fetchall()
+        return self._rader[klass]
 
     def _uppfyller(self, lexem, vad: tuple, svar) -> bool:
         u, nyckel = self.u, lexem["nyckel"]

@@ -28,7 +28,7 @@ import sqlite3
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
-    NAKEN, Numerus, attribut_med_grad,
+    NAKEN, Numerus, kontrollera_stöd, attribut_med_grad,
     Prepositionsfras,
     FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar,
 )
@@ -45,8 +45,9 @@ PRONOMENFORM = Val("pronomenform", ("subjektsform", "objektsform"))
 #: "vilken bok", "flickans bok", "sin bok", "den röda boken", "vatten",
 #: "en bok", "boken", "böcker".
 BESTÄMNING = Val("bestämning", (
-    "frågedeterminant", "genitiv", "possessiv", "dubbel_bestämdhet", "naken",
-    "obestämd_artikel", "bestämd_suffix", "obestämd_plural"))
+    "frågedeterminant", "genitiv", "possessiv", "demonstrativ",
+    "dubbel_bestämdhet", "naken", "obestämd_artikel", "bestämd_suffix",
+    "obestämd_plural"))
 
 #: G8, G9, S2. Adjektivets form, attributivt och predikativt: "röda", "röda",
 #: "röd", "rött".
@@ -102,6 +103,8 @@ SUBSTANTIVCELL_GEN = {
 HUVUDORDETS_BESTÄMDHET = {
     "frågedeterminant": Bestämdhet.OBESTÄMD, "genitiv": Bestämdhet.OBESTÄMD,
     "possessiv": Bestämdhet.OBESTÄMD, "dubbel_bestämdhet": Bestämdhet.BESTÄMD,
+    # "den här boken": den analytiska demonstrativen tar suffixet med sig.
+    "demonstrativ": Bestämdhet.BESTÄMD,
     "naken": Bestämdhet.OBESTÄMD, "obestämd_artikel": Bestämdhet.OBESTÄMD,
     "bestämd_suffix": Bestämdhet.BESTÄMD, "obestämd_plural": Bestämdhet.OBESTÄMD,
 }
@@ -109,7 +112,7 @@ HUVUDORDETS_BESTÄMDHET = {
 #: Bestämningar som ger adjektivet svag form: "den röda boken", "sin röda bok",
 #: "flickans röda bok". En frågedeterminant gör det inte: "vilken röd bok".
 SVAG_BESTÄMNING = frozenset({"genitiv", "possessiv", "dubbel_bestämdhet",
-                             "bestämd_suffix"})
+                             "bestämd_suffix", "demonstrativ"})
 
 #: Reflexivpronomenets utfall → koncept. Bara tredje person har ett eget
 #: reflexivt pronomen — "sig" — medan första och andra använder sitt vanliga
@@ -182,6 +185,7 @@ class SvenskRenderare:
                                 else "ack_dat")]
 
         self.u.kontrollera_naken(nf)
+        kontrollera_stöd(nf, "sv", ("demonstrativ", "räkneord"))
 
         # Genus avgör artikel, possessiv och adjektiv bara i singular — "de
         # stora böckerna", "de stora husen". Egenskapen läses ändå alltid;
@@ -198,7 +202,12 @@ class SvenskRenderare:
             naturlig = "genitiv"
         elif nf.possessiv is not None:
             naturlig = "possessiv"
-        elif nf.bestämdhet is Bestämdhet.BESTÄMD and nf.attribut:
+        elif nf.demonstrativ is not None:
+            naturlig = "demonstrativ"
+        elif nf.bestämdhet is Bestämdhet.BESTÄMD and (nf.attribut
+                                                      or nf.räkneord is not None):
+            # Räkneordet utlöser den dubbla bestämdheten precis som ett
+            # attribut gör: "de två böckerna", aldrig "två böckerna".
             naturlig = "dubbel_bestämdhet"
         elif nf.bestämdhet in NAKEN:
             naturlig = "naken"
@@ -230,6 +239,20 @@ class SvenskRenderare:
             variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
             före = [self.u.form_för(
                 nf.possessiv, _possessivcell(nf.numerus, genus), variant)]
+        elif bestämning == "demonstrativ":
+            # "den här boken" — demonstrativen kongruerar i genus och numerus
+            # OCH tar suffixet med sig, precis som den dubbla bestämdheten.
+            #
+            # Varianten är den ANALYTISKA: svenskan har två konstruktioner
+            # för samma koncept, "den här boken" och "denna bok", men bara
+            # den analytiska finns för båda demonstrativerna — den fjärran
+            # har inget "denne". Att den syntetiska också är riktig svenska
+            # är en sak för entydighetsfiltret (KÄRNAN 6.5).
+            if nf.demonstrativ is None:
+                raise RenderingsFel("sv: frasen har ingen demonstrativ")
+            före = [self.u.form_för(nf.demonstrativ, _artikelcell(
+                nf.numerus, genus).replace("utr", "utr_sg").replace("neu", "neu_sg"),
+                "analytisk")]
         elif bestämning == "dubbel_bestämdhet":
             # Svenskans dubbla bestämdhet: "den röda boken" kräver BÅDE den
             # fristående artikeln och suffixet på substantivet. Utan attribut
@@ -241,6 +264,14 @@ class SvenskRenderare:
                                     "utr" if genus == UTRUM else "neu")]
         # naken ("vatten"), bestämd_suffix ("boken") och obestämd_plural
         # ("böcker") har inget ord före huvudordet.
+
+        räkneord: list[Ord] = []
+        if nf.räkneord is not None:
+            # "de två böckerna": räkneordet står EFTER bestämningen och FÖRE
+            # attributen.
+            self.u.kontrollera_räkneord(nf)
+            with self.u.led("räkneord"):
+                räkneord = [self.u.form_för(nf.räkneord, "inv")]
 
         attribut: list[Ord] = []
         for i, a in enumerate(nf.attribut):
@@ -261,9 +292,11 @@ class SvenskRenderare:
                     f"sv/{self.u.lemma(huvud)}: saknar singular helt (plurale "
                     f"tantum) — meningen kan inte be om {nf.numerus.value}") from None
             raise
-        self.u.ordning("bestämning_före_huvudord", före, [*attribut, huvudord])
+        efter = [*räkneord, *attribut, huvudord]
+        self.u.ordning("bestämning_före_huvudord", före, efter)
+        self.u.ordning("räkneord_före_attribut", räkneord, [*attribut, huvudord])
         self.u.ordning("attribut_före_huvudord", attribut, [huvudord])
-        return [*före, *attribut, huvudord]
+        return [*före, *efter]
 
     # ── adjektiv ─────────────────────────────────────────────────────
 
@@ -298,6 +331,16 @@ class SvenskRenderare:
         """
         a = attribut_med_grad(a)
         svag = bestämning in SVAG_BESTÄMNING
+        lexem_ = self.u.lexem(a.koncept)
+        if self.u.ordklass(lexem_) == "Räkneord/ordningstal":
+            # "den andra boken". Ordningstalet böjs som ett adjektiv men
+            # kompareras inte — "mer andra" finns inte.
+            if a.grad is not Grad.POSITIV:
+                raise RenderingsFel(
+                    f"sv/{self.u.lemma(lexem_)}: ett ordningstal kompareras inte")
+            if numerus is Numerus.PL:
+                return [self.u.form(lexem_, "a_pl")]
+            return [self.u.form(lexem_, "best_a_sg" if svag else "obest_a_sg")]
         if a.grad is Grad.POSITIV:
             return [self._adjektiv(a.koncept, svag, numerus, genus)]
 

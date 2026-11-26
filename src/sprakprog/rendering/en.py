@@ -27,7 +27,7 @@ import sqlite3
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
     NAKEN, Numerus, Prepositionsfras, FRÅGESLOTTAR, RenderingsFel, Satsmodus,
-    Tidsreferens, attribut_med_grad, slutar,
+    Tidsreferens, attribut_med_grad, kontrollera_stöd, slutar,
 )
 from .uppslag import Ord, Uppslag, Val, frasdel
 
@@ -39,8 +39,8 @@ PRONOMENFORM = Val("pronomenform", ("subjektsform", "objektsform"))
 #: G2–G7. Vad som står före huvudordet: "which book", "the girl's book",
 #: "her book", "the book", "water", "a book", "books".
 BESTÄMNING = Val("bestämning", (
-    "frågedeterminant", "genitiv", "possessiv", "bestämd_artikel", "naken",
-    "obestämd_artikel", "obestämd_plural"))
+    "frågedeterminant", "genitiv", "possessiv", "demonstrativ",
+    "bestämd_artikel", "naken", "obestämd_artikel", "obestämd_plural"))
 
 #: E1. "a book", "an apple".
 ARTIKELFORM = Val("artikelform", ("a", "an"))
@@ -73,7 +73,8 @@ FRÅGEPRONOMENFORM = Val("frågepronomenform", ("subjektsform", "objektsform"))
 
 #: Bestämningar som pekar ut ett bestämt exemplar och därför bär en attributiv
 #: superlativ: "the biggest book", "her biggest book", "the girl's biggest book".
-BESTÄMD_BESTÄMNING = frozenset({"bestämd_artikel", "possessiv", "genitiv"})
+BESTÄMD_BESTÄMNING = frozenset({"bestämd_artikel", "possessiv", "genitiv",
+                                "demonstrativ"})
 
 
 def _ljudform(ord: Ord, text: str) -> Ord:
@@ -111,6 +112,7 @@ class EngelskRenderare:
             return [self.u.form(huvud, "nom" if form == "subjektsform" else "obl")]
 
         self.u.kontrollera_naken(nf)
+        kontrollera_stöd(nf, "en", ("demonstrativ", "räkneord"))
 
         if nf.frågedeterminant is not None:
             naturlig = "frågedeterminant"
@@ -118,6 +120,8 @@ class EngelskRenderare:
             naturlig = "genitiv"
         elif nf.possessiv is not None:
             naturlig = "possessiv"
+        elif nf.demonstrativ is not None:
+            naturlig = "demonstrativ"
         elif nf.bestämdhet is Bestämdhet.BESTÄMD:
             naturlig = "bestämd_artikel"
         elif nf.bestämdhet in NAKEN:
@@ -127,6 +131,14 @@ class EngelskRenderare:
         else:
             naturlig = "obestämd_plural"
         bestämning = self.u.regel(BESTÄMNING, naturlig)
+
+        räkneord: list[Ord] = []
+        if nf.räkneord is not None:
+            # "the two books": räkneordet står EFTER bestämningen och FÖRE
+            # attributen. Plural krävs — se `kontrollera_räkneord`.
+            self.u.kontrollera_räkneord(nf)
+            with self.u.led("räkneord"):
+                räkneord = [self.u.form_för(nf.räkneord, "inv")]
 
         attribut: list[Ord] = []
         for i, a in enumerate(nf.attribut):
@@ -160,15 +172,24 @@ class EngelskRenderare:
             if nf.possessiv is None:
                 raise RenderingsFel("en: frasen har ingen possessiv")
             före = [self.u.form_för(nf.possessiv, "obest")]
+        elif bestämning == "demonstrativ":
+            # "this book", "these books" — demonstrativen kongruerar i numerus
+            # och tar artikelns plats.
+            if nf.demonstrativ is None:
+                raise RenderingsFel("en: frasen har ingen demonstrativ")
+            före = [self.u.form_för(
+                nf.demonstrativ, "pl" if nf.numerus is Numerus.PL else "sg")]
         elif bestämning == "bestämd_artikel" and artikel:
             före = [self.u.form_för("artikel_bestamd", "inv")]
         elif bestämning == "obestämd_artikel" and artikel:
-            före = [self._obestämd_artikel([*attribut, huvudord][0])]
+            före = [self._obestämd_artikel([*räkneord, *attribut, huvudord][0])]
         # naken ("water") och obestämd_plural ("books") har inget ord före.
 
-        self.u.ordning("bestämning_före_huvudord", före, [*attribut, huvudord])
+        efter = [*räkneord, *attribut, huvudord]
+        self.u.ordning("bestämning_före_huvudord", före, efter)
+        self.u.ordning("räkneord_före_attribut", räkneord, [*attribut, huvudord])
         self.u.ordning("attribut_före_huvudord", attribut, [huvudord])
-        return [*före, *attribut, huvudord]
+        return [*före, *efter]
 
     def _obestämd_artikel(self, nästa: Ord) -> Ord:
         """a eller an efter nästa ords första ljud (E1).
@@ -190,6 +211,14 @@ class EngelskRenderare:
         framför det väljs på dess första ljud.
         """
         a = attribut_med_grad(a)
+        lexem_ = self.u.lexem(a.koncept)
+        if self.u.ordklass(lexem_) == "Räkneord/ordningstal":
+            # "the second book". Ordningstalet står på attributets plats men
+            # kompareras inte — "more second" finns inte.
+            if a.grad is not Grad.POSITIV:
+                raise RenderingsFel(
+                    f"en/{self.u.lemma(lexem_)}: ett ordningstal kompareras inte")
+            return [self.u.form(lexem_, "inv")]
         if a.grad is Grad.POSITIV:
             return [self.u.form_för(a.koncept, "pos")]
         if a.grad is Grad.SUPERLATIV and bestämning not in BESTÄMD_BESTÄMNING:

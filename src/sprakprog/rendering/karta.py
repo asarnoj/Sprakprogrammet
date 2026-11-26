@@ -69,7 +69,7 @@ from pathlib import Path
 from . import RENDERARE
 from . import spec as S
 from .spec import RenderingsFel
-from .uppslag import MÄNSKLIG, TILLTAL, Uppslag, Val
+from .uppslag import dela_klass, klassnamn, MÄNSKLIG, TILLTAL, Uppslag, Val
 
 # ── sådant som stoppar en väg ────────────────────────────────────────────
 
@@ -92,10 +92,16 @@ FÄLTKLASSER = {
     ("Mening", "predikativ"): ("Adjektiv",),
     ("Mening", "fråga_om"): ("Frågadverb",),
     ("Mening", "adverbial"): ("Adverb",),
-    ("Nominalfras", "koncept"): ("Substantiv", "Pronomen"),
+    ("Nominalfras", "koncept"): ("Substantiv", "Pronomen",
+                                 "Kvantifikator/huvudord"),
     ("Nominalfras", "possessiv"): ("Possessiv",),
     ("Nominalfras", "frågedeterminant"): ("Interrogativdeterminant",),
-    ("Attribut", "koncept"): ("Adjektiv",),
+    ("Nominalfras", "demonstrativ"): ("Demonstrativ",),
+    ("Nominalfras", "kvantifikator"): ("Kvantifikator/bestämning",),
+    ("Nominalfras", "räkneord"): ("Räkneord/grundtal",),
+    # Ordningstalet böjs som ett adjektiv och står på attributets plats:
+    # "den andra boken", "the second book".
+    ("Attribut", "koncept"): ("Adjektiv", "Räkneord/ordningstal"),
     ("Prepositionsfras", "preposition"): ("Preposition",),
     ("Bisats", "subjunktion"): ("Subjunktion",),
 }
@@ -218,6 +224,11 @@ def _domän(k: _Kontext, klass: str, namn: str) -> list:
             "frågedeterminant": [ingen, ("symbol", sym(("Nominalfras",
                                                         "frågedeterminant")))],
             "ägare": [ingen, ("NF", nf)],
+            "demonstrativ": [ingen, ("symbol", sym(("Nominalfras",
+                                                    "demonstrativ")))],
+            "kvantifikator": [ingen, ("symbol", sym(("Nominalfras",
+                                                     "kvantifikator")))],
+            "räkneord": [ingen, ("symbol", sym(("Nominalfras", "räkneord")))],
         }[namn]
     if klass == "Attribut":
         return {"koncept": [("symbol", sym(("Attribut", "koncept")))],
@@ -439,18 +450,21 @@ class Lexikon:
         self.u = verklig
         self._rader: dict = {}
         self._cache: dict = {}
-        self.klasser = {r[0] for r in verklig.conn.execute(
-            """SELECT DISTINCT k.ordklass FROM Koncept k JOIN Lexem l
+        self.klasser = {klassnamn(*r) for r in verklig.conn.execute(
+            """SELECT DISTINCT k.ordklass, k.roll FROM Koncept k JOIN Lexem l
                ON l.koncept_id = k.id WHERE l.språk = ?""", (verklig.språk,))}
 
-    def rader(self, ordklass: str):
-        if ordklass not in self._rader:
-            self._rader[ordklass] = self.u.conn.execute(
-                """SELECT l.*, k.ordklass, k.nyckel FROM Lexem l
-                   JOIN Koncept k ON k.id = l.koncept_id
-                   WHERE l.språk = ? AND k.ordklass = ?""",
-                (self.u.språk, ordklass)).fetchall()
-        return self._rader[ordklass]
+    def rader(self, klass: str):
+        """Lexemen i en klass. `klass` kan bära en roll: "Räkneord/grundtal"."""
+        if klass not in self._rader:
+            ordklass, roll = dela_klass(klass)
+            self._rader[klass] = self.u.conn.execute(
+                f"""SELECT l.*, k.ordklass, k.roll, k.nyckel FROM Lexem l
+                    JOIN Koncept k ON k.id = l.koncept_id
+                    WHERE l.språk = ? AND k.ordklass = ?
+                      AND k.roll IS {'?' if roll else 'NULL'}""",
+                (self.u.språk, ordklass, *((roll,) if roll else ()))).fetchall()
+        return self._rader[klass]
 
     def värden(self, ordklass: str, vad: tuple) -> list:
         nyckel = (ordklass, vad)

@@ -89,7 +89,35 @@ CREATE TABLE Koncept (
        `tagg` är OCH — konceptet måste ha ALLA krävda egenskaper. Här är det
        medlemskap: meningens tidsreferens måste finnas BLAND de tillåtna.
        Samma bitmaskmekanism, två olika frågor. */
-    tempuskrav   INTEGER
+    tempuskrav   INTEGER,
+    /* roll : delar en ordklass som bär TVÅ syntaktiska roller. NULL för de
+       ordklasser som bara har en, vilket är de flesta.
+
+       Ordklassen säger vad ett ord ÄR; rollen säger vilken plats i en fras
+       det kan fylla, och två ordklasser blandar dem:
+
+         Räkneord       'grundtal'    två böcker
+                        'ordningstal' den andra boken  — böjs som ett
+                                      adjektiv och står som ett attribut
+         Kvantifikator  'bestämning'  varje bok, alla böcker
+                        'huvudord'    ingen läser, något hände
+                                      (en: nobody, nothing, someone)
+
+       Varför kolumnen behövs: renderaren får inte titta på konceptnycklar
+       (Symbol kastar Förbigång vid jämförelse och uppslagning), så den kan
+       omöjligt skilja räkn_2 från räkn_ord_2 på egen hand. Utan rollen
+       skulle kartan lika gärna bygga "andra böcker" för "två böcker" och
+       "varje läser boken". Rollen läses genom `Uppslag.ordklass`, som
+       svarar "Räkneord/grundtal" — samma väg som ordklassen alltid gått.
+
+       Fördelningen är LÄST ur datan, inte hittad på: de engelska lemmana
+       skiljer rollerna åt entydigt där de svenska sammanfaller (kvant_ingen
+       = nobody är huvudord, kvant_ingen_det = no är bestämning, båda
+       "ingen" på svenska). Se paradigm/sv/räkneord.yaml, som kallar sitt
+       eget paradigm heterogent av precis detta skäl. */
+    roll         TEXT    CHECK (roll IN (
+                     'grundtal', 'ordningstal', 'bestämning', 'huvudord'
+                 ))
 );
 
 CREATE INDEX idx_koncept_ordklass ON Koncept(ordklass);

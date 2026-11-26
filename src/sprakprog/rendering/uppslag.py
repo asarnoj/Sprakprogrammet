@@ -47,6 +47,17 @@ MÄNSKLIG = 32
 #: läsning av något annat syns som ett fel i stället för att gå förbi.
 KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik")
 
+
+def klassnamn(ordklass: str, roll: str | None) -> str:
+    """"Räkneord" + "grundtal" → "Räkneord/grundtal". Utan roll: bara ordklassen."""
+    return f"{ordklass}/{roll}" if roll else ordklass
+
+
+def dela_klass(klass: str) -> tuple[str, str | None]:
+    """Motsatsen: "Räkneord/grundtal" → ("Räkneord", "grundtal")."""
+    ordklass, _, roll = klass.partition("/")
+    return ordklass, roll or None
+
 #: Hur ett reflexivt verb syns i lemmat (KÄRNAN 3.5, TYSTA_BESLUT A8). Bara de
 #: språk vars renderare läser egenskapen genom `egenskap` står här.
 REFLEXIVT_LEMMA = {"sv": lambda lemma: lemma.endswith(" sig")}
@@ -185,7 +196,7 @@ class Uppslag:
         vägrar hellre än gissar.
         """
         rader = self.conn.execute(
-            """SELECT l.*, k.ordklass, k.nyckel FROM Lexem l
+            """SELECT l.*, k.ordklass, k.roll, k.nyckel FROM Lexem l
                JOIN Koncept k ON k.id = l.koncept_id
                WHERE k.nyckel = ? AND l.språk = ?""",
             (koncept, self.språk),
@@ -216,7 +227,15 @@ class Uppslag:
     # ── läsningar utan kunskap ───────────────────────────────────────
 
     def ordklass(self, lexem: sqlite3.Row) -> str:
-        return lexem["ordklass"]
+        """Ordklassen, med rollen efter ett snedstreck när ordklassen har en.
+
+        "Räkneord/grundtal" mot "Räkneord/ordningstal": två böcker mot den
+        andra boken. Två ordklasser bär två syntaktiska roller var, och
+        renderaren kan inte skilja dem på konceptnyckeln — den får inte
+        titta på den (`karta.Symbol`). Rollen går därför samma väg som
+        ordklassen alltid gått, och `Koncept.roll` säger vilken.
+        """
+        return klassnamn(lexem["ordklass"], lexem["roll"])
 
     def lemma(self, lexem: sqlite3.Row) -> str:
         """Lemmat, för felmeddelanden. Renderaren fattar inga beslut på det."""
@@ -321,6 +340,25 @@ class Uppslag:
                 f"{self.språk}/{nf.koncept}: naken singular kräver ett "
                 f"oräknebart ord — 'vatten' går, 'bok' gör det inte. "
                 f"Räknebara ord tar artikel i singular eller står i plural")
+
+    def kontrollera_räkneord(self, nf) -> None:
+        """En räknad fras står i plural.
+
+        "två böcker", aldrig "två bok". Undantaget vore räkneordet ETT, som
+        tar singular — men vilket räkneord det är får renderaren inte veta:
+        konceptnyckeln är ogenomskinlig för den (`karta.Symbol`), och
+        `Koncept.numerus` är tom för alla räkneord. Att kräva plural är
+        därför det enda EXAKTA svaret, och det kostar ingenting: "en bok"
+        säger man med den obestämda artikeln, inte med grundtalet.
+
+        Skulle "exakt ett exemplar" behöva sägas är vägen ett numeruskrav
+        på konceptet, samma mekanism som `Adverb.tempuskrav` — inte en
+        gissning här.
+        """
+        if nf.räkneord is not None and nf.numerus is not Numerus.PL:
+            raise RenderingsFel(
+                f"{self.språk}/{nf.räkneord}: en räknad fras står i plural "
+                f"— 'två böcker', inte 'två bok'")
 
     def frågepronomen(self, koncept: str) -> str:
         """vem eller vad — avgörs på det EFTERFRÅGADE, inte på slotten.

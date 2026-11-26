@@ -26,8 +26,37 @@ specifikation, tre olika celler. Mappningen ligger per språk i renderaren.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import MISSING, dataclass, field, fields
 from enum import StrEnum
+
+
+def _återställ(self, tillstånd) -> None:
+    """Läs ett betat specobjekt, också ett som betades före ett nytt fält.
+
+    `slots=True` gör att pickle sparar de SATTA platserna. Ett facit betat
+    innan ett fält fanns saknar därför fältet helt, och en renderare som
+    läser det får AttributeError på varje spec i filen — nätet som ska
+    fånga vad en ombyggnad gör med texten föll alltså på själva
+    ombyggnaden, vilket är precis den gång det behövs.
+
+    Fälten som saknas fylls med sina förvalsvärden, vilket är vad de hade
+    haft om de funnits när facit betades.
+
+    Tillståndet är en LISTA i fältordning, så ett nytt fält måste läggas
+    SIST i sin klass. Läggs det i mitten läser ett gammalt facit fel värde
+    i varje fält efter det, tyst.
+    """
+    for f, värde in zip(fields(self), tillstånd):
+        object.__setattr__(self, f.name, värde)
+    for f in tuple(fields(self))[len(tillstånd):]:
+        if f.default is not MISSING:
+            värde = f.default
+        elif f.default_factory is not MISSING:
+            värde = f.default_factory()
+        else:
+            raise TypeError(f"{type(self).__name__}.{f.name} saknas i facit "
+                            f"och har inget förval")
+        object.__setattr__(self, f.name, värde)
 
 
 class Bestämdhet(StrEnum):
@@ -233,6 +262,42 @@ class Nominalfras:
     realiseras olika i de sju språken: morfologisk genitiv före huvudordet
     i sv/en, efter i de, preposition i fr/es/it, partikel i ja.
     """
+    demonstrativ: str | None = None
+    """Utpekande bestämning: "den här boken", "that book".
+
+    Tar artikelns plats som possessiven gör, och pekar ut ett bestämt
+    exemplar — därför räknas frasen som bestämd i `bestämd_fras`.
+
+    Svenskan har TVÅ konstruktioner för samma koncept, och de skiljer sig i
+    huvudordets form: "den här boken" med bestämt suffix, "denna bok" utan.
+    Renderaren bygger den analytiska ("den här"), eftersom båda
+    demonstrativerna har den medan bara den närmare har "denna". Att den
+    syntetiska också är riktig svenska är en sak för entydighetsfiltret
+    (KÄRNAN 6.5), inte för renderaren.
+    """
+    kvantifikator: str | None = None
+    """Kvantifierande bestämning: "varje bok", "alla böcker", "ingen bok".
+
+    Bara de kvantifikatorer vars `Koncept.roll` är `bestämning` hör hemma
+    här. De vars roll är `huvudord` — ingen, inget, någon, något, som
+    engelskan skriver nobody, nothing, someone, something — är inga
+    bestämningar utan hela nominalfraser, och står i `koncept`.
+
+    Kombinationen med en annan bestämning ("alla DE böckerna", "all THE
+    books") är en egen konstruktion som inte byggs här: den kräver ett
+    förbestämningsled, och inget kort behöver den.
+    """
+    räkneord: str | None = None
+    """Räknad mängd: "två böcker", "de två böckerna".
+
+    Till skillnad från de andra bestämningarna tar räkneordet INTE
+    artikelns plats — det står mellan bestämningen och attributen, i alla
+    sju språken: "the two big books", "de två stora böckerna", "les deux
+    grands livres".
+
+    Bara grundtal. Ordningstalet böjs som ett adjektiv och står som ett
+    attribut ("den andra boken"), och `Koncept.roll` skiljer dem åt.
+    """
 
 
 @dataclass(frozen=True, slots=True)
@@ -378,6 +443,12 @@ class Mening:
     """
 
 
+#: Alla specobjekt läser ett äldre facit likadant (`_återställ`).
+for _klass in (Attribut, Nominalfras, Prepositionsfras, Bisats, Mening):
+    _klass.__setstate__ = _återställ
+del _klass
+
+
 class RenderingsFel(Exception):
     """Renderaren kan inte producera meningen.
 
@@ -395,18 +466,47 @@ def attribut_med_grad(attribut: "str | Attribut") -> "Attribut":
 def bestämd_fras(nf: "Nominalfras") -> bool:
     """Pekar frasen ut ett bestämt exemplar?
 
-    Bestämd artikel, possessiv eller genitivägare gör det alla tre — "den
-    största boken", "mitt största problem", "flickans största bok". Bara
-    den nakna obestämda artikeln gör det inte, och det är precis där den
-    attributiva superlativen slutar fungera i fem av sju språk.
+    Bestämd artikel, possessiv, genitivägare och demonstrativ gör det alla
+    fyra — "den största boken", "mitt största problem", "flickans största
+    bok", "den här största boken". Bara den nakna obestämda artikeln gör
+    det inte, och det är precis där den attributiva superlativen slutar
+    fungera i fem av sju språk.
+
+    Kvantifikatorn gör det INTE: "varje största bok" finns inte. Den
+    kvantifierar över exemplar i stället för att peka ut ett.
     """
-    return (nf.bestämdhet is Bestämdhet.BESTÄMD
-            or nf.possessiv is not None or nf.ägare is not None)
+    return (nf.bestämdhet is Bestämdhet.BESTÄMD or nf.possessiv is not None
+            or nf.ägare is not None or nf.demonstrativ is not None)
 
 
 #: Frastyper utan determinerare i de språk som tillåter sådana. Samlade här
 #: därför att alla sju renderare behöver samma test.
 NAKEN = (Bestämdhet.GENERISK, Bestämdhet.PARTITIV)
+
+
+#: Nominalfrasens led som inte alla sju renderare bygger än. Listan står här
+#: och inte i renderarna, så att ett nytt led fälls av `kontrollera_stöd` i
+#: samtliga språk tills var och en av dem säger att den bygger det.
+VALFRIA_LED = ("demonstrativ", "kvantifikator", "räkneord")
+
+
+def kontrollera_stöd(nf: "Nominalfras", språk: str, stöder=()) -> None:
+    """Vägra rendera ett led språket inte bygger än.
+
+    Ett fält som en renderare inte känner till syns inte som ett fel — det
+    försvinner. Specen säger "de här två böckerna" och renderaren skriver
+    "böckerna", tyst och trovärdigt. Det är precis den sortens fel hela
+    projektet är byggt för att inte göra, så leden räknas upp och den som
+    inte hanteras stoppar renderingen.
+    """
+    for led in VALFRIA_LED:
+        # Reservvärdet gäller bara nominalfraser som lästs ur ett äldre
+        # facit: en `slots`-dataklass saknar de fält som tillkommit sedan
+        # den betades. En fras byggd här har alltid alla led.
+        if getattr(nf, led, None) is not None and led not in stöder:
+            raise RenderingsFel(
+                f"{språk}: nominalfrasen har {led}, men {språk}-renderaren "
+                f"bygger inte det ledet än och skulle tyst utelämna ordet")
 
 
 #: De argumentslottar en wh-fråga kan efterfråga. Adverbialfrågor namnger
