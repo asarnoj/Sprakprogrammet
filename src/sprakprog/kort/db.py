@@ -22,6 +22,9 @@ STANDARD_KORT_DB = PROJEKTROT / "kort.db"
 #: och den ska skrivas för hand och köras medvetet.
 TILLÄGG = (
     ("Kurs", "meningar_per_dag", "INTEGER NOT NULL DEFAULT 20"),
+    ("Repetition", "r_före", "REAL"),
+    ("Mening", "sedda", "INTEGER"),
+    ("Mening", "nya", "INTEGER"),
 )
 
 

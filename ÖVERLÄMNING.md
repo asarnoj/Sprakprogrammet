@@ -667,6 +667,41 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Vad som faktiskt går att mäta ur användningen
+
+*Skrivet 2026-08-15, efter en fråga om vilka tal som egentligen är mätbara.*
+
+Nollmodellen är `Mening.förväntat` — FSRS egen förutsägelse av hur många ord
+som blir fel, summerad över meningens SEDDA kort. Skillnaden mot utfallet är
+det enda måttet som skiljer **"meningen var för svår"** från **"korten i den
+var svaga"**, eftersom kortens svaghet är precis vad förutsägelsen räknar bort.
+
+```
+överskott = faktiska fel − förväntade fel
+```
+
+**Instrumentet är provat på en känd signal.** Med en inbyggd störeffekt över
+Σ=1,5 hittar det tröskeln; utan effekt ligger det platt på noll och falsklarmar
+i 2 % av körningarna. Styrkan:
+
+| effekt | upptäcks efter |
+|---|---|
+| 0,24 extra fel/mening | ~200 meningar (tio dagar) |
+| 0,12 | ~1 000 meningar (två månader) |
+| 0,06 | mer än 2 000 |
+
+**Fyra av åtta vikter har ett falsifierbart prov** — budget, interferens,
+koncentration och nykvot förutsäger alla överskottsfel. De övriga fyra har det
+inte: täckning och tomgång är effektivitetsmål, upprepning och längd är
+variation och felsökbarhet. De ska inte låtsas vara mätningar.
+
+Retentionsmålet 0,90 är **lånat** från FSRS, inte valt av oss. Ett försök att
+härleda det ur kapacitetsmodellen gav optimum vid 0,70, monotont fallande —
+inte en upptäckt utan ett tecken på att objektivet "kort × retention" är fel:
+det straffar inte att ett glömt kort blir ett fel mitt i en mening.
+
+---
+
 ## Upplåsningen: nivån avgör vilka kort som FINNS
 
 *Byggt 2026-08-14.* Mätningen som avgjorde formen: en tysk nybörjare har
