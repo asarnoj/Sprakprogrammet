@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import math
 import sqlite3
 from dataclasses import dataclass, field
@@ -30,6 +31,18 @@ from .pipeline import (
     _anropa_llm, _beskriv_cell, _bygg_invers_legend, _ladda_instruktioner,
     _lämplig_batch, _språknamn,
 )
+
+def _vägra_i_claude_code() -> str | None:
+    """Samma spärr som generera_former har.
+
+    Anropen går via `claude -p` som subprocess. Körs det inifrån Claude Code
+    hänger subprocessen i stället för att svara.
+    """
+    if os.environ.get("CLAUDECODE"):
+        return ("Kör inte det här kommandot inifrån Claude Code — öppna ett "
+                "vanligt terminalfönster och kör det därifrån.")
+    return None
+
 
 # Poängen med granskningen är att fånga det generatorn missade — därför en
 # klart starkare modell än genereringens standard. --modell för att sänka.
@@ -240,6 +253,8 @@ def granska_former(
 ) -> Granskningsstatistik:
     """Granska Former för (språk, ordklass) och skriv avvikelser till rapport."""
     stat = Granskningsstatistik()
+    if (v := _vägra_i_claude_code()):
+        stat.fel.append(v); stat.avbruten = True; return stat
     legend = ladda_legend()
     inv_legend = _bygg_invers_legend(legend)
 

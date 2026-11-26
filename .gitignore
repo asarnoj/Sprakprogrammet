@@ -16,3 +16,7 @@ sprak.db-wal
 
 # Testdata
 smoke.log
+
+# Fas-status för nattkörningen — maskinlokal, ska inte delas
+.natt2_status
+natt2.log
