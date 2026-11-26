@@ -19,8 +19,8 @@ import sys
 from collections import Counter
 
 from sprakprog.rendering import (
-    Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, SvenskRenderare,
-    Tidsreferens, TyskRenderare,
+    Bestämdhet, FranskRenderare, Mening, Nominalfras, Numerus, RenderingsFel,
+    SvenskRenderare, Tidsreferens, TyskRenderare,
 )
 
 SPRÅK = "sv"
@@ -29,7 +29,8 @@ if "--språk" in sys.argv:
 
 conn = sqlite3.connect("sprak.db")
 conn.row_factory = sqlite3.Row
-r = {"sv": SvenskRenderare, "de": TyskRenderare}[SPRÅK](conn)
+r = {"sv": SvenskRenderare, "de": TyskRenderare,
+     "fr": FranskRenderare}[SPRÅK](conn)
 
 
 def koncept(ordklass, **filter):
@@ -55,6 +56,8 @@ print("═" * 72)
 # de kodar neutrum som 3 (_legend.yaml: Alla), sv som 2.
 utrum = koncept("Substantiv", genus=1)[0]
 neutrum = koncept("Substantiv", genus=3 if SPRÅK == "de" else 2)[0]
+if SPRÅK == "fr":  # franskan har maskulinum/femininum, inte utrum/neutrum
+    neutrum = koncept("Substantiv", genus=2)[0]
 subjekt = Nominalfras("pers_flicka", Bestämdhet.BESTÄMD)
 
 rader = 0
