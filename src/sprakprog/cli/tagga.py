@@ -16,7 +16,7 @@ from pathlib import Path
 
 from ..db import STANDARD_DB, anslut
 from ..generering.taggning import (
-    STANDARD_TAGGNINGSMODELL, tagga_koncept, tagga_monster,
+    STANDARD_TAGGNINGSMODELL, tagga_koncept, tagga_lexem, tagga_monster,
 )
 
 MIGRATIONSKATALOG = Path("ordbok/migrationer")
@@ -51,7 +51,9 @@ def _kör(args: argparse.Namespace, jobb: str) -> int:
     conn = anslut()
     print(f"\n{'─' * 50}")
     print(f"Taggar: {jobb}   (modell: {args.modell})")
-    funktion = tagga_koncept if jobb == "koncepttaggning" else tagga_monster
+    funktion = {"koncepttaggning": tagga_koncept,
+                "lexemtaggning": tagga_lexem,
+                "monstertaggning": tagga_monster}[jobb]
     extra = {}
     if jobb == "monstertaggning" and args.koncept:
         extra["koncept"] = [k.strip() for k in args.koncept.split(",") if k.strip()]
@@ -66,6 +68,10 @@ def _kör(args: argparse.Namespace, jobb: str) -> int:
 
 def kör_koncept(args: argparse.Namespace) -> int:
     return _kör(args, "koncepttaggning")
+
+
+def kör_lexem(args: argparse.Namespace) -> int:
+    return _kör(args, "lexemtaggning")
 
 
 def kör_monster(args: argparse.Namespace) -> int:

@@ -80,6 +80,9 @@ def main(argv: list[str] | None = None) -> int:
         "tagga-koncept",
         help="Fyll gradbarhet, räknebar, valens och semantik på Koncept"), 25)
     _tagga_args(sub.add_parser(
+        "tagga-lexem",
+        help="Fyll genus (substantiv) och prenominal (adjektiv) på Lexem"), 30)
+    _tagga_args(sub.add_parser(
         "tagga-monster",
         help="Bygg valensmönster (Mönster + MönsterKrav) för verben"), 10)
 
@@ -129,6 +132,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "tagga-koncept":
         from .tagga import kör_koncept
         return kör_koncept(args)
+    if args.kommando == "tagga-lexem":
+        from .tagga import kör_lexem
+        return kör_lexem(args)
     if args.kommando == "tagga-monster":
         from .tagga import kör_monster
         return kör_monster(args)

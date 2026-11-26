@@ -29,7 +29,7 @@ import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .pipeline import _anropa_llm
+from .pipeline import _anropa_llm, _språknamn
 
 STANDARD_TAGGNINGSMODELL = "claude-opus-5"
 
@@ -119,6 +119,22 @@ VERB → "valens": lista av "Intransitiv", "Transitiv", "Ditransitiv",
 
 PRONOMEN → "semantik": lista av etiketter nedan.
 
+ADVERB → "semantik": vilken sorts bestämning adverbet uttrycker. Renderaren
+  använder det för att placera adverbialet rätt — tyskans TeKaMoLo-ordning
+  bygger på distinktionen.
+    TID       igår, nu, snart, alltid, ofta, sällan
+    PLATS     här, där, hemma, ute
+    RIKTNING  hit, dit, bort, upp
+  Adverb som varken är tid, plats eller riktning (mycket, ganska, kanske,
+  faktiskt, också) får tom lista [].
+
+PREPOSITION → "semantik": vilken relation prepositionen uttrycker.
+    PLATS     i, på, under, över, bredvid, bakom, mellan
+    RIKTNING  till, från, mot, genom
+    TID       efter, före, under (tidsbetydelse), sedan
+  Flera tillåtna — "i" är både plats ("i huset") och tid ("i maj").
+  Rent abstrakta prepositioner (av, om, med, utan, för, trots) får [].
+
 Semantikbitar:
 {_SEMANTIK_LISTA}
 
@@ -147,6 +163,8 @@ def tagga_koncept(
            OR (k.ordklass = 'Substantiv'  AND k.räknebar   IS NULL)
            OR (k.ordklass = 'Verb'        AND k.valens     IS NULL)
            OR (k.ordklass = 'Pronomen'    AND k.semantik   IS NULL)
+           OR (k.ordklass = 'Adverb'      AND k.semantik   IS NULL)
+           OR (k.ordklass = 'Preposition' AND k.semantik   IS NULL)
         ORDER BY k.ordklass, k.nyckel""").fetchall()
 
     if antal:
@@ -189,7 +207,8 @@ def tagga_koncept(
                     satser.append(f"UPDATE Koncept SET valens = {bits} "
                                   f"WHERE nyckel = {_sql_sträng(r['nyckel'])};")
                     stat.satta_värden += 1
-            elif r["ordklass"] == "Pronomen" and data.get("semantik"):
+            elif r["ordklass"] in ("Pronomen", "Adverb", "Preposition") \
+                    and data.get("semantik"):
                 bits = sum(SEMANTIK.get(x, 0) for x in data["semantik"])
                 if bits:
                     satser.append(f"UPDATE Koncept SET semantik = {bits} "
@@ -355,5 +374,147 @@ def tagga_monster(
         with conn:
             conn.executescript("\n".join(satser))
         print(f"  → {migration} ({len(satser)} satser, körda mot databasen)")
+
+    return stat
+
+
+# ── 3. Lexemtaggning: genus och prenominal ───────────────────────────
+
+GENUS_KODNING = {
+    "sv": {"utrum": 1, "neutrum": 2},
+    "de": {"maskulinum": 1, "femininum": 2, "neutrum": 3},
+    "fr": {"maskulinum": 1, "femininum": 2},
+    "es": {"maskulinum": 1, "femininum": 2},
+    "it": {"maskulinum": 1, "femininum": 2},
+}
+
+
+def _bygg_lexemprompt(språk: str, poster: list[sqlite3.Row]) -> str:
+    ord_lista = "\n".join(
+        f"  {r['lemma']}   [{r['ordklass']}]" for r in poster
+    )
+    if språk == "sv":
+        genusregel = ('"genus": "utrum" eller "neutrum" — det som avgör '
+                      'en/ett och bestämdhetssuffixet (en bok → boken, '
+                      'ett hus → huset).')
+    elif språk == "de":
+        genusregel = ('"genus": "maskulinum", "femininum" eller "neutrum" — '
+                      'artikeln der/die/das. OBS de fall där grammatiskt '
+                      'genus inte följer betydelsen: das Mädchen, das '
+                      'Fräulein, der Mensch.')
+    else:
+        genusregel = '"genus": "maskulinum" eller "femininum".'
+
+    prenominal = ""
+    if språk in ("fr", "es", "it"):
+        prenominal = """
+För ADJEKTIV, sätt också:
+  "prenominal": true/false — står adjektivet FÖRE substantivet?
+  I romanska språk står beskrivande adjektiv normalt EFTER (un livre rouge,
+  un libro rojo) → false. Färg, form och nationalitet alltid efter.
+  Undantag som står FÖRE (→ true): fr grand, petit, bon, mauvais, jeune,
+  vieux, beau, joli, nouveau, gros, long; es buen, mal, gran, joven, viejo;
+  it buono, cattivo, grande, piccolo, giovane, vecchio, bello, brutto."""
+    elif språk == "sv":
+        prenominal = """
+För ADJEKTIV: svenska adjektiv står alltid före substantivet →
+  "prenominal": true."""
+
+    return f"""Du taggar lexem i en ordbok för ett språkinlärningsprogram.
+Svara ENBART med giltig JSON.
+
+Språk: {_språknamn(språk)}
+
+För SUBSTANTIV, sätt:
+  {genusregel}
+{prenominal}
+
+Ord att tagga:
+{ord_lista}
+
+Returnera, med lemmat som nyckel:
+{{"ord": {{"lemma1": {{"genus": "..."}}, "lemma2": {{"prenominal": false}}}}}}"""
+
+
+def tagga_lexem(
+    conn: sqlite3.Connection,
+    migration: Path,
+    *,
+    antal: int | None = None,
+    batch_storlek: int = 30,
+    modell: str = STANDARD_TAGGNINGSMODELL,
+    verbose: bool = False,
+) -> Taggningsstatistik:
+    """Fyll Lexem.genus (substantiv) och Lexem.prenominal (adjektiv).
+
+    Båda blockerar renderingen: utan genus går det inte att välja artikel
+    eller böja adjektiv och possessiv i sv/de/fr/es/it, och utan prenominal
+    hamnar adjektivet på fel sida i de romanska språken.
+    """
+    stat = Taggningsstatistik()
+    satser: list[str] = []
+
+    for språk in ("sv", "de", "fr", "es", "it"):
+        poster = conn.execute("""
+            SELECT l.id, l.lemma, k.ordklass
+            FROM Lexem l JOIN Koncept k ON k.id = l.koncept_id
+            WHERE l.språk = ?
+              AND ((k.ordklass = 'Substantiv' AND l.genus IS NULL)
+                OR (k.ordklass = 'Adjektiv'   AND l.prenominal IS NULL))
+            ORDER BY k.ordklass, l.lemma""", (språk,)).fetchall()
+        if antal:
+            poster = poster[:antal]
+        if not poster:
+            continue
+
+        for nr, av, batch in _batchar(poster, batch_storlek):
+            if verbose:
+                print(f"  {språk} batch {nr}/{av}: {len(batch)} ord")
+            try:
+                svar = _json_ur_svar(_anropa_llm(_bygg_lexemprompt(språk, batch), modell))
+            except Exception as e:
+                stat.fel.append(f"{språk} batch {nr}: {e}")
+                continue
+
+            per_ord = svar.get("ord", {})
+            for r in batch:
+                data = per_ord.get(r["lemma"])
+                if not isinstance(data, dict):
+                    stat.fel.append(f"Inget svar för {språk}/{r['lemma']}")
+                    continue
+                stat.behandlade += 1
+                lemma = _sql_sträng(r["lemma"])
+
+                if r["ordklass"] == "Substantiv":
+                    kod = GENUS_KODNING[språk].get(str(data.get("genus", "")).lower())
+                    if kod:
+                        satser.append(
+                            f"UPDATE Lexem SET genus = {kod} WHERE lemma = {lemma} "
+                            f"AND språk = {_sql_sträng(språk)} AND koncept_id IN "
+                            f"(SELECT id FROM Koncept WHERE ordklass = 'Substantiv');")
+                        stat.satta_värden += 1
+                elif r["ordklass"] == "Adjektiv" and "prenominal" in data:
+                    satser.append(
+                        f"UPDATE Lexem SET prenominal = {1 if data['prenominal'] else 0} "
+                        f"WHERE lemma = {lemma} AND språk = {_sql_sträng(språk)} "
+                        f"AND koncept_id IN (SELECT id FROM Koncept "
+                        f"WHERE ordklass = 'Adjektiv');")
+                    stat.satta_värden += 1
+
+    if satser:
+        migration.write_text(
+            "/* ── lexemtaggning — genus och prenominal ───────────────────────────\n"
+            "   Genererad av `ordbok tagga-lexem`. Granskas av Julius.\n"
+            "   Utan genus går det inte att välja artikel eller böja adjektiv och\n"
+            "   possessiv i sv/de/fr/es/it. Utan prenominal hamnar adjektivet på\n"
+            "   fel sida i de romanska språken.\n"
+            "   KÖRS EFTER VARJE `ordbok import`.\n"
+            "   ──────────────────────────────────────────────────────────────── */\n\n"
+            + "\n".join(satser) + "\n",
+            encoding="utf-8",
+        )
+        with conn:
+            conn.executescript("\n".join(satser))
+        print(f"  → {migration} ({len(satser)} UPDATE-satser, körda mot databasen)")
 
     return stat

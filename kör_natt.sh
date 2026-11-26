@@ -44,9 +44,17 @@ FORMER=$(sqlite3 sprak.db "SELECT COUNT(*) FROM Former;")
 echo "  Koncept: $KONCEPT (väntat 733)   Former: $FORMER (väntat 48135)"
 [ "$KONCEPT" = "733" ] || fatal "fel antal koncept — databasen är inte den väntade."
 
-steg "2. Koncepttaggning (~16 anrop)"
+steg "2. Koncepttaggning (~19 anrop)"
 
+# gradbarhet, räknebar, valens för modalverben, semantik för pronomen,
+# adverb och prepositioner.
 ordbok tagga-koncept --verbose || echo "  VARNING: koncepttaggningen gav fel, se ovan. Fortsätter."
+
+steg "2b. Lexemtaggning — genus och prenominal (~150 anrop, ~20 min)"
+
+# Det här är det som faktiskt blockerar renderingen: utan genus går det inte
+# att välja artikel eller böja adjektiv och possessiv i sv/de/fr/es/it.
+ordbok tagga-lexem --verbose || echo "  VARNING: lexemtaggningen gav fel, se ovan. Fortsätter."
 
 steg "3. Mönstertaggning — provkörning på 5 verb"
 
@@ -104,7 +112,9 @@ sqlite3 sprak.db "
   UNION ALL SELECT '  MönsterKrav:      '||COUNT(*) FROM MönsterKrav
   UNION ALL SELECT '  gradbarhet satt:  '||COUNT(*) FROM Koncept WHERE gradbarhet IS NOT NULL
   UNION ALL SELECT '  räknebar satt:    '||COUNT(*) FROM Koncept WHERE räknebar IS NOT NULL
-  UNION ALL SELECT '  valens satt:      '||COUNT(*) FROM Koncept WHERE valens IS NOT NULL;"
+  UNION ALL SELECT '  valens satt:      '||COUNT(*) FROM Koncept WHERE valens IS NOT NULL
+  UNION ALL SELECT '  genus satt:       '||COUNT(*)||' av 3669' FROM Lexem WHERE genus IS NOT NULL
+  UNION ALL SELECT '  prenominal satt:  '||COUNT(*) FROM Lexem WHERE prenominal IS NOT NULL;"
 
 if [ -f ordbok/granskning.tsv ]; then
   echo "  Granskade avvikelser: $(($(wc -l < ordbok/granskning.tsv) - 1))"
