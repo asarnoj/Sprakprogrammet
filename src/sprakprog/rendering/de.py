@@ -65,6 +65,23 @@ GRADSTAM = {Grad.POSITIV: "pos", Grad.KOMPARATIV: "komp",
             Grad.SUPERLATIV: "superl"}
 
 
+def _dela_partikel(form: str) -> tuple[str, str | None]:
+    """(verbstam, partikel) för ett finit partikelverb.
+
+    Tyska partikelverb skriver ihop partikeln i infinitiv och particip —
+    "anrufen", "angerufen" — men SÄRAR den i finita former: "ruft an". Datan
+    lagrar formen som den ser ut, alltså med mellanslag, och partikeln hör
+    hemma i satsklammern och inte klistrad vid verbet.
+
+    Ett mellanslag i en finit form betyder därför partikel. Fjorton tyska
+    verb berörs.
+    """
+    if " " not in form:
+        return form, None
+    stam, _, partikel = form.rpartition(" ")
+    return stam, partikel
+
+
 def _substantivcell(kasus: int, numerus: Numerus) -> str:
     """Tyska substantiv skiljer fyra kasus i singular, två i plural.
 
@@ -418,7 +435,20 @@ class TyskRenderare:
         if m.bisats is not None:
             efterfält += [",", *self.bisats(m.bisats)]
         if bisats:
+            # I bisats står verbet sist, och DÄR återförenas partikeln med
+            # stammen: "..., dass sie den Bruder anruft". Samma ord, ihop
+            # igen, därför att ingenting längre skiljer dem åt.
+            stam, partikel = _dela_partikel(finit)
+            if partikel is not None:
+                finit = partikel + stam
             return [*vorfeld, *mittelfeld, *infinit, finit, *efterfält]
+        # I HUVUDSATS lämnar partikeln det finita verbet och går sist i
+        # satsklammern: "Das Mädchen ruft den Bruder an". Det är samma
+        # klammer som bär infinita verbdelar, och partikeln hör till den av
+        # samma skäl — den är det som står kvar när verbet flyttar till V2.
+        finit, partikel = _dela_partikel(finit)
+        if partikel is not None:
+            infinit = [*infinit, partikel]
         return ([finit, *vorfeld, *mittelfeld, *infinit, *efterfält]
                 if m.fråga or m.modus is Satsmodus.IMPERATIV
                 else [*vorfeld, finit, *mittelfeld, *infinit, *efterfält])
