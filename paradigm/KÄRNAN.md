@@ -122,6 +122,12 @@ skriva ett ord.** Den listan är sluten, och därmed är kortmängden komplett:
 | var i satsen står det? | `regel` | mönstret |
 | vad är ordets egenskap, när den syns på ett **annat** ord? | `egenskap` | ordet |
 
+**Medlemskapet i mönstret spåras inte — bara undantagen.** Användaren lär sig
+inte «dessa 102 svenska verb är svaga». Hen lär sig regeln, och de 66 starka får
+vart sitt kort. *Ett ord utan undantagskort är regelbundet, och det kostar
+ingenting.* Frågan «är `springa` svagt?» lärs som `sprang` — det är samma
+faktum, ett kort.
+
 **Formfrågan har exakt två svar och inget tredje:** antingen läste renderaren
 en sträng, eller byggde den en. Det är därför `oregelbunden` och `ändelse` är
 två typer och inte en — och testet på att delningen är rätt är att de kan
@@ -143,7 +149,11 @@ Nyckelkolumnen ovan har bara två värden, och det är hela strukturen:
 | | nyckel | växer med | exempel |
 |---|---|---|---|
 | **ordfamiljen** | ett ord | ordförrådet | `gå → gick` är ett faktum om ett ord |
-| **mönsterfamiljen** | ett mönster | ingenting | `-de` är dåtid för svaga verb |
+| **mönsterfamiljen** | ett mönster | ingenting | `-rna` är bestämd plural: `bilarna` |
+
+*(Utkast 24 skrev «`-de` är dåtid för svaga verb» som exempel. Det kortet finns
+inte — svenskans `pret`-ändelse är **tom** i `ändelser.tsv`, och hela `-ade`
+ligger i stammen. Se lucka 1; det är den felaktiga gränsen i sin renaste form.)*
 
     språk    ordfamiljen    mönsterfamiljen
     de             1 172                 42
@@ -607,6 +617,36 @@ men frågan blir «vilken av två», inte «vilken av 133».
 hunnit träna precis innan på regeln som passades»*. Ett omprov mäter inte om du
 kunde regeln utan om du kunde den efter att just ha sett svaret.
 
+### När mönstret blivit automatiskt
+
+Julius: *«vid något tillfälle under inlärningen så slutar hjärnan tänka på det
+viset utan endast se ordet som ordet oberoende av kontext.»*
+
+Det är sant, och det har tre följder. **Två har redan sina mekanismer:**
+
+- **FSRS modellerar automatiseringen som stigande stabilitet.** Ett mönster som
+  gått rätt tvåhundra gånger får mycket långa intervall och slutar frågas. Det
+  behövs ingen ny mekanism — kortet blir billigt av sig själv.
+- **Mönsterkorten möts konstant.** Tyskans 39 ändelsekort träffas av nästan
+  varje mening, precis som franskans `le`. De är alltså samma fall som redan
+  har sitt svar: **fönster i stället för förfallodag.**
+
+**Den tredje är ny, och den rör attributionen.** Ett mönsterkort möts alltid
+*genom ett ord*, så en framgång är sammanblandad: skrev användaren `bilarna`
+därför att hen kan `-rna`, eller därför att hen sett `bilarna` femtio gånger?
+
+När båda är automatiserade bär mötet **ingen information**, och ett misstag
+blir dessutom felattribuerat — skulden läggs på en regel som är stenhård.
+
+> **Regeln visas bara av transfer: att få den rätt på ett ord man inte nött
+> in.** Ett möte är informativt i den mån ordets eget kort är svagare än
+> mönsterkortet.
+
+Det är mätbart ur kortens egna FSRS-tillstånd och ger en urvalsregel: **vill man
+pröva ett mönster ska det paras med ett färskt ord.** Det är också en
+attributionsregel — faller en mening där mönsterkortet har hög retrievability
+och ordkortet låg, är ordet den sannolika skulden.
+
 ### När svaret är rätt men inte det som frågades
 
 Systemet gör tre saker och inte fler: **godtar meningen, bokför inte
@@ -815,6 +855,25 @@ Svenskan visar det renast, och utan franska:
 `stammar.tsv` lagrar **båda** som en stam med cellen `pret`. Strukturellt är
 de identiska. Och klassen skiljer dem inte: svenskans 174 verb fördelar sig på
 K0 och K1, men `arbeta` och `gå` ligger i **samma klass**.
+
+**Orsaken är att gränsen mellan stam och ändelse är dragen fel för svenskans
+verb**, och det syns direkt i ändelsetabellen:
+
+    sv  Verb  K0  pret         ändelse = ''
+    sv  Verb  K1  pret         ändelse = ''
+
+Dåtidsändelsen är **tom**. Hela `-ade`, `-de`, `-te` ligger i stammen. Så
+`arbetade` blir ett `oregelbunden`-kort — det mest regelbundna som finns i
+svenskan bokförs som ett undantag.
+
+Substantiven och adjektiven är dragna rätt: `bil → bilar → bilen → bilarna` ger
+`-r`, `-en`, `-rna` som riktiga ändelsekort. Det är bara verbens tempusmarkör
+som hamnat på fel sida, troligen för att `åka → åkte` tappar en vokal och
+tabellen valde att lägga hela härledningen i stammen i stället för att låta
+ändelsetabellen bära två varianter.
+
+**Lucka 1 är alltså inte bara «hur stor är gruppen» utan «ligger gränsen rätt».**
+Och den frågan går att bedöma på svenska, vilket den franska inte gjorde.
 
 **Alltså hjälper inte renderarnas redovisning** — utkast 22 hade fel där.
 Renderaren *läste* både `arbetade` och `gick` ur samma tabell, så dess
