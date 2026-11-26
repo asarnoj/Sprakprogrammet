@@ -49,7 +49,7 @@ from ..kortmodell import Formtabell, Kort, meningens_kort
 from ..rendering import RENDERARE, RenderingsFel, spåra
 from ..rendering import spec as S
 from ..rendering.karta import FÄLTKLASSER
-from ..rendering.uppslag import dela_klass
+from ..rendering.uppslag import dela_klass, klassnamn
 from ..rendering.restriktioner import TIDSBIT, Validator
 from .forklaring import (Bevisfel, Nod, absolut, bevisa, bevisa_osynligt,
                          uppfyller)
@@ -206,6 +206,8 @@ class Sammansättare:
         self.kontroll = False
         #: Frågans mål, som bevisen om osynlighet gäller.
         self._mål: Kort | None = None
+        #: (nåbarhet, del, etiketter) → vägarna med de målbärande först
+        self._ordnade: dict = {}
         self._nytt_bevis = False
         self._budget_skar = False
         self.statistik: Counter = Counter()
@@ -285,9 +287,15 @@ class Sammansättare:
                       if mål.typ == "regel" and mål.nyckel[0] == "ljud" else None)
             målklass = None
             if mål.typ in ("ord", "oregelbunden"):
-                rad = self.conn.execute("SELECT ordklass FROM Koncept WHERE nyckel = ?",
-                                        (mål.nyckel[0],)).fetchone()
-                målklass = rad[0] if rad else None
+                # MED rollen. Kartan valde klassen genom `Uppslag.ordklass`, som
+                # svarar "Räkneord/grundtal", och jämförelsen nedan är mot det
+                # svaret. Läste man bara `ordklass` här matchade den aldrig, och
+                # nåbarheten skar bort precis de vägar som bär kortet: varje kort
+                # vars ordklass har en roll blev tyst oprövbart.
+                rad = self.conn.execute(
+                    "SELECT ordklass, roll FROM Koncept WHERE nyckel = ?",
+                    (mål.nyckel[0],)).fetchone()
+                målklass = klassnamn(*rad) if rad else None
 
             def bär(h, klasser: dict) -> bool:
                 if mål.typ == "regel" and mål.nyckel[0] == "val":
@@ -333,6 +341,28 @@ class Sammansättare:
                             ändrat = True
             self._nåcache[mål] = (når, egen)
         return self._nåcache[mål]
+
+    def _vägordning(self, del_: str, etiketter: tuple, nåbar, måste: bool):
+        """Delens vägar, med dem som själva bär målet först.
+
+        Uppräkningen är densamma — ingen väg faller bort — men ORDNINGEN
+        avgör hur snabbt ett ja hittas. Specens fält gås igenom i sin
+        ordning, så ett fält som lagts till sist får sina vägar allra sist,
+        bakom varje kombination av de tidigare. Målet «that book» låg
+        därför bakom hela `satsled`, och sökningen hann inte dit: kortet
+        tog över en timme utan att ge en mening, medan «the book» tog 1,6 s
+        enbart för att artikeln råkar väljas tidigt.
+
+        Ett nej kostar lika mycket som förut, eftersom listan är hel.
+        """
+        vägar = self._index[del_].get(etiketter, ())
+        if not måste or nåbar is None:
+            return vägar
+        nyckel = (id(nåbar), del_, etiketter)
+        if nyckel not in self._ordnade:
+            egen = nåbar[1]
+            self._ordnade[nyckel] = sorted(vägar, key=lambda v: not egen[id(v)])
+        return self._ordnade[nyckel]
 
     def _ljudceller(self, regel: str) -> set:
         """Cellerna där ljudregeln finns i något ords form."""
@@ -385,7 +415,7 @@ class Sammansättare:
             self._sedda.add(minne)
         gav = False
         kedja = kedja + (nod,)
-        for väg in self._index[del_].get(etiketter, ()):
+        for väg in self._vägordning(del_, etiketter, nåbar, måste):
             i = id(väg)
             if self._min_väg[i] > budget:
                 # Vägen ryms inte i den här längden, men kan rymmas i en längre.
@@ -893,6 +923,8 @@ class Sammansättare:
             ut.update(enum(namn, typ))
         for namn in ("fråga", "negerad"):
             ut[namn] = fält(namn) == "True"
+        if fält("negation") == "symbol":
+            ut["negation"] = ordet(f"{rot}.negation", ("Mening", "negation"))
         if fält("bisats") == "bisats":
             ut["bisats"] = self._bisats(v, f"{rot}.bisats", ordet)
         fråga_om = fält("fråga_om")
@@ -925,6 +957,10 @@ class Sammansättare:
                                            ("Nominalfras", "frågedeterminant"))
         if fält("ägare") == "NF":
             ut["ägare"] = self._nf(v, f"{rot}.ägare", ordet)
+        for namn in ("demonstrativ", "kvantifikator", "räkneord"):
+            if fält(namn) == "symbol":
+                ut[namn] = ordet(f"{rot}.{namn}", ("Nominalfras", namn))
+        ut["självständig"] = fält("självständig") == "True"
         return S.Nominalfras(**ut)
 
     def _bisats(self, v: dict, rot: str, ordet) -> S.Bisats:
