@@ -112,20 +112,21 @@ def prov_stegen_är_hel() -> list[str]:
     fel = []
     for språk in SPRÅK:
         s = d.stege(språk)
-        # NAMNET ÄR EN TUPEL sedan grundböjningen blev ett steg som bär hela
-        # presensparadigmet. Att läsa det som en sträng gav en lista av
-        # tuplar och ett prov som föll på fel grund.
-        k = [n for t, namn in s if t == "konstruktion" for n in namn]
-        b = [n for t, namn in s if t == "böjning" for n in namn]
-        väntad_b = [c for c, _ in d.projicera().get(språk, [])]
-        if sorted(k) != sorted(NIVÅ.values()):
-            fel.append(f"{språk}: konstruktionerna stämmer inte ({len(k)} av "
-                       f"{len(NIVÅ)})")
-        if sorted(b) != sorted(väntad_b):
-            fel.append(f"{språk}: böjningsstegen stämmer inte ({len(b)} av "
-                       f"{len(väntad_b)})")
-        if len(set(k)) != len(k) or len(set(b)) != len(b):
-            fel.append(f"{språk}: något steg förekommer två gånger")
+        # TYPEN SÄGER INTE LÄNGRE VAD ETT STEG BÄR. Sedan en konstruktion
+        # slås ihop med den böjning den kräver innehåller ett
+        # `konstruktion`-steg både konstruktionsnamnet och celler. Provet
+        # räknar därför på UNIONEN av alla namn och inte per typ — annars
+        # mäter det den gamla formen och faller på rätt data.
+        alla = [n for _, namn in s for n in namn]
+        väntat = sorted([*NIVÅ.values(),
+                         *(c for c, _ in d.projicera().get(språk, []))])
+        if sorted(alla) != väntat:
+            saknas = set(väntat) - set(alla)
+            extra = set(alla) - set(väntat)
+            fel.append(f"{språk}: stegen är inte hel — {len(saknas)} saknas, "
+                       f"{len(extra)} tillkom")
+        if len(set(alla)) != len(alla):
+            fel.append(f"{språk}: något förekommer två gånger i stegen")
     return fel
 
 
@@ -175,22 +176,32 @@ def prov_beroenden() -> list[str]:
     return fel
 
 
-def prov_varvas() -> list[str]:
-    """De två sorterna ska VARVAS, inte ligga i två block.
+def prov_grundböjningen_först() -> list[str]:
+    """Ingenting får ligga före grundböjningen.
 
-    Ligger all böjning först och alla konstruktioner sedan är det två stegar
-    efter varandra och inte en flätad, och då har flätningen slutat göra
-    något utan att säga ifrån.
+    ERSATTE "de två sorterna varvas", och det var rätt att ersätta den.
+    Flätningen skulle hindra att stegen blev två block efter varandra, men
+    sedan konstruktionerna slås ihop med sin böjning ligger cellerna INUTI
+    konstruktionsstegen — och då är få typbyten inte längre ett symptom utan
+    designen. Provet mätte en form systemet vuxit ur.
+
+    Det som fortfarande gäller, och som allt hänger på: nivå 1 måste gå att
+    tala på. Ligger en konstruktion före grundböjningen har kursen en nivå
+    utan verbform, och det var hela skälet att grundböjningen bröts ut.
     """
     fel = []
     for språk in SPRÅK:
-        typer = [t for t, _ in d.stege(språk)]
-        if len(set(typer)) < 2:
-            continue                       # bara en sort finns att varva
-        byten = sum(a != b for a, b in zip(typer, typer[1:]))
-        if byten < 4:
-            fel.append(f"{språk}: bara {byten} byten mellan sorterna — "
-                       f"stegen är block, inte flätad")
+        steg = d.stege(språk)
+        grund = d.grundböjning(språk)
+        if not grund:
+            continue
+        först = next((i for i, (typ, namn) in enumerate(steg)
+                      if typ == "böjning" and set(namn) & grund), None)
+        if först is None:
+            fel.append(f"{språk}: grundböjningen finns inte i stegen")
+        elif först != 0:
+            fel.append(f"{språk}: grundböjningen ligger på steg {först + 1}, "
+                       f"inte först — nivå 1 saknar verbform")
     return fel
 
 
@@ -395,7 +406,7 @@ PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("stegen viks olika per språk", prov_stegen_viks),
         ("den flätade stegen är hel", prov_stegen_är_hel),
         ("konstruktion aldrig före sin böjning", prov_beroenden),
-        ("de två sorterna varvas", prov_varvas),
+        ("grundböjningen ligger först", prov_grundböjningen_först),
         ("inget tomt läromoment", prov_inget_tomt_läromoment),
         ("varje cell har ett kort", prov_varje_cell_har_ett_kort),
         ("migrationen bevarar historiken", prov_migrationen_bevarar_historiken),
@@ -454,13 +465,13 @@ def _sabotage_utan_beroenden():
     return ångra
 
 
-def _sabotage_två_block():
-    """All böjning först, alla konstruktioner sedan — två stegar, inte en."""
+def _sabotage_konstruktioner_först():
+    """Alla konstruktioner före all böjning — nivå 1 utan verbform."""
     äkta = d.stege
     def block(språk, ordklass="Verb"):
         s = äkta(språk, ordklass)
-        return ([x for x in s if x[0] == "böjning"]
-                + [x for x in s if x[0] == "konstruktion"])
+        return ([x for x in s if x[0] == "konstruktion"]
+                + [x for x in s if x[0] == "böjning"])
     d.stege = block
     return lambda: setattr(d, "stege", äkta)
 
@@ -555,7 +566,7 @@ SABOTAGE = [
     (_sabotage_utan_filter, 3),
     (_sabotage_tappa_steg, 4),
     (_sabotage_utan_beroenden, 5),
-    (_sabotage_två_block, 6),
+    (_sabotage_konstruktioner_först, 6),
     (_sabotage_kort_per_cell, 7),
     (_sabotage_hoppa_celler, 8),
     (_sabotage_utan_migration, 9),

@@ -4110,6 +4110,41 @@ Ordningen är nu presens först. Utfall:
 fem steg, engelskan fyra) mot tjugo konstruktioner, så den proportionella
 flätningen lägger konstruktioner först — och nivå 1–4 har ingen verbform alls.
 
+#### KONSTRUKTION OCH BÖJNING ÄR ETT LÄROMOMENT (2026-08-28)
+
+Beroendena var ordnade: cellerna före konstruktionen som kräver dem. Mätt
+blev följden absurd — **franskans `pret_1sg` låg på nivå 4 och
+konstruktionen `tempus` på nivå 38.** Trettiofyra nivåer där dåtidskort
+skapas som ingen mening får använda: antingen står de i kön utan att gå att
+nå (A3), eller så filtrerar `nåbara` bort dem och de trettiofyra stegen gör
+ingenting alls.
+
+**Att ordna åt andra hållet är inte bättre** — då möter användaren dåtid
+innan något kort lär ut hur den böjs, vilket är felet `BEROENDE` fanns mot.
+De två går alltså inte att ORDNA, bara att slå ihop.
+
+Det är samma slutsats som grundböjningen tvingade fram, och av samma skäl:
+**en konstruktion och den böjning den förutsätter är ETT läromoment.**
+
+    fr    11 ▸ tempus + pret 1sg…3pl + imperf…
+          18 ▸ perfekt + pp_fem_sg + pp_msc_sg + pp_fem_pl + pp_msc_pl
+    sv    14 ▸ perfekt + sup + sup_passiv
+
+**En cell binds till EN konstruktion**, den första i stegen. `sup_passiv`
+uppfyller både perfektens krav (tempus Sup) och passivens (diates Passiv) och
+hamnade därför på två steg — samma cell upplåst två gånger.
+
+Stegarna blev kortare av hopslagningen: franskan 49 → 28, spanskan 65 → 36.
+
+**Två prov mätte en form systemet vuxit ur, och båda skrevs om.** *"Den
+flätade stegen är hel"* räknade namn PER TYP, men ett konstruktionssteg bär
+numera både ett konstruktionsnamn och celler; det räknar nu på unionen. Och
+*"de två sorterna varvas"* skulle hindra att stegen blev två block — men
+sedan cellerna ligger INUTI konstruktionsstegen är få typbyten designen och
+inte ett symptom. Den ersattes av *"grundböjningen ligger först"*, som är det
+som faktiskt bär: ligger en konstruktion före grundböjningen har kursen en
+nivå utan verbform.
+
 #### GRUNDBÖJNINGEN — NIVÅ 1 GÅR ATT TALA PÅ (2026-08-28)
 
 Regeln som saknades kunde inte härledas ur tempus, och engelskan är beviset:

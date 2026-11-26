@@ -321,10 +321,9 @@ def stege(språk: str,
     except FileNotFoundError:
         axlar = {}
 
-    def sist_med(lista, villkor) -> int:
-        """Index för den SISTA cellen i `lista` som uppfyller villkoret, annars −1."""
-        träffar = [i for i, cell in enumerate(lista) if villkor(axlar.get(cell, {}))]
-        return träffar[-1] if träffar else -1
+    def celler_för(lista, villkor) -> list[str]:
+        """Cellerna i `lista` som uppfyller villkoret."""
+        return [c for c in lista if villkor(axlar.get(c, {}))]
 
     # GRUNDBÖJNINGEN FÖRST, före varje konstruktion. Se `grundböjning`.
     grund = grundböjning(språk, ordklass)
@@ -334,12 +333,36 @@ def stege(språk: str,
     # KRAVEN RÄKNAS MOT RESTEN, eftersom grundböjningen redan ligger före
     # varje konstruktion. Att räkna dem mot hela listan gav ett index i fel
     # lista så snart grundböjningen bröts ut.
-    krav: dict[str, int] = {}
-    for namn, tempus in BEROENDE.items():
-        krav[namn] = sist_med(
-            resten, lambda a, t=tempus: tempusnamn.get(a.get("tempus")) in t)
-    krav[PASSIVKONSTRUKTION] = sist_med(
-        resten, lambda a: a.get("diates") == 2)
+    # KONSTRUKTIONEN OCH DESS BÖJNING ÖPPNAS TILLSAMMANS, som ett steg.
+    #
+    # Först ordnades de bara: cellerna före konstruktionen som kräver dem.
+    # Mätt blev följden absurd — franskans `pret_1sg` låg på nivå 4 och
+    # konstruktionen `tempus` på nivå 38, alltså 34 nivåer där dåtidskort
+    # skapas som ingen mening får använda. Antingen står de i kön utan att gå
+    # att nå (A3), eller så filtrerar `nåbara` bort dem och de 34 stegen gör
+    # ingenting alls.
+    #
+    # Att ordna dem åt andra hållet är inte bättre: då möter användaren dåtid
+    # innan något kort lär ut hur den böjs, vilket var felet BEROENDE fanns
+    # mot. De går alltså inte att ORDNA, bara att slå ihop — samma slutsats
+    # som grundböjningen tvingade fram, och av samma skäl: en konstruktion
+    # och den böjning den förutsätter är ETT läromoment.
+    # EN CELL BINDS TILL EN ENDA KONSTRUKTION, den som kommer först i
+    # stegen. `sup_passiv` uppfyller både perfektens krav (tempus Sup) och
+    # passivens (diates Passiv), och hamnade därför på två steg — samma cell
+    # upplåst två gånger, och `prov_stegen_är_hel` säger med rätta ifrån.
+    ordning = [namn for namn in konstruktioner
+               if namn in BEROENDE or namn == PASSIVKONSTRUKTION]
+    villkor = {**{n: (lambda a, t=t: tempusnamn.get(a.get("tempus")) in t)
+                  for n, t in BEROENDE.items()},
+               PASSIVKONSTRUKTION: lambda a: a.get("diates") == 2}
+    knutet: dict[str, list[str]] = {}
+    tagna: set[str] = set()
+    for namn in ordning:
+        knutet[namn] = [c for c in celler_för(resten, villkor[namn])
+                        if c not in tagna]
+        tagna.update(knutet[namn])
+    resten = [c for c in resten if c not in tagna]
 
     # GRUNDBÖJNINGEN ÄR ETT ENDA STEG, inte ett per cell. Mätt med grinden
     # på och en cell per steg: nivå 1 kunde bygga 164 meningar men tio av dem
@@ -355,16 +378,12 @@ def stege(språk: str,
     if först:
         rader.append((-1.0, 0, "böjning", tuple(först)))
     for i, cell in enumerate(resten):
-        rader.append(((i + 1) / len(resten), 0, "böjning", (cell,)))
+        rader.append(((i + 1) / max(1, len(resten)), 0, "böjning", (cell,)))
     for i, namn in enumerate(konstruktioner):
         pos = (i + 1) / len(konstruktioner)
         # Ligger konstruktionen före sitt krav skjuts den ner precis efter.
-        gräns = krav.get(namn, -1)
-        if gräns >= 0 and resten:
-            pos = max(pos, (gräns + 1) / len(resten))
-        # 1 = konstruktionen kommer EFTER böjningen på samma position, så
-        # den böjning ett krav pekar på hinner före.
-        rader.append((pos, 1, "konstruktion", (namn,)))
+        # 1 = konstruktionen kommer EFTER en böjning på samma position.
+        rader.append((pos, 1, "konstruktion", (namn, *knutet.get(namn, ()))))
     rader.sort(key=lambda r: (r[0], r[1]))
     return [(typ, namn) for _, _, typ, namn in rader]
 
