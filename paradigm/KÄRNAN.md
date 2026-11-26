@@ -974,11 +974,41 @@ bestämmer vad som är värt att lära först. Två sorters frekvens behövs:
 
 Version ett har samma ordning för alla användare.
 
-**Frekvenserna finns inte ännu.** `ordbok/nivålistor/grundord.csv` har en CEFR-nivå per
-koncept (A1, A2, B1), men den är en bedömning och inte en mätning, och den ordnar inte
-orden inom nivån. Den får användas för orden tills en mätt frekvens finns, och dragen får
-lika vikt tills de är mätta. Båda är tillfälliga val. Japanskan ska kontrolleras för
-hand.
+**Båda frekvenserna är nu mätta** (2026-09-21), och ingen korpus behövdes.
+
+| Frekvens | Mätt som | Fil |
+|---|---|---|
+| hur ofta ett ord används | konceptets lemma, delat mellan de koncept som bär det, median över språken | `ordbok/nivålistor/frekvens.csv` |
+| hur ofta innehållets drag används | **varje FORM är en sträng, och `wordfreq` mäter strängar** — «book» 66 % mot «books» 34 %, «is» 45 % mot «was» 25 %. Summerad per cell ger det dragets andel av språket | `ordbok/nivålistor/användningar.csv` |
+
+Den andra raden var tänkt att kräva en korpus — trädbankerna i Universal
+Dependencies — men en form ÄR en sträng, så samma verktyg räcker. Det sparar också
+den handgjorda mappningen mellan korpusens etiketter och våra kort, och ger samma
+mätning för alla språk på en gång. Engelskan, de tyngsta dragen:
+
+    18,0 %  Preposition/inv     4,8 %  Verb/pres_3sg
+    12,7 %  Artikel/inv         3,4 %  Verb/pret
+     7,6 %  Verb/inf_imp        1,9 %  Verb/sup
+
+Strängen mäts en gång och delas mellan dem som bär den, i två led: mellan cellerna i
+samma lexem (engelskans `read` är infinitiv, presens och preteritum) och mellan lexem
+(`stand` är både substantiv och verb). Annars överstiger summan språket självt.
+
+**Varför det behövdes.** Utan dragets frekvens sjunker varje rent grammatiskt moment
+till kursens slut, eftersom ett regelkort inte har någon ordfrekvens. Mätt på
+nivåordningen, omordnad efter enbart konceptfrekvens: preteritum hamnade på nivå 127
+av 164, frågeinversionen på 135 och substantivets plural på 163. Hundratjugo gloser
+före dåtid.
+
+`grundord.csv` har en CEFR-nivå per koncept (A1, A2, B1), men den är en bedömning och
+inte en mätning, och den ordnar inte orden inom nivån. Den behövs inte längre för
+ordningen. Japanskan saknar tokeniserare (MeCab) och är omätt i båda tabellerna; den
+ska kontrolleras för hand.
+
+**Tio nivåer av 164 består bara av ordföljdsregler** — `objekt_efter_verb`,
+`frågeord_först`, `inversion_i_fråga` och sju till. De hänger inte på någon form och
+får ingen vikt ur användningarna. I version 1 tas de i beroendeordning; att låta dem
+ärva vikt från de former de gör sägbara är en senare förbättring.
 
 **Version 1 väljer bara ur nästa nivå, och mönsterkorten först** (avgjort 2026-09-20).
 Kandidatmängden ovan — upplåsta, oinförda, prövbara — innehåller varje ordkort från dag
