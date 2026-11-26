@@ -3782,6 +3782,54 @@ alla sju, och då är det inte längre "en nivå per böjningsparameter".
 **Det är den frågan som ska besvaras innan något byggs**, och den är en
 designfråga och inte en mätning.
 
+#### JULIUS SVAR PÅ DEN, OCH DET HÅLLER (2026-08-27)
+
+*"Man hade kunnat ha en universell nivålista som är detaljerad, och sen
+renderas nivålistan olika för de olika språken genom att gå igenom och se att
+vissa rader faktiskt bidrar till något nytt i språket."*
+
+Det löser motsättningen utan att offra den delade axeln: listan förblir
+universell och konceptnära, och STEGEN blir en projektion av den per språk.
+Samma form som renderarna redan har — universell spec, språkspecifik
+realisering.
+
+**Och predikatet finns redan.** Strukturkontrollen i `meningsgranskning`
+frågar exakt detta: *"TVÅ SPECAR SOM RENDERAR IDENTISKT — skiljer sig
+specarna men inte texten har renderaren tappat en distinktion."* Det som där
+är ett FEL är här ett urvalskriterium: renderar två specar likadant bidrar
+raden inget i det språket och hoppas över.
+
+**Mätt på verbets personböjning**, andel av sex verb där själva verbformen
+skiljer sig — subjektspronomenet borträknat, annars "syns" varje distinktion
+i varje språk bara för att pronomenet byts:
+
+    par        sv    en    de    fr    es    it
+    1sg/2sg     0%    0%  100%   67%  100%  100%
+    1sg/3sg     0%  100%  100%   33%  100%  100%
+    2sg/3sg     0%  100%   67%  100%  100%  100%
+    1sg/1pl     0%    0%  100%  100%  100%  100%
+    1pl/2pl     0%    0%  100%  100%     ?  100%
+    3sg/3pl     0%  100%  100%  100%  100%  100%
+
+Utfallet är språkligt riktigt, vilket är kvittot på att måttet mäter rätt sak:
+
+- **Svenskan noll överallt** — svenska verb personböjs inte. Varje personrad
+  hoppas över, och stegen blir kortare utan att någon skriver en regel.
+- **Engelskan bara där 3sg ingår** — det enda märkta cellen är `-s`.
+- **Tyskans 2sg/3sg 67 %** — `liest`/`liest` faller ihop för en del verb.
+- **Franskans 1sg/3sg 33 %** — `parle`/`parle` är identiska för -er-verben,
+  och 1sg/2sg skiljer sig bara på ett stumt `-s` (67 %).
+
+**Stegen skulle alltså bli olika långa av sig själv:** noll personnivåer i
+svenskan, en i engelskan, fem till sex i de romanska och tyskan. Ingen lista
+per språk behöver skrivas eller underhållas.
+
+**Det som återstår att avgöra** är vad man gör med de PARTIELLA raderna —
+franskans 33 % är varken synlig eller osynlig. En tröskel vore ett påhittat
+tal; att låta raden gälla de verb där den syns är troligen rätt, men det gör
+nivån till en egenskap hos verbet snarare än hos språket, och den
+konsekvensen är inte genomtänkt än.
+
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 
 ### F3 ? — Två oberoende tak, och ett tredje som inte styrs
