@@ -85,7 +85,8 @@ class TyskRenderare:
 
     # ── nominalfras ──────────────────────────────────────────────────
 
-    def nominalfras(self, nf: Nominalfras, kasus: int) -> list[str]:
+    def nominalfras(self, nf: Nominalfras, kasus: int,
+                    negerad: bool = False) -> list[str]:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
@@ -119,6 +120,13 @@ class TyskRenderare:
             cell = f"{g}_{k}" if nf.numerus is Numerus.SG else f"pl_{k}"
             ord.append(self.u.form_för("artikel_bestamd", cell))
             deklination = "svag"
+        elif negerad:
+            # "kein Buch", aldrig "nicht ein Buch". kein är den negerade
+            # obestämda artikeln och böjs som ein — men har till skillnad
+            # från ein också plural: "keine Bücher".
+            cell = f"{g}_{k}" if nf.numerus is Numerus.SG else f"pl_{k}"
+            ord.append(self.u.form_för("kvant_ingen_det", cell))
+            deklination = "bland"
         elif nf.numerus is Numerus.SG:
             ord.append(self.u.form_för("artikel_obestamd", f"{g}_{k}"))
             deklination = "bland"
@@ -209,6 +217,11 @@ class TyskRenderare:
         """
         finit, infinit = self.verbdelar(m)
 
+        # Ett obestämt objekt drar till sig negationen i tyskan.
+        kein_objekt = (m.negerad and m.objekt is not None
+                       and m.objekt.bestämdhet is Bestämdhet.OBESTÄMD
+                       and m.objekt.possessiv is None and m.objekt.ägare is None)
+
         vorfeld = self.nominalfras(m.subjekt, self.kasus_för(m.verb, "subjekt"))
         mittelfeld: list[str] = []
         if m.io is not None:
@@ -216,16 +229,14 @@ class TyskRenderare:
         for adverbial in m.adverbial:
             mittelfeld.append(self.u.form_för(adverbial, "inv"))
         if m.objekt is not None:
-            mittelfeld += self.nominalfras(m.objekt, self.kasus_för(m.verb, "objekt"))
+            mittelfeld += self.nominalfras(
+                m.objekt, self.kasus_för(m.verb, "objekt"), negerad=kein_objekt)
 
-        if m.negerad:
-            # nicht står sist i Mittelfeld, efter objekten men före
-            # predikativet och de infinita verbdelarna.
-            #
-            # KÄND GRÄNS: tyskan negerar OBESTÄMDA nominalfraser med "kein"
-            # i stället — "sie gab kein Buch", inte "sie gab nicht ein Buch".
-            # kein finns inte i databasen; det är en negerad obestämd artikel
-            # och borde vara ett determinerarlexem.
+        # Negationen realiseras på TVÅ sätt beroende på vad som negeras.
+        # Är objektet obestämt tar det kein och satsen får inget nicht alls:
+        # "sie gab kein Buch". Annars står nicht sist i Mittelfeld:
+        # "sie gab das Buch nicht".
+        if m.negerad and not kein_objekt:
             mittelfeld.append(self.u.form_för("neg_inte", "inv"))
         if m.predikativ is not None:
             mittelfeld += self.predikativ(m)

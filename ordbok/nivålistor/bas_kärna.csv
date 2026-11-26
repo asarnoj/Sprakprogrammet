@@ -1197,6 +1197,19 @@ kvant_några,Kvantifikator,A2,it,alcuni
 kvant_några,Kvantifikator,A2,ja,いくつか
 # kvant_ingen: negativ kvantifikator (person) — "nobody/no one"
 # ja: 誰も kräver negerad verbform (誰も来ない, inte *誰も来る)
+# kvant_ingen_det: negativ DETERMINERARE — "ingen bok", "kein Buch".
+# Skild från kvant_ingen, som är pronomenet "ingen/niemand/nadie". Svenskan
+# använder samma ord för båda, men tyskan och spanskan har skilda ord
+# (niemand/kein, nadie/ningún) och det är determineraren som behövs för att
+# negera en obestämd nominalfras. Tyskan KRÄVER den: "nicht ein Buch" är
+# inte tyska. Franskan har ingen motsvarighet ("pas de livre") och japanskan
+# inte heller.
+kvant_ingen_det,Kvantifikator,A1,sv,ingen
+kvant_ingen_det,Kvantifikator,A1,en,no
+kvant_ingen_det,Kvantifikator,A1,de,kein
+kvant_ingen_det,Kvantifikator,A1,es,ningún
+kvant_ingen_det,Kvantifikator,A1,it,nessun
+
 kvant_ingen,Kvantifikator,A1,sv,ingen
 kvant_ingen,Kvantifikator,A1,en,nobody
 kvant_ingen,Kvantifikator,A1,fr,personne

@@ -4,7 +4,15 @@ meta:
   språk: sv
   ordklass: Kvantifikator
   beskrivning: >
-    Kvantifikatorerna används här som indefinita pronomen (ingen=nobody, inget=nothing) och är oböjliga i den rollen.
+    Kvantifikatorerna används här som indefinita pronomen (ingen=nobody, inget=nothing) och är oböjliga i den rollen. Undantaget är den negativa determineraren kvant_ingen_det, som böjs som en artikel: ingen/inget/inga.
 
 celler:
   - id: inv
+  - id: utr
+    genus: UtrMask
+    numerus: Sg
+  - id: neu
+    genus: NeuFem
+    numerus: Sg
+  - id: pl
+    numerus: Pl
