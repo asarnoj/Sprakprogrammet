@@ -13,7 +13,14 @@ tills renderaren byggs.
 
 ---
 
-## 1. Verkligt hål: svenska saknar perfekt particip  ⚠️
+## 1. ~~Verkligt hål: svenska saknar perfekt particip~~  ✅ ÅTGÄRDAT 2026-07-09
+
+**Löst:** tre perfpart-celler tillagda i `sv/verb.yaml` (perfpart_obest_utr_sg,
+perfpart_obest_neu_sg, perfpart_a), modellerade som adjektivböjning och
+skilda från supinum via satt genus. INSTRUKTIONER.md uppdaterad. Ursprunglig
+analys nedan bevarad för kontext.
+
+
 
 `sv/verb.yaml` har supinum (har **ätit**) men inte perfekt particip
 (**äten/ätet/ätna**, **stängd/stängt/stängda**). De är olika former i
