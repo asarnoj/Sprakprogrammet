@@ -980,6 +980,22 @@ orden inom nivån. Den får användas för orden tills en mätt frekvens finns, 
 lika vikt tills de är mätta. Båda är tillfälliga val. Japanskan ska kontrolleras för
 hand.
 
+**Version 1 väljer bara ur nästa nivå, och mönsterkorten först** (avgjort 2026-09-20).
+Kandidatmängden ovan — upplåsta, oinförda, prövbara — innehåller varje ordkort från dag
+ett, eftersom orden är upplåsta (3.1). Men ordningen som ska sålla dem är TÄCKNINGEN, och
+den är inte räknad. Öppnas mängden innan dess väljer kursen på frekvens ensamt och kan
+lära ut femtio substantiv innan den rör grammatiken. Version 1 tar därför kandidaterna ur
+nästa nivå, med mönsterkorten före orden.
+
+- **Det är ett närmevärde för täckningen, inte en egen regel.** Ett mönsterkort behövs av
+  varje mening och har därför hög ny täckning; tabellen ovan säger samma sak om «artikeln
+  följer genus». Orden kommer ändå med, som lånekort till mönstren, och lärs ut som
+  glosor innan kortet som kräver dem (5.4).
+- **Priset** är att ett mycket vanligt ord kan komma senare än ett sällsynt mönster.
+- **Täckningen är eget arbete.** När den finns ersätter den både urvalet och ordningen,
+  och den här noteringen faller bort. Ingen annan del behöver ändras: kandidatmängden är
+  det enda som är avsmalnat.
+
 ### 5.7 Två rattar
 
 > **Tidsratten bestämmer vad dagen innehåller. Svårighetsratten bestämmer hur
@@ -1837,7 +1853,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     5a  entydighetsfiltret och märkningen  kräver 2; varianterna och källmeningens märkning (6.5); behövs av 4 och 5
     5   sökningen                          kräver 5a och 3c; värdet, budgeten, villkoren 6–8 i 6.1; svarstiden mäts med en tidig prototyp innan steg 6–9 byggs
     5b  aspektkrav på koncept              parallellt (6.5)
-    6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6)
+    6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6); passet/: två faser, glosan för innehållsord och meningen för funktionsord (5.4), ensamövningen som reservsteg 1 (6.3), villkor 1, 4, 5, 6 och 8 i 6.1; tidsmodellen och täckningen kvar, och villkor 3 och 7 kräver 5a
     7   urvalet                            kräver 6; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
     8   rättningen                         kräver 5; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4); rattning/: diffen per kort och omrättningen byggda, parningen mot flera varianter och prerekvisiten kvar
     9   gränssnittet                       kräver 6–8; introövningarna (5.4), meningen och rättningen med omrättning och flaggor (7.2), knappen för nya nivåer (4.4), inställningarna för tid, dygnsgräns och svårighet (5.1, 5.7)
@@ -1846,6 +1862,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     P2  frekvenserna                       parallellt — punkt 10
     P3  provsviten                         parallellt — simulerade kurser (3.10)
     P4  valideringen                       parallellt — kaikki, AI-granskning, användarflaggor (3.4)
+    P5  täckningen                         parallellt — den nya täckningen per kort, läst ur formtabellen (3.4) och kartan (6.7) utan att bygga meningar (5.6); ersätter både kandidatmängden och ordningen i 5.6, som tills dess är nästa nivå med mönsterkorten först
 
 **Kärnan byggs först för ett språkpar: svenska och engelska.** En kurs har två språk.
 Entydighetsfiltret behöver källspråkets karta (6.5), och målspråket behöver allt:
@@ -1964,6 +1981,7 @@ eller av mätningar, utom:
 | tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
 | de romanska renderarna skriver alltid ut subjektspronomenet (`yo leo`) | varianten `leo` finns inte | variantsökningen (6.5) |
 | `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst, och meningar bryter mot verbets krav | stoppa bygget i stället för att släppa kravet |
+| kandidatmängden är nästa nivå, inte «upplåsta, oinförda, prövbara» (5.6) | ett vanligt ord kan komma senare än ett sällsynt mönster | täckningen (5.6), som eget arbete; se noteringen där |
 | ingen provsvit i pytest-mening (inga `test_*.py`) | näten ligger som fristående skript i `ordbok/verktyg/` och körs genom `alla_prov.py`; de täcker attribution, rättningens positioner, de nya konstruktionerna, ordföljd, passet och tjänsterna, men ingenting kör dem automatiskt | steg P3, om en riktig svit behövs — ingången finns |
 | `neg_heller` har det engelska lemmat `not either` | ordet är diskontinuerligt — "she does not read it **either**" — och går inte att slå upp som ett; konceptet hålls utanför kartan och kan inte läras ut | lemmat ska vara `either`, och negationen bäras av `neg_inte` |
 | `kvant_båda` kräver bestämd form i svenskan — "båda **böckerna**" | ingen kolumn bär den egenskapen, så konceptet hålls utanför kartan | en kolumn som säger att bestämningen tvingar fram bestämd form, eller samma sak som ett `numeruskrav` för species |

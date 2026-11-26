@@ -358,11 +358,25 @@ class Passet:
         return frozenset()
 
     def kandidater(self) -> list[Kort]:
-        """Korten i nästa nivå som inte är införda (4.5), de vanligaste först.
+        """Korten i nästa nivå som inte är införda (4.5), mönsterkorten först.
 
-        Täckningen (5.6) avgör ordningen när den är räknad. Tills dess kommer
-        mönsterkorten först — varje mening behöver dem — och orden i
-        frekvensordning.
+        DET HÄR ÄR INTE 5.6. Där är kandidaterna «upplåsta, inte införda och
+        prövbara», vilket med nivåerna som grindar (4.5) betyder VARJE ordkort
+        från dag ett — orden är upplåsta (3.1). Ordningen som ska sålla dem är
+        täckningen, och den är inte räknad.
+
+        Öppnas mängden innan täckningen finns väljer kursen på frekvens
+        ensamt, och kan lära ut femtio substantiv innan den rör grammatiken.
+        Därför den avsmalnade mängden, med mönsterkorten före orden: ett
+        mönsterkort behövs av varje mening och har hög ny täckning, vilket är
+        ett grovt närmevärde för det 5.6 vill mäta.
+
+        Orden kommer ändå med, som lånekort till mönstren, och lärs ut som
+        glosor innan kortet som kräver dem (5.4). Priset är att ett mycket
+        vanligt ord kan komma senare än ett sällsynt mönster.
+
+        När täckningen finns ersätter den både mängden och ordningen
+        (KÄRNAN 5.6, noteringen om version 1).
         """
         return sorted(self.nästa_nivå() - self.data.införda(),
                       key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
