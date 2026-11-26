@@ -120,14 +120,71 @@ def svaret_beror_inte_på_ordningen() -> list[str]:
     return brister
 
 
-PROV = [("svaret beror inte på ordningen", svaret_beror_inte_på_ordningen)]
+def _nivå(i: int) -> set[Kort]:
+    """Nivå `i`:s kort, ettindexerat som i kursen."""
+    d = json.loads(NIVÅER.read_text(encoding="utf-8"))
+    return {Kort(r[0], r[1], tuple(r[2])) for r in d["nivåer"][i - 1]}
+
+
+def svaret_beror_inte_på_det_tillåtna_före() -> list[str]:
+    """Samma fråga ska ge samma svar vare sig mängden växt under körningen.
+
+    VARFÖR DEN HÄR KONTROLLEN FINNS. Minnet av vad delar gav kastades förut så
+    snart predikatet byttes, och bars därför aldrig över ett dygnsbyte — hela
+    dagsplanens 42,7 sekunder gick till att bygga upp det på nytt. Sedan
+    2026-10-11 bär varje post i stället VAD DEN FRÅGADE OM och gäller så länge
+    de korten svarar likadant. Dag två gick från 40,1 till 9,9 sekunder.
+
+    Men beständigheten flyttar felrisken. En del som hämtar sitt svar ur minnet
+    frågar inte predikatet, så dess kort hamnar inte i förälderns beroende —
+    och föräldern lever då vidare när barnet blivit ogiltigt. Mätt utan den
+    ärvningen: dag tre med buret minne tog 3,6 s mot en färsk motors 39,5 och
+    gav ANDRA meningar.
+
+    DÄRFÖR GÅR KONTROLLEN TRE MÄNGDER DJUPT. Dag ett och två stämde även med
+    felet inne; det syntes först på den tredje. En kontroll på två mängder hade
+    gått igenom och släppt ut ett tyst nej.
+    """
+    karta = ladda(KARTA)
+    mängder = [_nivå_ett() | set(MÅLEN)]
+    for i in (2, 3):
+        mängder.append(mängder[-1] | _nivå(i))
+
+    def svep(s, mängd: set) -> list[int]:
+        # Nytt predikatobjekt varje gång, som i passet: `dagsplan`,
+        # `_ordförråd` och `paket_för` bygger var sitt.
+        def tillåten(k: Kort) -> bool:
+            return k in mängd
+        return [_räkna(s, mål, tillåten) for mål in MÅLEN]
+
+    buren = Sammansättare(sqlite3.connect(ROT / "sprak.db"), karta, "sv")
+    brister = []
+    for n, mängd in enumerate(mängder, 1):
+        varma = svep(buren, mängd)
+        färsk = Sammansättare(sqlite3.connect(ROT / "sprak.db"), karta, "sv")
+        kalla = svep(färsk, mängd)
+        for mål, v, k in zip(MÅLEN, varma, kalla):
+            if v != k:
+                brister.append(
+                    f"mängd {n} ({len(mängd)} kort), {mål}: {v} träffar med "
+                    f"buret minne, {k} med färskt — minnet bär ett svar som "
+                    "inte gäller sedan mängden växte")
+    return brister
+
+
+PROV = [("svaret beror inte på ordningen", svaret_beror_inte_på_ordningen),
+        ("svaret beror inte på det tillåtna före",
+         svaret_beror_inte_på_det_tillåtna_före)]
 
 
 def _falsifiera() -> list[str]:
     """Det gamla läget ska fälla provet: nyckeln utan målet."""
     import sprakprog.sammansattning as S
 
-    gammalt = S.Sammansättare._minnesnyckel
+    brister = []
+    print("\nfalsifiering — varje gammalt läge ska fälla sitt prov:")
+
+    gammal_nyckel = S.Sammansättare._minnesnyckel
 
     def utan_mål(self, nod, bindning, budget, tillåten, kedja, måste, nåbar=None):
         """Nyckeln som den var: `måste` men inte VILKET mål."""
@@ -143,14 +200,14 @@ def _falsifiera() -> list[str]:
     try:
         fel = svaret_beror_inte_på_ordningen()
     finally:
-        S.Sammansättare._minnesnyckel = gammalt
-
-    print("\nfalsifiering — det gamla läget ska fälla sitt prov:")
+        S.Sammansättare._minnesnyckel = gammal_nyckel
     if fel:
-        print(f"  ✓ föll  nyckeln utan målet  ({fel[0][:66]}…)")
-        return []
-    print("  ✗ STUMT  nyckeln utan målet")
-    return ["provet vaktar inte minnesnyckeln — det gamla läget går igenom"]
+        print(f"  ✓ föll  nyckeln utan målet  ({fel[0][:60]}…)")
+    else:
+        print("  ✗ STUMT  nyckeln utan målet")
+        brister.append("provet vaktar inte minnesnyckeln")
+
+    return brister
 
 
 def main() -> int:
