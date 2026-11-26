@@ -3863,12 +3863,52 @@ svenskan fem. Ingen lista per språk är skriven.
 ändelse i varje tabell ska läras ut exakt en gång. Två gånger betyder tomma
 moment; noll gånger betyder något som inte går att lära sig.
 
-**KVAR INNAN DET KAN KOPPLAS IN — ordningen.** Listan är delad men inte
-pedagogisk: att `pres_1sg` kommer före `pret_1sg` följer av att fler språk
-har cellen, inte av att presens ska läras först. En riktig ordning kräver att
-cellerna märks med sina axlar (tempus, person, numerus, modus, diates) och
-sorteras på dem. Axlarna finns i `Former` men inte i `ändelser.tsv`, så
-märkningen är nästa steg.
+#### MÄRKNINGEN BEHÖVDE INTE GÖRAS — DEN FANNS (2026-08-27)
+
+Ordningen var det som återstod, och jag antog att cellerna måste märkas med
+sina axlar först. **De är redan märkta.** `paradigm/{språk}/verb.yaml` ger
+varje cell dess tempus, person, numerus och diates, och `ladda_slot` resolvar
+dem. Arbetet var att LÄSA märkningen, inte att göra den.
+
+Listan sorteras nu på `(diates, tempus, numerus, person)`, och bara den
+första komponenten — tempusordningen — är ett val. Den står som en läsbar
+lista över legendens fjorton värden i stället för att gömmas i en
+sorteringsfunktion eller spridas över nittio cellnamn.
+
+**Två ordningsfel som mätningen visade, och båda var lärorika:**
+
+*Otaggad diates sorterade före aktiv.* Engelskans yaml utelämnar `diates` på
+en del celler medan franskans skriver ut den, och eftersom den delade listan
+tar den LÄGSTA rangen över språken vann den otaggade. Franskans steg blev
+1sg, 2sg, 1pl, 2pl, 3pl, 3sg. En otaggad diates betyder aktiv, inte "före
+aktiv" — men numerus och person behåller sitt nollvärde, och där är det rätt:
+svenskans `pres` och japanskans `masu` gör ingen personskillnad och är
+paradigmets omarkerade form.
+
+*Diates måste slå tempus.* Svenskans `inf_passiv` (läsas) kom före `pres`
+(läser), eftersom infinitiv rankas före presens. Hela aktivum ska läras innan
+något passivum — det är en starkare regel än tempusordningen. Samma sak
+flyttade japanskans `ukemi` från andra plats till sista.
+
+**Stegarna, färdiga:**
+
+    sv (5)   inf, pres, sup, inf_passiv, sup_passiv
+    en (4)   pres_3sg, pret, gerund, inf_imp
+    de (8)   inf, pres_1sg, pres_2sg, pres_3sg, pret_1sg, konj2_2sg,
+             konj2_2pl, part1
+    fr (34)  inf, pres 1sg…3pl, pret 1sg…3pl, particip, imperfekt,
+             futurum, konditionalis, presensparticip
+    ja (9)   jisho, masu, ta, imp, kond, te, nai, vol, ukemi
+
+**Franskan hoppar över `imperf_2sg` och `kond_2sg`** — de ändelserna är redan
+lärda tidigare i paradigmet. Det är projektionen som arbetar, och det syns
+utan att någon skrivit en regel om franskan.
+
+**KVAR INNAN INKOPPLING.** Mekanismen räknar; den styr fortfarande
+ingenting. Att koppla in den betyder att `befolka` skapar ändelsekort per
+steg i stället för alla på nivå 1, och att `NIVÅ` blir två axlar i stället
+för en: konstruktionerna som idag, plus böjningsstegen. Hur de två flätas —
+en gemensam numrering eller två oberoende räknare — är nästa beslut.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 

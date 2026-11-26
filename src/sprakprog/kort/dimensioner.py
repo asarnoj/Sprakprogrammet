@@ -48,41 +48,87 @@ from pathlib import Path
 
 ÄNDELSEFIL = Path(__file__).resolve().parents[3] / "ordbok" / "ändelser.tsv"
 
-#: DEN UNIVERSELLA LISTAN HÄRLEDS, den författas inte.
+#: TEMPUSORDNINGEN ÄR ETT VAL, och det enda i den här filen.
 #:
-#: Första försöket var handskrivet — pres_1sg, pres_2sg, … — och det var en
-#: fransk lista med universella anspråk. Mätt mot datan missade den 11 av
-#: svenskans 12 celler (`pres`, `pret`, `sup`, `imp` och passiverna), 15 av
-#: tyskans 31 (konjunktiverna och participen) och ALLA tio japanska (`masu`,
-#: `te`, `ta`, `nai`, `pot`, `vol` …). Svenskan fick ett enda steg, och det
-#: var listans fel och inte svenskans.
+#: Allt annat räknas: vilka celler som finns, vilka som lär ut något nytt,
+#: vilka klasser de gäller i. Men VILKEN TEMPUS SOM SKA LÄRAS FÖRST är en
+#: pedagogisk fråga och inget faktum om språken — därför står den här, som en
+#: läsbar lista över fjorton värden, i stället för att gömmas i en sorterings-
+#: funktion eller spridas över nittio cellnamn.
 #:
-#: Lärdomen är att cellnamnen inte är ett delat ordförråd. `pres` i svenskan
-#: och `pres_1sg` i franskan är samma tempus i olika upplösning, och
-#: japanskans `masu` är en artighetsform utan europeisk motsvarighet. En
-#: författad lista blir därför alltid formad av det språk som skrev den.
+#: Ordningen: ordboksformen först, eftersom det är så ord slås upp och lärs
+#: in. Sedan presens, dåtid, och den form som bygger de sammansatta tiderna.
+#: Framtid och imperfekt därefter, och de modala och japanskspecifika
+#: formerna sist — de förutsätter att grundtempus sitter.
 #:
-#: Unionen av alla språks celler ÄR den universella listan. Ordningen inom
-#: den är (antal språk som har cellen, fallande; sedan namnet), alltså det
-#: mest delade först — ett tal som räknas ur datan och inte väljs. Celler som
-#: bara ett språk har hamnar sist och projiceras bara dit.
-#:
-#: DET ÅTERSTÅENDE ARBETET STÅR HÄR OCH INTE I EN KOMMENTAR NÅGON ANNANSTANS:
-#: ordningen är delad men inte PEDAGOGISK. Att `pres_1sg` kommer före
-#: `pret_1sg` följer av att fler språk har den, inte av att presens ska läras
-#: först. En riktig ordning kräver att cellerna märks med sina axlar (tempus,
-#: person, numerus, modus, diates) och sorteras på dem — och de axlarna finns
-#: redan i `Former`, men inte i ändelsetabellen. Se F5b.
+#: Namnen kommer ur `paradigm/_legend.yaml` och är desamma i alla sju språken.
+#: Ett värde som saknas här hamnar sist, så en ny tempus i ordboken bryter
+#: ingenting — den syns bara i slutet tills någon placerar den.
+TEMPUSORDNING = ("Inf", "Pres", "Pret", "Sup", "PresPer", "Imperf", "Fut",
+                 "Imp", "Kond", "Te", "Neg", "Pot", "Vol")
+
+
+def _axelrang(cell, legend) -> tuple:
+    """Cellens plats i paradigmet: tempus, diates, numerus, person.
+
+    NUMERUS FÖRE PERSON, alltså 1sg, 2sg, 3sg, 1pl, 2pl, 3pl — böjnings-
+    tabellens egen ordning, och samma som `_rang` ger pronomenen. Person före
+    numerus hade gett 1sg, 1pl, 2sg, 2pl, vilket ingen läromedelstabell
+    använder.
+    """
+    a = cell.axlar
+    tempusnamn = {v: k for k, v in legend.get("tempus", {}).items()}
+    t = tempusnamn.get(a.get("tempus"))
+    plats = (TEMPUSORDNING.index(t) if t in TEMPUSORDNING
+             else len(TEMPUSORDNING))
+    # OTAGGAD DIATES BETYDER AKTIV, inte "före aktiv". Engelskans yaml
+    # utelämnar `diates` på en del celler medan franskans skriver ut den, och
+    # eftersom listan tar den LÄGSTA rangen över språken vann den otaggade:
+    # `pres_1pl` fick 0 och sorterade före `pres_3sg` som fick 1. Franskans
+    # steg blev 1sg, 2sg, 1pl, 2pl, 3pl, 3sg.
+    #
+    # Numerus och person behåller 0 för otaggat, och där ÄR det rätt: en cell
+    # utan person — svenskans `pres`, japanskans `masu` — gör ingen
+    # personskillnad alls och är paradigmets omarkerade form. Den hör först.
+    # DIATES SLÅR TEMPUS. Hela aktivum innan något passivum, och det är en
+    # starkare regel än tempusordningen: svenskans `inf_passiv` (läsas) kom
+    # annars före `pres` (läser), eftersom infinitiv rankas före presens.
+    # Passiv infinitiv är ett av paradigmets sista moment, inte ett av dess
+    # första — man lär sig hela den aktiva böjningen först.
+    #
+    # Samma sak i japanskan: `ukemi` låg tvåa och hör hemma sist.
+    return (a.get("diates") or 1,      # Aktiv (1) före Passiv (2)
+            plats,
+            a.get("numerus") or 0,     # Sg (1) före Pl (2), omarkerad först
+            a.get("person") or 0,      # P1, P2, P3, omarkerad först
+            cell.id)
 
 
 def universella_celler(ordklass: str = "Verb") -> tuple[str, ...]:
-    """Unionen av alla språks celler, mest delade först."""
-    tabeller = ändelsetabeller(ordklass)
-    antal: dict[str, set[str]] = defaultdict(set)
-    for (språk, _), tabell in tabeller.items():
-        for cell in tabell:
-            antal[cell].add(språk)
-    return tuple(sorted(antal, key=lambda c: (-len(antal[c]), c)))
+    """Unionen av alla språks celler, i paradigmets ordning.
+
+    LISTAN HÄRLEDS, den författas inte. Mitt första försök var handskrivet —
+    `pres_1sg`, `pres_2sg`, … — alltså en fransk lista med universella
+    anspråk. Mätt mot datan missade den 11 av svenskans 12 celler, 15 av
+    tyskans 31 och ALLA tio japanska. Svenskan fick ett enda steg, och det var
+    listans fel och inte svenskans.
+    """
+    from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
+    legend = ladda_legend()
+    rang: dict[str, tuple] = {}
+    for språk in sorted({s for s, _ in ändelsetabeller(ordklass)}):
+        try:
+            slot = ladda_slot(språk, ordklass, legend)
+        except FileNotFoundError:
+            continue
+        for cell in slot.celler:
+            # SAMMA CELLNAMN KAN FINNAS I FLERA SPRÅK, och axlarna ska vara
+            # desamma. Är de det inte tar vi den lägsta rangen — ett namn kan
+            # bara ha en plats i en delad lista.
+            r = _axelrang(cell, legend)
+            if cell.id not in rang or r < rang[cell.id]:
+                rang[cell.id] = r
+    return tuple(sorted(rang, key=lambda c: rang[c]))
 
 
 def ändelsetabeller(ordklass: str = "Verb") -> dict[tuple[str, str], dict[str, str]]:
