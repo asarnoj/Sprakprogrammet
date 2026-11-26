@@ -1,0 +1,148 @@
+SQLite-struktur för Språkprogrammet (visualisering)
+==================================================
+Schema-version: 2
+
+Mål: En flerspråkig datamodell där meningar byggs från semantiska byggstenar
+och kan renderas i valfritt tilllagt språk. Varje grammatisk form trackas
+separat för spaced repetition på byggstens-nivå.
+
+
+Översikt av tabeller
+--------------------
+
+1) Koncept  (språkoberoende begrepp)
+   - id
+   - namn      (engelsk identifierare, t.ex. "eat", "ball", "he")
+   - ordklass  (grammatisk kategori: Substantiv, Verb, Adjektiv, ...)
+
+2) Lexem  (ett per språk per koncept)
+   - id
+   - koncept_id   (koppling till Koncept)
+   - språk        (t.ex. 'sv', 'fr')
+   - lemma        (uppslagsformen i det specifika språket)
+   - genus        (fri text, tolkas i sitt språks kontext)
+                  sv: Utrum | Neutrum
+                  fr: Maskulin | Feminin
+   - transitivitet (Transitiv | Intransitiv | Ditransitiv | Reflexiv)
+   - gradbarhet   (Gradbar | Icke gradbar)
+
+3) Former  (en rad = en böjd form kopplad till ett lexem)
+   - id
+   - lexem_id   (koppling till Lexem, implicierar språk)
+   - form       (den böjda formen, t.ex. "äter", "mange", "bollarna")
+
+   Morfologiska axlar (fylls bara när relevanta):
+   - numerus    1=Singular, 2=Plural
+   - species    1=Obestämd, 2=Bestämd  (ej tillämplig i t.ex. franska)
+   - kasus      bitflagga: 1=Nominativ, 2=Ackusativ, 4=Dativ, 8=Genitiv
+   - genus      1=Utrum/Maskulin, 2=Neutrum/Feminin  (tolkas per språk)
+   - tempus     Infinitiv | Presens | Preteritum | Supinum |
+                Imperativ | Perfekt particip | Presens particip
+   - grad       Positiv | Komparativ | Superlativ
+
+
+Koncept-binder-Lexem-relationen
+--------------------------------
+Samma koncept binder ihop motsvarigheter i olika språk:
+
++----+------+-----------+
+| id | namn | ordklass  |
++----+------+-----------+
+|  1 | eat  | Verb      |  ← binder äta (sv) och manger (fr)
+|  2 | ball | Substantiv|  ← binder boll (sv) och balle (fr)
++----+------+-----------+
+
++----+-----------+------+---------+---------+
+| id | koncept_id| språk| lemma   | genus   |
++----+-----------+------+---------+---------+
+|  1 |     1     |  sv  | äta     | NULL    |
+|  2 |     1     |  fr  | manger  | NULL    |
+|  3 |     2     |  sv  | boll    | Utrum   |
+|  4 |     2     |  fr  | balle   | Feminin |
++----+-----------+------+---------+---------+
+
+
+Exempel: Former för boll (sv) och balle (fr)
+---------------------------------------------
+Svenska böjer substantiv i numerus OCH species (bestämdhet via suffix):
+
++------+----------+---------+--------+--------+-------+
+| form | lexem_id | numerus | species| kasus  | genus |
++------+----------+---------+--------+-------+--------+
+| boll      |  3  |    1    |   1    |   7   | NULL  |
+| bollen    |  3  |    1    |   2    |   7   | NULL  |
+| bollar    |  3  |    2    |   1    |   7   | NULL  |
+| bollarna  |  3  |    2    |   2    |   7   | NULL  |
++------+----------+---------+--------+-------+--------+
+
+Franska böjer substantiv BARA i numerus (bestämdhet = separat artikel):
+
++---------+----------+---------+--------+-------+
+| form    | lexem_id | numerus | species| kasus |
++---------+----------+---------+--------+-------+
+| balle   |    4     |    1    |  NULL  |   7   |
+| balles  |    4     |    2    |  NULL  |   7   |
++---------+----------+---------+--------+-------+
+
+
+Exempel: Former för gullig (sv) och mignon (fr)
+------------------------------------------------
+Svenska adjektiv böjs i genus, numerus och species:
+
++-----------+----+------+--------+------+----------+
+| form      | id |genus |numerus |spec. | grad     |
++-----------+----+------+--------+------+----------+
+| gullig    |  5 |  1   |   1    |  1   | Positiv  |  (utrum sg obestämd)
+| gulligt   |  5 |  2   |   1    |  1   | Positiv  |  (neutrum sg obestämd)
+| gulliga   |  5 |  3   |   2    |  1   | Positiv  |  (pl obestämd)
+| gulliga   |  5 |  3   |   1    |  2   | Positiv  |  (bestämd)
+| gulligare |  5 | NULL |  NULL  | NULL | Komparativ|
+| gulligast |  5 | NULL |  NULL  |  1   | Superlativ|
+| gulligaste|  5 | NULL |  NULL  |  2   | Superlativ|
++-----------+----+------+--------+------+----------+
+
+Franska adjektiv böjs i genus och numerus (INTE species, INTE syntetisk komp.):
+
++------------------+----+------+--------+------------+
+| form             | id |genus |numerus | grad       |
++------------------+----+------+--------+------------+
+| mignon           |  6 |  1   |   1    | Positiv    |  (maskulin sg)
+| mignonne         |  6 |  2   |   1    | Positiv    |  (feminin sg)
+| mignons          |  6 |  1   |   2    | Positiv    |  (maskulin pl)
+| mignonnes        |  6 |  2   |   2    | Positiv    |  (feminin pl)
+| plus mignon      |  6 |  1   |   1    | Komparativ |
+| plus mignonne    |  6 |  2   |   1    | Komparativ |
+| le plus mignon   |  6 |  1   |   1    | Superlativ |
+| la plus mignonne |  6 |  2   |   1    | Superlativ |
++------------------+----+------+--------+------------+
+
+
+Urvalslogik (vid generering)
+-----------------------------
+1) Välj ett Koncept per slot i meningen (t.ex. ordklass=Verb).
+2) Hämta det Lexem som matchar önskat språk (Lexem.språk = 'fr').
+3) Härled morfologiska axlar från meningens inställningar:
+   - Verb:       tempus  → hämta rätt form
+   - Substantiv: numerus + species → hämta rätt form
+   - Adjektiv:   grad + genus + numerus + species → hämta rätt form
+4) Hämta den rad i Former där lexem_id + axlar matchar.
+5) Saknas form → välj annat Koncept eller lätta på kraven.
+
+
+Index (för prestanda)
+----------------------
+- Koncept: ordklass
+- Lexem:   lemma, språk, koncept_id
+- Former:
+    Substantiv:  (lexem_id, numerus, species)
+    Verb:        (lexem_id, tempus)
+    Adjektiv:    (lexem_id, grad, genus, numerus, species)
+
+
+Noter om genus-kolumnen
+------------------------
+genus i Lexem  = fri text, språkspecifikt värde (Utrum, Feminin, etc.)
+genus i Former = heltal, morfologisk axel för böjningskongruens:
+                 1 = första genus i språket  (sv: Utrum   | fr: Maskulin)
+                 2 = andra  genus i språket  (sv: Neutrum | fr: Feminin)
+                 3 = båda (används i svenska för pl/bestämd adjektivform)

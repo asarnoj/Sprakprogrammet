@@ -1,0 +1,120 @@
+{
+  "verb": {
+    "ser": {
+      "valens": "transitiv",
+      "bojningar": {
+        "presens": "ser",
+        "preteritum": "såg",
+        "supinum": "sett"
+      },
+      "betydelse": "att använda synen"
+    },
+    "springer": {
+      "valens": "intransiv",
+      "bojningar": {
+        "presens": "springer",
+        "preteritum": "sprang",
+        "supinum": "sprungit"
+      },
+      "betydelse": "att röra sig snabbt"
+    },
+    "ger": {
+      "valens": "ditransitiv",
+      "bojningar": {
+        "presens": "ger",
+        "preteritum": "gav",
+        "supinum": "gett"
+      },
+      "betydelse": "att överföra något till någon"
+    },
+    "är": {
+      "valens": "kopula",
+      "bojningar": {
+        "presens": "är",
+        "preteritum": "var",
+        "supinum": "varit"
+      },
+      "betydelse": "att befinna sig i ett tillstånd"
+    }
+  },
+  "substantiv": {
+    "hund": {
+      "genus": "en",
+      "bojningar": {
+        "singular": "hund",
+        "plural": "hundar",
+        "bestämd_singular": "hunden",
+        "bestämd_plural": "hundarna"
+      },
+      "betydelse": "fyrbent husdjur"
+    },
+    "bok": {
+      "genus": "en",
+      "bojningar": {
+        "singular": "bok",
+        "plural": "böcker",
+        "bestämd_singular": "boken",
+        "bestämd_plural": "böckerna"
+      },
+      "betydelse": "tryckt publikation med sidor"
+    },
+    "bil": {
+      "genus": "en",
+      "bojningar": {
+        "singular": "bil",
+        "plural": "bilar",
+        "bestämd_singular": "bilen",
+        "bestämd_plural": "bilarna"
+      },
+      "betydelse": "motorfordon"
+    },
+    "hus": {
+      "genus": "ett",
+      "bojningar": {
+        "singular": "hus",
+        "plural": "hus",
+        "bestämd_singular": "huset",
+        "bestämd_plural": "husen"
+      },
+      "betydelse": "byggnad för boende"
+    }
+  },
+  "adjektiv": {
+    "stor": {
+      "bojningar": {
+        "positiv": "stor",
+        "komparativ": "större",
+        "superlativ": "störst",
+        "bestämd_form": "stora"
+      },
+      "betydelse": "av betydande storlek"
+    },
+    "snabb": {
+      "bojningar": {
+        "positiv": "snabb",
+        "komparativ": "snabbare",
+        "superlativ": "snabbast",
+        "bestämd_form": "snabba"
+      },
+      "betydelse": "som rör sig fort"
+    },
+    "röd": {
+      "bojningar": {
+        "positiv": "röd",
+        "komparativ": "rödare",
+        "superlativ": "rödast",
+        "bestämd_form": "röda"
+      },
+      "betydelse": "av röd färg"
+    },
+    "glad": {
+      "bojningar": {
+        "positiv": "glad",
+        "komparativ": "gladare",
+        "superlativ": "gladast",
+        "bestämd_form": "glada"
+      },
+      "betydelse": "som känner glädje"
+    }
+  }
+}
