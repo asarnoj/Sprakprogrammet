@@ -4,10 +4,11 @@ Den fullständiga specifikationen av kärnan — korten, nivåerna, dagspasset,
 meningsbygget och bedömningen — så som den ska byggas. Filen beskriver målet,
 inte ändringar i den kod som finns.
 
-> **Läge 2026-09-12.** Specen är avgjord utom en fråga (punkt 10), och den
-> blockerar inget. Kortmodellen och aspektvalet avgjordes samma dag. Det som
-> står först i tur är arbete, inte beslut: språkens böjningsregler (steg 0) och
-> renderarnas redovisning (steg 1), som kan göras samtidigt.
+> **Läge 2026-09-13.** Designen är avgjord utom frågorna i punkt 10, och ingen av
+> dem blockerar bygget. Steg 0 är gjort för svenska och väntar på granskning
+> (`ordbok/regelkontroll/sv.md`). Steg 1 är inventerat men inte byggt
+> (`paradigm/TYSTA_BESLUT.md`). Nästa arbete är att bygga steg 1 och ta fram
+> böjningsreglerna för övriga språk.
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -24,7 +25,7 @@ misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
 7. Bedömningen
 8. Koden
 9. Byggordningen
-10. Öppen fråga
+10. Öppna frågor
 11. Acceptans
 12. Kända fel i data och kod
 
@@ -73,12 +74,17 @@ mening ska gå ihop — det var så planens 7 nya kort blev 25.
 
 **R2 · Entydigheten**
 
-> En uppgift är giltig endast om exakt en målmening är korrekt.
+> En uppgift är giltig endast om varje målkort ingår i varje korrekt svar som
+> går att bygga av användarens införda kort.
 
-Har källmeningen två korrekta översättningar vet användaren inte vad som
-efterfrågas, och rättningen mäter en gissning. Egenskapen är att relationen
-källmening → målmening är en *funktion*; den är varken injektivitet eller
-surjektivitet.
+En mening har ofta flera korrekta översättningar: `leo` och `yo leo`, `igår läste
+hon` och `hon läste igår`, `sade` och `sa`. Det är inget fel i sig. Felet uppstår
+när användaren kan svara rätt utan att målet prövas — då mäter rättningen
+ingenting. Tvetydighet i källmeningen är samma fall: «jag arbetade» har två
+franska översättningar, och imperfektkortet finns bara i den ena.
+
+Tillägget om införda kort behövs, annars skulle ett synonymt ord som användaren
+aldrig lärt sig göra uppgiften ogiltig. Varianterna hittas i 6.5 och bedöms i 7.3.
 
 **R3 · Varje beslut renderaren fattar är en nivå och ett kort**
 
@@ -236,14 +242,29 @@ Principen kräver att varje språks regler skrivs ner: klasserna med sina synlig
 villkor, ändelserna per cell och ljudreglerna. De kontrolleras mekaniskt:
 
     generera alla former i databasen med reglerna
-    varje form som reglerna inte ger är antingen
-        ett undantagskort, eller
-        en regel som saknas
+    varje form som reglerna inte ger är
+        ett undantagskort,
+        en regel som saknas, eller
+        ett fel i datan
 
-Det är en kontroll av att reglerna stämmer, inte statistik, och en människa
-granskar bara listan över avvikelser. Svenskan görs först, eftersom Julius kan
-bedöma den; övriga språk tas fram ur standardgrammatiker och kontrolleras på
-samma sätt.
+Kontrollen sorterar själv ut datafel där formen bryter mot ett samband utan
+undantag — en passiv som inte är aktiv form plus -s, en genitiv som inte är formen
+plus -s. Resten granskar en människa, och bara listan över avvikelser. Det är en
+kontroll av att reglerna stämmer, inte statistik.
+
+**Kontrollen ensam räcker inte.** Formerna i databasen är genererade, och regler som
+tas fram på samma sätt kan stämma med dem utan att någon av dem är rätt. Därför
+finns tre lager till:
+
+| Lager | Vad det fångar | Finns för |
+|---|---|---|
+| kaikki som oberoende facit | fel som reglerna och datan delar | de, es, fr, it, sv |
+| AI-granskning av former och meningar | det kaikki saknar | alla språk |
+| användarens flagga «facit är fel» (7.2) | det som slinker igenom | alla språk |
+
+Svenskan är gjord: `python -m sprakprog.bojning.kontroll sv`. Slutna ordklasser —
+pronomen, artiklar, possessiv, räkneord — ska också kontrolleras. Deras paradigm
+har inga regler, så varje form är ett undantagskort.
 
 **Basen härleds ur de renderade formerna, inte ur lemmasträngen.** Annars blir
 lexem som böjs i två led fel (`sœur aînée` blev `sœurs aînée`), och flerordslexem
@@ -268,8 +289,26 @@ rad för alla språk) följer av betydelsen och blir inget kort.
 
 `prenominal` varierar från ord till ord (16 av franskans 111 adjektiv står före
 substantivet) och är därför en egenskap, inte en regel. `variant` skiljer
-homonymer åt och blir inget kort. Franskan har 162 genuskort — ett per
-substantiv.
+homonymer åt och blir inget kort.
+
+Två egenskaper saknas i tabellen men följer av samma kriterium, eftersom värdet hör
+till ett ord och syns på ett annat: **reflexivt verb** (`skynda sig`, syns på
+pronomenet) och spanskans **ser eller estar** (syns på kopulan). I dag läses båda
+förbi instrumenteringen (`paradigm/TYSTA_BESLUT.md`, A8–A9).
+
+**Genus får ett kort per substantiv, även där genuset syns på ordet** (`-tion`,
+`-ung`, `-chen`). Förutsägbarhetsprincipen i 3.4 tillämpas inte här, och skälet är
+införandet:
+
+| | Utan mönsterkort | Löser FSRS det själv? |
+|---|---|---|
+| genus | ett kort per substantiv, som ändå införs med ordet | ja — kan användaren mönstret skjuts korten snabbt upp |
+| former | ett kort per ord och cell, och alla måste införas (R1) | nej — en övning som måste göras försvinner inte för att den blir lätt |
+
+FSRS rättar till det som *repeteras*, men inte det som måste *införas*. Att kunna
+böja ett regelbundet verb man aldrig sett är vad det betyder att kunna böjningen;
+att kunna genus för varje ord man lärt sig är allt som finns att kunna om genus.
+Franskan har 162 genuskort.
 
 ### 3.6 `rektion` och `regel`
 
@@ -319,8 +358,11 @@ där renderaren väljer tempus utifrån aspekten, och uppgiften görs entydig ge
 att källmeningen visar valet (6.5). Samma sak gäller modus som inte styrs av ett
 ord.
 
-Därmed finns inga kända hål i täckningen, förutsatt att renderarna redovisar sina
-beslut (steg 1).
+**Två kända hål återstår**, båda inventerade i `paradigm/TYSTA_BESLUT.md` och båda
+åtgärdas i steg 1: tio ord som renderaren skriver ut utan att de är lexem, och som
+därför saknar `ord`-kort (`ne`, `est-ce que`, japanskans partiklar), och 26
+läsningar av befintliga kort som går förbi instrumenteringen (`hjälpverb`,
+`prenominal`, konjunktivrektion).
 
 ### 3.9 Oböjliga ord
 
@@ -348,27 +390,22 @@ Konstruktionerna är desamma i alla sju språk, eftersom de hör till konceptlag
 Dagens kod har 20 (`urval.ANVÄNDER`), sammanflätade med böjningen till en stege
 på 22 steg (24 i japanskan).
 
-Realiseringsstegen per språk, uppskattad:
+Realiseringsstegen per språk, inventerad i steg 1 (`paradigm/TYSTA_BESLUT.md`):
 
-| | ordföljd | övriga beslut | totalt |
-|---|---|---|---|
-| sv | 4 | 11 | 15 |
-| en | 3 | 9 | 12 |
-| de | 7 | 10 | 17 |
-| fr | 3 | 22 | 25 |
-| es | 4 | 24 | 28 |
-| it | 3 | 23 | 26 |
-| ja | 4 | 6 | 10 |
-| | **28** | **105** | **133** |
+| | sv | en | de | fr | es | it | ja | summa |
+|---|---|---|---|---|---|---|---|---|
+| ordföljdsregler som redan redovisas | 4 | 3 | 6 | 3 | 4 | 3 | 4 | **27** |
+| tysta beslut | 29 | 23 | 35 | 36 | 34 | 37 | 12 | **206** |
 
-Ordföljdsreglerna redovisas redan; `befolka.ORDFÖLJD` har 27, varav sex i
-tyskan. De 105 övriga besluten fattas tyst i dag och kan räknas exakt först när
-renderarna redovisar dem (steg 1).
+Specen uppskattade tidigare 105 tysta beslut. Hur många som blir regelkort beror på
+frågorna i 10.2 — till exempel om skiljetecken är kort.
 
 ### 4.2 Ordningen är en graf
 
-Beroendena läses ur renderaren, som vet vad den slår upp när den tillämpar en
-regel:
+Beroendena **anges där beslutet fattas**, i redovisningsanropet (8.3). Provsviten
+kontrollerar att renderaren aldrig slår upp något som regeln inte har angett. Att
+i stället mäta beroendena genom att rendera exempelmeningar vore sampling, och ett
+beroende som inte råkar dyka upp skulle missas.
 
     perfekt        kräver  particip
     klitika_före   kräver  objektsform
@@ -400,25 +437,36 @@ och det blir kort:
 
 ### 4.4 Grinden
 
-> **En nivå kan öppnas när föregångarnas kort har mötts och gått rätt minst en
-> gång, och den prövningen inte skedde i dag.**
+> **En nivå kan öppnas när föregångarnas mönsterkort har införts, mötts och gått
+> rätt minst en gång, och den prövningen inte skedde i dag.**
 
-- **Högst en ny nivå per dygn.** Ett kort som införs i dag kan inte räknas som
-  lärt förrän i morgon, eftersom FSRS kortaste meningsfulla intervall är ett
-  dygn. Regeln behöver alltså inget valt tal.
-- **Nivån byts bara när passet startas.** Två knappar: *starta* och *starta på
-  nästa nivå*. Planen räknas ut efter valet och ändras inte under passet.
-- **Ingen grind för «materialet räcker».** Grinden ovan kräver ett lyckat möte,
-  och ett möte kräver en mening som gick att bygga. Att en nivå skulle sakna
-  material kan bara hända om den öppnar noll kort — och det förbjuder
-  invarianten.
+Mönsterkorten är de kort nivån själv öppnar — regler, ändelser, celler. Undantagskort
+för enskilda ord räknas inte, annars skulle grinden bli långsammare för varje nytt
+ord i ordförrådet.
+
+- **Knappen öppnar alla nivåer vars grind är uppfylld.** Nivåer öppnas bara när passet
+  startas: *starta* eller *starta med nya nivåer*. Planen räknas ut efter valet och
+  ändras inte under passet.
+- **Takten är användarens egen.** Grinden kräver att korten först har införts, och
+  införandet styrs av tidsmodellen (5.5), som mäter hur fort användaren klarar sina
+  kort. Den som kämpar låser upp långsammare, utan att något tal är valt.
+- **Längs en kedja öppnas högst en nivå per dygn**, eftersom föregångarens kort måste
+  ha klarats en tidigare dag. Nivåer som inte beror på varandra behöver inte vänta på
+  varandra.
+- **Ingen grind för arbetsbördan.** Att öppna en nivå lägger inga kort i passet, bara
+  kandidater. Arbete tillkommer först när kort införs, och det taket sätter
+  tidsmodellen redan. En grind som prövade arbetsbördan vid upplåsningen skulle
+  aldrig spärra.
+- **Ingen grind för «materialet räcker».** Grinden kräver ett lyckat möte, och ett
+  möte kräver en mening som gick att bygga. Att en nivå skulle sakna material kan
+  bara hända om den öppnar noll kort — och det förbjuder invarianten.
 
 ### 4.5 Upplåsning är inte införande
 
 | | Frågan | Rätt svar? | Kostar |
 |---|---|---|---|
 | **Upplåsning** | vad *går* att lära nu | ja — grammatiken avgör | ingenting |
-| **Införande** | vad *borde* läras nu | nej — ett omdöme (5.5) | minuter per dag |
+| **Införande** | vad *borde* läras nu | nej — ett omdöme (5.6) | minuter per dag |
 
 Att låsa upp tio nivåer ger en kö av kort, inte tio nivåers arbete samma dag. Ett
 kort som är upplåst men inte infört kan aldrig stå i en mening (R1).
@@ -455,8 +503,10 @@ alla andra, och går det fel hamnar det i dagens again-hög.
 Passet är klart när **new-, again- och due-högarna är tomma.** Varje fel ger mer
 arbete. Att varje kort alltid går att nå garanteras av budgeten (6.3).
 
-Det finns i dag ingen utväg för ett kort som användaren inte klarar under dagen
-(se 7.7).
+**Att passet kan dra ut på tiden är ett medvetet val.** Det som räknas är arbete som
+lyckas, inte nedlagd tid. Tidsratten styr hur mycket nytt som planeras (5.5), inte
+när passet slutar, och ett kort som användaren inte klarar ligger kvar tills det
+klaras.
 
 ### 5.4 Introfasen: hur ett kort införs
 
@@ -483,7 +533,7 @@ bokför ett eller två kort märker användaren inte.
 |---|---|
 | `ord` | glosa: betydelse → form |
 | böjningscell | en ruta i paradigmtabellen |
-| pronomen | hela paradigmet på en gång — pronomen är ett system, inte sex fakta |
+| pronomen | hela paradigmet i följd, en övning per form — pronomen är ett system, inte sex fakta |
 | `egenskap` | tvåval, t.ex. vilket genus ordet har |
 | `rektion` | vilket kasus verbet styr |
 | `regel` | lektion med regeln och två exempel |
@@ -491,61 +541,99 @@ bokför ett eller två kort märker användaren inte.
 Ett mönsterkort införs med ett ord användaren redan kan, så att bara mönstret är
 nytt. Senare *prövas* det helst på ett nytt ord (6.4).
 
+**En övning görs om tills svaret blir rätt.** Ett kort som misslyckas läggs sist i
+introfasens kö. Det första svaret, som ges efter att kortet visats, är kortets
+första FSRS-betyg; omtagen bokförs som vanliga möten (7.1).
+
 **Dag ett.** Nivå 1 ger singularpronomenen — jag, du, han, hon, den, det —
 eftersom `numerus` är en senare konstruktion. Vi, ni och de kommer med den.
 Passet når sin första mening när användaren kan ett pronomen och ett verb.
 
-### 5.5 Vilka nya kort: införandeordningen
+### 5.5 Hur många nya kort
 
-Tidsratten bestämmer **hur många** nya kort dagen får. Ordningen bestämmer
-**vilka**, i två steg:
+Beräkningen görs en gång, när passet startas och användaren har valt om nya nivåer
+ska öppnas.
 
-    1.  finns ouppfyllda mönsterkrav   -> inför kort som uppfyller dem
-    2.  annars                         -> semantisk frekvens
+**Mätt ur loggen**
+- tid per införandeövning, med omtag
+- tid per förfallet kort som klaras, med de extra möten som fel kostar — talet visar
+  också hur bra användaren är
 
-**Steg 1 — det meningarna saknar.** Generatorn väljer först ett verb. Verbets
-mönster säger vad varje slot kräver *innan* något ord är valt: «subjektet ska vara
-mänskligt», «objektet ska vara ett räknebart föremål». Kan kravet inte uppfyllas
-med införda ord loggas kravet. Kandidaterna är de oinförda lexem som uppfyller
-det, och de hittas genom en sökning i ordboken. Generatorn behöver aldrig se
-oinförda kort.
+**Härlett ur FSRS, med användarens egna parametrar**
+- hur många repetitioner ett nytt kort ger upphov till, dag för dag framåt
+- hur mycket arbete de redan införda korten ger, dag för dag framåt
 
-    krav som inte gick att uppfylla    kandidater
-    subjekt: mänsklig                  oinförda koncept med semantik «mänsklig»
-    verb med komplementslot            oinförda modalverb
-    (exempel, inte en mätning)
+> **Dagens antal nya kort är det största antal som gör att den förväntade
+> arbetstiden ryms inom den inställda tiden varje dag framåt.**
 
-Metoden rangordnar alla korttyper på samma skala, rättar sig själv när kravet
-börjar gå att uppfylla, och kan aldrig föreslå ett kort som inte finns. Den kräver
-att felet i `urval.py:219` är åtgärdat (punkt 12).
+Hur långt framåt behöver inte väljas: ett korts bidrag minskar när intervallen
+växer, och beräkningen slutar när bidraget är mindre än ett enda kortmöte. Tar de
+förfallna korten redan mer än den inställda tiden, till exempel efter några dagars
+uppehåll, blir antalet noll.
 
-*Sekundärsignal:* effektivt antal olika ord som fyllt en slot, 1/Σp², mätt ur
-loggen. Den visar att en slot håller på att bli trång innan kravet slutar gå att
+Nivåns kort är inte tvingade att införas. De konkurrerar som alla andra kort, men
+vinner nästan alltid, eftersom de är de mest efterfrågade (5.6).
+
+### 5.6 Vilka nya kort: införandeordningen
+
+    1.  efterfrågan   hur ofta ett meningsbygge stoppades av att kortet saknades
+    2.  frekvens      skiljer kort med samma efterfrågan
+
+**Steg 1 — efterfrågan, för alla korttyper.** Efterfrågan mäts i korten själva:
+
+- **Saknas ett ord** som kan fylla en plats, är kandidaterna oinförda ord. Verbets
+  mönster säger vad varje plats kräver *innan* något ord är valt — «subjektet ska vara
+  mänskligt» — så generatorn behöver aldrig känna till oinförda ord i förväg.
+- **Kräver en upplåst konstruktion en cell, regel eller egenskap** som inte är införd,
+  är kandidaten just det kortet. Upplåsta kort vet generatorn om, eftersom nivågrafen
+  säger att de är upplåsta.
+
+Kandidaterna rangordnas efter **hur ofta generatorn stoppades för att just det kortet
+saknades**, räknat i loggen från riktiga meningsbyggen. Ett allmänt kort — en regel,
+en ändelse för en hel klass, ett hjälpverb — stoppar många byggen och kommer först;
+ett enskilt ord stoppar få.
+
+Därför behövs ingen särskild regel för när en nivås kort införs: de är de mest
+efterfrågade i samma stund som nivån öppnas. Samma sak gäller slutna ordklasser:
+hjälpverbet kommer när perfekt öppnas, eftersom perfektnivåns meningar inte går att
+bygga utan det.
+
+Metoden kräver att felet i `urval.py:219` är åtgärdat (punkt 12).
+
+*Sekundärsignal:* effektivt antal olika ord som fyllt en plats, 1/Σp², mätt ur
+loggen. Den visar att en plats håller på att bli trång innan kravet slutar gå att
 uppfylla.
 
-**Steg 2 — det som är värt att kunna.** Grammatiken bestämmer vad som går att
-lära; betydelsen bestämmer vad som är värt att lära först.
+**Steg 2 — frekvensen skiljer lika.** Grammatiken bestämmer vad som går att lära;
+betydelsen bestämmer vad som är värt att lära först.
 
 | `Koncept.källa` | Innehåll | Ordning |
 |---|---|---|
-| `bas_kärna` (170) | artiklar, pronomen, prepositioner, konjunktioner, räkneord, negation, frågeord, hjälp- och modalverb | följer nivåerna |
-| `grundord` (566) | substantiv, verb, adjektiv, adverb | frekvens inom ordklassen |
+| `bas_kärna` (170) | artiklar, pronomen, prepositioner, konjunktioner, räkneord, negation, frågeord, hjälp- och modalverb | efterfrågan |
+| `grundord` (566) | substantiv, verb, adjektiv, adverb | efterfrågan, sedan frekvens inom ordklassen |
 
 Frekvenslistan är gemensam för alla språk och rangordnar **koncept, inte lemman**.
 Därför uppstår inga problem med ord som har flera betydelser: `per_känna` och
-`per_lukta` får var sin plats, trots att båda heter `sentir` på franska. Version
-ett har samma ordning för alla användare. Japanskan ska kontrolleras för hand
-innan listan används.
+`per_lukta` får var sin plats, trots att båda heter `sentir` på franska. Version ett
+har samma ordning för alla användare.
 
-### 5.6 Två rattar
+**Frekvenslistan finns inte ännu.** `ordbok/nivålistor/grundord.csv` har en CEFR-nivå
+per koncept (A1, A2, B1), men den är en bedömning och inte en mätning, och den ordnar
+inte orden inom nivån. Den får användas tills en mätt frekvens finns, och är då ett
+tillfälligt val. Japanskan ska kontrolleras för hand.
+
+### 5.7 Två rattar
 
 > **Tidsratten bestämmer vad dagen innehåller. Svårighetsratten bestämmer hur
 > tätt det packas.**
 
-Svårighetsratten *är* τ i budgeten (6.3); förvalet τ = 0,10 är härlett, och ratten
-flyttar det. Högre τ ger färre och tätare meningar och ett kortare pass, men
-oftare fall där rättaren inte kan avgöra vilket kort som föll. De förfallna korten
-bestäms av FSRS och påverkas av ingen av rattarna.
+Svårighetsratten flyttar budgeten i 6.3: tätare meningar ger färre meningar och ett
+kortare pass. **Den får aldrig göra meningarna tätare än rättningen klarar.** Gränsen är
+hur många samtidiga fel jämförelsen kan reda ut utan tvetydighet, och den mäts när
+rättningen finns. Tills dess gäller förvalet τ = 0,10, och ratten kan bara göra
+meningarna lättare. Så bryts R5 aldrig av ett val användaren gör.
+
+De förfallna korten bestäms av FSRS och påverkas av ingen av rattarna.
 
 ---
 
@@ -557,7 +645,7 @@ En mening får ställas endast om:
 
 1. varje kort den kräver är **infört** (R1)
 2. varje regel den använder är **upplåst** i alla tre stegarna
-3. den är **entydig** — källmeningen har exakt en korrekt översättning (R2, 6.5)
+3. varje målkort ingår i **varje korrekt svar** som går att bygga av användarens införda kort (R2, 6.5)
 4. **båda språken kan uttrycka den.** Motorn har inga fasta källspråk — alla språk
    är likvärdiga — men alla språk har inte alla celler. Svenskans `vantar` har
    ingen singular, och då ställs meningen inte. Det är rätt beteende, inget fel.
@@ -584,6 +672,11 @@ Exempel: när genuskortet för `hus` är målet duger `ett hus`, där genuset sy
 ett ställe. `ett stort hus` duger inte — där styr genuset både artikeln och
 adjektivet, och ett fel går inte att knyta till ett enda kort.
 
+**Ett korts positioner är de utskrivna ord vars form kortet bestämde.** Renderaren
+spårar det för varje ord (8.3), även när ord smälter ihop (`au` = `à` + `le`) och när
+språket skrivs utan mellanslag. Två kort är oberoende när deras positioner inte
+överlappar. Samma spår är rättningens underlag (7.3).
+
 **Det här är hela urvalet.** Följande beteenden följer av regeln och får inga
 egna regler:
 
@@ -597,7 +690,8 @@ egna regler:
 | varierande längd | de förfallna korten tar slut under dagen, så passet börjar med korta, täta meningar och slutar med långa, lätta |
 
 Mål och utfyllnad är alltså inte två mekanismer. Målen är helt enkelt de kort som
-har lägst R.
+har lägst R. För övervakade kort är R andelen rätt i fönstret (7.6), så ett kort som
+ses ofta men ofta blir fel blir också mål.
 
 ### 6.3 Budgeten
 
@@ -607,7 +701,8 @@ syns i diffen var det sitter, med två gör det inte. Därför:
     P(≥2 fel i meningen) ≤ τ        τ = 0,10
 
 τ = 1 − retentionsmålet 0,9, samma tolerans som fönstret i 7.6. Det är
-svårighetsrattens förval.
+svårighetsrattens förval, och ratten får flytta det upp till den gräns som mäts när
+rättningen finns (5.7).
 
 Med R = 0,90 för förfallna kort och R = 0,99 för övriga:
 
@@ -639,8 +734,8 @@ billigare per kort (mätt ur loggen):
          4               20,5          5,1
          8               24,9          3,1
 
-Den fasta kostnaden per mening dominerar. **När påfyllningen ska sluta är den
-öppna frågan i punkt 10.**
+Den fasta kostnaden per mening dominerar. **När påfyllningen ska sluta är öppen
+fråga 10.1.**
 
 ### 6.4 Att bygga mot ett kort
 
@@ -648,7 +743,8 @@ Att ett kort är upplåst och förfallet gör inte att det dyker upp av sig sjä
 Franskans `inversion_wh` förekommer bara i wh-frågor, så när kortet är förfallet
 måste generatorn **välja** att bygga en wh-fråga. Varje regel ska därför ha ett
 byggvillkor — «meningen måste innehålla ett objektspronomen» — och den kunskapen
-finns redan i renderaren. Dagens generator kan sikta på ord men inte på regler.
+finns redan i renderaren. Villkoret anges i redovisningsanropet, bredvid regelns
+beroenden (4.2, 8.3). Dagens generator kan sikta på ord men inte på regler.
 
 **Ett mönsterkort prövas bäst på ett nytt ord.** Ett mönster möts alltid genom ett
 ord. Skriver användaren `bilarna` rätt vet man inte om hen kan `-rna` eller bara
@@ -657,34 +753,35 @@ eget kort är svagare än mönsterkortet.
 
 ### 6.5 Entydighetsfiltret
 
-Entydigheten kontrolleras när meningen byggs, i samma filter som låsta regler.
-Den kan inte kontrolleras i förväg, eftersom den beror på vad användaren har låst
-upp: «jag arbetade» har en fransk översättning innan `imperf` är upplåst, och två
-efteråt.
+R2 kontrolleras när meningen byggs, i samma filter som låsta regler. Det går inte att
+kontrollera i förväg, eftersom resultatet beror på vad användaren har infört: «jag
+arbetade» har en fransk översättning innan `imperf` är infört, och två efteråt.
 
-Filtret bygger på en **neutraliseringstabell** per språkpar: de skillnader
-målspråket gör men källspråket inte gör.
+**Filtret söker automatiskt, för vilket språkpar som helst.** Motorn behandlar alla
+språk lika, så inga tabeller behöver skrivas för hand. Två sorters varianter söks:
 
-    för varje neutraliseringspunkt i meningen:
-        har målspråket mer än ett UPPLÅST alternativ?
-            ja -> källmeningen måste visa vilket, annars förkastas meningen
+| Sort | Hur den hittas | Exempel |
+|---|---|---|
+| samma källmening, olika innehåll | variera meningens innehåll längs de axlar där språk skiljer sig — tid och aspekt, singular eller plural för «du», referentens genus, lexemvarianter — och se vilka varianter som ger samma källmening | «jag arbetade» → imparfait eller passé composé |
+| samma innehåll, olika korrekta målmeningar | renderaren räknar upp de former språket tillåter: utelämnbart subjekt, godtagna ordföljder, stavningsvarianter, sammandragningar | `leo` / `yo leo` |
 
-För svenska → franska innehåller tabellen ungefär: aspekt i dåtid, modus som inte
-styrs av ett ord, `man` → `on`, och de 16 svenska lemman som har flera
-betydelser (`fråga`, `får`, `hälsa` …). För de flesta av dem avgör meningen ändå,
-eftersom betydelserna har olika ordklass. Två införda ord för samma koncept i
-målspråket — tyskans `glauben` och `finden` — är samma sorts fall och hör till
-samma tabell.
+Bara varianter som går att bygga av användarens införda kort räknas. Därefter:
 
-**Aspekt och modus löses genom att källmeningen visar valet.** Är både
-imparfait och passé composé upplåsta får en dåtidsmening bara ställas om den
+    ingår varje målkort i varje korrekt målmening?   nej -> förkasta
+
+Sökningen körs per kandidatmening och kostar några renderingar. Varianterna den
+hittar är också de svar rättningen godtar (7.3).
+
+**Aspekt och modus löses genom att källmeningen visar valet.** Är både imparfait och
+passé composé införda får en dåtidsmening bara ha imperfektkortet som mål om den
 innehåller ett ord som avgör valet: «jag arbetade **varje dag**», «jag arbetade
-**igår**». Generatorn lägger till ett sådant ord när meningen annars vore
-tvetydig. Användaren tränar då just det som är svårt — att läsa valet ur
-sammanhanget. Tabellen behöver därför för varje sådan punkt en lista över vilka
-ord i källspråket som pekar mot vilket alternativ.
+**igår**». Generatorn lägger till ett sådant ord när meningen annars vore tvetydig, och
+användaren tränar då just det som är svårt — att läsa valet ur sammanhanget.
 
-Tabellen finns inte ännu (steg 5b).
+Vilka ord som avgör valet kan sökningen inte hitta, eftersom det hör till betydelsen
+och inte till ett visst språk. Det märks därför en gång på konceptet och gäller för
+alla sju språk: adverben har redan `tempuskrav`, och behöver ett **`aspektkrav`**
+bredvid. Det finns inte ännu (steg 5b).
 
 ### 6.6 Algoritmen
 
@@ -723,18 +820,34 @@ till** kostar ingenting.
 Möten där R ≈ 1 säger lite. De filtreras bort **när FSRS-parametrarna
 optimeras**, inte när loggen skrivs — data kastas aldrig.
 
-### 7.2 Betyg
+### 7.2 Betyg och omrättning
 
-`Again` och `Good` räknas fram ur diffen, och det räcker för FSRS. `Hard` och
-`Easy` räknas aldrig fram, inte heller ur svarstiden. Längre fram får användaren
-sätta dem själv.
+`Again` och `Good` räknas fram ur diffen. **Stavfel och accentfel räknas som fel** —
+rättningen gissar inte vad användaren menade.
+
+Efter meningen visas rättningen, och användaren kan **markera om**:
+
+- ett underkänt kort som godkänt — ett stavfel, eller en korrekt variant som
+  renderaren missade
+- ett godkänt kort som `Hard` eller `Easy`
+- facit som fel — en flagga som går till granskningen av datan (3.4)
+
+Loggen sparar både diffens betyg och användarens. Diffens betyg är mätt och
+användarens är användarens eget; båda är tillåtna enligt R4, och FSRS får
+användarens. `Hard` och `Easy` räknas aldrig fram, inte heller ur svarstiden.
 
 `fsrs` tar bara hela betyg. Något «0,7 av ett Good» finns inte och ska inte
 efterliknas (R4).
 
 ### 7.3 Vilket kort föll
 
-Rättaren går igenom de tolkningar som stämmer med svaret, i två steg:
+**Först väljs varianten.** Svaret jämförs med varje godtagen variant (6.5), och den som
+har minst avvikelser är den användaren skrev. Korten i den varianten graderas; ett
+kort som bara finns i en annan variant är ograderat, eftersom det inte prövades.
+
+**Sedan knyts avvikelserna till kort.** Varje avvikande ord har de kort som bestämde
+dess form, enligt renderarens spår (6.2). Rättaren går igenom de tolkningar som
+stämmer med svaret, i två steg:
 
 1. **Prerekvisit.** Kan man inte ordet kan man inte heller dess form. Föll `ord`
    är formkorten ograderade.
@@ -756,15 +869,17 @@ Ställ **inte** en isolerande fråga direkt efter ett tvetydigt fel. Användaren
 då just sett facit, och ett rätt svar skulle skjuta upp kortet längre än hen
 klarar.
 
-### 7.4 Rätt svar, men inte det som efterfrågades
+### 7.4 Korrekta svar som inte fanns bland varianterna
 
-Skriver användaren en korrekt översättning med ett annat ord än målkortet gör
-systemet tre saker och inget mer: **godtar meningen, bokför inte målkortet, och
-säger inte vilket ord som var tänkt.** Att säga det vore att avslöja svaret och
-förstöra nästa mätning. Kortet står kvar som förfallet.
+Två fall återstår när användaren skriver något korrekt som sökningen i 6.5 inte
+räknade upp:
 
-Är det andra ordet infört var uppgiften inte entydig, och filtret i 6.5 borde ha
-stoppat den. Är det inte infört går det inte att förutse.
+- **Ett korrekt ord som inte är infört.** Renderaren känner igen det som en form av ett
+  annat lexem för samma koncept. Systemet godtar meningen, bokför inte målkortet och
+  säger inte vilket ord som var tänkt — att säga det vore att avslöja svaret. Kortet
+  står kvar som förfallet.
+- **En korrekt variant som renderaren missade.** Diffen underkänner den, och användaren
+  markerar om (7.2). Omrättningen loggas, så att varianten kan läggas till.
 
 ### 7.5 Mönster som blivit automatiska
 
@@ -785,6 +900,12 @@ felfritt.
 Fönstret är 1/(1 − 0,9) = tio möten, och tröskeln är retentionsmålets tolerans.
 Mekanismen finns byggd och testad i dag och tas över som modell.
 
+**För ett övervakat kort är R andelen rätt i fönstret.** FSRS bedömer ett kort som setts
+femton gånger samma dag som mycket starkt, även när användaren gör fel, och
+urvalsregeln (6.2) skulle då aldrig välja det som mål. Sju rätt av tio ger R = 0,7, och
+kortet blir mål som alla andra svaga kort. För de här korten är det också en bättre
+skattning än FSRS, eftersom förfallodagen inte betyder något för dem.
+
 Om ett kort är **schemalagt** eller **övervakat** avgörs av hur ofta det faktiskt
 mötts per dygn enligt loggen, inte av en simulering. Ett nytt kort är schemalagt
 tills det visat sig mötas oftare än en gång om dagen. På så sätt sorterar
@@ -800,8 +921,8 @@ Byggs inte i version ett. När det byggs:
 - **Åtgärden är att granska kortet, inte att stänga av det.** Ett kort som ständigt
   faller är ofta fel avgränsat, och det tyder på att en regel i 3.4 saknas eller
   är fel för just det ordet.
-- **Inom en dag finns i dag ingen utväg.** Dagen tar slut först när again-högen är
-  tom, även om användaren inte klarar ett visst kort.
+- **Inom en dag behövs ingen utväg.** Passet slutar först när again-högen är tom, och
+  det är ett medvetet val (5.3).
 
 Inget går förlorat på att vänta, eftersom svårigheten redan lagras för varje kort.
 
@@ -838,7 +959,7 @@ innehåll upptäcktes i efterhand. R1 tar bort orsaken, och därmed behovet.
 
 ### 8.3 Redovisning
 
-Renderaren hämtar allt via `Uppslag`, och fyra anrop är instrumenterade:
+Renderaren hämtar allt via `Uppslag`, och i dag är fyra anrop instrumenterade:
 
 | Anrop | Ger kort av typen |
 |---|---|
@@ -848,59 +969,83 @@ Renderaren hämtar allt via `Uppslag`, och fyra anrop är instrumenterade:
 | `ordföljd(regel)` | `regel` |
 
 Allt som går förbi dem är osynligt. Den som läser `lexem["genus"]` direkt gör
-genuskortet omöjligt att pröva.
+genuskortet omöjligt att pröva. **Inventeringen i steg 1 visar att de fyra anropen inte
+räcker** (`paradigm/TYSTA_BESLUT.md`): 206 beslut fattas tyst, 26 läsningar av
+befintliga kort går förbi anropen, och tio ord skrivs ut utan att vara lexem.
 
-**Att redovisa ett beslut** betyder att göra det till ett sådant anrop:
+Steg 1 gör därför fem saker:
+
+1. **`ordföljd` byter namn till `regel`.** Anropet har redan rätt form, men de flesta
+   tysta besluten gäller kongruens, konstruktion och ljud, inte ordföljd.
+2. **Förbigångarna lagas först**, eftersom de gör befintliga korttyper omätbara.
+3. **De hårdkodade orden blir lexem**, så att de får `ord`-kort.
+4. **Varje anrop anger regelns beroenden och byggvillkor.** Det ger nivågrafen dess
+   kanter (4.2) och generatorn förmågan att bygga mot regeln (6.4).
+5. **Renderaren spårar vilka kort som bestämde varje utskrivet ord.** Det är
+   positionerna i 6.2 och rättningens underlag i 7.3.
+
+Att redovisa ett beslut betyder att göra det till ett sådant anrop:
 
 ```python
-self.u.ordföljd("inversion_wh")     # redovisat — syns
-def eliderar(self, första, andra):  # inte redovisat — sker tyst
+self.u.regel("klitika_före", kräver=["objektsform"])   # redovisat — syns
+def eliderar(self, första, andra):                      # inte redovisat — sker tyst
 ```
 
-Anropet gör tre saker: regeln blir en nivå, ett kort och en kant i
-beroendegrafen. Steg 1 i byggordningen är att göra så med varje beslut som i dag
-fattas tyst.
+Anropet gör tre saker: regeln blir en nivå, ett kort och en kant i beroendegrafen.
 
 ---
 
 ## 9 · Byggordningen
 
-    0   böjningsreglerna per språk         skrivs och kontrolleras mot alla former (3.4); svenskan först
-    1   renderarna redovisar sina beslut   allt annat bygger på detta
+    0   böjningsreglerna per språk         svenskan gjord, väntar på granskning; slutna ordklasser och sex språk kvar
+    1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); allt annat bygger på detta
     2   nivåstegarna och grafen            följer ur 1; kontrollera att grafen är acyklisk
     3   kortmodellen                       kräver 0; ändelser, ljudregler och undantag genereras ur reglerna
-    4   dagspasset och införandet          kräver 2 och 3
+    3b  datamodellen                       kort, möten, nivåer, dagens tilldelning, inställningar, kursens språkpar
+    4   dagspasset och införandet          kräver 2 och 3; tidsmodellen (5.5) och efterfrågan (5.6)
     5   meningsbygget                      kräver 4
-    5b  neutraliseringstabellerna          kräver 1; en per språkpar, med ord som avgör aspekt
-    6   rättningen                         kräver 1
+    5b  entydighetsfiltret                 kräver 1; variantsökningen och aspektkrav på koncept (6.5)
+    6   rättningen                         kräver 1; spåret från ord till kort, och omrättningen (7.2)
     7   lektioner och frekvenslista        parallellt
     7b  provsviten                         parallellt — finns inte i dag
+    7c  valideringen                       parallellt — kaikki, AI-granskning, användarflaggor (3.4)
 
-**Steg 0 och 1 är oberoende och kan göras samtidigt.** Steg 0 kräver
-språkkunskap, steg 1 kodarbete i renderarna.
+**Steg 1 är det billigaste sättet att upptäcka om modellen håller.** När renderarna
+redovisar går det att mäta hur många regler en mening faktiskt använder, och alltså
+om attributionen fungerar med ett par hundra regelkort i stället för dagens tre.
+Håller den inte syns det innan något har raderats.
 
-**Steg 1 är det billigaste sättet att upptäcka om modellen håller.** När
-renderarna redovisar går det att mäta hur många regler en mening faktiskt
-använder, och alltså om attributionen fungerar med 133 regelkort i stället för
-dagens tre. Håller den inte syns det innan något har raderats.
-
-**Rent arbete, utan kvarstående beslut:** böjningsreglerna för sju språk,
-renderarnas redovisade beslut, omkring 133 lektionstexter, den semantiska
-frekvenslistan (japanskan för hand), en neutraliseringstabell per språkpar, och
+**Rent arbete, utan kvarstående beslut:** böjningsreglerna för övriga sex språk,
+renderarnas redovisning, en lektionstext per regelkort, den semantiska
+frekvenslistan (japanskan för hand), aspektkraven på adverbialkoncepten, och
 datafelen i punkt 12.
 
 ---
 
-## 10 · Öppen fråga
+## 10 · Öppna frågor
 
-### När påfyllningen ska sluta
+Ingen av frågorna blockerar bygget.
 
-Budgeten tillåter långa meningar, och långa meningar är billiga per kort, men
-något måste avgöra när en mening är lång nog. Det är den enda öppna parametern i
+### 10.1 När påfyllningen ska sluta
+
+Budgeten tillåter långa meningar, och långa meningar är billiga per kort, men något
+måste avgöra när en mening är lång nog. Det är den enda öppna parametern i
 meningsbygget, och det enda stället där en smaksak — «ibland långa, ibland korta
 meningar» — kan få avgöra. Blir det ett val ska det stå som ett val.
 
-Frågan blockerar inget och besvaras bäst när meningsbygget finns och kan mätas.
+Frågan besvaras bäst när meningsbygget finns och kan mätas.
+
+### 10.2 Frågor som väntar på Julius
+
+- **Svenska böjningsregler** — fem frågor i `ordbok/regelkontroll/sv.md`. Den första,
+  om utrala substantiv på konsonant har en standardklass, kan principen själv besvara:
+  är både `-ar` och `-er` produktiva, blir pluralen ett kort per ord.
+- **Renderarnas beslut** — tre frågor i `paradigm/TYSTA_BESLUT.md` punkt 6: om
+  skiljetecken är kort, om ett språks fasta val (passé composé) är ett kort eller en
+  del av lektionen, och om `vem`/`vad` är ett läromoment för en svensk.
+- **Komparationens typ.** Om ett adjektiv kompareras syntetiskt (`större`) eller med
+  `mer` syns inte i ordet och är kunskap per ord. Är det en `egenskap` — det syns på
+  `mer`, alltså på ett annat ord — eller ett undantagskort?
 
 ---
 
@@ -914,9 +1059,11 @@ Frågan blockerar inget och besvaras bäst när meningsbygget finns och kan mät
 | regler som renderaren använder utan att de är upplåsta | ej mätt | 0 |
 | meningar med P(≥2 fel) > τ | ej styrt | 0 |
 | mål som inte är ensamt svaga på sin plats | ej mätt | 0 |
-| uppgifter med mer än ett rätt svar | ej mätt | 0 |
+| målkort som inte ingår i varje korrekt svar | ej mätt | 0 |
 | former i databasen som varken reglerna ger eller ett undantagskort täcker | ej mätt | 0 |
 | kortmöten där rättaren inte kan avgöra vilket kort som föll | ≤ 31 % av felen | mäts, ska minska |
+| korrekta svar som underkänns och markeras om | ej mätt | mäts, ska minska |
+| samtidiga fel som jämförelsen reder ut utan tvetydighet | ej mätt | mäts — sätter svårighetsrattens gräns (5.7) |
 
 **Det som bara kan prövas med användare.** Allt ovan följer av grundreglerna
 eller av mätningar, utom:
@@ -925,7 +1072,7 @@ eller av mätningar, utom:
 |---|---|---|
 | ordförrådets ordning | bestäms utifrån; japanskan avviker | att de första hundra orden räcker till meningar |
 | svårighetsrattens effekt | en modell av beteende | att högre τ ger färre och kortare pass |
-| hur ofta rättaren inte kan avgöra | mätt med 3 regelkort | samma tal med 133 |
+| hur ofta rättaren inte kan avgöra | mätt med 3 regelkort | samma tal med alla regelkort |
 | lektionernas storlek | en funktion är kanske inte ett steg | syns bara hos användaren |
 
 ---
@@ -940,8 +1087,11 @@ eller av mätningar, utom:
 | tyska fraslexem med adjektiv först (`älterer Bruder`) | 79 specar faller | böj båda leden, som `sœur aînée` |
 | japanskans `no`- och verbfrasadjektiv (36 st) saknar former | orden kan inte renderas | en form per ord, giltig i alla celler (3.9) |
 | enstaka tomma celler, t.ex. `sv/bröd best_pl` | enstaka specar faller | fyll i |
-| `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst; meningar bryter mot verbets krav, och signalen i 5.5 går förlorad | logga i stället för att släppa kravet |
-| `befolka.ORDFÖLJD` har 27 regler, tabellen i 4.1 räknar 28 | antalet i tyskan är osäkert | räknas om i steg 1 |
+| 52 misstänkta datafel i svenska former — passiv utan -s, genitiv, genus | fel facit | `ordbok/regelkontroll/sv.md` |
+| 26 läsningar av befintliga kort går förbi instrumenteringen (`hjälpverb`, `prenominal`, `ja_adjektiv_typ`, konjunktivrektion, infinitivmarkör …) | korten kan inte prövas | steg 1; `TYSTA_BESLUT.md` punkt 1 |
+| tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
+| de romanska renderarna skriver alltid ut subjektspronomenet (`yo leo`) | varianten `leo` finns inte | variantsökningen (6.5) |
+| `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst; meningar bryter mot verbets krav, och signalen i 5.6 går förlorad | logga i stället för att släppa kravet |
 | ingen provsvit (inga `test_*.py`) | inget visar att attributionen fortfarande fungerar | steg 7b |
 
 ---
@@ -976,6 +1126,15 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | ändelsekort per sträng, där celler med samma ändelse slås ihop | klarar inte isoleringstestet: presens `-e` och konjunktiv `-e` är olika kunskap |
 | aspektvalet utanför projektet, båda svaren godtas | användaren lär sig böja imparfait men aldrig när formen ska användas |
 | en egen övningstyp för aspektvalet | bryter formen «en mening, ett facit»; källmeningen kan visa valet i stället |
+| exakt en korrekt målmening (tidigare R2) | för sträng: `leo` och `yo leo`, `sade` och `sa` är båda rätt; det som krävs är att målet prövas i varje korrekt svar |
+| högst en ny nivå per dygn | följer redan av grinden längs en kedja; nivåer som inte beror på varandra har ingen anledning att vänta |
+| grind för arbetsbördan när en nivå öppnas | spärrar aldrig: upplåsning lägger inga kort i passet, och införandet begränsas redan av tidsmodellen |
+| att gruppera nivåer | en vald storlek utan grund (R6) |
+| regelkort för genus | genus införs ändå med ordet, och FSRS skjuter snabbt upp det användaren redan kan |
+| förlåtande rättning av stavfel och accenter | rättningen skulle gissa vad användaren menade; användaren markerar om i stället |
+| beroendegrafen mätt genom att rendera exempelmeningar | sampling — ett beroende som inte råkar dyka upp missas |
+| neutraliseringstabeller skrivna för hand per språkpar | 42 par, de flesta omöjliga att granska; sökningen hittar tvetydigheten automatiskt |
+| FSRS:s R för övervakade kort | ligger nära 1 även när användaren gör fel, så kortet väljs aldrig som mål |
 
 ---
 
