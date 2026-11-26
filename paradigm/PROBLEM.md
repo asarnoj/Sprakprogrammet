@@ -3824,11 +3824,51 @@ Utfallet är språkligt riktigt, vilket är kvittot på att måttet mäter rätt
 svenskan, en i engelskan, fem till sex i de romanska och tyskan. Ingen lista
 per språk behöver skrivas eller underhållas.
 
-**Det som återstår att avgöra** är vad man gör med de PARTIELLA raderna —
-franskans 33 % är varken synlig eller osynlig. En tröskel vore ett påhittat
-tal; att låta raden gälla de verb där den syns är troligen rätt, men det gör
-nivån till en egenskap hos verbet snarare än hos språket, och den
-konsekvensen är inte genomtänkt än.
+#### PROJEKTIONEN ÄR BYGGD (2026-08-27) — `kort/dimensioner.py`
+
+Mekanismen finns nu, men är ÄNNU INTE inkopplad i nivåstegen. Den räknar, den
+styr ingenting.
+
+**Kriteriet, och varför det inte är ett val:** en cell lär ut något nytt om
+dess ÄNDELSE inte redan är känd från en tidigare cell i SAMMA klass.
+Franskans K0 har `pres_1sg = e` och `pres_3sg = e`; har man lärt sig den
+första finns ingenting kvar i den andra. K1 har `s` och `t` på samma celler,
+och där är det två moment. Det är strängidentitet i data som redan finns,
+ingen tröskel.
+
+**Partiella rader löser sig av det:** raden står kvar med just de klasser som
+realiserar den. `1sg` mot `3sg` blir en nivå i K1 och inte i K0. Att det
+sitter på KLASSEN och inte på ordet är hela skillnaden mot invändningen
+ovan — `system`-kort hör redan till en klass, så granulariteten finns i
+kortmodellen och ingen omskrivning behövs.
+
+**Och listan HÄRLEDS.** Mitt första försök var handskrivet — `pres_1sg`,
+`pres_2sg`, … — alltså en fransk lista med universella anspråk. Mätt mot
+datan missade den 11 av svenskans 12 celler, 15 av tyskans 31 och ALLA tio
+japanska. Svenskan fick ett enda steg, och det var listans fel. Unionen av
+alla språks celler är den universella listan.
+
+**Utfallet: 90 universella celler, veckade per språk.**
+
+    sv   5     inf, sup, inf_passiv, pres, sup_passiv
+    en   4     pres_3sg, pret, gerund, inf_imp
+    de   8
+    fr  34     es 45     it 44     ja 9
+
+Talen är språkligt riktiga, vilket är kvittot på att kriteriet mäter rätt
+sak: **engelskan får exakt fyra** — walk, walks, walked, walking — och
+svenskan fem. Ingen lista per språk är skriven.
+
+**`dimensionsprov` vaktar fyra invarianter**, och den tredje bär idén: varje
+ändelse i varje tabell ska läras ut exakt en gång. Två gånger betyder tomma
+moment; noll gånger betyder något som inte går att lära sig.
+
+**KVAR INNAN DET KAN KOPPLAS IN — ordningen.** Listan är delad men inte
+pedagogisk: att `pres_1sg` kommer före `pret_1sg` följer av att fler språk
+har cellen, inte av att presens ska läras först. En riktig ordning kräver att
+cellerna märks med sina axlar (tempus, person, numerus, modus, diates) och
+sorteras på dem. Axlarna finns i `Former` men inte i `ändelser.tsv`, så
+märkningen är nästa steg.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 

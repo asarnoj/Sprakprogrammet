@@ -51,6 +51,7 @@ NÄT = [
     ("arbetsbördeprov.py",   False),
     ("samplarprov.py",       False),
     ("strukturprov.py",      False),
+    ("dimensionsprov.py",    False),
     ("ordföljdsprov.py",     True),
     ("renderarbild.py",      True),
     ("introduktionsprov.py", True),
