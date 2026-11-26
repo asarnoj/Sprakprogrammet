@@ -451,15 +451,30 @@ som mål, av införda kort och dagens redan valda. Lyckas det sparas meningen so
 
 **Kort som bara kan prövas tillsammans införs som ett paket.** Första dagen är inget
 kort prövbart ensamt: ett verb kan inte vara mål utan ett subjekt, och ett pronomen inte
-utan ett verb. Paketet är kortet och de oinförda kort det kräver enligt grafen (4.2),
-och det väljs helt eller inte alls. Kan ett krav uppfyllas av flera kort — subjektet kan
-vara vilket pronomen som helst — väljs det som står först i införandeordningen (5.6).
+utan ett verb.
+
+**Paketet är de oinförda korten i en minsta mening för kortet** (avgjort 2026-09-14). Det
+räknas som kraven i 4.2, men över alla kort, ord inräknade, och med de införda korten
+tillåtna: en mening med kortet hittas, och ett oinfört kort i taget förbjuds tills inget
+går att ta bort. Grafen räcker inte till paketet, eftersom ord inte har kanter där — och
+första dagen kräver pronomenet ett verb, som då aldrig kom med. Paketet väljs helt eller
+inte alls. Kan kortet prövas med flera paket jämförs de med sin nya täckning per kort
+(5.6). Ett kort som många andra kräver finns i många paket och vinner därför ofta, så
+efterfrågan syns utan ett eget mått. Hur alternativen söks utan att hela kartan gås
+igenom för varje kandidat avgörs i steg 6.
 
 **Omkontrollen vid införandet:** varje infört korts bevis prövas mot entydighetsfiltret
 (6.5) igen, nu med det nya kortet. Klarar beviset sig är kortet fortfarande prövbart.
 Faller det söks ett nytt bevis, och hittas inget väntar det nya kortet. Någon
 förteckning över vilka kort som konkurrerar behövs inte: filtret hittar det själv, och
 det kostar en filtrering av en sparad mening per infört kort.
+
+**Ett nytt kort får aldrig göra ett annat kort oprövbart för gott** (avgjort 2026-09-14).
+Väntar ett kort för att ett infört kort står i vägen, och finns ingen mening som skiljer
+dem, väntar det för alltid — och varje nivå som kräver det förblir stängd. Det är därför
+ett fel i programmet och ingen väntan: provsviten (steg P3) kontrollerar att varje kort
+som väntar på det sättet blir prövbart igen, och märkningen av källmeningen (6.5) tar
+bort de flesta fallen.
 
 Kontrollen kommer fram till rätt sak av sig själv. `yo` blir aldrig ett kort, och det
 stämmer: den som aldrig skriver `yo` talar korrekt spanska. Pronomenet prövas genom
@@ -573,6 +588,47 @@ råkar dyka upp skulle missas.
 
 Ett krav på en konstruktion (`whfråga`) betyder de kort konstruktionen kräver i språket.
 
+**Kraven är de minsta kortmängderna** (avgjort 2026-09-14). För ett nivåkort räknas, i
+varje giltig mening där kortet syns, mängden av meningens övriga nivåkort. Kortets krav är
+de mängder som ingen annan av mängderna ryms i. De kortaste meningarna räcker inte: den
+kortaste med objektsformen `mig` är «Se mig!», och då skulle objektsformen kräva
+imperativ, fast «Barnen ser mig» prövar samma kort utan den.
+
+- **Bara beslut som syns räknas** (6.2). «I walked» visar ingen kongruens, så preteritum
+  kräver den inte.
+- **Ordkort räknas inte**, eftersom ord är upplåsta från början (3.1). Nivåkorten är
+  mönsterkorten och korten för slutna ordklasser (4.1).
+- **Kraven räknas per språkpar**, med entydighetsfiltret och märkningen (6.5), och med
+  bara nivåns egna kort och föregångarnas tillåtna. Om ett kort kan prövas beror på vad
+  källspråket kan visa och på vilka varianter som finns, så nivåerna är desamma för alla
+  användare av samma kurs men inte för alla kurser med samma målspråk.
+- **Har kortet flera minsta mängder väljs en**, efter täckningen nedan. Tills
+  frekvenserna finns (steg P2) söks bara en: den som krymps fram ur den första mening
+  sammansättningen hittar. Alternativen och valet mellan dem kommer med frekvenserna.
+  Att bevisa att inga fler minsta mängder finns kräver att nästan hela kartan gås igenom
+  för varje kort, och det lönar sig först när valet kan göras efter täckning. Till dess
+  kan ett krav bli ett sämre alternativ: objektsformen kan komma att kräva imperativ,
+  eftersom «Se mig!» är den första meningen.
+
+**Mängderna hittas med frågor som sammansättningen besvarar uttömmande:** finns en giltig
+mening som prövar kortet, byggd av bara de här nivåkorten? Meningarna är oändligt många —
+en bisats kan innehålla en bisats — men ingen del behöver upprepas mer än en gång längs en
+gren, eftersom satsen i bisatsen i bisatsen kan kortas utan att något kort tillkommer. Då
+är det ändligt många sammansättningar att gå igenom, och ett nej är ett bevis.
+
+1. **En mening hittas**, och dess nivåkort är en första mängd.
+2. **Mängden krymps**: ett kort i taget förbjuds, och går det fortfarande att bygga en
+   mening tas den nya, mindre mängden. När inget kort går att ta bort är mängden minst.
+3. **Nästa minsta mängd** (med frekvenserna, se ovan) måste sakna minst ett kort ur varje
+   mängd som redan hittats, så frågorna upprepas med ett sådant kort förbjudet tills inga
+   nya mängder finns.
+
+Vilka beslut som syns avgör spåret på den riktiga meningen (8.3), inte kartan. Kartan
+kan inte avgöra det själv: om «Blood exists» hade kunnat vara en uppmaning beror på
+subjektets ord, och ett beslut som syns i en del kan försvinna när en annan del vägrar.
+Två ord med samma formkortsmönster, samma celler, samma sammanfallande former och samma
+egenskaper ger samma kort i samma mening, så ett av dem prövas.
+
 **Krav med flera alternativ.** Många krav kan uppfyllas av flera kort. Franskans `je`
 kräver ett verb i 1 sg, som kan ha vilken klass ändelse som helst, och varje sådan
 ändelse kräver `je`. Blev kravet en kant till varje alternativ skulle alla kräva
@@ -582,7 +638,8 @@ varandra, och `je` och alla klassers ändelser bli en enda nivå. Därför:
   substantiv som helst, och ord är upplåsta från början (3.1). Det blir ingen kant.
 - **Övriga krav med flera alternativ blir en kant till ett av dem**: det som ger mest
   täckning per kort (5.6), räknat med hela ordförrådet. Vid lika avgör kartans
-  ordning.
+  ordning. Tills frekvenserna finns (steg P2) är täckningen okänd, och då blir kanten den
+  minsta mängd som krymps fram ur sammansättningens första mening.
 
 **Krav som följer av entydigheten står också i grafen.** När två kort konkurrerar om
 samma val, som imparfait och passé composé, kan vart och ett bara prövas i en mening med
@@ -922,7 +979,7 @@ En mening får ställas endast om:
    inte går att uppfylla gör meningen omöjlig och släpps aldrig tyst (punkt 12,
    `urval.py:219`)
 7. **ett fel på ett mål går att knyta till just det kortet**: inget annat enskilt kort
-   förklarar samma avvikelser (7.3). Det kontrolleras med samma rendering som rättningen
+   förklarar samma avvikelser, efter prerekvisiten (7.3). Det kontrolleras med samma rendering som rättningen
    använder, och gör R5 till ett villkor när meningen byggs i stället för en förhoppning
 8. **källmeningen har inte ställts i dag.** Efter ett fel har användaren sett facit, och
    samma fråga igen mäter minnet av facit i stället för kortet — samma skäl som omprovet
@@ -979,9 +1036,10 @@ i svensk plural, prövades det inte. Det gäller även när ord smälter ihop (`
 positioner och luckor inte överlappar. Samma omrenderingar är rättningens alternativ
 (7.3).
 
-Undantaget är ett ord och dess formkort. De delar alltid position, men prerekvisitregeln
-i 7.3 håller isär dem — föll ordet är formen ograderad — och därför får ett mönster
-prövas på ett nytt ord (6.4).
+Undantaget är ett ord och dess formkort, och ett beslut som väljer cell och den cellens
+formkort. De delar alltid position, men prerekvisiten i 7.3 håller isär dem — föll ordet
+är formen ograderad, och är svaret en annan av beslutets former har beslutet fallit — och
+därför får ett mönster prövas på ett nytt ord (6.4).
 
 **Det här är hela urvalet.** Följande beteenden följer av regeln och får inga
 egna regler:
@@ -1118,6 +1176,21 @@ Vilka ord som avgör valet kan sökningen inte hitta, eftersom det hör till bet
 och inte till ett visst språk. Det märks därför en gång på konceptet och gäller för
 alla sju språk: adverben har redan `tempuskrav`, och behöver ett **`aspektkrav`**
 bredvid. Det finns inte ännu (steg 5b).
+
+**Det källspråket inte skiljer visas med en märkning** (avgjort 2026-09-14). «You are
+tired» är både «du är trött» och «ni är trötta», och från svenska är «de läser» både
+*ils* och *elles*. Utan hjälp ingår *ni* och *elles* aldrig i varje korrekt svar (R2), så
+de korten går aldrig att öva i den kursen, och varje nivå som kräver dem förblir stängd.
+Därför märks källmeningen när två innehåll ger samma källmening men olika svar:
+«you (flera) are tired», «de (kvinnorna) läser».
+
+- **Märkningen kommer ur filtret.** Den visar det fält och det värde som skiljer
+  innehållen åt, och inget annat. Den visas bara när två innehåll annars skulle vara
+  samma fråga.
+- **Den skrivs en gång per fältvärde och källspråk** — «flera», «kvinnorna», «artigt» —
+  och är ingen kunskap om målspråket.
+- **Ett märkt innehåll är en egen fråga.** Efter märkningen ingår målkortet i varje
+  korrekt svar, och R2 prövas som vanligt.
 
 ### 6.6 Algoritmen
 
@@ -1363,8 +1436,20 @@ variant är ograderat, eftersom det inte prövades.
 den, enligt spåret: formens kort, och för ett ord på fel plats den regel som placerade
 det. Rättaren går igenom de tolkningar som stämmer med svaret, i två steg:
 
-1. **Prerekvisit.** Kan man inte ordet kan man inte heller dess form. Föll `ord`
-   är formkorten ograderade.
+1. **Prerekvisit.** Kan man inte ordet kan man inte heller dess form, och väljer man fel
+   form kan man inte heller den formens ändelse (avgjort 2026-09-14):
+   - Föll `ord` är formkorten ograderade.
+   - Förklarar ett beslut som väljer cell avvikelsen — svaret är den form ett annat utfall
+     hade gett, «she read» för «reads» — har beslutet fallit, och den valda cellens
+     formkort är ograderade.
+   - Är svaret en form som inte finns — «she readed» — har formkortet fallit och beslutet
+     klarats.
+
+   Ett formkort gäller strängen i en klass, som svenskans er-verb `-te` mot ar-verbens
+   `-ade`, och de felen blir former som inte finns (`köpade`). Att utelämna engelskans
+   `-s` är att inte markera tredje person, alltså kongruensen. Har användaren i själva
+   verket valt rätt men glömt ändelsen får valet skulden: det kommer tillbaka snart och
+   klaras, och formkortet mäts en annan gång.
 2. **Minsta förklaring.** Kan ett kort förklara alla avvikelser väljs det framför
    flera kort som felat oberoende av varandra. `ett stort hus` → `en stor hus`
    avviker på två ställen, och genuskortet förklarar båda.
@@ -1381,9 +1466,17 @@ ställena genuset styr. Mot svaret `ett stor hus` stämmer det inte — `ett` sk
 fel — och där är det adjektivets ändelse som föll.
 
 **Ett kort vars betyg är detsamma i alla tolkningar bokförs.** Ett kort vars betyg
-skiljer sig mellan tolkningarna bokförs inte, och användaren får inget besked om det —
-kortet står kvar som förfallet. Samma sak gäller när två varianter har lika få
-avvikelser och ger kortet olika betyg. Det är en verklig gräns för vad en diff kan
+skiljer sig mellan tolkningarna bokförs inte, och användaren får inget besked om det.
+Samma sak gäller när två varianter har lika få avvikelser och ger kortet olika betyg.
+
+**Ett kort som inte graderades på en felaktig plats bokförs inte mer samma dag**
+(avgjort 2026-09-14) — varken som mål eller som övrigt kort, och vare sig det var
+tvetydigt eller ograderat genom prerekvisiten. Är det förfallet flyttas det till nästa
+dag med FSRS-tillståndet orört. Användaren har sett facit just där, och ett rätt svar
+samma dag mäter minnet av facit och inte kortet — samma skäl som villkor 8 i 6.1. Annars
+skulle FSRS få ett rätt svar och skjuta upp kortet längre än användaren klarar. Kortet
+som föll övas igen samma dag som vanligt: felet är bokfört, så ett rätt svar efteråt är
+återinlärning. Det är en verklig gräns för vad en diff kan
 avslöja, och varje sådant fall är en brist i generatorn (R5). Villkor 7 i 6.1 gör att det
 bara kan ske vid två samtidiga fel, genom ett fel i programmet, eller när budgeten har
 släppts (6.3).
@@ -1682,8 +1775,9 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     3   kortmodellen                       kräver 0; kortmodell/: korten för svenskan och engelskan gjorda, och besluten kopplade till kort; delen av formen per kort kvar (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
     3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2)
-    4   nivåerna och grafen                kräver 2; kraven är kortens minsta meningar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3
-    5   sökningen                          kräver 2 och 3c; värdet, budgeten, entydighetsfiltret (6.5), villkoren 6–8 i 6.1
+    4   nivåerna och grafen                kräver 2 och 5a; kraven är kortens minsta mängder per språkpar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3; nivaer/: en minsta mängd per kort, än så länge utan språkpar och filter
+    5a  entydighetsfiltret och märkningen  kräver 2; varianterna och källmeningens märkning (6.5); behövs av 4 och 5
+    5   sökningen                          kräver 5a och 3c; värdet, budgeten, villkoren 6–8 i 6.1; svarstiden mäts med en tidig prototyp innan steg 6–9 byggs
     5b  aspektkrav på koncept              parallellt (6.5)
     6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6)
     7   urvalet                            kräver 6; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
@@ -1751,6 +1845,12 @@ Frågorna väntar på Julius. Lektionerna och frekvenserna behövs först i steg
   `mer`, alltså på ett annat ord — eller ett undantagskort? Den svenska renderaren
   redovisar den i dag som egenskap (8.3); blir svaret undantagskort ändras bara
   kortmodellen.
+- **Översättning åt båda hållen** (Julius 2026-09-14, tas upp efter kärnan). Att
+  översätta från målspråket till sitt eget språk prövar förståelse, en annan förmåga än
+  den kärnan i dag prövar, som är att producera målspråket. Svaret skrivs dessutom på
+  användarens eget språk, så de kort som graderas i dag säger inget om målspråket. Det
+  behöver alltså egna kort eller en egen bokföring. Det löser inte behovet av märkning
+  (6.5), eftersom produktionen av *elles* fortfarande måste gå att öva.
 - **Japansk skrift.** Stavfel räknas som fel (7.2), men att skriva ett ord med kana när
   facit har kanji är ett val av skrift, inte ett stavfel. Ska båda godtas?
 ---

@@ -36,7 +36,13 @@ orakelt svarade på varje läsning — sina händelser och sina anrop, med vilka
 specobjekt och koncept varje argument var. Sammansättningen (steg 2) fogar
 ihop vägarna till hela meningar genom att döpa om delens namn till meningens.
 Ett symboliskt koncept står i händelserna som ("sym", väg), så att det går att
-skilja från en konceptnyckel.
+skilja från en konceptnyckel. Varje ord vägen skapar beskrivs — en form, eller
+ett ord från ett anrop — så att sammansättningen kan avgöra om en ordningsregels
+led har ord.
+
+Vilka beslut som syns avgör inte kartan. Det beror på vilka ord meningen får och
+på om andra delar vägrar, och avgörs av spåret på den riktiga meningen (KÄRNAN
+4.2, 8.3).
 
 Ordens egenskaper tar sina möjliga värden ur databasen per ordklass: ett
 substantivs genus kan vara det som något svenskt substantiv har. Samband mellan
@@ -315,7 +321,9 @@ class Block:
 
     def _förläng(self, k: int) -> None:
         while len(self._ord) < k:
-            self._ord.append(self._körning.nytt_ord(f"<del{self._nr}:{len(self._ord)}>"))
+            ord = self._körning.nytt_ord(f"<del{self._nr}:{len(self._ord)}>")
+            self._körning.beskriv_ord(ord, ("del", self._nr, len(self._ord)))
+            self._ord.append(ord)
 
     def _se(self, djup) -> None:
         """Anroparen läser listan till `djup`. Är delen inte sammanfattad så noga, väntar vägen."""
@@ -369,6 +377,7 @@ class Block:
             text = f"<del{self._nr}:{k}…>" if self._ord else f"<del{self._nr}>"
             self._rest = self._körning.nytt_ord(text)
             self._rest.längder, self._rest.del_ = rest, self._del
+            self._körning.beskriv_ord(self._rest, ("del", self._nr, "rest", k))
         self._längdtips = True
         return _Helhet(self, [*self._ord, self._rest])
 
@@ -569,6 +578,7 @@ class SymUppslag:
         else:
             ord.koncept, ord.variant = lexem["nyckel"], lexem["variant"]
         self._händelse("form", koncept, cell, ord.nr)
+        self._körning.beskriv_ord(ord, ("form", koncept, cell))
         return ord
 
     def form_för(self, koncept, cell, variant=None):
@@ -678,6 +688,8 @@ class Körning:
         #: (nr, del, ((parameter, etikett, referens), …)) — referensen är
         #: specobjektets eller konceptets väg hos anroparen, None för ett värde
         self.anropsställen: list[tuple] = []
+        #: ordets nr → ("form", koncept, cell) eller ("del", anropets nr, plats)
+        self.ordbeskrivning: dict[int, tuple] = {}
         self._ordnr = 0
         self._specval: dict = {}
 
@@ -697,6 +709,9 @@ class Körning:
 
     def läsningar(self) -> list[tuple]:
         return [(v[0], v[3]) for v in self.orakel.val]
+
+    def beskriv_ord(self, ord: SymOrd, beskrivning: tuple) -> None:
+        self.ordbeskrivning[ord.nr] = beskrivning
 
     # ── stubbarna ──
 
@@ -740,7 +755,9 @@ class Körning:
         if sort == "none":
             return None
         if sort == "ord":
-            return self.nytt_ord(f"<del{nr}>")
+            ord = self.nytt_ord(f"<del{nr}>")
+            self.beskriv_ord(ord, ("del", nr, "ord"))
+            return ord
         return Block(self, nr, del_, (u[1] for u in utdata if isinstance(u, tuple)))
 
 
@@ -792,12 +809,15 @@ class Väg:
     händelser  det vägen redovisade, i ordning
     anrop      ((nr, del, ((parameter, etikett, referens), …)), …)
     utdata     vad delen lämnade tillbaka (`_utdatasort`)
+    ord        ((nr, beskrivning), …) — ("form", koncept, cell) eller
+               ("del", anropets nr, plats) för varje ord vägen skapade
     """
     argument: tuple
     villkor: tuple
     händelser: tuple
     anrop: tuple
     utdata: frozenset
+    ord: tuple = ()
 
 
 @dataclass
@@ -959,7 +979,7 @@ class Kartritare:
                     tuple((v[0], v[3]) for v in orakel.val
                           if not (isinstance(v[0], tuple) and v[0][0] == "argument")),
                     tuple(körning.händelser), tuple(körning.anropsställen),
-                    frozenset(sorter)))
+                    frozenset(sorter), tuple(sorted(körning.ordbeskrivning.items()))))
             except RenderingsFel:
                 karta.vägar["vägrar"] += 1
             except Förbigång as e:
