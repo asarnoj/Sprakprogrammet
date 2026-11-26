@@ -2399,6 +2399,50 @@ ledet är fortfarande det som inte är trimmat, och det är vad resten av C4
 handlar om.
 
 
+
+#### MÄTT: INFORMATION I STÄLLET FÖR Σ(1−R) (2026-09-04)
+
+Julius: *"man kan både göra en mening svårare genom att lägga till väldigt
+svåra ord och genom att lägga till väldigt många halvsvåra ord."* Det är
+sant, och budgettermen ser dem som samma sak — docstringen i `poang.py`
+konstaterade det redan och lappade med `koncentration` i stället för att byta
+mått.
+
+**Argumentet jag förde fram.** Σ(1−R) mäter förväntade FEL, inte förväntad
+KUNSKAP. Ett kort vid R = 0,90 och ett vid R = 0,10 bär lika mycket
+information — 0,47 bitar var — men Σ värderar det hopplösa nio gånger högre.
+Informationen H(R) toppar vid R = 0,5 och är noll i båda ändarna.
+
+**Mätningen stödde inte mekanismen.** På Julius kortlek, backdaterad tio
+dygn så att korten faktiskt förfallit:
+
+    19 meningar    vald information 81,7 bitar   bästa möjliga 96,1   15 % lämnat
+
+Men R-profilerna visar att skillnaden INTE är den jag påstod. Det finns inga
+hopplösa kort — lägsta R var 0,49 även efter tio dygns försening. Det de två
+måtten är oense om är meningens LÄNGD:
+
+    vald        Σ=1,22   info 4,20   R: 0,49 0,77 0,88 0,93 0,93 …
+    info-bäst   Σ=1,61   info 6,03   R: 0,58 0,77 0,77 0,84 0,88 0,88 …
+
+Informationen fortsätter stiga förbi Σ = 1,5, eftersom ett extra kort vid
+R ≈ 0,8 ger ~0,7 bitar men bara ~0,2 till Σ. Frågan är alltså inte vilket
+MÅTT som är rätt utan vilket MÅL som är rätt: 1,5 förväntade fel, eller 1,8
+till 2,1. Det är kalibrering, inte modellval, och priset för de 15 procenten
+är ungefär 35 procent fler fel per mening — vilket kostar återförsök (B7)
+och sannolikt motivation.
+
+**Och just nu finns ingenting att optimera över.** Mätt på kortleken som den
+står: 69 av 70 sedda franska kort har R > 0,95, och hela kortleken bär
+**1,1 bitar** information. Direkt efter ett pass är allt färskt; spridningen
+uppstår först när korten hunnit förfalla.
+
+**Slutsats: byt inte mått nu.** Mekanismen jag argumenterade för uppträder
+inte i datan, vinsten är liten och betalas i fler fel per mening. Argumentet
+biter däremot skarpt för LEECH-kort, alltså kort med mycket låg R — de finns
+inte än, men uppstår om `une`-fallet inte hanteras. Ta leech-frågan först och
+återkom hit när kortleken har verklig spridning.
+
 #### MÄTT OCH FÖRKASTAT: "REDAN AVKLARAT" SOM POÄNGTERM (2026-09-04)
 
 Jag föreslog en term som skulle straffa meningar fulla av kort som redan
