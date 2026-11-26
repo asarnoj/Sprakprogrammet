@@ -3376,6 +3376,47 @@ skynda på — men klockan går nu, och det var hela poängen.
 
 ### F1 ! — Vad avgör att en nivå öppnas?
 
+#### ALFABETET AVGJORDE I VILKEN ORDNING SPRÅKET LÄRS UT (2026-08-27)
+
+Julius: *"Nu t.ex lär vi oss ni och vi innan vi lär oss du."*
+
+`_rang` har tre signaler — källa, CEFR-nivå och centralitet — och när de tar
+slut var sista brytpunkten **konceptnyckeln**, alltså strängjämförelsen.
+
+Mätt på franskan: alla sex personliga pronomen kan stå med samma 65 verb, så
+centraliteten är IDENTISK (65) för `je`, `tu`, `nous`, `vous`, `elle`, `il`.
+Ordningen föll därför helt på alfabetet:
+
+    rang 4  nous     pronomen_1pl  ┐  "p" < "s", alltså
+    rang 5  je       pronomen_1sg  ┘  plural före singular
+    rang 6  vous     pronomen_2pl
+    rang 7  tu       pronomen_2sg
+
+**Ordningen på språkets mest grundläggande ord bestämdes av hur nycklarna
+råkade stavas.** Det är samma sorts fel som `byggbarhet` hade: ett tal som
+såg härlett ut men mätte något annat än det utgav sig för.
+
+`Koncept.person` och `Koncept.numerus` fanns redan och ger paradigmets egen
+ordning. Efter rättelsen, och samma i alla sju språk:
+
+    fr  je, tu, elle, il, on, nous, vous
+    de  ich, du, sie, er, man, wir, ihr
+    it  io, tu, lei, lui, uno, noi, voi
+    ja  私, あなた, 彼女, 彼, 私たち, あなたたち
+    sv  jag, du, hon, han, man, vi, ni
+
+Brytpunkten gäller bara där ett paradigm FINNS: koncept utan person och
+numerus — substantiv, verb, adjektiv — får 9 och påverkas inte av varandra.
+
+**Rangen skrivs av `befolka`**, så en kurs som redan finns behåller sin gamla
+ordning tills korten byggs om. Det sker vid nollställning och vid
+nivåupplåsning.
+
+**Och ordningen räcker inte ensam** — se F5b: `je` och `nous` införs var för
+sig medan verbets alla sex personändelser redan ligger där från nivå 1.
+
+
+
 Idag: **kapacitet, inte behärskning.** Nivån öppnas när belastningen den
 skulle ge ryms i det användaren valt att öva.
 
@@ -3668,6 +3709,44 @@ skäl:
    farlig, inte lagret.
 
 Kvar blir den ärliga frågan: nästa nivå lägger till N kort — ryms de?
+
+### F5b ? — Böjningsdimensionerna är inga nivåer, men borde vara det
+
+**Julius 2026-08-27:** *"je, tu, nous, vous är ett speciellt fall eftersom de
+direkt anknyter till en specifik böjning. Alla nya böjningsparametrar borde
+vara en nivå. Sen kanske man kan klumpa ihop vissa nivåer ifall de enskilt är
+för små."*
+
+**Stegen har 21 KONSTRUKTIONER** — objekt, bestämdhet, numerus, attribut,
+possessiv, io, adverbial, tempus … — och de styr vad en MENING får innehålla.
+Böjningens egna dimensioner styrs inte alls. Mätt på franskan: `befolka` på
+nivå 1 skapar ändelsekorten `e`, `es`, `ez`, `ons`, `s`, `∅` på en gång, för
+två böjningsklasser. Sex personformer, samma dag.
+
+**Julius poäng är att det är samma sorts axel.** Att låsa upp `nous`-formen
+öppnar mängder av kort för ord man redan kan, bara med en böjning till — och
+det är exakt vad en nivå gör. Skillnaden mot dagens steg är bara att
+konstruktionerna sitter på MENINGEN och böjningen på ORDET.
+
+**Det knyter ihop tre öppna poster:**
+
+- **Ordningsfrågan (den här postens ursprung).** `pronomen_1sg` och
+  `pronomen_1pl` fick sin ordning ur alfabetet tills paradigmordningen lades
+  in. Men ordningen mellan PRONOMEN spelar bara roll om verbformen följer
+  med, och det gör den inte idag: `je` och `nous` införs var för sig medan
+  alla sex ändelser redan finns.
+- **A3, oåtkomliga kort.** Ändelsekort som ingen mening kan nå är precis de
+  som inte hör hemma på den nivå de skapades.
+- **F5, stegen är slut vid 21.** Böjningsdimensionerna skulle ge stegen fler
+  meningsfulla trappsteg utan att hitta på nya konstruktioner.
+
+**Vad som behöver mätas innan det byggs.** Hur många dimensioner blir det per
+språk, och hur många kort bär var och en? Blir det åttio trappsteg med tre
+kort på vart är klumpningen inte en efterhandsjustering utan hela designen.
+Talen finns i `Former`-tabellens axlar (person, numerus, tempus, kasus,
+genus) och går att räkna innan en rad kod skrivs.
+
+**Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 
 ### F3 ? — Två oberoende tak, och ett tredje som inte styrs
 

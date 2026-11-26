@@ -509,7 +509,7 @@ def _rang(språk_db: sqlite3.Connection, språk: str, cefr: str) -> dict[str, in
 
     o = Ordförråd(språk_db, språk, cefr)
     meta = {r["nyckel"]: r for r in språk_db.execute(
-        "SELECT nyckel, källa, nivå, ordklass FROM Koncept")}
+        "SELECT nyckel, källa, nivå, ordklass, person, numerus FROM Koncept")}
 
     def råcentralitet(k: str) -> int:
         ordklass = o.ordklass.get(k)
@@ -536,7 +536,30 @@ def _rang(språk_db: sqlite3.Connection, språk: str, cefr: str) -> dict[str, in
         return (0 if m["källa"] == "bas_kärna" else 1,
                 _NIVÅRANG.get(m["nivå"], 9),
                 0 if m["ordklass"] in _OUMBÄRLIGA else 1,
-                -andel, k)
+                -andel,
+                # PARADIGMETS EGEN ORDNING NÄR CENTRALITETEN ÄR LIKA.
+                #
+                # Sista brytpunkten var konceptNYCKELN, alltså alfabetet, och
+                # det avgjorde i tysthet i vilken ordning man möter språkets
+                # mest grundläggande ord. Mätt på franskan: alla sex
+                # personliga pronomen har centralitet 65 — de kan stå med
+                # samma 65 verb — så ordningen föll på strängjämförelsen, och
+                # `pronomen_1pl` kom före `pronomen_1sg` därför att "p" < "s".
+                #
+                # Följden var att man lärde sig `nous` före `je`, och `vous`
+                # före `tu`. Julius märkte det: "Nu t.ex lär vi oss ni och vi
+                # innan vi lär oss du."
+                #
+                # `person` och `numerus` ligger redan på Koncept och ger
+                # paradigmets ordning: je, tu, il/elle, nous, vous, ils. Det
+                # är ordningen varje läromedel i varje av de sju språken
+                # använder, och den är läst ur datan snarare än vald.
+                #
+                # Koncept UTAN de fälten (substantiv, verb, adjektiv) får 9
+                # och påverkas inte av varandra — brytpunkten gäller bara där
+                # ett paradigm faktiskt finns.
+                m["numerus"] or 9, m["person"] or 9,
+                k)
 
     return {k: i for i, k in enumerate(sorted(rå, key=nyckel))}
 
