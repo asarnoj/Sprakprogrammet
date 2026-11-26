@@ -356,7 +356,22 @@ Bit     Värde   Etikett       Vad det markerar
 16384   16384   KLÄDESPLAGG   Bärs på kroppen (byxa, sko, glasögon)
 32768   32768   INREDNING     Möbel, husgeråd, byggnadsdel (bord, lampa, dörr)
 65536   65536   NATURFENOMEN  Väder och naturkraft (regn, storm, eld) — ej föremål
+131072 131072   ÖVERLÅTBAR    Kan byta ägare (ge, sälja, låna, köpa, erbjuda)
+262144 262144   HANTERBAR     Kan lyftas och bäras för hand
+524288 524288   ÖPPNINGSBAR   Har en öppning som kan öppnas och stängas
 ```
+
+**Matchningsregeln är OCH.** Konceptet måste ha ALLA bitar kravet anger:
+`Koncept.semantik & MönsterKrav.tagg == MönsterKrav.tagg`. Regeln var
+odefinierad fram till 2026-08-12 — texten ovan sade att masken används för
+att matcha, men aldrig hur. Implementerad i
+`src/sprakprog/rendering/restriktioner.py`.
+
+Bitarna 131072–524288 tillkom 2026-08-12. Motivet står i
+`paradigm/RESTRIKTIONER.md`: KONKRET-kravet användes av 36 verb och släppte
+igenom 211 av 259 substantiv, så `flickan gav en näsa` passerade. Bitarna är
+POSITIVA påståenden om världen i stället för förbud knutna till verb — då
+räcker en matchningsregel, och biten återanvänds mellan verb.
 
 Bitarna 4096–65536 tillkom 2026-08-10. Mätning visade att 259 substantiv föll
 på bara 15 distinkta värden, med 84 ord i ett enda fack (enbart KONKRET) där
