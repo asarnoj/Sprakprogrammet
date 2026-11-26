@@ -320,8 +320,12 @@ class SvenskRenderare:
                 attribut.extend(self.attribut(a, bestämning, nf.numerus, genus))
 
         tabell = SUBSTANTIVCELL_GEN if genitiv else SUBSTANTIVCELL
-        huvudets = (nf.bestämdhet if bestämning == "kvantifikator"
-                    else HUVUDORDETS_BESTÄMDHET[bestämning])
+        # Kvantifikatorn låter specens bestämdhet avgöra huvudordets form,
+        # men bara de två som substantivet HAR: en naken fras (generisk eller
+        # partitiv) tar den obestämda formen, precis som utan kvantifikator.
+        huvudets = HUVUDORDETS_BESTÄMDHET[bestämning]
+        if bestämning == "kvantifikator" and nf.bestämdhet not in NAKEN:
+            huvudets = nf.bestämdhet
         cell = tabell[(huvudets, nf.numerus)]
         try:
             huvudord = self.u.form(huvud, cell)

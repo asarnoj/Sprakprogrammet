@@ -112,6 +112,12 @@ def fallen(k) -> list[tuple[str, S.Mening, str]]:
         ("kvantifikator bestämd",
          _mening(k, NF(bok, B.BESTÄMD, numerus=N.PL, kvantifikator="kvant_alla")),
          {"sv": "Flickan läser alla böckerna.", "en": VÄGRAR}),
+        # En naken fras med kvantifikator: huvudordets cell slogs upp på
+        # specens bestämdhet, och GENERISK finns inte i den tabellen — en
+        # KeyError mitt i sökningen i stället för en mening.
+        ("kvantifikator i naken fras",
+         _mening(k, NF(bok, B.GENERISK, numerus=N.PL, kvantifikator="kvant_alla")),
+         {"sv": "Flickan läser alla böcker.", "en": "The girl reads all books."}),
         ("kvantifikator böjd",
          _mening(k, NF(hus, kvantifikator="kvant_ingen_det")),
          {"sv": "Flickan läser inget hus.", "en": "The girl reads no house."}),
