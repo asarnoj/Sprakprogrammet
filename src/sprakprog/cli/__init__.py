@@ -53,6 +53,14 @@ def main(argv: list[str] | None = None) -> int:
     p_mappa.add_argument("--lemma",    required=True, help="lemmaformen, t.ex. 'tala'")
     p_mappa.add_argument("--json",     action="store_true", help="JSON-output istället för text")
 
+    # ── generera ─────────────────────────────────────────────────────────
+    p_generera = sub.add_parser(
+        "generera",
+        help="Generera böjda former via Claude API och skriv till Former-tabellen",
+    )
+    from .generera import lägg_till_argument as _generera_args
+    _generera_args(p_generera)
+
     args = parser.parse_args(argv)
 
     # Lazy import för snabb startup på enskilda kommandon
@@ -71,6 +79,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "mappa-kaikki":
         from .mappa_kaikki import kör as kör_mappa_kaikki
         return kör_mappa_kaikki(args)
+    if args.kommando == "generera":
+        from .generera import kör as kör_generera
+        return kör_generera(args)
 
     parser.error(f"okänt kommando: {args.kommando}")
     return 2
