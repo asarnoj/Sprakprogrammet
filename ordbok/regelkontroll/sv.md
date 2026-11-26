@@ -33,11 +33,7 @@ En ljudanpassning som beror på ljudet och inte på klassen är ett eget regelko
 
 ## Att granska
 
-1. **Utrala substantiv på konsonant.** `bil → bilar` men `park → parker`, och det syns inte i ordet. Suffix som entydigt ger pluralen har regler (-het, -tion, -ist, -ör → -er; -ing, -dom → -ar); övriga får pluralen som kort. Är -ar ett försvarbart standardval för enstaviga ord, eller ska pluralen vara ett kort?
-2. **Dubbelteckning efter kort vokal.** `man → mannen`, `rum → rummet`, `dum → dumma`: vokallängden syns inte i stavningen, så formerna blir kort.
-3. **Starka verbs supinum.** Supinum är alltid ett kort för starka verb, även när det bara är stammen + -it (`skrivit`). Ska `stam + -it` vara regel, med ablautformerna (`sprungit`) som undantag?
-4. **Betonad slutstavelse.** `gammal → gamla` men `normal → normala`, `vit → vitt` men `privat → privat`. Betoningen syns inte, så de avvikande blir kort.
-5. **Komparation.** Datan har syntetisk komparativ för ord där svenskan hellre säger mer (`intressantare`, `normalare`). Reglerna förutsäger dem, så de syns inte som kort här — men de avgör om renderaren skriver `intressantare` eller `mer intressant`.
+1. **Komparation.** Datan har syntetisk komparativ för ord där svenskan hellre säger mer (`intressantare`, `normalare`). Reglerna förutsäger dem, så de syns inte som kort här — men de avgör om renderaren skriver `intressantare` eller `mer intressant`.
 
 ## Verb: ord med undantagskort (94)
 

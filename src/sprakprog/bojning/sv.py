@@ -453,18 +453,12 @@ CELLNAMN = {
     "best_superl": "best. superlativ",
 }
 
+# Avgjort 2026-09-13 (Julius): utrala substantiv på konsonant (`bil → bilar`,
+# `park → parker`), dubbelteckning efter kort vokal (`man → mannen`), starka
+# verbs supinum (`skrivit`, `sprungit`) och betonad slutstavelse (`gammal →
+# gamla`, `normal → normala`) syns inte i stavningen eller gäller en sluten
+# grupp, och blir därför kort per ord (KÄRNAN 3.4). Reglerna gör redan så.
 GRANSKA = (
-    "**Utrala substantiv på konsonant.** `bil → bilar` men `park → parker`, och det "
-    "syns inte i ordet. Suffix som entydigt ger pluralen har regler (-het, -tion, -ist, -ör → -er; "
-    "-ing, -dom → -ar); övriga får pluralen som kort. Är -ar ett försvarbart standardval "
-    "för enstaviga ord, eller ska pluralen vara ett kort?",
-    "**Dubbelteckning efter kort vokal.** `man → mannen`, `rum → rummet`, "
-    "`dum → dumma`: vokallängden syns inte i stavningen, så formerna blir kort.",
-    "**Starka verbs supinum.** Supinum är alltid ett kort för starka verb, även när "
-    "det bara är stammen + -it (`skrivit`). Ska `stam + -it` vara regel, med "
-    "ablautformerna (`sprungit`) som undantag?",
-    "**Betonad slutstavelse.** `gammal → gamla` men `normal → normala`, "
-    "`vit → vitt` men `privat → privat`. Betoningen syns inte, så de avvikande blir kort.",
     "**Komparation.** Datan har syntetisk komparativ för ord där svenskan hellre "
     "säger mer (`intressantare`, `normalare`). Reglerna förutsäger dem, så de syns "
     "inte som kort här — men de avgör om renderaren skriver `intressantare` eller "

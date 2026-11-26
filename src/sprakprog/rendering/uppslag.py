@@ -36,7 +36,7 @@ from dataclasses import dataclass
 
 from ..generering.granskning import _former_per_cell
 from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
-from .spec import NAKEN, Numerus, RenderingsFel
+from .spec import NAKEN, TILLTAL, Numerus, RenderingsFel
 
 # docs/BITMASK.md §11. Enda biten uppslaget behöver känna till, och bara
 # för att välja mellan vem och vad.
@@ -49,6 +49,18 @@ KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik")
 #: Hur ett reflexivt verb syns i lemmat (KÄRNAN 3.5, TYSTA_BESLUT A8). Bara de
 #: språk vars renderare läser egenskapen genom `egenskap` står här.
 REFLEXIVT_LEMMA = {"sv": lambda lemma: lemma.endswith(" sig")}
+
+
+def frasdel(metod):
+    """Märker en renderarmetod som en DEL: något kartan går igenom för sig.
+
+    En del är en frasfunktion med uttryckliga indata — specobjektet den får och
+    de argument den anropas med. Kartan (`rendering/karta.py`) ersätter de andra
+    delarna med stubbar när den går igenom en del, och det är märkningen som
+    säger var gränserna går (KÄRNAN 6.7).
+    """
+    metod.frasdel = True
+    return metod
 
 
 def _anropsställe() -> tuple[str, int]:
@@ -204,6 +216,11 @@ class Uppslag:
 
     def mänsklig(self, koncept: str) -> bool:
         return bool((self.koncept(koncept, "semantik") or 0) & MÄNSKLIG)
+
+    def tilltal(self, koncept: str) -> str | None:
+        """Vem subjektskonceptet tilltalar i en imperativ — 2sg, 2pl, artig, 1pl —
+        eller None. Renderaren jämför aldrig konceptnycklar själv (KÄRNAN 6.7)."""
+        return TILLTAL.get(koncept)
 
     # ── former ───────────────────────────────────────────────────────
 

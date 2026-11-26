@@ -25,15 +25,14 @@ Id:na i kommentarerna (G1, S1 …) är inventeringen i `paradigm/TYSTA_BESLUT.md
 from __future__ import annotations
 
 import sqlite3
-from dataclasses import replace
 
 from .spec import (
     Aspekt, Attribut, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras,
     NAKEN, Numerus, attribut_med_grad,
     Prepositionsfras,
-    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, RenderingsFel, Satsmodus, Tidsreferens, slutar,
 )
-from .uppslag import Ord, Uppslag, Val
+from .uppslag import Ord, Uppslag, Val, frasdel
 
 UTRUM, NEUTRUM = 1, 2
 
@@ -155,6 +154,7 @@ class SvenskRenderare:
 
     # ── nominalfras ──────────────────────────────────────────────────
 
+    @frasdel
     def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False,
                     genitiv: bool = False) -> list[Ord]:
         huvud = self.u.lexem(
@@ -282,6 +282,7 @@ class SvenskRenderare:
         form = self.u.regel(ADJEKTIVFORM, naturlig)
         return self.u.form_för(koncept, _adjektivcell(form, numerus))
 
+    @frasdel
     def attribut(self, a: str | Attribut, bestämning: str, numerus: Numerus,
                  genus: int) -> list[Ord]:
         """Attributivt adjektiv i sin grad.
@@ -320,6 +321,7 @@ class SvenskRenderare:
 
     # ── satsens delar ────────────────────────────────────────────────
 
+    @frasdel
     def adverbial(self, a: str | Prepositionsfras | Bisats) -> list[Ord]:
         """Adverb, prepositionsfras eller bisats — samma slot, tre frastyper."""
         if isinstance(a, str):
@@ -332,6 +334,7 @@ class SvenskRenderare:
         self.u.ordning("preposition_före_komplement", [preposition], komplement)
         return [preposition, *komplement]
 
+    @frasdel
     def komplement(self, m: Mening) -> list[Ord]:
         """Infinitivkomplement: "vill läsa", "börjar att läsa"."""
         markör = self.u.infinitivmarkör(m.verb)
@@ -342,6 +345,7 @@ class SvenskRenderare:
         self.u.ordning("infinitivmarkör_före", [markörord], [infinitiv])
         return [markörord, infinitiv]
 
+    @frasdel
     def predikativ(self, m: Mening) -> list[Ord]:
         if isinstance(m.predikativ, str):
             if m.grad is not Grad.POSITIV:
@@ -396,27 +400,43 @@ class SvenskRenderare:
             ut += [än, *jämfört]
         return ut
 
-    def verbfras(self, m: Mening, satsart: str) -> list[Ord]:
+    @frasdel
+    def verbfras(self, m: Mening, satsart: str, verb: str | None = None,
+                 diates: Diates | None = None) -> list[Ord]:
         """Verbet, som ett eller flera ord.
 
         Svenskan har ingen syntetisk futurumform. "ska ge" byggs av
         modalverbet i presens plus huvudverbets infinitiv — samma sorts
         analytiska konstruktion som en/de använder, och skälet till att
         returtypen är en lista och inte en sträng.
+
+        `verb` och `diates` skickas bara för bli-passivens hjälpverb: samma sats,
+        ett annat verb, aktiv diates. Att skicka dem i stället för att kopiera
+        specen gör att kartan ser exakt vad som ändrades (KÄRNAN 6.7).
         """
-        lexem = self.u.lexem(m.verb)
+        verb = m.verb if verb is None else verb
+        diates = m.diates if diates is None else diates
+        lexem = self.u.lexem(verb)
         if satsart == "imperativ":
             # Svenskan har EN imperativform för alla tilltal: "läs!" säger
             # man till en som till många. Tilltalet läses ändå ut, för att
             # ett subjekt som inte är någon tilltalad ska stoppas här och
             # inte tyst rendera en uppmaning till tredje person.
-            tilltal(m, "sv", ("2sg", "2pl", "artig"))
+            tal = self.u.tilltal(m.subjekt.koncept)
+            if tal is None:
+                raise RenderingsFel(
+                    f"sv: imperativens subjekt måste vara den tilltalade, "
+                    f"inte {m.subjekt.koncept!r}")
+            if tal not in ("2sg", "2pl", "artig"):
+                raise RenderingsFel(
+                    f"sv: saknar imperativform för {tal} — svenskan uttrycker "
+                    f"det med en omskrivning")
             return [self.u.form(lexem, "imp")]
 
         passiv = None
-        if m.diates is not Diates.AKTIV:
+        if diates is not Diates.AKTIV:
             passiv = self.u.regel(PASSIVFORM, "bli_passiv"
-                                  if m.diates is Diates.PASSIV_HÄNDELSE
+                                  if diates is Diates.PASSIV_HÄNDELSE
                                   else "s_passiv")
         if passiv == "bli_passiv":
             # "boken blev läst" — bli plus perfektparticip, som kongruerar
@@ -431,9 +451,9 @@ class SvenskRenderare:
             form = self.u.regel(PARTICIPFORM, naturlig)
             cell = {"plural": "perfpart_a", "utrum": "perfpart_obest_utr_sg",
                     "neutrum": "perfpart_obest_neu_sg"}[form]
-            hjälp = replace(m, verb="verb_bli", diates=Diates.AKTIV)
             with self.u.led("hjälpverb"):
-                hjälpverb = self.verbfras(hjälp, satsart)
+                hjälpverb = self.verbfras(m, satsart, verb="verb_bli",
+                                         diates=Diates.AKTIV)
             particip = self.u.form(lexem, cell)
             self.u.ordning("hjälpverb_före_huvudverb", hjälpverb, [particip])
             return [*hjälpverb, particip]
@@ -488,6 +508,7 @@ class SvenskRenderare:
         return (not self.u.har_form(lexem, "inf")
                 and self.u.har_form(lexem, "inf_passiv"))
 
+    @frasdel
     def reflexivpronomen(self, m: Mening) -> Ord | None:
         """Verbets reflexiva pronomen i subjektets person, annars None.
 
@@ -498,7 +519,7 @@ class SvenskRenderare:
         if not self.u.egenskap(self.u.lexem(m.verb, None), "reflexiv"):
             return None
         nf = m.subjekt
-        if nf.koncept == "pronomen_2sg_formal":
+        if self.u.tilltal(nf.koncept) == "artig":
             # Artigt `ni` är andra person SINGULAR i Koncept men tar
             # pluralens `er`. Utan undantaget blev det "ni skyndar dig".
             naturlig, koncept = "er", "pronomen_2sg_formal"
@@ -515,6 +536,7 @@ class SvenskRenderare:
 
     # ── satsen ───────────────────────────────────────────────────────
 
+    @frasdel
     def satsled(self, m: Mening, bisats: bool = False) -> list[Ord]:
         """Satsens ord, utan skiljetecken och utan inledande subjunktion.
 
@@ -624,6 +646,7 @@ class SvenskRenderare:
             ord.extend(argumentbisats)
         return ord
 
+    @frasdel
     def frågeord(self, m: Mening) -> list[Ord] | None:
         """Frågeordet i en wh-fråga, böjt efter sin roll. None = ingen sådan.
 
@@ -635,7 +658,7 @@ class SvenskRenderare:
             return None
         if m.fråga_om not in FRÅGESLOTTAR:
             return [self.u.form_för(m.fråga_om, "inv")]
-        efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
+        efterfrågat = getattr(m, m.fråga_om)
         if efterfrågat is None:
             raise RenderingsFel(
                 f"sv: fråga_om={m.fråga_om!r} men den slotten är tom — "
@@ -650,6 +673,7 @@ class SvenskRenderare:
             "frågepronomen_person" if sort == "person" else "frågepronomen_sak",
             "nom" if m.fråga_om == "subjekt" else "ack_dat")]
 
+    @frasdel
     def bisats(self, b: Bisats) -> list[Ord]:
         """Subjunktion plus satsen i bisatsordföljd."""
         subjunktion = self.u.form_för(b.subjunktion, "inv")
