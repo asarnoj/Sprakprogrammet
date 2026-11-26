@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..fsrslager import Lager
-from ..kortmodell import Kort
+from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
 from ..rattning import FEL, RÄTT, Rättning, rätta
 from ..rendering import RenderingsFel, spåra
@@ -114,6 +114,74 @@ class Passet:
 
     # ── meningsfasen ──
 
+    def _åtskilda(self, ut, mål: set) -> bool:
+        """6.1 punkt 5: inga två svaga kort styr samma ställe i meningen.
+
+        Budgeten (6.3) ser till att felen blir FÅ; det här ser till att de blir
+        ÅTSKILJBARA. KÄRNAN 6.2 kallar dem samma tal sett från två håll, och
+        bara det ena höll förut: passet räknade sannolikheten för två fel men
+        aldrig om två mål stod på samma ord.
+
+        Exemplet i 6.2: när genuskortet för `hus` är målet duger «ett hus», där
+        genuset syns på ett ställe. «ett stort hus» duger inte — där styr
+        genuset både artikeln och adjektivet, och ett fel går inte att knyta
+        till ett enda kort.
+
+        UNDANTAGET är ETT ORDS PREREKVISITSTEGE (6.2, 7.3): ordet självt, det
+        beslut som valde dess cell, och den cellens formkort. De delar alltid
+        position, men 7.3 skiljer dem åt utan att behöva positionerna — föll
+        ordet är formen ograderad; förklarar beslutet avvikelsen har beslutet
+        fallit; är svaret en form som inte finns har formkortet fallit. Därför
+        får ett mönster prövas på ett nytt ord (6.4).
+
+        Ett ORDFÖLJDSbeslut hör inte till stegen: det placerar ordet, det
+        väljer inte dess form, och 7.3 har ingen prerekvisit som skiljer det
+        från formkortet. Två mål som delar en LUCKA är aldrig åtskilda — där
+        finns inget ord att hänga en stege på.
+        """
+        platser: dict = {}
+        for kort, ps in meningens_kort(self.s.tabell, ut):
+            if kort in mål:
+                platser.setdefault(kort, set()).update(ps)
+
+        stegar: list[set] = []
+        for o in ut.ord:
+            stegar.append(set(self.s.tabell.kort(
+                self.s.u.lexem(o.koncept, o.variant), o.cell)))
+        for kort, ps in meningens_kort(self.s.tabell, ut):
+            if kort.typ == "regel" and kort.nyckel[0] == "val":
+                for sort, i in ps:
+                    if sort == "ord":
+                        stegar[i].add(kort)
+
+        lista = sorted(platser, key=str)
+        for i, a in enumerate(lista):
+            for b in lista[i + 1:]:
+                delat = platser[a] & platser[b]
+                if not delat:
+                    continue
+                if all(sort == "ord" and a in stegar[j] and b in stegar[j]
+                       for sort, j in delat):
+                    continue
+                return False
+
+        # 6.1 punkt 7, den del som går att avgöra utan varianterna: har ett
+        # ANNAT kort exakt samma positioner som ett mål, finns ingen avvikelse
+        # som skiljer dem åt, och skulden går inte att lägga rätt. Hela
+        # villkoret kräver de omrenderingar entydighetsfiltret (6.5) ger och
+        # kan inte prövas förrän det finns.
+        alla: dict = {}
+        for kort, ps in meningens_kort(self.s.tabell, ut):
+            alla.setdefault(kort, set()).update(ps)
+        for a in platser:
+            for b, ps in alla.items():
+                if b == a or ps != platser[a]:
+                    continue
+                if any(a in stege and b in stege for stege in stegar):
+                    continue
+                return False
+        return True
+
     def ryms(self, mål: set, övriga: set) -> bool:
         """Håller budgeten: P(≥2 fel) ≤ τ (6.3)?"""
         return _minst_ett_fel([self.p(k) for k in mål | övriga]) <= self.τ
@@ -165,6 +233,8 @@ class Passet:
                 # 6.1 punkt 8: källmeningen har redan ställts i dag. Den mäter
                 # då minnet av facit i stället för kortet. Risken räknas ändå,
                 # så en utesluten kandidat inte får avsluta sökningen.
+                continue
+            if not self._åtskilda(ut, mål):
                 continue
             uppgift = Uppgift(träff, ut, källtext, frozenset(mål),
                               frozenset(träff.kort - mål))
