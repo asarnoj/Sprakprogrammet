@@ -30,7 +30,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-from .spec import Mening, Nominalfras, Tidsreferens
+from .spec import Diates, Mening, Nominalfras, Tidsreferens
 
 # docs/BITMASK.md §11. Bara för läsbara felmeddelanden.
 BITNAMN = {
@@ -165,6 +165,13 @@ class Validator:
         """Alla krav specen bryter mot. Tom lista = välformad."""
         krav = self.krav_för(m.verb)
         brott: list[Brott] = []
+
+        # I passiv sats är subjektet semantiskt objekt, så det ska prövas
+        # mot objektskravet. Annars skulle "boken lästes" avvisas för att
+        # böcker inte är animata — läsa kräver animat SUBJEKT, men här är
+        # subjektet det lästa.
+        if m.diates is not Diates.AKTIV and "objekt" in krav:
+            krav = {**krav, "subjekt": krav["objekt"]}
 
         for slot, nf in (("subjekt", m.subjekt), ("objekt", m.objekt),
                          ("io", m.io)):

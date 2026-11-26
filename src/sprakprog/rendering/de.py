@@ -28,7 +28,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -185,6 +185,13 @@ class TyskRenderare:
         som hamnar i slutet.
         """
         person, numerus = self._subjektsform(m.subjekt)
+        if m.diates is not Diates.AKTIV:
+            # "das Buch wird gelesen" — werden, inte sein. Tyskan har bara
+            # en passiv, och den delar hjälpverb med futurum: skillnaden är
+            # att futurum tar infinitiv och passiven particip.
+            return (self.u.form_för("verb_bli", f"{TEMPUSSTAM[m.tid]}_{person}{numerus}"
+                                    if m.tid in TEMPUSSTAM else f"pres_{person}{numerus}"),
+                    [self.u.form_för(m.verb, "part2")])
         if m.aspekt is Aspekt.PERFEKT:
             # "sie hat gelesen" mot "sie ist gegangen" — hjälpverbet väljs
             # per verb ur Lexem.hjälpverb, kolumnen som fylldes långt innan

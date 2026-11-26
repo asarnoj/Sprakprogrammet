@@ -18,7 +18,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, Prepositionsfras,
+    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, Prepositionsfras,
     RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
@@ -222,7 +222,20 @@ class SvenskRenderare:
         returtypen är en lista och inte en sträng.
         """
         lexem = self.u.lexem(m.verb)
-        suffix = "_passiv" if self._deponens(lexem) else ""
+        if m.diates is Diates.PASSIV_HÄNDELSE:
+            # "boken blev läst" — bli plus perfektparticip, som kongruerar
+            # med subjektet. Den betonar händelsen; s-passiven är omarkerad.
+            huvud = self.u.lexem(m.subjekt.koncept)
+            genus = huvud["genus"] or UTRUM
+            cell = ("perfpart_a" if m.subjekt.numerus is Numerus.PL
+                    else "perfpart_obest_utr_sg" if genus == UTRUM
+                    else "perfpart_obest_neu_sg")
+            return [self.u.form_för("verb_bli", TEMPUSCELL[m.tid]),
+                    self.u.form(lexem, cell)]
+        # S-passiven är svenskans omarkerade: läses, lästes, lästs. Den
+        # ligger som egna celler i Former, inte som en konstruktion.
+        suffix = ("_passiv" if m.diates is Diates.PASSIV
+                  or self._deponens(lexem) else "")
         if m.aspekt is Aspekt.PERFEKT:
             # "har läst" / "hade läst" — hjälpverbet bär tempus, supinumet
             # är oföränderligt. Svenskan använder alltid ha, aldrig vara.

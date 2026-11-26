@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from .spec import Aspekt, Mening, Nominalfras, RenderingsFel, Tidsreferens
+from .spec import Aspekt, Diates, Mening, Nominalfras, RenderingsFel, Tidsreferens
 from .uppslag import Uppslag
 
 TOPIK, OBJEKT, DATIV = "は", "を", "に"
@@ -93,6 +93,23 @@ class JapanskRenderare:
                 raise RenderingsFel(
                     f"ja/{lexem['lemma']}: varken ます- eller adjektivform finns")
             return grund + "です"
+        if m.diates is not Diates.AKTIV:
+            # Japanskan har en egen passivform i paradigmet — 受身 — precis
+            # som svenskans s-passiv. Ingen konstruktion behövs, men den
+            # artiga formen måste komponeras: 読まれる → 読まれます.
+            ukemi = self.u.form_för(m.verb, "ukemi")
+            if not ukemi.endswith("る"):
+                raise RenderingsFel(
+                    f"ja: ukemi-formen {ukemi!r} slutar inte på る")
+            stam = ukemi[:-1]
+            if m.negerad:
+                grund = stam + "ません"
+                return grund + "でした" if m.tid is Tidsreferens.FÖRFLUTEN else grund
+            grund = stam + "ます"
+            return (stam + "ました"
+                    if m.tid is Tidsreferens.FÖRFLUTEN
+                    or m.aspekt is Aspekt.PERFEKT else grund)
+
         masu = self.u.form_för(m.verb, "masu")
         if m.negerad:
             # Japanskan har inget nekande ord i satsen — verbet böjs.

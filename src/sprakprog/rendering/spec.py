@@ -46,6 +46,23 @@ class Tidsreferens(StrEnum):
     FRAMTID = "framtid"
 
 
+class Diates(StrEnum):
+    """Aktiv eller passiv — och svenskan har två passiver.
+
+    I en passiv sats står PATIENTEN som subjekt: "boken lästes". Specen
+    behöver inget nytt fält för det; den som bygger meningen sätter helt
+    enkelt patienten i subjektsslotten. Men validatorn måste veta det, så
+    att den prövar subjektet mot verbets OBJEKTskrav i stället.
+
+    PASSIV_HÄNDELSE finns för att svenskan skiljer "boken lästes" från
+    "boken blev läst" — den senare betonar händelsen. Sex av sju språk har
+    bara en passiv och renderar båda värdena likadant.
+    """
+    AKTIV = "aktiv"
+    PASSIV = "passiv"
+    PASSIV_HÄNDELSE = "passiv_händelse"
+
+
 class Referentgenus(StrEnum):
     """Naturligt genus hos den som åsyftas — inte grammatiskt genus.
 
@@ -154,6 +171,7 @@ class Mening:
     språkspecifika mönstret. Ingen rad = ren infinitiv, vilket är fallet för
     de flesta modalverb.
     """
+    diates: Diates = Diates.AKTIV
     fråga: bool = False
     """Ja/nej-fråga: "läser flickan boken?"
 

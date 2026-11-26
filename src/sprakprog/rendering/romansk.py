@@ -32,7 +32,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, Referentgenus,
+    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, Referentgenus,
     RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
@@ -168,6 +168,25 @@ class RomanskRenderare:
         return person, numerus, genus
 
     def verbdelar(self, m: Mening, föregående_objekt=None) -> list[str]:
+        if m.diates is not Diates.AKTIV:
+            # "le livre est lu", "el libro es leído" — vara plus particip
+            # som kongruerar med subjektet, precis som être-participen i
+            # sammansatt dåtid. Spanskan använder ser, inte estar.
+            person, numerus, genus = self._subjektsform(m.subjekt)
+            # Dåtida passiv skiljer sig: spanskan tar indefinido ("fue
+            # leído"), franskan och italienskan imperfekt ("était lu", "era
+            # letto") eftersom deras pret är passé simple respektive passato
+            # remoto — litterära tempus som ingen inlärare behöver.
+            #
+            # KÄND GRÄNS: den sammansatta perfektiva passiven ("a été lu",
+            # "è stato letto") är inte byggd. Den kräver tre verbdelar.
+            if m.tid is not Tidsreferens.FÖRFLUTEN:
+                stam = "pres"
+            else:
+                stam = "imperf" if self.SAMMANSATT_DÅTID else "pret"
+            return [self.u.form_för("verb_vara", f"{stam}_{person}{numerus}",
+                                    "permanent"),
+                    self.u.form_för(m.verb, f"pp_{_kön(genus)}_{numerus}")]
         """`föregående_objekt` är (genus, numerus) för ett objektsklitikum.
 
         Med 'ha'-hjälpverbet kongruerar participet med det direkta objektet

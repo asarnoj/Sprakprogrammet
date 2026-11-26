@@ -255,6 +255,7 @@ utökningarna flyttar bara taket.
 14  har läst / hade läst            + perfekt          ✅ 2026-08-13
 15  hon läser i skolan              + prepositionsfras ✅ 2026-08-13
 16  läser flickan boken?            + ja/nej-fråga     ✅ 2026-08-13
+17  boken lästes / blev läst        + passiv           ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
 12  har gett                        + perfekt
@@ -316,8 +317,8 @@ Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
 | Utökning | Former | Vad `Mening` behöver |
 |---|---|---|
 | ~~Genitiv~~ | ~~992~~ | ✅ `Nominalfras.ägare` |
-| Passiv | 601 | diates på `Mening` |
-| Perfektparticip | 454 | particip som attribut |
+| ~~Passiv~~ | ~~601~~ | ✅ `Diates` |
+| ~~Perfektparticip~~ | ~~454~~ | ✅ används av bli-passiven |
 | Komparation | 294 | jämförelsekonstruktion |
 | ~~Perfekt~~ | ~~165~~ | ✅ `Aspekt.PERFEKT` |
 | Imperativ | 161 | satsmodus |
