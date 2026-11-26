@@ -94,6 +94,13 @@ def main(argv: list[str] | None = None) -> int:
     from .generera import lägg_till_argument as _generera_args
     _generera_args(p_generera)
 
+    # ── tillämpa-granskning ──────────────────────────────────────────────
+    p_ratt = sub.add_parser(
+        "tillämpa-granskning",
+        help="Skriv in granskningens förslag i Former (inga LLM-anrop)")
+    from .rattelse import lägg_till_argument as _ratt_args
+    _ratt_args(p_ratt)
+
     # ── granska-former ───────────────────────────────────────────────────
     p_granska = sub.add_parser(
         "granska-former",
@@ -138,6 +145,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "tagga-monster":
         from .tagga import kör_monster
         return kör_monster(args)
+    if args.kommando == "tillämpa-granskning":
+        from .rattelse import kör as kör_rattelse
+        return kör_rattelse(args)
     if args.kommando == "granska-former":
         from .granska import kör as kör_granska
         return kör_granska(args)
