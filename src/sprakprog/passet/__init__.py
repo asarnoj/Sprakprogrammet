@@ -32,6 +32,7 @@ from ..fsrslager import Lager
 from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
 from ..rattning import FEL, RÄTT, Rättning, rätta
+from ..nivaer import SLUTNA_ORDKLASSER
 from ..rendering import RenderingsFel, spåra
 from ..rendering.spår import Utskrift
 from ..sammansattning import Sammansättare, Träff
@@ -55,6 +56,22 @@ class Uppgift:
     @property
     def facit(self) -> str:
         return self.ut.text
+
+
+@dataclass(frozen=True, slots=True)
+class Glosa:
+    """Introövningen för ett innehållsord: betydelse → form (5.4).
+
+    Funktionsord får INTE en glosa utan en mening med ordet som enda mål —
+    «en glosa vore sällan entydig: engelskans *a* är både en och ett» (5.4).
+    Därför gäller den här bara de öppna ordklasserna.
+    """
+    kort: Kort
+    källtext: str
+    facit: str
+    #: Varje form av lexemet godtas: kortet klaras om användaren skriver en
+    #: form reglerna kan bygga av rätt lexem (3.3).
+    former: frozenset
 
 
 def _minst_ett_fel(p: list[float]) -> float:
@@ -363,6 +380,43 @@ class Passet:
         presenterade = self.data.presenterade()
         return [k for k in self.kandidater() if k not in presenterade]
 
+    def glosa(self, kort: Kort) -> Glosa | None:
+        """Innehållsordets introövning, eller None när den inte går att ställa.
+
+        Är källordet tvetydigt — två koncept med samma lemma OCH samma
+        ordklass, som «fisk» — skulle glosan bryta mot R2, och då ställs den
+        inte (5.4). Mätt: 16 av 719 svenska lemman bärs av flera koncept, och
+        bara två av dem är innehållsord.
+        """
+        if kort.familj != "ord" or self.s.par is None:
+            return None
+        nyckel = kort.nyckel[0]
+        källa, mål = self.s.par.u, self.s.u
+        try:
+            hit = källa.lexem(nyckel)
+            dit = mål.lexem(nyckel)
+        except RenderingsFel:
+            return None
+        ordklass = källa.ordklass(hit).split("/")[0]
+        if ordklass in SLUTNA_ORDKLASSER:
+            return None
+        lemma = källa.lemma(hit)
+        syskon = källa.conn.execute(
+            """SELECT count(*) FROM Koncept k JOIN Lexem l ON l.koncept_id = k.id
+               WHERE l.språk = ? AND l.lemma = ? AND k.ordklass = ?""",
+            (källa.språk, lemma, ordklass)).fetchone()[0]
+        if syskon > 1:
+            return None
+        former = {f for f in mål._celler(dit).values() if f}
+        if not former:
+            return None
+        return Glosa(kort, f"{lemma}  ({ordklass.lower()})",
+                     mål.lemma(dit), frozenset(former))
+
+    def rätta_glosa(self, glosa: Glosa, svar: str) -> bool:
+        """Klarat om svaret är en form reglerna kan bygga av rätt lexem (3.3)."""
+        return svar.strip().lower() in {f.lower() for f in glosa.former}
+
     def _ensamt_mål(self, kort: Kort, paket: frozenset) -> Uppgift | None:
         """En övning med kortet som ENDA mål, byggd utan gränsvärde (5.4).
 
@@ -394,7 +448,8 @@ class Passet:
         """
         return self._ensamt_mål(kort, frozenset())
 
-    def presentera(self, kort: Kort, paket: frozenset = frozenset()) -> Uppgift | None:
+    def presentera(self, kort: Kort, paket: frozenset = frozenset(),
+                   markera: bool = True) -> Uppgift | None:
         """Introövningen: en mening med kortet som ENDA mål (5.4).
 
         Bokför ingenting. Kortet räknas som presenterat, och får därför användas
@@ -409,9 +464,40 @@ class Passet:
         uppgift = self._ensamt_mål(kort, paket)
         if uppgift is None:
             return None
+        if markera:
+            self.klarat_introövningen(kort)
+        return uppgift
+
+    def introsteg(self, kort: Kort,
+                  paket: frozenset = frozenset()) -> tuple[list, Uppgift] | None:
+        """Vad som ska presenteras för att lära ut `kort`, i kravordning (5.4).
+
+        «Ordningen inom dagen följer kraven. Ett kort presenteras efter de
+        kort det kräver, så att lånekorten redan är införda eller
+        presenterade.» Glosorna kommer alltså före övningen, och regeln hör
+        hemma HÄR och inte i ett gränssnitt: ett annat gränssnitt skulle
+        annars behöva komma ihåg att införa den på nytt.
+
+        Ger (glosor, övning), eller None när ingen övning går att bygga.
+        """
+        uppgift = self.presentera(kort, paket, markera=False)
+        if uppgift is None:
+            return None
+        kända = self.data.införda() | self.data.presenterade()
+        glosor = [g for k in sorted(uppgift.träff.kort - kända - {kort}, key=str)
+                  if (g := self.glosa(k)) is not None]
+        return glosor, uppgift
+
+    def klarat_introövningen(self, kort: Kort) -> None:
+        """Kortet är presenterat — det har KLARAT introövningen (5.1).
+
+        Förut räknades kortet som presenterat så snart övningen byggdes, alltså
+        innan användaren svarat. Då fick ett kort användas i dagens meningar
+        utan att ha klarats, och «en övning görs om tills det nya kortet blir
+        rätt» (5.4) saknade verkan.
+        """
         self.data.presentera(kort)
         self.uppdatera()
-        return uppgift
 
     # ── dagens läge, för gränssnittet ──
 

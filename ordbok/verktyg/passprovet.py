@@ -254,6 +254,41 @@ def korten_införs_när_de_går_rätt(p: Passet, data: Kursdata) -> list[str]:
             ["inget kort infördes trots att varje svar var lika med facit"])
 
 
+def orden_lärs_ut_före_mönstret(p: Passet, data: Kursdata) -> list[str]:
+    """5.4. «Ett kort presenteras efter de kort det kräver.»
+
+    Introövningen för SVO byggdes med «Tid står.», där varken `tid` eller
+    `står` någonsin visats: tre okända saker prövades och en av dem kallades
+    mål. Innehållsorden ska ha sin glosa först.
+    """
+    nivån = p.nästa_nivå()
+    kort = p.att_presentera()[0]
+    steg = p.introsteg(kort, paket=nivån)
+    if steg is None:
+        return ["ingen övning gick att bygga"]
+    glosor, uppgift = steg
+    kända = data.införda() | data.presenterade()
+    lärda = {g.kort for g in glosor}
+    okända = [k for k in uppgift.träff.kort - kända - lärda - {kort}
+              if p.glosa(k) is not None]
+    return ([f"{kort}: övningen har {len(okända)} olärda innehållsord "
+             f"{sorted(map(str, okända))} som ingen glosa täcker"]
+            if okända else [])
+
+
+def presenterat_betyder_klarat(p: Passet, data: Kursdata) -> list[str]:
+    """5.1. «presenterat = har klarat introövningen i dag.»
+
+    Förut räknades kortet som presenterat så snart övningen BYGGDES, alltså
+    innan användaren svarat, och fick då användas i dagens meningar utan att
+    ha klarats.
+    """
+    kort = p.att_presentera()[0]
+    p.presentera(kort, paket=p.nästa_nivå(), markera=False)
+    return ([f"{kort} räknades som presenterat utan att ha klarat övningen"]
+            if kort in data.presenterade() else [])
+
+
 INVARIANTER = [
     ("introfasen bokför ingenting", introfasen_bokför_ingenting, True),
     ("introövningen har ett enda mål", introövningen_har_ett_mål, False),
@@ -264,6 +299,8 @@ INVARIANTER = [
     ("dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True),
     ("meningen använder bara tillåtet", meningen_använder_bara_tillåtet, False),
     ("korten införs när de går rätt", korten_införs_när_de_går_rätt, True),
+    ("orden lärs ut före mönstret", orden_lärs_ut_före_mönstret, True),
+    ("presenterat betyder klarat", presenterat_betyder_klarat, True),
 ]
 
 

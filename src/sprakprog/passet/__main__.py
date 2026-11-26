@@ -94,6 +94,49 @@ def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
     return False
 
 
+def _glosor(passet: Passet, kö: list) -> bool:
+    """Lär ut övningens okända innehållsord först (5.4).
+
+    «Ordningen inom dagen följer kraven. Ett kort presenteras efter de kort
+    det kräver, så att lånekorten redan är införda eller presenterade.»
+
+    Utan det här prövade den första övningen tre okända saker och kallade en
+    av dem mål: SVO lärdes ut med «Tid står.», där varken `tid` eller `står`
+    hade visats. Dag ett ska i stället nå sin första mening när användaren kan
+    ett pronomen och ett verb (5.4).
+
+    Ger False när användaren avbröt.
+    """
+    if not kö:
+        return True
+    print(f"    orden först ({len(kö)} st):")
+    envis = 0
+    while kö:
+        glosa = kö.pop(0)
+        mening_id = passet.data.ny_mening(
+            "glosa", str(glosa.kort), glosa.källtext, sorted(glosa.former))
+        svar = _fråga(f"      {glosa.källtext}  →  ")
+        if svar == "q":
+            raise SystemExit
+        if svar == "s":
+            print("      hoppade över.")
+            return False
+        passet.data.svara(mening_id, svar, 0.0)
+        if passet.rätta_glosa(glosa, svar):
+            print("      rätt.")
+            passet.data.presentera(glosa.kort)
+            envis = 0
+            continue
+        print(f"      facit: {glosa.facit}")
+        kö.append(glosa)                      # sist i kön (5.4)
+        envis += 1
+        if envis > len(kö):
+            print("      orden sitter inte än — introfasen pausas.")
+            return False
+    passet.uppdatera()
+    return True
+
+
 def _lektion(passet: Passet, uppgift, kort) -> None:
     """Visa kortet i en färdig mening innan det prövas (5.4).
 
@@ -132,13 +175,14 @@ def _lektion(passet: Passet, uppgift, kort) -> None:
 def _introfas(passet: Passet) -> None:
     """Presentera nästa nivås kort, ett i taget (5.1, 5.4).
 
-    En övning per kort, med kortet som enda mål och de andra korten i nivån
-    som lånekort. Ingenting bokförs: övningen finns för att användaren inte
-    ska möta ny kunskap oförberedd, och kortet prövas på riktigt först i
-    meningsfasen.
+    Ordningen följer kraven: övningens okända innehållsord lärs ut som glosor
+    innan kortet som behöver dem. Ingenting bokförs — övningen finns för att
+    användaren inte ska möta ny kunskap oförberedd, och kortet prövas på
+    riktigt först i meningsfasen.
 
-    Ett kort som går fel läggs SIST i kön och görs om senare (5.4) — inte
-    direkt, eftersom användaren då har facit i färskt minne.
+    Ett kort räknas som presenterat när det KLARAT övningen (5.1). Går den
+    fel läggs kortet sist i kön och görs om senare, inte direkt: då har
+    användaren facit i färskt minne.
     """
     kö = passet.att_presentera()
     if not kö:
@@ -148,29 +192,35 @@ def _introfas(passet: Passet) -> None:
     nivån = frozenset(kö)
     print(f"  introfasen: {len(kö)} kort i nästa nivå. Inget bokförs här.")
     kvar = list(kö)
-    medan_inget_gick = 0
+    envis = 0
     while kvar:
         kort = kvar.pop(0)
-        uppgift = passet.presentera(kort, paket=nivån)
-        if uppgift is None:
+        steg = passet.introsteg(kort, paket=nivån)
+        if steg is None:
             print(f"  {kort}: ingen övning går att bygga ännu — hoppas över.")
             continue
+        glosor, uppgift = steg
         print(f"\n  lär dig nu:  {kort}")
+        if not _glosor(passet, glosor):
+            return
         _lektion(passet, uppgift, kort)
-        övning = passet.presentera(kort, paket=nivån)
+        övning = passet.presentera(kort, paket=nivån, markera=False)
         if övning is None:
-            print("  ingen andra mening att öva på — kortet prövas i meningsfasen.")
+            print("  ingen andra mening att öva på — kortet prövas i "
+                  "meningsfasen.")
+            passet.klarat_introövningen(kort)
             continue
         utfall = _ställ(passet, övning, fas="intro")
         if utfall:
-            medan_inget_gick = 0
+            passet.klarat_introövningen(kort)
+            envis = 0
             continue
-        if utfall is None and not kvar:
+        if utfall is None:
             print("  introfasen avbruten.")
             return
         kvar.append(kort)          # sist i kön (5.4)
-        medan_inget_gick += 1
-        if medan_inget_gick >= len(kvar) + 1:
+        envis += 1
+        if envis > len(kvar):
             print("  inget kort går rätt just nu — introfasen pausas.")
             return
     print("\n  nivån är presenterad. Korten prövas nu i meningar.")
