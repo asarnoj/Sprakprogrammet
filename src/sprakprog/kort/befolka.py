@@ -410,8 +410,25 @@ def _cellkort(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
         for cell in celler:
             ut.append((rad["språk"], rad["koncept"], rad["variant"] or None,
                        cell, nyckel))
-        # ändelsen som gäller samma cell
-        for cell in celler:
+        # ändelsen som gäller samma cell — BARA FÖR STAMMAR.
+        #
+        # EN REST UPPVISAR INTE KLASSENS ÄNDELSE; det är definitionen av en
+        # rest. `dela_upp` lägger cellen bland resterna just för att formen
+        # inte slutar på ändelsen, och att sedan koppla cellen till
+        # ändelsekortet är att påstå motsatsen. Julius om `J'ai.`: *"vad är
+        # ens s för ändelsekort? Prövades det verkligen?"* — nej.
+        #
+        #     was     → ändelsekort 'ed'
+        #     です     → ändelsekort 'ます'
+        #     mannen  → ändelsekort 'et'
+        #     être    → ändelsekort 'er'
+        #
+        # Mätt på kopplingarna innan villkoret: ja 8,9 %, fr 6,2 %, en 5,8 %,
+        # it 5,4 %, es 3,5 %, sv 1,7 %. Kortet steg i stabilitet på bevis som
+        # aldrig fanns — den enda feltypen som FÖRDÄRVAR data i stället för
+        # att sakna den. Formkortet äger hela strängen; där finns ingen
+        # ändelse att pröva separat.
+        for cell in celler if grupp >= 0 else ():
             # ÄNDELSEN, inte cellen — samma nyckel som kortet fick ovan.
             ändelse = ändelser.get(
                 (rad["språk"], rad["ordklass"], rad["klass"], cell))

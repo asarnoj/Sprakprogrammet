@@ -444,6 +444,61 @@ def prov_stammigrationen_bevarar_historiken() -> list[str]:
     return fel
 
 
+def prov_ändelsen_finns_i_formen() -> list[str]:
+    """En cell får bara peka på ett ändelsekort om formen HAR ändelsen.
+
+    Julius om `J'ai.`: *"vad är ens s för ändelsekort? Prövades det
+    verkligen?"* — nej. K1:s `pres_1sg` är `s`, men `ai` är suppletiv och
+    innehåller inget `s`. Kortet fick ändå ✓.
+
+    `dela_upp` gör redan rätt: en form som inte slutar på klassens ändelse
+    blir en REST med eget formkort. `_cellkort` körde ändelseslingan för båda
+    radtyperna och kopplade alltså in resterna igen. Mätt på kopplingarna:
+
+        ja 8,9 %   fr 6,2 %   en 5,8 %   it 5,4 %   es 3,5 %   sv 1,7 %
+
+            was     → ändelsekort 'ed'
+            です     → ändelsekort 'ます'
+            mannen  → ändelsekort 'et'
+
+    Kortet steg i stabilitet på bevis som aldrig fanns — den enda feltypen
+    som FÖRDÄRVAR data i stället för att sakna den (D3).
+
+    PROVET LÄSER FORMEN, inte bara radtypen. Resten bär hela ordformen i
+    `stammar.tsv`, så påståendet går att pröva mot strängen: ändelsen får
+    inte vara ett suffix av formen (det är vad som gjorde den till en rest),
+    och ingen systemkoppling får utgå från raden.
+    """
+    from sprakprog.db import anslut
+    from sprakprog.kort.befolka import _cellkort, _stamrader, _ändelserader
+    sdb = anslut()
+    fel = []
+    for s_ in sorted(SPRÅK):
+        änd = {(r["språk"], r["ordklass"], r["klass"], r["cell"]):
+               r["ändelse"] or "∅" for r in _ändelserader({s_})}
+        rester = {}
+        for rad in _stamrader({s_}):
+            if int(rad["stamgrupp"]) < 0:
+                for cell in rad["celler"].split(","):
+                    rester[(rad["språk"], rad["koncept"],
+                            rad["variant"] or None, cell)] = rad
+        # a) premissen: en rest uppvisar inte klassens ändelse
+        for nyckel, rad in rester.items():
+            e = änd.get((rad["språk"], rad["ordklass"], rad["klass"], nyckel[3]))
+            if e is not None and e != "∅" and rad["form"].endswith(e):
+                fel.append(f"{s_}/{nyckel[1]}/{nyckel[3]}: {rad['form']!r} "
+                           f"slutar på {e!r} men räknades som rest")
+        # b) slutsatsen: ingen systemkoppling utgår från en rest
+        träffar = [(k, n) for *k4, n in
+                   [(a, b, c, d, n) for a, b, c, d, n in _cellkort(sdb, {s_})]
+                   for k in [tuple(k4)] if n.startswith("system:") and k in rester]
+        if träffar:
+            k, n = träffar[0]
+            fel.append(f"{s_}: {len(träffar)} rester kopplade till ett "
+                       f"ändelsekort, t.ex. {rester[k]['form']!r} → {n}")
+    return fel[:6]
+
+
 def prov_nivå_ett_går_att_tala_på() -> list[str]:
     """Varje verbcell en NIVÅ 1-mening slår upp ska ha ett kort.
 
@@ -535,7 +590,8 @@ PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("ingen stam är sitt eget ord", prov_ingen_stam_är_sitt_ord),
         ("cellen tappar inte ordet", prov_cellen_tappar_inte_ordet),
         ("stammigrationen bevarar historiken",
-         prov_stammigrationen_bevarar_historiken)]
+         prov_stammigrationen_bevarar_historiken),
+        ("ändelsen finns i formen", prov_ändelsen_finns_i_formen)]
 
 
 
@@ -729,6 +785,37 @@ def _sabotage_utan_stammigration():
     return lambda: setattr(b, "_slå_ihop_stam_med_ord", äkta)
 
 
+def _sabotage_ändelse_även_på_rest():
+    """Före villkoret: ändelseslingan kördes för rester också.
+
+    Uttryckt som ett TILLÄGG till den riktiga kartan i stället för som en
+    kopia av den gamla koden — annars prövar sabotaget sin egen avskrift.
+    """
+    import sprakprog.kort.befolka                # noqa: F401
+    b = sys.modules["sprakprog.kort.befolka"]
+    äkta = b._cellkort
+
+    def med_rester(språk_db, språk):
+        ut = list(äkta(språk_db, språk))
+        änd = {(r["språk"], r["ordklass"], r["klass"], r["cell"]):
+               r["ändelse"] or "∅" for r in b._ändelserader(språk)}
+        for rad in b._stamrader(språk):
+            if int(rad["stamgrupp"]) >= 0:
+                continue
+            for cell in rad["celler"].split(","):
+                e = änd.get((rad["språk"], rad["ordklass"], rad["klass"], cell))
+                if e is None:
+                    continue
+                ut.append((rad["språk"], rad["koncept"], rad["variant"] or None,
+                           cell, b._nyckel("system", rad["språk"], None, None,
+                                           rad["ordklass"], rad["klass"],
+                                           None, None, e)))
+        return ut
+
+    b._cellkort = med_rester
+    return lambda: setattr(b, "_cellkort", äkta)
+
+
 #: (sabotage, vilket prov det ska fälla).
 SABOTAGE = [
     (_sabotage_omkastad, 0),
@@ -745,6 +832,7 @@ SABOTAGE = [
     (_sabotage_behåll_identiska_stammar, 11),
     (_sabotage_utan_omdirigering, 12),
     (_sabotage_utan_stammigration, 13),
+    (_sabotage_ändelse_även_på_rest, 14),
 ]
 
 

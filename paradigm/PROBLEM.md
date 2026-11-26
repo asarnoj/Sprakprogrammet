@@ -2445,6 +2445,39 @@ den inte går att bygga. `avoir` har ett för `pres_3sg` men inte för
 klassens ändelse ska ha ett formkort i stället för en cellkoppling till
 ändelsen.
 
+**✓ ÅTGÄRDAT 2026-08-29.** Regeln fanns redan — på fel ställe. `dela_upp` i
+stamanalysen lägger en cell bland RESTERNA just när formen inte slutar på
+klassens ändelse, och resten får sitt eget formkort. `_cellkort` körde sedan
+ändelseslingan för BÅDA radtyperna och kopplade in resterna igen.
+
+Felet var alltså inte att kunskapen saknades utan att den kastades bort ett
+steg senare. Mätt över alla sju språken, andel av cellkopplingarna:
+
+    ja  8,9 %      fr  6,2 %      en  5,8 %      it  5,4 %
+    es  3,5 %      sv  1,7 %
+
+        was     → ändelsekort 'ed'
+        です     → ändelsekort 'ます'
+        mannen  → ändelsekort 'et'
+        être    → ändelsekort 'er'
+
+Den franska mätningen ovan (152 av 2 363) gällde bara verben; över hela
+franskan är det 550 kopplingar.
+
+Ändelseslingan gäller nu bara stamrader. Ingen ändelse blev onåbar och ingen
+cell naken — kontrollerat i alla sju språken: noll ändelsekort utan koppling,
+noll celler utan kort. Formkortet äger hela strängen, och där finns ingen
+ändelse att pröva separat.
+
+Invarianten i nät 13 läser FORMEN och inte bara radtypen: resten bär hela
+ordformen i `stammar.tsv`, så både premissen (ändelsen är inte ett suffix av
+formen) och slutsatsen (ingen systemkoppling utgår från raden) går att pröva
+mot strängen.
+
+Det som INTE går att rätta är historiken. Ändelsekort som redan stigit i
+stabilitet på de här bevisen bär kvar den — det finns ingen ärlig väg att
+räkna om ett betyg som byggde på en mening som aldrig prövade kortet.
+
 #### TVÅ TREDJEDELAR AV STAMKORTEN ÄR SITT EGET ORD
 
 Julius: *"Vi gjorde il i ordglosdelen redan. Är det problematiskt att il är
