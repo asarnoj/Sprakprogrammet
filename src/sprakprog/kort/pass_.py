@@ -110,8 +110,12 @@ def starta(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict, *,
         if not _antal_rader(kort_db, finns["id"]):
             _lägg_in(kort_db, finns["id"],
                      _rader(kort_db, kurs, plan, läge, nu, nåbara))
-            _kanske_avsluta(kort_db, finns["id"], nu or datetime.now(UTC))
-            kort_db.commit()
+        # STÄDNINGEN KÖRS VID VARJE LÄSNING och inte bara när passet byggs:
+        # rader blir bedömda under dagens gång, av glosläget och av andra
+        # meningar, och passet ska följa med. Den är billig och idempotent.
+        _stäng_redan_bedömda(kort_db, finns["id"], nu)
+        _kanske_avsluta(kort_db, finns["id"], nu or datetime.now(UTC))
+        kort_db.commit()
         return kort_db.execute(
             "SELECT * FROM Pass WHERE id = ?", (finns["id"],)).fetchone()
     if finns is not None:
@@ -127,9 +131,59 @@ def starta(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict, *,
         (kurs["id"], _lokalt_datum(nu), läge, nu.isoformat()))
     pass_id = kort_db.execute("SELECT last_insert_rowid() AS i").fetchone()["i"]
     _lägg_in(kort_db, pass_id, _rader(kort_db, kurs, plan, läge, nu, nåbara))
+    _stäng_redan_bedömda(kort_db, pass_id, nu)
     _kanske_avsluta(kort_db, pass_id, nu)
     kort_db.commit()
     return kort_db.execute("SELECT * FROM Pass WHERE id = ?", (pass_id,)).fetchone()
+
+
+def _stäng_redan_bedömda(kort_db: sqlite3.Connection, pass_id: int,
+                         nu: datetime | None = None) -> int:
+    """Rader vars kort redan bedömts idag är GJORDA, inte väntande.
+
+    JULIUS MÄTTE FÖLJDEN: *"en övning som jag gjorde helt korrekt flyttade
+    inga kort. Det var exakt lika många i due, again och new."* Meningen
+    `Il existe.` rörde sju kort och alla sju var redan bedömda tidigare samma
+    dag, så bedömningen blev en nolloperation. Spåret visade det direkt.
+
+    Orsaken låg inte i rättningen utan HÄR: fyra av passets tio väntande
+    rader var kort som redan hade en dom idag. Passet räknade dem som arbete,
+    `att_göra` visade dem, och generatorn byggde meningar för att täcka dem —
+    men E2 hoppar över dem vid bokföringen, med rätta. Två delar av systemet
+    hade olika åsikt om vad som återstod.
+
+    *"Övningar ska endast ta fram ett kort som behöver tränas. Annars är
+    övningen meningslös."*
+
+    REGELN ÄR EXAKT E2:S, inte en egen. Ett kort med en dom idag är klart för
+    dagen — en upprepad rätt ger FSRS-faktor 1,0 och gör bokstavligen
+    ingenting. Ett kort som FÄLLTS idag står kvar: det ska tas igen, och det
+    är hela poängen med `igen`-rollen (B7). Skulle de två reglerna gå isär är
+    det den här funktionen som är fel, inte E2.
+    """
+    rader = kort_db.execute(
+        """SELECT DISTINCT pk.id, pk.kort_id FROM Passkort pk
+           WHERE pk.pass_id = ? AND pk.status = 'väntar'
+             AND pk.kort_id IS NOT NULL""", (pass_id,)).fetchall()
+    if not rader:
+        return 0
+    ider = [r["kort_id"] for r in rader]
+    platser = ",".join("?" * len(ider))
+    domar = kort_db.execute(
+        f"""SELECT kort_id, betyg FROM Repetition
+            WHERE kort_id IN ({platser}) AND tidpunkt >= ?""",
+        (*ider, dygnets_början(nu))).fetchall()
+    graderade = {d["kort_id"] for d in domar}
+    fällda = {d["kort_id"] for d in domar if d["betyg"] == 1}
+    klara = [r["id"] for r in rader
+             if r["kort_id"] in graderade and r["kort_id"] not in fällda]
+    if not klara:
+        return 0
+    tid = (nu or datetime.now(UTC)).isoformat()
+    kort_db.execute(
+        f"""UPDATE Passkort SET status = 'rätt', tidpunkt = ?
+            WHERE id IN ({",".join("?" * len(klara))})""", (tid, *klara))
+    return len(klara)
 
 
 def behöver_fyllas(kort_db: sqlite3.Connection, pass_id: int) -> bool:

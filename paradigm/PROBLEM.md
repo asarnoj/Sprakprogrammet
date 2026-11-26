@@ -2887,6 +2887,49 @@ FSRS 6.3.2, oförändrad, med `learning_steps=()` och `relearning_steps=()`.
 En egen minnesmodell vore månader av tyst felaktighet, och det är precis den
 sortens fel som kostat mest i det här projektet.
 
+#### PASSET HÖLL KVAR KORT SOM REDAN VAR BEDÖMDA (2026-08-28)
+
+Julius, efter förklaringen nedan: *"Detta är problematiskt. Trots att det
+inte går 24 timmar så vill jag inte få övningar som inte gör någon skillnad.
+Övningar ska endast ta fram ett kort som behöver tränas. Annars är övningen
+meningslös."*
+
+Invändningen är riktig, och felet låg inte i E2 utan i PASSET. Mätt på hans
+kurs: **fyra av tio väntande rader var kort som redan hade en dom idag.**
+Passet räknade dem som arbete, `att_göra` visade dem, generatorn byggde
+meningar för att täcka dem — och bokföringen hoppade över dem, med rätta.
+Två delar av systemet hade olika åsikt om vad som återstod.
+
+`_stäng_redan_bedömda` stänger dem numera vid varje läsning av dagen, och
+regeln är EXAKT E2:s: ett kort med en dom idag är klart, ett kort som FÄLLTS
+idag står kvar och ska tas igen (B7). Skulle de gå isär är det städningen som
+är fel.
+
+**OM ANKI, som Julius frågade:** det finns ingen 24-timmarsregel där heller.
+Kort förfaller på ett DATUM, inte en tidsstämpel, och blir tillgängliga vid
+dygnsgränsen — som standard 04:00 lokal tid ("next day starts at"). En natts
+sömn räcker; det som behövs är att gränsen passeras. Det här projektet gör
+detsamma med lokal midnatt som gräns (`dygnets_början`), och att flytta den
+några timmar är en inställning som kan läggas till om användningen kräver.
+
+#### EGENSKAPEN HADE TRE VAKTER, OCH DET GJORDE PROVET SVÅRT (2026-08-28)
+
+Jag skrev först invarianten på UTFALLET — "varje serverad mening bokför minst
+ett kort" — och fick ett prov som inte gick att fälla. Inte med städningen
+avslagen, inte med nödutgången (B8) avslagen också, och inte ens när kön
+preparerats så att bara obokförbara kort väntade. Generatorn vägrar bygga en
+mening utan täckning, så en tredje vakt tog över varje gång.
+
+**Ett prov som inte kan falla bevisar ingenting**, och tre vakter gör ett
+utfallsprov till en mätning av vilken som råkar svara först. Invarianten
+sitter därför på KÖN — ingen väntande rad får peka på ett kort med en dom
+idag — vilket är den plats felet faktiskt uppstod och den enda som går att
+fälla rent.
+
+Att det krävdes tre avstängda försvar för att ens nå fram är i sig ett svar
+till Julius: den meningslösa övningen var inte ett hål i en vägg utan ett
+läge kön aldrig skulle ha hamnat i.
+
 #### ARBETE SOM INTE SYNS ÄR ARBETE MAN MISSTROR (2026-08-28)
 
 Julius, dag 2: *"en övning som jag gjorde helt korrekt flyttade inga kort.

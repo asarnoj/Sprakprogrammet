@@ -374,8 +374,71 @@ def prov_en_kurs_per_målspråk(tj, kort, kurs) -> list[str]:
     return fel
 
 
+def prov_inget_redan_bedömt_väntar(tj, kort, kurs) -> list[str]:
+    """Ingen passrad får VÄNTA på ett kort som redan bedömts idag.
+
+    Julius: *"Trots att det inte går 24 timmar så vill jag inte få övningar
+    som inte gör någon skillnad. Övningar ska endast ta fram ett kort som
+    behöver tränas. Annars är övningen meningslös."*
+
+    Han mätte fallet: `Il existe.` rörde sju kort och alla sju var redan
+    bedömda tidigare samma dag, så due, again och new stod stilla.
+
+    INVARIANTEN SITTER PÅ KÖN, inte på den serverade meningen, och det är ett
+    medvetet val. Jag försökte först pröva utfallet — "varje serverad mening
+    bokför minst ett kort" — och fick ett prov som inte gick att fälla ens med
+    städningen OCH nödutgången avslagna: generatorn vägrar ändå bygga en
+    mening utan täckning. Egenskapen har alltså tre oberoende vakter, och ett
+    prov på utfallet mäter vilken som råkar svara först.
+
+    Kön är den plats där felet faktiskt uppstod, och den enda som går att
+    fälla rent: ett kort med en dom idag hör inte hemma bland det som väntar.
+    Ett FÄLLT kort står kvar — det ska tas igen (B7).
+    """
+    from sprakprog.kort import pass_ as passlager
+    from sprakprog.kort.schemalaggning import dygnets_början
+    tj.nollställ(kurs["id"], "RESET")
+    for _ in range(20):
+        g = tj.glosor(kurs["id"])
+        if not g or not g["ord"]:
+            break
+        for o in g["ord"]:
+            tj.glossvar(kurs["id"], o["kort_id"], True)
+    u = tj.uppgift(kurs["id"])
+    if u is None or u.get("tomt"):
+        return []                      # tom dag: omätbar, se japanskan
+    f = tj._öppna[u["id"]][1]
+    tj.svara(u["id"], f.text)
+    tj.bokför(u["id"])
+    # Lägg tillbaka de nyss bedömda korten som väntande — precis läget
+    # Julius hamnade i, återskapat med avsikt.
+    rad = passlager.nuvarande(kort, kurs["id"])
+    if rad is None:
+        return []
+    for k in f.kort:
+        kort.execute(
+            """INSERT INTO Passkort (pass_id, kort_id, roll, ordning)
+               VALUES (?, ?, 'förfallen',
+                       (SELECT COALESCE(MAX(ordning), 0) + 1
+                        FROM Passkort WHERE pass_id = ?))""",
+            (rad["id"], k["id"], rad["id"]))
+    kort.commit()
+    tj.hem(kurs["id"])                 # läsningen ska städa kön
+    kvar = kort.execute(
+        """SELECT COUNT(*) AS n FROM Passkort pk
+           WHERE pk.pass_id = ? AND pk.status = 'väntar' AND EXISTS
+             (SELECT 1 FROM Repetition r WHERE r.kort_id = pk.kort_id
+              AND r.tidpunkt >= ? AND (r.betyg IS NULL OR r.betyg <> 1))""",
+        (rad["id"], dygnets_början(None))).fetchone()["n"]
+    if kvar:
+        return [f"[{kurs['målspråk']}] {kvar} rader väntar på kort som redan "
+                f"bedömts idag — de räknas som arbete men bokför ingenting"]
+    return []
+
+
 PROV = [
     ("en kurs per målspråk", prov_en_kurs_per_målspråk),
+    ("inget redan bedömt väntar", prov_inget_redan_bedömt_väntar),
     ("dagsbudgeten hålls av alla vägar in", prov_glosbudget),
     ("extraövningen går att köra", prov_extraövningen_går_att_köra),
     ("passet tar slut", lambda tj, k, kurs: prov_dagen_tar_slut(tj, kurs)),
@@ -415,6 +478,16 @@ def _sabotera(namn: str):
                                  "källa": None} for r in rader], "kvar": 0}
         Övningstjänst.glosor = utan_budget
         return lambda: setattr(Övningstjänst, "glosor", äkta)
+
+    if namn == "inget redan bedömt väntar":
+        # Före rättelsen: passet lämnade rader kvar som `väntar` för kort
+        # som redan bedömts idag. Passet räknade dem som arbete, `att_göra`
+        # visade dem, och generatorn byggde meningar för att täcka dem —
+        # medan E2 hoppade över dem vid bokföringen, med rätta.
+        from sprakprog.kort import pass_ as passlager
+        äkta = passlager._stäng_redan_bedömda
+        passlager._stäng_redan_bedömda = lambda *a, **kw: 0
+        return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
 
     if namn == "en kurs per målspråk":
         # Före spärren: `ny_kurs` skapade glatt en andra kurs mot samma mål.
