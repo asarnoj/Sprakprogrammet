@@ -1065,6 +1065,66 @@ leverera (samma sorts spärr som `nya = min(osedda, …)` redan är), eller krä
 att en mätning bär en rimlig fördelning innan den får styra. Frågan är inte
 avgjord.
 
+**Och den saknade bottnen är inte längre hypotetisk.** En simulering som
+svarade på noll millisekunder drog `sekunder_per_repetition` till **2,8
+mikrosekunder**, och dagen planerade in 246 nya kort på en tiominutersinställning.
+Det når fortfarande inte verklig användning — klockan går på servern — men det
+är samma mekanism, körd hela vägen genom tjänsten.
+
+#### DEFEKTEN HADE EN ANDRA HALVA: FEL NÄMNARE (2026-08-26)
+
+Posten ovan handlar om att TALET är opålitligt. Det här handlar om att det
+användes på fel storhet.
+
+    minuter_kvar = att_göra × sekunder_per_repetition
+
+`att_göra` räknar **passrader**. `sekunder_per_repetition` har **bedömda
+kort** i nämnaren — en menings sekunder delade på de kort den betygsatte. Och
+en mening betygsätter fler kort än den stänger rader: den betygsätter allt den
+rör, men stänger bara de rader som stod i dagens plan.
+
+Mätt ur verkliga pass:
+
+    glosor     1,00 rader per svar   (per definition — en glosa, ett svar)
+    meningar   1,33–1,80 rader per svar   mot 2,4 bedömda kort
+
+Produkten underskattade därför genomgående. Simulerat över en vecka med
+användarens egna uppmätta svarstider:
+
+    dag 1   lovade 1 min   verkligt 1,5
+    dag 3   lovade 2 min   verkligt 3,4
+    dag 5   lovade 3 min   verkligt 4,4
+    dag 7   lovade 4 min   verkligt 5,7
+
+*Rättat med en NY MÄTNING och inte en modell.* `sekunder_per_rad` är samma
+tid dividerad med antalet STÄNGDA PASSRADER — och det talet är en rak
+räkning, eftersom `Passkort.tidpunkt` sätts en gång per `registrera`-anrop,
+alltså en gång per svar. Verifierat: 18 rader × 3,45 s = 1,0 min, och dagen
+tog 1,0 min.
+
+**De två växelkurserna har nu var sin uppgift, och det är avsiktligt.**
+`sekunder_per_repetition` (per bedömt kort) styr INFLÖDET, för det är vad B2
+räknar med. `sekunder_per_rad` (per passrad) översätter `att_göra` till
+minuter. Att använda den ena där den andra hör hemma var hela felet.
+
+#### OCH TIO MINUTER ÄR ETT JÄMVIKTSMÅL, INTE ETT LÖFTE OM DAG ETT
+
+Julius: *"när jag har ställt in pass att vara 10 minuter så kanske inte det
+betyder att första passet är det... de första dagarna är lite kortare för att
+komma in i repetitionsrytmen?"*
+
+Det stämmer, och det är B2:s styrning som arbetar. En ny kurs har inga
+repetitioner att göra — bara det som förs in. Dagen växer mot målet
+allteftersom korten börjar komma tillbaka. Samma simulering som ovan, med
+tio minuter inställt:
+
+    dag 1  1,5 min   dag 3  3,4   dag 5  4,4   dag 7  5,7
+
+**Men gränssnittet sa det inte**, och en kort dag såg därför ut som en trasig
+inställning. Hemvyn säger numera *"about 2 min left · growing toward 10 min as
+reviews build up"* när dagen ligger under halva målet och det finns osett
+material kvar att växa med. Villkoret är mätt, inte antaget.
+
 ### B5 ✓ — När är dagen slut?
 
 När korten är gjorda. Punkt — det finns inget andra villkor, och det är
@@ -1295,6 +1355,40 @@ som är per pass och lever i minnet.
 senare, ger S 1,538 → 1,571 och D 7,39 → 7,38. Straffet står kvar,
 återförsöket köper inte loss det. Det är precis vad man vill.
 
+#### REGELN GÄLLDE INTE ETT KORT SOM REDAN VAR AVKLARAT (2026-08-26)
+
+`pass_.registrera` letade efter en passrad med status `väntar` och hoppade
+över allt annat. Ett kort som drillats rätt på morgonen och sedan fallerade i
+en mening samma dag fick därför **ingen `igen`-rad**.
+
+Mätt på `ord:avoir`, drillat rätt i glosläget och sedan fällt i `J'ai.`:
+
+    efter drillen   S = 2,307   D = 2,12   förfaller 28 aug
+    efter felet     S = 0,775   D = 7,39   förfaller 27 aug   ← ETT DYGN BAKÅT
+    passraden       glosa: rätt — oförändrad
+
+Kortet tappade två tredjedelar av sin stabilitet, svårigheten mer än
+tredubblades, förfallodagen flyttades bakåt — och passet visste ingenting om
+det. Följderna var tre, och alla tre är sådant passlagret finns för att
+omöjliggöra:
+
+- `att_göra` rörde sig inte, så dagen kunde säga **"klart" med ett kort som
+  just rasat**
+- huvudradens `igen` (generatorns minnesinterna passkö) och `dagsläge`s `igen`
+  (tabellen) gled isär och återförenades aldrig — mätt 5 mot 3 efter fem
+  meningar
+- återförsöket levde bara i minnet och dog vid omstart
+
+**Att felet bokförs är riktigt** (E2: "ett FEL får alltid registreras, även om
+kortet redan bedömts idag"). Det som saknades var att dagen fick veta om det.
+Den här postens regel skiljer inte på om kortet råkade vara avklarat — ett fel
+får inte lämnas ofixat.
+
+*Rättat: `igen`-raden läggs till oavsett tidigare status, så länge kortet
+tillhör dagens plan.* Ett kort som INTE står i dagen — ett sett kort som råkade
+vara med i en mening som valdes för något annat (E4) — får fortfarande ingen
+rad, för annars kunde ett pass aldrig ta slut.
+
 ### B8 ~ — Vad händer när ett förfallet kort inte går att bygga en mening kring?
 
 Det händer, och det har mätts: två tyska stamkort gick inte att nå med någon
@@ -1360,6 +1454,80 @@ kommer.
 kö full av kort av typ 1 och 2 ger nu en dag som tar slut i förtid i stället
 för en som aldrig tar slut — bättre, men fortfarande inte samma sak som att
 inte köa dem.
+
+#### OCH KVOTEN KOM TILLBAKA, PÅ ETT ANNAT STÄLLE (2026-08-26)
+
+Passlagret byggdes efter posten ovan, och dess `_rader` fick en växelvarvsloop
+med ett riktigt syfte: mät nåbarheten EFTER att dagens ord valts, inte före.
+Det var nödvändigt — mäter man före är svaret vid kallstart noll, allt går
+till ord, och dagen blir sju glosor och noll meningar.
+
+Men loopens avbrottsvillkor var `rest <= 0 or not glosor and not nya_kort`,
+alltså "sluta bara om BÅDA listorna är tomma". Det finns nästan alltid ett ord
+till att ta, så loopen fortsatte köpa ord långt efter att de slutat låsa upp
+något. Mätt på en färsk franskkurs med taket 25:
+
+    varv 0    6 ord  →  7 böjningskort
+    varv 1    8 ord  →  2
+    varv 2    9 ord  →  0     ← härifrån är varje varv rent slöseri
+    varv 3   10 ord  →  0
+    varv 4   11 ord  →  0
+    varv 5   12 ord  →  0
+
+Dagen fick tolv ord där `nya_ord` räknat fram sex. **Det är exakt vad posten
+ovan mätte och förkastade**, återinfört på ett ställe posten inte kände till.
+
+**Rotorsaken under det är växelkursen `_kort_per_koncept`**, och den är mer
+intressant än loopen. Den är 4,01 för franskan, mätt så här:
+
+    389 genuskort + 212 stammar + 203 ordkort + 16 former + 2 rektion
+    = 822 kort / 205 koncept
+
+Genus kräver artiklar och adjektiv, alltså nivå 3 och 5. Stammar kräver böjda
+former. **På nivå 1 låser ett nytt ord bara upp ÄNDELSEKORT — och franskan har
+elva sådana totalt, som dessutom har `koncept = NULL` och därför inte ingår i
+medelvärdet alls.** Talet 4,01 beskriver en kortlek dagen inte kan använda,
+och `nya_ord = tak / 4,01` blir därför för litet, varpå loopen kompenserar åt
+andra hållet.
+
+*Rättat: loopen bryter när ett varv inte gav några böjningskort.* Dagen gick
+från 12 + 9 = 21 kort till 9 + 9 = 18. Växelkursen står orörd — att räkna om
+den mot NÅBARA kort på nivån är en riktigare mätning men ett eget beslut, och
+den står som öppen nedan.
+
+#### MENINGSRUMMET, SOM ÄR DEN VERKLIGA GRÄNSEN (mätt 2026-08-26)
+
+Posten ovan skiljer tre orsaker till att ett köat kort inte går att nå.
+Mätningen lägger till en fjärde, och den är den vanligaste vid kallstart.
+
+Dagen planeras mot vilka kort som är NÅBARA. `nåbara_kort` samplar meningar
+och svarar att 41 kort går att röra med dagens tolv ord. Men den frågar aldrig
+hur många OLIKA MENINGAR som finns att röra dem med:
+
+    12 kända ord, nivå 1, 6 000 kandidatförsök  →  24 olika meningar
+
+Tjugofyra. Och de kort som blev över när dagen tog slut i förtid nås av en
+eller två meningar var:
+
+    K0 pres_1pl   `Nous coûtons.` · `Nous existons.`
+    K0 pres_1sg   `Je coûte.` · `J'existe.`
+    K1 pres_2pl   `Vous avez.`
+    K1 pres_2sg   `Tu as.`
+
+De är alltså inte svåra att nå — de rördes 130–270 gånger av 3 000
+kandidater. De går bara inte att nå UTAN ATT UPPREPA en mening som redan
+ställts, och upprepningsspärren (C5) avvisar det med rätta.
+
+**Det är därför en dag kan sluta med "klart" medan kort står kvar som nya.**
+Inte för att något är trasigt, utan för att `nåbar` och `nåbar med en mening
+som inte redan ställts` är olika frågor, och dagen planeras mot den första.
+
+**Öppet, och det är en riktig fråga:** ska dagens storlek begränsas av
+meningsrummet? Talet går att mäta — det är samma sampling `byggbarhet` redan
+gör — men vad man ska göra med det är ett beslut. Att planera färre kort ger
+en ärligare dag; att planera som nu ger en dag som ibland tar slut i förtid
+och botas av att morgondagen kommer. Nödutgången (B8) gör i alla fall det
+andra alternativet SYNLIGT sedan 2026-08-26, vilket det inte var förut.
 
 **Provet:** `passet tar slut` i `ordbok/verktyg/tjänsteprov.py` — rätta svar
 hela vägen ska tömma dagen inom 120 steg. Det fällde engelskan direkt efter
@@ -2911,6 +3079,35 @@ sidladdning inte kan öppna en nivå som inte går att öva.
 mening, eftersom måttet stiger när ord lärs in. Mätt: hemskärmen tar 3 ms med
 varm cache och 593 ms efter en bokföring.
 
+#### GRINDEN ÄR MÄTT, OCH DEN ÄR LÅG (2026-08-26)
+
+Postens öppna fråga — att måttet är blint för relevans — har nu ett tal.
+
+`redo_för_nivå` är `byggbarhet × kandidater ≥ 1`, alltså **går det att bygga
+minst EN mening av 800 på nästa nivå utan okända ord**. Tröskeln är 0,00125.
+Mätt på en färsk franskkurs:
+
+    före dag 1    byggbarhet 0,000     redo = nej
+    efter dag 1   byggbarhet 0,071     redo = JA — 57 gånger över tröskeln
+
+Efter ett enda pass med tolv drillade ord står nivå 2 öppen med bred marginal.
+Julius: *"varje gång jag gör klart första passet så kan jag levla upp på
+direkten vilket är för snabbt."*
+
+**Grinden gör precis det den härleddes för**, och härledningen är riktig: den
+handlar om huruvida SÖKNINGEN kan fungera. Den säger ingenting om huruvida
+INLÄRAREN är redo — och det är just vad posten ovan redan noterat.
+
+**Och två tal om olika saker står under samma rubrik**, vilket gör motsägelsen
+synlig i gränssnittet:
+
+    "Ready"    ett golv: kan generatorn bygga en enda mening på nivån
+    "4 days"   en varaktighet: 85 kort ÷ 25 kort per dygn i din takt
+
+Det ena är en dörr, det andra en sträcka. Att de ser ut att beskriva samma
+beredskap är ett gränssnittsproblem; att grinden är låg är den här postens
+öppna fråga, och den kräver förkunskapsvillkoret som aldrig prövats.
+
 **STÄNGT 2026-08-26 — CLI:t räknades om och den gamla matten är borta.**
 Posten löd: *"`upplåsningsläge` räknar fortfarande `rum`, `saknas` och `krävs`
 med det gamla `per_kort` — fem till trettio gånger för högt. De grindar
@@ -3638,6 +3835,36 @@ JS-subtraktionen serverflyttad ger den två brott på första varvet.
 räknar" — och det gjorde de. Frågan som saknades var "stämmer det som står",
 och den kunde bara ställas genom att flytta räkningen till servern. Ett prov
 som kör JavaScript hade varit det andra svaret, och det sämre.
+
+#### TVÅ TAL OM TVÅ OLIKA ÖGONBLICK (2026-08-26)
+
+Julius: *"när jag kör pass och har uppe info så ser jag new, due och again
+både på huvudraden och vid inforaden... de är inte synkade. De visar olika
+info precis efter att man gjort klart en övning men sen klickar next så blir
+de samma igen."*
+
+Det var inte en kapplöpning utan två källor.
+
+    huvudradens `igen`   `svara` returnerar `_igen_efter`, en PROGNOS av vad
+                         generatorns passkö BLIR när meningen bokförts
+    uppdelningens tal    passet SOM DET ÄR, ur `Passkort`
+
+`svara` körs före `bokför` — självrättningens fönster ligger emellan — så de
+två beskriver olika ögonblick och kunde aldrig vara ense förrän man klickade
+Next. Då blev de det igen, precis som observerat.
+
+*Rättat: räknarna rörs inte längre i `svara`.* Både räknarna och uppdelningen
+ritas i `nästa()`, ur samma `/api/dag`-svar. Att kortet gick till återförsök
+syns ändå direkt — kortlistan ritar ett ✗ på just det kortet, vilket är
+besked om SAKEN i stället för om en totalsumma.
+
+**Meningsräknaren är ett undantag och ett ärligt sådant:** meningen ÄR gjord i
+samma stund man svarat, oavsett bokföring.
+
+**Och den andra halvan av observationen — att inga kort tycktes komma till
+"again" — var inte gränssnittets fel utan B7:s.** Se den posten: en `igen`-rad
+skapades bara för kort som stod som `väntar`, så ett kort som redan var
+avklarat idag och sedan fälldes räknades ingenstans.
 
 ### H6 ~ — Vilket språk talar gränssnittet? (ny 2026-08-26)
 

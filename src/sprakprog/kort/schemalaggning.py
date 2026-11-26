@@ -868,6 +868,74 @@ def sekunder_per_repetition(kort_db: sqlite3.Connection, språk: str,
     return ms / n / 1000 if n and ms else None
 
 
+def sekunder_per_rad(kort_db: sqlite3.Connection, språk: str) -> float | None:
+    """Vad EN PASSRAD kostar i tid. Växelkursen mellan `att_göra` och minuter.
+
+    VARFÖR DEN INTE ÄR `sekunder_per_repetition`. Det talet har BEDÖMDA KORT
+    i nämnaren: en menings sekunder delas på de kort den betygsatte. Det är
+    rätt bokföring för vad en repetition kostar (E7), och det är den kursen
+    inflödesstyrningen ska använda.
+
+    Men `att_göra` räknar något annat: PASSRADER. Och en mening stänger
+    färre rader än den betygsätter kort — den betygsätter allt den rör, men
+    stänger bara de rader som stod i dagens plan. Mätt på verkliga pass:
+
+        glosor    1,00 rader per svar   (per definition — en glosa, ett svar)
+        meningar  1,33–1,80 rader per svar
+
+    `minuter_kvar = att_göra × sekunder_per_repetition` multiplicerade alltså
+    två tal med olika nämnare. Mätt över en simulerad vecka med användarens
+    egna svarstider underskattade det genomgående med omkring hälften:
+
+        dag 1   lovade 1 min   verkligt 1,5
+        dag 3   lovade 2 min   verkligt 3,4
+        dag 5   lovade 3 min   verkligt 4,4
+        dag 7   lovade 4 min   verkligt 5,7
+
+    DEN HÄR NÄMNAREN GÅR ATT MÄTA och behöver inte modelleras.
+    `Passkort.tidpunkt` sätts en gång per `registrera`-anrop, alltså en gång
+    per svar, så antalet STÄNGDA RADER är en rak räkning. Täljaren är samma
+    tid som `sekunder_per_repetition` summerar. Kvoten är därför sekunder per
+    rad, vilket är precis vad `att_göra` ska multipliceras med.
+
+    ÄRVER MELLAN SPRÅK på samma villkor som takten: hur fort någon läser och
+    skriver är en egenskap hos människan. None när ingenting är mätt — ett
+    tomt fält är ärligare än en gissad tid.
+    """
+    # KAPAS, INTE UTESLUTS. En uppgift som stått öppen i en timme är en
+    # kafferast och inte en mätning, men att kasta raden vore att kasta det
+    # arbete som faktiskt gjordes. `AVBROTTSGRÄNS_MS` är Ankis tal och står
+    # som ovägt tills en egen gräns går att mäta fram (E7).
+    def stängda(målspråk: str | None) -> int:
+        villkor = "ku.målspråk = ?" if målspråk else "1 = 1"
+        return kort_db.execute(
+            f"""SELECT COUNT(*) AS n FROM Passkort pk
+                JOIN Pass s  ON s.id  = pk.pass_id
+                JOIN Kurs ku ON ku.id = s.kurs_id
+                WHERE pk.tidpunkt IS NOT NULL AND {villkor}""",
+            (målspråk,) if målspråk else ()).fetchone()["n"]
+
+    if stängda(språk) < MINSTA_TIDTAGNA:
+        if stängda(None) < MINSTA_TIDTAGNA:
+            return None
+        språk = None
+    rader = stängda(språk)
+    ms = kort_db.execute(
+        f"""SELECT COALESCE(SUM(MIN(millisekunder, ?)), 0) AS ms FROM Mening
+            WHERE millisekunder IS NOT NULL
+              AND {'språk = ?' if språk else '1 = 1'}""",
+        (AVBROTTSGRÄNS_MS, språk) if språk else (AVBROTTSGRÄNS_MS,)
+    ).fetchone()["ms"]
+    ms += kort_db.execute(
+        f"""SELECT COALESCE(SUM(MIN(r.millisekunder, ?)), 0) AS ms
+            FROM Repetition r JOIN Kort k ON k.id = r.kort_id
+            WHERE r.mening_id IS NULL AND r.millisekunder IS NOT NULL
+              AND {'k.språk = ?' if språk else '1 = 1'}""",
+        (AVBROTTSGRÄNS_MS, språk) if språk else (AVBROTTSGRÄNS_MS,)
+    ).fetchone()["ms"]
+    return ms / rader / 1000 if rader and ms else None
+
+
 def kort_per_mening(kort_db: sqlite3.Connection, språk: str) -> float | None:
     """Hur många kort en mening rör. MÄTT ur användarens egen historik.
 
@@ -1236,6 +1304,14 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
             "kort_per_mening": k,
             "minuter_per_dag": minuter_per_dag,
             "sekunder_per_repetition": sekunder_per_repetition(kort_db, språk),
+            # TVÅ VÄXELKURSER, MED OLIKA NÄMNARE OCH OLIKA UPPGIFTER.
+            # `sekunder_per_repetition` (per bedömt kort) styr INFLÖDET — den
+            # svarar på vad en repetition kostar, vilket är vad B2 räknar med.
+            # `sekunder_per_rad` (per passrad) översätter `att_göra` till
+            # MINUTER, eftersom `att_göra` räknar rader. Att använda den ena
+            # där den andra hör hemma var felet bakom "about 1 min left" på
+            # en dag som tog en och en halv.
+            "sekunder_per_rad": sekunder_per_rad(kort_db, språk),
             "prognos": beslut["prognos"],
             "kostnad_per_kort": beslut["kostnad_per_kort"],
             # `klar` FINNS INTE HÄR LÄNGRE, och det är hela poängen med

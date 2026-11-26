@@ -486,6 +486,11 @@ const T = {
   oåtkomliga:   n => `${n} card${n === 1 ? "" : "s"} could not be reached by ` +
                      `any sentence today and were left ungraded.`,
   oövad:        "Practise a little and the pace shows up here.",
+  //: Dagen är kortare än inställningen därför att kortleken är ung — det
+  //: finns ännu inga repetitioner att göra. Talet stiger av sig självt när
+  //: korten börjar komma tillbaka; se B2. Att SÄGA det är skillnaden mellan
+  //: en styrning som arbetar och en inställning som ser trasig ut.
+  växer:        m => `growing toward ${m} min as reviews build up`,
   ryms:         "There is room for the next level.",
   över:         (k, c) => `Your cards need ${k} sentences a day; you practise ${c}.`,
   extra_finns:  (t, n) => [t && `${t} early`, n && `${n} new`]
@@ -649,10 +654,15 @@ async function hem() {
   sätt("d-antal", d.att_göra);
   // DAGEN I MINUTER när takten är mätt. Minuter är användarens enhet (B4),
   // så dagens arbete ska gå att läsa i den enheten och inte bara i kort.
+  // OCH ATT DEN VÄXER, när den gör det. En ny kurs har inga repetitioner
+  // att göra ännu, så dagen är kortare än inställningen — det är B2:s
+  // styrning som arbetar, inte ett fel. Utan raden ser "about 2 min left"
+  // på en tiominutersinställning ut som att ratten är trasig.
   sätt("d-under", d.klar ? T.klart_idag(d.gjort)
                          : !d.finns ? T.inget_idag
                          : d.minuter_kvar != null
                            ? `about ${d.minuter_kvar} min left`
+                             + (d.växer ? ` · ${T.växer(d.minuter)}` : "")
                            : T.kvar_idag(d.att_göra, d.gjort));
   // EN RAD I KLARTEXT om vad dagen består av, i den ordning man möter det.
   // Fyra rader med fackord — "New forms, met in sentences" — svarade på
@@ -1056,8 +1066,26 @@ async function svara() {
     }
     $("anm").append(li);
   }
-  sätt("r-igen", r.igen);
+  // RÄKNARNA RÖRS INTE HÄR, och det är rättelsen.
+  //
+  // Raden löd `sätt("r-igen", r.igen)`. Men `r.igen` är en PROGNOS: `svara`
+  // körs före `bokför` — självrättningens fönster ligger emellan — så
+  // `_igen_efter` räknar ut vad passkön KOMMER att bli. Uppdelningen bakom
+  // i-knappen beskriver samtidigt passet SOM DET ÄR.
+  //
+  // Två tal om två olika ögonblick, ritade bredvid varandra. De kunde aldrig
+  // vara ense förrän man klickade Next, och då blev de det igen — precis det
+  // Julius såg. Det var inte en kapplöpning utan två källor.
+  //
+  // Nu finns en sanning: räknarna och uppdelningen ritas båda i `nästa()`,
+  // ur samma `/api/dag`-svar. Att kortet gick till återförsök syns ändå
+  // direkt — `visaKortutfall` ritar ett ✗ på just det kortet, vilket är
+  // besked om SAKEN i stället för om en totalsumma.
   visaKortutfall(r.kort || []);
+  // MENINGSRÄKNAREN ÄR ETT UNDANTAG, och ett ärligt sådant: meningen ÄR
+  // gjord i samma stund man svarat, oavsett bokföring. Utan den stod talet
+  // still tills nästa mening laddats, vilket såg ut som att svaret inte
+  // räknades.
   gjortIdag += 1;
   sätt("r-gjort", gjortIdag);
   $("hjälp").hidden = true;

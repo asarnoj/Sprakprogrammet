@@ -201,22 +201,34 @@ def prov_inget_tal_för_låst_läge(tj, kort, kurs) -> list[str]:
 
 
 def prov_tiden_följer_arbetet(tj, kort, kurs) -> list[str]:
-    """`minuter_kvar` ska vara `att_göra` omräknat med den mätta takten.
+    """`minuter_kvar` ska vara `att_göra` omräknat med RÄTT växelkurs.
 
     Talet är användarens enhet (B4). Är det räknat ur något annat än det
     arbete skärmen samtidigt visar är det två åsikter om samma dag.
+
+    OCH NÄMNAREN MÅSTE VARA DENSAMMA SOM TÄLJAREN RÄKNAR. Provet krävde
+    tidigare `att_göra × sekunder_per_repetition`, och det var självt felet:
+    `att_göra` räknar PASSRADER medan `sekunder_per_repetition` har BEDÖMDA
+    KORT i nämnaren. En mening betygsätter fler kort än den stänger rader
+    (mätt: 1,33–1,80 rader per svar mot 2,4 bedömda kort), så produkten
+    underskattade dagen med omkring hälften — och provet höll med, eftersom
+    det prövade samma felaktiga formel.
+
+    Ett prov som skriver om koden en gång till bevisar bara att koden är sig
+    lik. Det här jämför mot `sekunder_per_rad`, som mäter tid per rad direkt
+    ur `Passkort.tidpunkt` — en räkning och inte en modell.
     """
     i = tj.hem(kurs["id"])["idag"]
+    spr = i.get("sek_per_rad")
     if i["minuter_kvar"] is None:
-        return ([] if not i["sek_per_rep"] else
-                ["minuter_kvar är None fast takten är mätt "
-                 f"({i['sek_per_rep']:.2f} s/rep)"])
-    if not i["sek_per_rep"]:
-        return ["minuter_kvar visas utan att takten är mätt"]
-    väntat = round(i["att_göra"] * i["sek_per_rep"] / 60)
+        return ([] if not spr else
+                [f"minuter_kvar är None fast raderna är mätta ({spr:.2f} s/rad)"])
+    if not spr:
+        return ["minuter_kvar visas utan att sekunder_per_rad är mätt"]
+    väntat = round(i["att_göra"] * spr / 60)
     if i["minuter_kvar"] != väntat:
-        return [f"minuter_kvar={i['minuter_kvar']} men {i['att_göra']} kort "
-                f"× {i['sek_per_rep']:.2f} s ger {väntat}"]
+        return [f"minuter_kvar={i['minuter_kvar']} men {i['att_göra']} rader "
+                f"× {spr:.2f} s ger {väntat}"]
     return []
 
 

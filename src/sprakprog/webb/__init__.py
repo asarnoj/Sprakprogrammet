@@ -554,11 +554,39 @@ class Övningstjänst:
                          # arbete ska gå att läsa i minuter och inte bara i
                          # kort. None när takten inte är mätt — en gissad
                          # tidsangivelse vore värre än ingen.
+                         #
+                         # PER RAD, inte per repetition. `att_göra` räknar
+                         # passrader; `sekunder_per_repetition` har bedömda
+                         # kort i nämnaren. En mening betygsätter fler kort
+                         # än den stänger rader, så produkten underskattade
+                         # genomgående med omkring hälften — mätt över en
+                         # vecka: lovat 1/2/3/4 min mot verkliga
+                         # 1,5/3,4/4,4/5,7. Se `sekunder_per_rad`.
                          "minuter_kvar": (
-                             round(p["att_göra"] * p["sekunder_per_repetition"] / 60)
-                             if p["sekunder_per_repetition"] else None),
+                             round(p["att_göra"] * p["sekunder_per_rad"] / 60)
+                             if p["sekunder_per_rad"] else None),
+                         # VÄXER DAGEN ÄNNU? Tio minuter är ett JÄMVIKTSMÅL
+                         # och inte ett löfte om dag ett. B2 styr inflödet så
+                         # att dygnets arbete konvergerar mot målet; de
+                         # första dagarna har helt enkelt inga repetitioner
+                         # att göra ännu. Mätt på en ny franskkurs med tio
+                         # minuter inställt: 1,5 min dag 1, 3,4 dag 3, 4,4
+                         # dag 5, 5,7 dag 7.
+                         #
+                         # Utan det här beskedet ser en kort dag ut som en
+                         # trasig inställning. Villkoret är MÄTT och inte
+                         # antaget: dagen ligger under halva målet OCH det
+                         # finns osett material kvar att växa med.
+                         "växer": bool(
+                             p["sekunder_per_rad"] and p["osedda"]
+                             and p["att_göra"] * p["sekunder_per_rad"]
+                                 < p["minuter_per_dag"] * 60 / 2),
                          "per_läge": p["kostnad_per_läge"],
                          "sek_per_rep": p["sekunder_per_repetition"],
+                         # Den växelkurs `minuter_kvar` faktiskt vilar på.
+                         # Skickas så att gränssnittets tal går att pröva mot
+                         # sin egen källa — se `indikatorprov`.
+                         "sek_per_rad": p["sekunder_per_rad"],
                          "inflödestak": p["inflödestak"],
                          "oövade": p["oövade"],
                          "glosor": min(

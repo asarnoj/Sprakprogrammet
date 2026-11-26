@@ -219,7 +219,34 @@ def _rader(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict,
                         and (möjliga_kort is None or r["id"] in möjliga_kort)]
             valda_kort += nya_kort[:kvar]
             rest = tak - len(valda_ord) - len(valda_kort)
-            if rest <= 0 or not glosor and not nya_kort:
+            # ETT VARV SOM INTE LÅSER UPP NÅGOT KÖPER INGENTING, och då ska
+            # loopen sluta köpa ord.
+            #
+            # Villkoret var `not glosor and not nya_kort`, alltså "bryt bara
+            # om BÅDA är tomma". Men det finns nästan alltid ett ord till att
+            # ta, så `glosor` är sällan tom — och loopen fortsatte köpa ord
+            # långt efter att de slutat låsa upp böjningskort. Mätt på en
+            # färsk franskkurs med taket 25:
+            #
+            #     varv 0   6 ord  →  7 böjningskort
+            #     varv 1   8 ord  →  2
+            #     varv 2   9 ord  →  0      ← härifrån är varje varv rent
+            #     varv 3  10 ord  →  0        slöseri: ett ord till, noll kort
+            #     varv 4  11 ord  →  0
+            #     varv 5  12 ord  →  0
+            #
+            # Dagen fick 12 ord där modellen räknat fram 6. De sex extra
+            # låste inte upp något; de fanns bara för att fylla ett tak.
+            #
+            # OCH DET ÄR PRECIS VAD B8 MÄTTE OCH FÖRKASTADE: "Taket är ett
+            # tak, inte en kvot. Frestelsen var att lägga den outnyttjade
+            # delen på fler ORD, så att minuterna fylls. Det mättes och
+            # förkastades." Passlagret byggdes efteråt och återinförde
+            # beteendet på ett annat ställe — samma fel, ny plats.
+            #
+            # Vid kallstart är ordförrådet för tunt för att bära sin egen
+            # tilldelning, och det botas av att morgondagen kommer.
+            if rest <= 0 or not nya_kort:
                 break
             # Resten av taket köper ord, till mätt växelkurs.
             önskat_ord = len(valda_ord) + max(1, int(rest / per_koncept))
@@ -427,6 +454,28 @@ def _syskonpass(kort_db: sqlite3.Connection, pass_id: int) -> list[int]:
            WHERE p.id = ?""", (pass_id,))]
 
 
+def _hör_till_passet(kort_db: sqlite3.Connection, pass_id: int,
+                     kort_id: int) -> bool:
+    """Står kortet i dagens plan över huvud taget — i vilken status som helst?
+
+    Skiljer TVÅ fall som båda saknar en väntande rad, och som ska behandlas
+    olika när kortet fallerar:
+
+        avklarat idag    raden finns med status `rätt`. Felet är då en verklig
+                         försämring av något dagen redan bokfört, och ska
+                         tillbaka som `igen`.
+
+        aldrig planerat  kortet stod inte i dagen. Det råkade vara med i en
+                         mening som valdes för något annat (E4). Mötet
+                         betygsätts, men dagen ska inte växa av det — annars
+                         kan ett pass aldrig ta slut, eftersom varje mening
+                         drar in kort som inte var planerade.
+    """
+    return bool(kort_db.execute(
+        "SELECT 1 FROM Passkort WHERE pass_id = ? AND kort_id = ? LIMIT 1",
+        (pass_id, kort_id)).fetchone())
+
+
 def registrera(kort_db: sqlite3.Connection, pass_id: int,
                utfall: dict[int, bool], nu: datetime | None = None) -> int:
     """Skriv in vad som hände med de kort meningen rörde.
@@ -448,16 +497,43 @@ def registrera(kort_db: sqlite3.Connection, pass_id: int,
                 """SELECT id FROM Passkort WHERE pass_id = ? AND kort_id = ?
                    AND status = 'väntar' ORDER BY ordning, id LIMIT 1""",
                 (pid, kort_id)).fetchone()
-            if rad is None:
+            if rad is not None:
+                if pid == pass_id:
+                    rörda += 1
+                kort_db.execute(
+                    "UPDATE Passkort SET status = ?, tidpunkt = ? WHERE id = ?",
+                    ("rätt" if rätt else "fel", nu, rad["id"]))
+            elif rätt or not _hör_till_passet(kort_db, pid, kort_id):
+                # Kortet hade ingen väntande rad. Klarades det spelar det
+                # ingen roll — och hör det inte till dagen alls (ett sett
+                # kort som råkade stå i meningen) ska det varken räknas
+                # eller köas.
                 continue
-            if pid == pass_id:
-                rörda += 1
-            kort_db.execute(
-                "UPDATE Passkort SET status = ?, tidpunkt = ? WHERE id = ?",
-                ("rätt" if rätt else "fel", nu, rad["id"]))
             # ÅTERFÖRSÖKET LÄGGS BARA I DET EGNA PASSET. Att ta igen ett fel
             # är en handling i det pass man sitter i; grannkursen ska veta
             # att kortet mötts, inte ärva ett återförsök man aldrig får.
+            #
+            # OCH DET GÄLLER ÄVEN ETT KORT SOM REDAN ÄR AVKLARAT IDAG. Raden
+            # ovan letade efter status `väntar` och hoppade över allt annat,
+            # så ett kort som drillats rätt på morgonen och sedan fallerade i
+            # en mening fick INGEN `igen`-rad. Följderna var tre, och alla
+            # tre är sådant passlagret finns för att omöjliggöra:
+            #
+            #   · `att_göra` rörde sig inte, så dagen kunde säga "klart" med
+            #     ett kort som just rasat
+            #   · huvudradens `igen` (generatorns minnesinterna passkö) och
+            #     `dagsläge`s `igen` (den här tabellen) gled isär och
+            #     återförenades aldrig — mätt 5 mot 3 efter fem meningar
+            #   · återförsöket levde bara i minnet och dog vid omstart
+            #
+            # Mätt på `ord:avoir`, drillat rätt och sedan fällt samma dag:
+            # S 2,307 → 0,775, D 2,12 → 7,39, förfaller flyttad ETT DYGN
+            # BAKÅT — medan passraden stod kvar som `glosa: rätt`.
+            #
+            # Att felet bokförs är riktigt (E2: "ett FEL får alltid
+            # registreras"). Det som saknades var att dagen fick veta om det.
+            # B7 säger att ett fel inte får lämnas ofixat, och den regeln
+            # skiljer inte på om kortet råkade vara avklarat.
             if not rätt and pid == pass_id:
                 kort_db.execute(
                     """INSERT INTO Passkort (pass_id, kort_id, roll, ordning)
