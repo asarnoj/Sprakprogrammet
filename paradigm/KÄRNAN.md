@@ -1443,7 +1443,15 @@ Efter meningen visas rättningen, och användaren kan **markera om**:
 
 Loggen sparar både diffens betyg och användarens. Diffens betyg är mätt och
 användarens är användarens eget; båda är tillåtna enligt R4, och FSRS får
-användarens. `Hard` och `Easy` räknas aldrig fram, inte heller ur svarstiden.
+användarens.
+
+**Renderaren behöver inte fånga varje nyans** (avgjort 2026-09-19). Ingen
+renderare täcker allt ett språk kan uttrycka, och en jakt på varje nyans är ett
+arbete utan slut. Omrättningen är utvägen: användaren markerar sitt svar som
+rätt, FSRS får det betyget, och flaggan gör fallet till en rad i granskningen av
+datan (3.4) i stället för ett stopp. Det som däremot förblir strängt är att
+rättningen aldrig gissar vad användaren menade — den räknar fram sitt betyg ur
+diffen, och användaren är den som får ändra det. `Hard` och `Easy` räknas aldrig fram, inte heller ur svarstiden.
 
 **Betygen går till FSRS när användaren går vidare** till nästa mening, inte när diffen
 räknats fram. Omrättningen kan ändra vilka kort som graderas: markeras ett underkänt
@@ -1814,7 +1822,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     5b  aspektkrav på koncept              parallellt (6.5)
     6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6)
     7   urvalet                            kräver 6; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
-    8   rättningen                         kräver 5; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4)
+    8   rättningen                         kräver 5; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4); rattning/: diffen per kort och omrättningen byggda, parningen mot flera varianter och prerekvisiten kvar
     9   gränssnittet                       kräver 6–8; introövningarna (5.4), meningen och rättningen med omrättning och flaggor (7.2), knappen för nya nivåer (4.4), inställningarna för tid, dygnsgräns och svårighet (5.1, 5.7)
     9b  den gamla kärnan raderas           kräver 9; när det nya passet går att använda från början till slut (8.1); skarven i Uppslag.ordning tas bort
     P1  lektionerna                        parallellt — punkt 10

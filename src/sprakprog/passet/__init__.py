@@ -169,17 +169,39 @@ class Passet:
                        uppgift.övriga, mening_id)
 
     def rätta(self, uppgift: Uppgift, svar: str, sekunder: float) -> Rättning:
-        """Rätta svaret, bokför varje möte och inför de kort som gick rätt (5.1, 7.1)."""
-        rättning = rätta(self.s.tabell, uppgift.ut, svar)
+        """Diffens betyg per kort. Bokför ingenting — det gör `bokför` (7.2)."""
         if uppgift.mening_id is not None:
             self.data.svara(uppgift.mening_id, svar, sekunder)
-        for kort, betyg in rättning.betyg.items():
-            self.data.bokför(kort, mål=kort in uppgift.mål, betyg_diff=betyg,
-                             betyg=betyg, mening_id=uppgift.mening_id)
+        return rätta(self.s.tabell, uppgift.ut, svar)
+
+    def bokför(self, uppgift: Uppgift, rättning: Rättning,
+               godkända: frozenset = frozenset(), höjt: dict | None = None,
+               flagga: str | None = None) -> None:
+        """Betygen går till FSRS när användaren går vidare, inte när diffen
+        räknats fram (7.2). Korten som gick rätt införs (5.1).
+
+        `godkända` är de kort användaren markerat om från underkänt till
+        godkänt: ett stavfel, eller ett korrekt svar som facit inte hade.
+        `höjt` ger `hard` eller `easy` på ett godkänt kort — de räknas aldrig
+        fram, varken ur diffen eller ur svarstiden. `flagga` är anmärkningen på
+        facit, som går till granskningen av datan (3.4).
+
+        Loggen sparar båda betygen: diffens, som är mätt, och användarens, som
+        FSRS får. Renderaren fångar inte varje nyans av ett språk, och
+        omrättningen är det som gör att den inte behöver det.
+        """
+        höjt = höjt or {}
+        if flagga is not None:
+            self.data.rapportera_fel(flagga, mening_id=uppgift.mening_id)
+        for kort, mätt in rättning.betyg.items():
+            betyg = RÄTT if kort in godkända else mätt
             if betyg == RÄTT:
+                betyg = höjt.get(kort, RÄTT)
+            self.data.bokför(kort, mål=kort in uppgift.mål, betyg_diff=mätt,
+                             betyg=betyg, mening_id=uppgift.mening_id)
+            if betyg != FEL:
                 self.data.inför(kort, uppgift.mening_id)
         self.uppdatera()
-        return rättning
 
     # ── introfasen ──
 

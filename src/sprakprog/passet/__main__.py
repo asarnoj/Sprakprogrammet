@@ -43,6 +43,7 @@ def _fråga(text: str) -> str:
 
 
 def _ställ(passet: Passet, uppgift) -> None:
+    """Ställ meningen, rätta svaret och låt användaren markera om (7.2)."""
     uppgift = passet.ställ(uppgift)
     print(f"\n  {uppgift.källtext}")
     start = time.perf_counter()
@@ -51,10 +52,23 @@ def _ställ(passet: Passet, uppgift) -> None:
         raise SystemExit
     rättning = passet.rätta(uppgift, svar, time.perf_counter() - start)
     if rättning.rätt:
-        print("  rätt.")
+        val = _fråga("  rätt.    [enter] vidare · h svårt · e lätt\n  ")
+        höjt = {k: "hard" if val == "h" else "easy" for k in rättning.betyg} \
+            if val in ("h", "e") else None
+        passet.bokför(uppgift, rättning, höjt=höjt)
+        return
+    print(f"  facit:   {uppgift.facit}")
+    print(f"  fel i:   {', '.join(str(k) for k in rättning.fel) or '—'}")
+    val = _fråga("  [enter] vidare · r jag hade rätt · f flagga facit\n  ")
+    if val == "r":
+        # Rätt svar som facit inte hade: korten godkänns och facit granskas.
+        passet.bokför(uppgift, rättning, godkända=frozenset(rättning.betyg), flagga=svar)
+        print("  godkänt, och facit flaggat för granskning.")
+    elif val == "f":
+        passet.bokför(uppgift, rättning, flagga=svar)
+        print("  facit flaggat.")
     else:
-        print(f"  facit: {uppgift.facit}")
-        print("  fel i:", ", ".join(str(k) for k in rättning.fel) or "—")
+        passet.bokför(uppgift, rättning)
 
 
 def main() -> None:
