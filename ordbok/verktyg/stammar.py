@@ -22,6 +22,10 @@ Stammar och ändelser definierar varandra, så ordningen är:
      ordets stamuppsättning. Former där ändelsen inte går att skala av är
      RESTER och får egna kort.
 
+     `celler`-kolumnen räknar inte cellerna utan RÄKNAR UPP dem. Det är den
+     kopplingen kortlagret behöver: given en form som renderaren slog upp
+     som (lexem, cell) ska det gå att peka ut vilket kort som prövades.
+
   4. Tröskeln och längdtaket söks fram per språk och ordklass genom att
      minimera antalet kort. Vilket värde som är rätt beror på hur mycket
      språket delar, och går inte att veta i förväg.
@@ -220,10 +224,10 @@ def analysera(conn, språk: str, ordklass: str):
         alla_rester += len(rester)
         for i, (stam, täcker) in enumerate(sorted(stammar.items())):
             rader.append((språk, lex["nyckel"], lex["variant"] or "", ordklass,
-                          klass, i, stam, len(täcker)))
+                          klass, i, stam, ",".join(sorted(täcker))))
         for cell in rester:
             rader.append((språk, lex["nyckel"], lex["variant"] or "", ordklass,
-                          klass, -1, celler[cell], 1))
+                          klass, -1, celler[cell], cell))
     former = sum(len(c) for _, c in par.values())
     return {"ord": len(par), "former": former, "klasser": len(tabeller),
             "tröskel": tröskel,
@@ -265,7 +269,8 @@ def main() -> None:
 
     if "--skriv" in sys.argv:
         with open("ordbok/stammar.tsv", "w") as f:
-            f.write("språk\tkoncept\tvariant\tordklass\tklass\tstamgrupp\tform\tceller\n")
+            f.write("språk\tkoncept\tvariant\tordklass\tklass\tstamgrupp"
+                    "\tform\tceller\n")
             for rad in alla_rader:
                 f.write("\t".join(str(x) for x in rad) + "\n")
         with open("ordbok/ändelser.tsv", "w") as f:

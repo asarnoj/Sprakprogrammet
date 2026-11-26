@@ -20,3 +20,9 @@ smoke.log
 # Fas-status för nattkörningen — maskinlokal, ska inte delas
 .natt2_status
 natt2.log
+
+# Inlärardatabasen är användarens data, inte projektets. Den går INTE att
+# återskapa ur repot — till skillnad från sprak.db, som byggs ur former.tsv.
+kort.db
+kort.db-wal
+kort.db-shm
