@@ -17,7 +17,9 @@ from pathlib import Path
 from ..fsrslager import Lager
 from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
+from ..rattning import FEL
 from ..rendering.karta import ladda
+from .tid import Meningstid, Tidsmodell, arbetsprofil
 from ..sammansattning import Sammansättare
 from . import Passet
 
@@ -33,6 +35,55 @@ def _nivåfil(fil: str) -> tuple[dict[Kort, frozenset], list[frozenset]]:
 
     krav = {kort(k): frozenset(map(kort, m)) for k, m in data["krav"]}
     return krav, [frozenset(map(kort, n)) for n in data["nivåer"]]
+
+
+#: Hur långt fram arbetsprofilen räknas. Ett kort kostar arbete i över ett år
+#: (8,37 repetitioner), och profilen måste täcka den svansen för att 5.5:s
+#: minimering ska hitta den verkliga toppen. Ett år plus lite marginal.
+PROFILDAGAR = 400
+
+
+def _kort_i_kursen(s: Sammansättare, nivåer: list[frozenset]) -> int:
+    """Hur många kort kursen har i allt — horisonten i 5.5.
+
+    «Kursen slutar när alla kort är införda.» Mängden är varje korts som
+    formtabellen ger för språkets lexem, plus nivåernas regler och ändelser.
+    """
+    alla: set[Kort] = {k for n in nivåer for k in n}
+    rader = s.u.conn.execute(
+        """SELECT l.*, k.ordklass, k.roll, k.nyckel FROM Lexem l
+           JOIN Koncept k ON k.id = l.koncept_id WHERE l.språk = ?""",
+        (s.språk,)).fetchall()
+    for rad in rader:
+        try:
+            for korten in s.tabell.former(rad).values():
+                alla.update(korten)
+        except Exception:                                          # noqa: BLE001
+            continue
+    return len(alla)
+
+
+def _tidsmodell(data: Kursdata, retention: float, fil: str):
+    """Tidsmodellen (5.5), eller None när något mått saknas.
+
+    Tre mått krävs, och alla tre är mätta: meningens kostnad ur den gamla loggen
+    (6.3), introövningens tid ur kursens egen logg, och hur tätt dagens meningar
+    packas. Saknas något svarar modellen inte alls — «utan talet finns ingen väg
+    från minuter till kort».
+    """
+    meningstid = Meningstid.ur_fil(fil)
+    if meningstid is None:
+        return None
+    # Kursens egna mått när de finns, annars den gamla loggens (5.5).
+    täthet = data.korttäthet() or meningstid.täthet
+    introsekunder = data.introsekunder()
+    if introsekunder is None:
+        # Introövningen är en mening med ett enda mål, så dess kostnad är
+        # linjens värde för ett kort. En övre gräns för en glosa, vilket är
+        # riktningen 5.5 kräver: färre nya kort, aldrig fler.
+        introsekunder = meningstid.fast + meningstid.per_kort
+    profil, _ = arbetsprofil(retention, PROFILDAGAR)
+    return Tidsmodell(profil, meningstid, täthet, introsekunder)
 
 
 def _fråga(text: str) -> str:
@@ -53,6 +104,18 @@ def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
     I introfasen (`fas="intro"`) BOKFÖRS INGENTING (5.4). Övningen finns för
     att användaren inte ska möta ny kunskap oförberedd, inte för FSRS; kortet
     prövas på riktigt först i meningsfasen.
+
+    OCH DÄR BEDÖMS BARA DET NYA KORTET. «En övning görs om tills det NYA
+    KORTET blir rätt … Fel på lånekorten spelar ingen roll, utom när de döljer
+    det nya kortet (R5); då görs övningen om» (5.4). Att döljas syns på att
+    målet självt faller: rättningen knyter avvikelsen till varje kort som
+    bestämde ordet, så ett lånefel som rör målets positioner fäller målet.
+    Villkoret «målet gick rätt» är alltså båda reglerna på en gång.
+
+    Hela meningen bedömdes förut, och det fällde en övning som hade gjort sitt:
+    «En stad faller.» besvarad «A city fall.» hade artikeln — övningens kort —
+    helt rätt, men saknade verbets -s. Introfasen pausade, och åtta kort föll
+    ur dagen för ett fel på ett lånekort.
     """
     uppgift = passet.ställ(uppgift, fas)
     print(f"\n  {uppgift.källtext}")
@@ -65,10 +128,25 @@ def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
         return None
     rättning = passet.rätta(uppgift, svar, time.perf_counter() - start)
     intro = fas == "intro"
-    if rättning.rätt:
-        if intro:
-            print("  rätt.")
+    if intro:
+        målen = {k for k in uppgift.mål if rättning.betyg.get(k) == FEL}
+        if not målen:
+            if rättning.rätt:
+                print("  rätt.")
+            else:
+                # Lånekorten är inte övningens sak, men facit ska synas: annars
+                # lär sig användaren en felstavning som «rätt».
+                print(f"  rätt i {', '.join(str(k) for k in uppgift.mål)}.")
+                print(f"  facit:   {uppgift.facit}")
+                print(f"  ({', '.join(str(k) for k in rättning.fel)} föll, "
+                      "men de prövas i meningsfasen)")
+                _fråga("  [enter] vidare\n  ")
             return True
+        print(f"  facit:   {uppgift.facit}")
+        print(f"  fel i:   {', '.join(str(k) for k in rättning.fel) or '—'}")
+        _fråga("  [enter] vidare\n  ")
+        return False
+    if rättning.rätt:
         val = _fråga("  rätt.    [enter] vidare · h svårt · e lätt\n  ")
         höjt = {k: "hard" if val == "h" else "easy" for k in rättning.betyg} \
             if val in ("h", "e") else None
@@ -76,9 +154,6 @@ def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
         return True
     print(f"  facit:   {uppgift.facit}")
     print(f"  fel i:   {', '.join(str(k) for k in rättning.fel) or '—'}")
-    if intro:
-        _fråga("  [enter] vidare\n  ")
-        return False
     val = _fråga("  [enter] vidare · r jag hade rätt · f flagga facit\n  ")
     if val == "r":
         # Rätt svar som facit inte hade: korten godkänns och facit granskas.
@@ -123,19 +198,40 @@ def _glosor(passet: Passet, kö: list) -> bool:
         glosa = kö.pop(0)
         mening_id = passet.data.ny_mening(
             "glosa", str(glosa.kort), glosa.källtext, sorted(glosa.former))
+        # TIDEN TAS. Den var hårdkodad till noll, och då är glosfasens kostnad
+        # osynlig för tidsmodellen — som enligt 5.5 ska mätas ur loggen: «tid
+        # per introövning, med omtag». Sexton glosor låg i loggen med 0,0 s.
+        start = time.perf_counter()
         svar = _fråga(f"      {glosa.källtext}  →  ")
+        gick = time.perf_counter() - start
         if svar == "q":
             raise SystemExit
         if svar == "s":
             print("      hoppade över.")
             return False
-        passet.data.svara(mening_id, svar, 0.0)
+        passet.data.svara(mening_id, svar, gick)
         if passet.rätta_glosa(glosa, svar):
             print("      rätt.")
             passet.data.presentera(glosa.kort)
             envis = 0
             continue
+        # ETT RÄTT SVAR SOM FACIT INTE HADE. Glosans facit är ETT ord, och ett
+        # ord har sällan en enda översättning: `passa` blev fällt för «fit»,
+        # som är lika riktigt som «suit». Meningsfasen har haft `r` för det
+        # här hela tiden; glosfasen hade det inte, fast dess facit är smalare.
+        # Svaret flaggas för granskning av datan (3.4), precis som där.
         print(f"      facit: {glosa.facit}")
+        val = _fråga("      [enter] vidare · r jag hade rätt\n      ")
+        if val == "q":
+            raise SystemExit
+        if val == "r":
+            passet.data.rapportera_fel(
+                f"glosan «{glosa.källtext}» godtog inte «{svar}»", kort=glosa.kort,
+                mening_id=mening_id)
+            passet.data.presentera(glosa.kort)
+            print("      godkänt, och facit flaggat för granskning.")
+            envis = 0
+            continue
         kö.append(glosa)                      # sist i kön (5.4)
         envis += 1
         if envis > len(kö):
@@ -145,7 +241,7 @@ def _glosor(passet: Passet, kö: list) -> bool:
     return True
 
 
-def _lektion(passet: Passet, uppgift, kort) -> None:
+def _lektion(passet: Passet, uppgift, kort, logga: bool = True) -> None:
     """Visa kortet i en färdig mening innan det prövas (5.4).
 
     Utan det här är introövningen ett prov före undervisningen: användaren
@@ -157,7 +253,8 @@ def _lektion(passet: Passet, uppgift, kort) -> None:
     igen som övning eller uppgift samma dag (6.1 punkt 8). Övningen blir
     därför en ANNAN mening med samma kort som mål.
     """
-    uppgift = passet.ställ(uppgift, "lektion")
+    if logga:
+        uppgift = passet.ställ(uppgift, "lektion")
     orden = [str(o) for o in uppgift.ut.ord]
     platserna = [p for k, ps in meningens_kort(passet.s.tabell, uppgift.ut)
                  if k == kort for p in ps]
@@ -180,8 +277,13 @@ def _lektion(passet: Passet, uppgift, kort) -> None:
               + ("    (_ = ordet som INTE skrivs)" if luckor else ""))
 
 
-def _introfas(passet: Passet) -> None:
-    """Presentera nästa nivås kort, ett i taget (5.1, 5.4).
+def _introfas(passet: Passet, plan) -> None:
+    """Gå igenom dagsplanens introövningar, ett kort i taget (5.1, 5.4).
+
+    FASEN FÖLJER PLANEN och bygger ingenting själv. Planen lades innan passet
+    började (5.1) och vet vilken mening som bär vilket kort; byggde fasen sin
+    egen övning kunde den ta just den mening huvuddelen hade reserverat, och
+    villkor 8 i 6.1 gör den då förbrukad.
 
     Ordningen följer kraven: övningens okända innehållsord lärs ut som glosor
     innan kortet som behöver dem. Ingenting bokförs — övningen finns för att
@@ -192,34 +294,48 @@ def _introfas(passet: Passet) -> None:
     fel läggs kortet sist i kön och görs om senare, inte direkt: då har
     användaren facit i färskt minne.
     """
-    kö = passet.att_presentera()
-    if not kö:
+    for kort, orsak in plan.karantän:
+        passet.data.sätt_i_karantän(kort, orsak)
+        print(f"  ⚠ {kort} i karantän: {orsak}")
+    kvar = [(k, u) for k, u in plan.introövningar
+            if k not in passet.data.presenterade()]
+    if not kvar:
         print("  allt i nästa nivå är redan presenterat i dag — korten prövas "
               "i meningar nu ([enter]).")
         return
-    nivån = frozenset(kö)
-    paket = passet.paket() - passet.data.införda() - passet.data.presenterade()
-    print(f"  introfasen: {len(paket)} kort — {len(kö)} mönsterkort och "
-          f"{len(paket) - len(kö)} ord. Inget bokförs här.")
-    kvar = list(kö)
+    # Ett FUNKTIONSORD står i båda: det har en introövning som ett mönsterkort
+    # och är ett ordkort. Räknades det två gånger stämde inte summan — «15 kort
+    # — 4 mönsterkort och 12 ord».
+    nya_ord = plan.orden - {k for k, _ in plan.introövningar}
+    print(f"  introfasen: {len(plan.kort)} kort — {len(kvar)} med egen övning "
+          f"och {len(nya_ord)} ord. Inget bokförs här.")
+
+    # ORDEN FÖRST, ALLA PÅ EN GÅNG — och det är kravordningen i 5.4, inte ett
+    # tycke. Ett innehållsords övning är en GLOSA, och en glosa kräver ingen
+    # mening: kortet kräver alltså ingenting och kan alltid gå först. Ett
+    # mönsterkorts övning är en mening, och den kräver sina ord. Mätt över
+    # engelskans nivåer: av 119 ordkort som kräver en regel är 119 funktionsord
+    # — som enligt 5.4 också övas med en mening — och noll innehållsord.
+    #
+    # Att fråga kort för kort «vilka av MINA ord är inte utlärda än» gav 3, 1,
+    # 1, 0, 0 och en svans på 1: klumparna var den frågan ställd lokalt om
+    # något planen redan visste globalt. Planen vet varje ord dagen behöver.
+    allt = [u for _, u in plan.introövningar] + list(plan.lektioner.values()) \
+        + list(plan.meningsfasen)
+    if not _glosor(passet, passet.glosorna(*allt)):
+        return
+
+    lästa: set[str] = set()
     envis = 0
     while kvar:
-        kort = kvar.pop(0)
-        steg = passet.introsteg(kort, paket=nivån)
-        if steg is None:
-            print(f"  {kort}: ingen övning går att bygga ännu — hoppas över.")
-            continue
-        glosor, uppgift = steg
+        kort, övning = kvar.pop(0)
+        lektion = plan.lektioner.get(kort)
         print(f"\n  lär dig nu:  {kort}")
-        if not _glosor(passet, glosor):
-            return
-        _lektion(passet, uppgift, kort)
-        övning = passet.presentera(kort, paket=nivån, markera=False)
-        if övning is None:
-            print("  ingen andra mening att öva på — kortet prövas i "
-                  "meningsfasen.")
-            passet.klarat_introövningen(kort)
-            continue
+        if lektion is not None:
+            # Samma lektionsmening gås igenom en gång per kort, med olika kort
+            # markerat — men den loggas som ställd EN gång (6.1 punkt 8).
+            _lektion(passet, lektion, kort, logga=lektion.källtext not in lästa)
+            lästa.add(lektion.källtext)
         utfall = _ställ(passet, övning, fas="intro")
         if utfall:
             passet.klarat_introövningen(kort)
@@ -228,11 +344,23 @@ def _introfas(passet: Passet) -> None:
         if utfall is None:
             print("  introfasen avbruten.")
             return
-        kvar.append(kort)          # sist i kön (5.4)
+        # «Ett kort som misslyckas läggs sist i introfasens kö» (5.4) — men
+        # sist i en TOM kö är samma fråga igen, direkt, med facit i färskt
+        # minne. Det är just det villkor 8 i 6.1 finns för att hindra, och en
+        # körning ställde «Väder passar.» två gånger i rad. Finns inget annat
+        # kort att skjuta in emellan pausas fasen i stället; kortet blir då
+        # inte presenterat, och kan därför inte heller användas i dagens
+        # meningar (5.1).
+        if not kvar:
+            print("  kortet sitter inte än, och det finns ingen annan övning "
+                  "att lägga emellan — introfasen pausas.")
+            return
+        kvar.append((kort, övning))
         envis += 1
         if envis > len(kvar):
             print("  inget kort går rätt just nu — introfasen pausas.")
             return
+
     print("\n  nivån är presenterad. Korten prövas nu i meningar.")
 
 
@@ -242,6 +370,13 @@ def main() -> None:
     p.add_argument("--karta", default=str(ROT / "kartor" / "en.pkl"))
     p.add_argument("--nivåer", default=str(ROT / "kartor" / "nivaer_en.json"))
     p.add_argument("--källspråk", default="sv")
+    p.add_argument("--minuter", type=float, default=20.0,
+                   help="tiden per dag; tidsmodellen (5.5) gör den till ett "
+                        "antal nya kort")
+    p.add_argument("--meningstid",
+                   default=str(ROT / "ordbok" / "nivålistor" / "meningstid.csv"),
+                   help="meningens mätta kostnad (6.3); utan den finns ingen "
+                        "gräns för hur mycket nytt en dag tar")
     a = p.parse_args()
 
     karta = ladda(a.karta)
@@ -249,22 +384,58 @@ def main() -> None:
     sprak = sqlite3.connect(ROT / "sprak.db")
     data = Kursdata(sqlite3.connect(a.kurs), a.källspråk, språk)
     krav, nivåer = _nivåfil(a.nivåer)
-    passet = Passet(data, Sammansättare(sprak, karta, par=a.källspråk),
-                    Lager(data), krav, nivåer)
+    lager = Lager(data)
+    sam = Sammansättare(sprak, karta, par=a.källspråk)
+    passet = Passet(data, sam,
+                    lager, krav, nivåer,
+                    tidsmodell=_tidsmodell(data, lager.retention, a.meningstid),
+                    kort_i_kursen=_kort_i_kursen(sam, nivåer))
 
     print(f"{a.källspråk} → {språk}.  [enter] öva · n nästa nivå · q sluta")
     print("  när en mening ställs: skriv översättningen, "
           "s hoppar över, q slutar")
+    # Dagens plan läggs en gång och gäller hela dagen (5.1). Den håller också
+    # ihop faserna: introfasen tar sina övningar ur den, och meningsfasen sina
+    # meningar, så att de två aldrig slåss om samma källmening (6.1 punkt 8).
+    plan = None
+    #: Kort vars meningar tagit slut i dag (6.1 punkt 8). Dagsskopat, inte
+    #: karantän: i morgon gäller villkoret inte och kortet tas om (5.1).
+    utan_material: set = set()
     while True:
         läge = passet.läge()
         print(f"\n[{läge['dag']} {läge['tid']}]  införda {läge['införda']} · "
               f"presenterade {läge['presenterade']} · svaga {läge['svaga']} · "
-              f"att lära in {läge['i_paketet']}")
+              # `i_paketet` är PAKETETS kort (3.10) — de som en minsta mening
+              # kräver. Dagsplanen är större, eftersom den också behöver ORD
+              # att bygga olika meningar av (5.1): paketet sa 7 och dagen lärde
+              # ut 13. Talet är ett golv tills planen finns, och sägs så.
+              + (f"att lära in {len(plan.kort - passet.data.införda())}"
+                 if plan is not None else
+                 f"att lära in minst {läge['i_paketet']}"))
         val = _fråga("> ")
         if val == "q":
             return
         if val == "n":
-            _introfas(passet)
+            # GRINDEN (5.5). Tidsmodellen säger hur många nya kort dagen tål,
+            # och ett paket tas helt eller inte alls (3.10) — så ett paket som
+            # inte ryms väntar tills det sparade tempot räcker. Utan modellen
+            # finns ingen gräns, och då är tangenttryckningen hela grinden.
+            svar = passet.tempo(a.minuter)
+            if svar is not None:
+                tempot, budget = svar
+                paket = len(passet.paket() - data.införda())
+                print(f"  {a.minuter:.0f} min om dagen räcker till "
+                      f"{tempot.nya} nya kort; med sparat {budget:.1f}. "
+                      f"Nästa paket är {paket} kort.")
+                if paket > budget:
+                    data.spara_tempo(0, budget)
+                    print(f"  paketet ryms inte i dag — {budget:.1f} sparas till "
+                          "i morgon (5.5). Öva det du har med [enter].")
+                    continue
+                data.spara_tempo(paket, max(0.0, budget - paket))
+            print("  lägger dagens plan …")
+            plan = passet.dagsplan(rapport=lambda r: print(r, flush=True))
+            _introfas(passet, plan)
             # Faserna följer på varandra (5.1): efter introfasen prövas korten
             # i meningar. Att gå tillbaka till menyn här var det som lät
             # introfasen köras om i stället, och passet nådde aldrig fram.
@@ -275,17 +446,41 @@ def main() -> None:
             continue
         # Meningsfasen körs tills högarna är tomma (5.3), inte en mening per
         # tangenttryck: dagen är klar när det svaga är klarat.
+        #
+        # ETT KORT UTAN MENING ÄR INTE KLART. Förut ströks det bara ur den
+        # lokala listan, och när listan tog slut sa passet «högarna är tomma —
+        # dagens arbete är gjort». Det var falskt: `gen_passa` föll på «Tid
+        # passar.», alla fyra meningar med ordet var förbrukade (villkor 8),
+        # och kortet blev aldrig infört.
+        #
+        # Det är inget FEL och ingen karantän — 6.1 punkt 8 säger det rakt ut:
+        # «En annan dag gäller inte villkoret … det är inget brott mot
+        # invarianten i 3.10». Kortet börjar om som nytt i morgon (5.1). Men
+        # dagen ska säga det.
+        #
+        # Mängden ligger UTANFÖR menyloopen. Låg den innanför prövades kortet
+        # på nytt vid varje [enter], och att bevisa att ingen mening finns
+        # kostar 18 s — passet blev obrukbart efter ett enda fel.
         while svaga:
             kortet = svaga[0]
-            uppgift = passet.uppgift(kortet)
+            uppgift = passet.uppgift(kortet, plan)
             if uppgift is None:
-                print(f"  {kortet}: ingen mening att pröva det med i dag.")
+                print(f"  {kortet}: dagens meningar för kortet är slut — "
+                      "det börjar om i morgon (5.1).")
+                utan_material.add(kortet)
                 svaga = [k for k in svaga if k != kortet]
                 continue
             if _ställ(passet, uppgift) is None:
                 break
-            svaga = sorted(passet.svaga(), key=str)
-        if not svaga:
+            svaga = [k for k in sorted(passet.svaga(), key=str)
+                     if k not in utan_material]
+        if svaga:
+            continue
+        kvar = sorted(passet.svaga() & utan_material, key=str)
+        if kvar:
+            print(f"\n  dagen är slut. {len(kvar)} kort kom inte in: "
+                  + ", ".join(map(str, kvar)) + " — de tas om i morgon (5.1).")
+        else:
             print("\n  högarna är tomma — dagens arbete är gjort (5.3).")
 
 

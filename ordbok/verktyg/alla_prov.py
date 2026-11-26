@@ -25,8 +25,9 @@ fäller de flesta regressioner; tjänste- och passproven bygger databaskopior
 och tar minuter. Faller något tidigt slipper man vänta ut resten.
 
 VAD SOM INTE ÄR MED. `nåbarhet`, `stammar`, `synk`, `rendera_prov`,
-`ögonblicksbild` och `passkörning` är MÄTVERKTYG, inte nät: de svarar med
-tal eller listor och har ingen invariant som kan falla. `felsvep` ger också
+`ögonblicksbild`, `passkörning`, `ordvalsmätning` och
+`meningstidsmätning` är MÄTVERKTYG, inte nät:
+de svarar med tal eller listor och har ingen invariant som kan falla. `felsvep` ger också
 ett tal, men det ingår ändå — dess "falska betyg" ska vara noll, och det är
 ett påstående som går att bryta.
 
@@ -55,6 +56,8 @@ NÄT = [
     ("strukturprov.py",      False),
     ("dimensionsprov.py",    False),
     ("lektionsprov.py",      False),
+    # Rent räknearbete: ingen databas, bara arbetsprofilen och tidsmodellen.
+    ("tidsmodellprov.py",    False),
     # Bygger databaskopior men är ändå SNABB — 2 s, inte minuter — därför att
     # varje invariant skriver sin egen lilla logg i stället för att sampla
     # meningar. Kolumnen säger körtid och inte metod.

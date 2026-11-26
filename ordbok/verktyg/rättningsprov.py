@@ -73,9 +73,11 @@ FALL = [
     ("en", HUR_MÅNGA, "How many book does the girl read?",
      ["ändelse:Substantiv/regelbunden/pl"],
      ["regel:val/kongruens/3sg", "ord:artikel_bestamd", "ord:pers_flicka"]),
+    # «reads» är en FORM av läsa, så lexemet kan användaren (3.3). Skulden
+    # ligger på cellvalet — prerekvisitstegen i 7.3.
     ("en", HUR_MÅNGA, "How many books does the girl reads?",
-     ["ord:kom_läsa"],
-     ["ord:skol_bok", "ord:artikel_bestamd", "ord:pers_flicka"]),
+     ["regel:val/tempusform/presens"],
+     ["ord:kom_läsa", "ord:skol_bok", "ord:artikel_bestamd", "ord:pers_flicka"]),
     ("en", HUR_MÅNGA, "How many books does the boy read?",
      ["ord:pers_flicka"],
      ["ord:skol_bok", "ord:kom_läsa", "regel:val/kongruens/3sg"]),
@@ -83,9 +85,11 @@ FALL = [
      ["ord:artikel_bestamd", "regel:val/bestämning/bestämd_artikel"],
      ["ord:pers_flicka", "ord:kom_läsa", "ord:skol_bok"]),
     ("en", HUR_MÅNGA, None, [], []),          # facit mot sig självt
+    # «pojke» är obestämd singular av samma lexem: bestämdheten brast, inte
+    # ordet (7.3 steg 1).
     ("sv", LITAR_PÅ, "Flickan litar på pojke.",
-     ["ord:pers_pojke"],
-     ["ord:pers_flicka", "ord:gen_lita"]),
+     ["regel:val/bestämning/bestämd_suffix"],
+     ["ord:pers_pojke", "ord:pers_flicka", "ord:gen_lita"]),
     ("sv", LITAR_PÅ, "Flickan litar på flickan.",
      ["ord:pers_pojke"],
      ["ord:gen_lita"]),
@@ -112,6 +116,12 @@ def _fall(språk: str, mening, svar, måste_falla, får_inte_falla) -> list[str]
             brister.append(f"{kort} föll fast dess ord stod kvar")
     if svar == ut.text and fallna:
         brister.append(f"perfekt svar underkände {sorted(fallna)}")
+    # SKULDEN MÅSTE LANDA. Prerekvisitstegen (7.3) ograderar formkort när ett
+    # beslut bär felet i stället — men ibland finns inget beslut: «How many
+    # books» blir plural av frågedeterminantens krav, inte av något `val`-kort.
+    # Ograderades ändelsen ändå föll ingenting, och ett fel svar blev perfekt.
+    if svar != ut.text and not fallna:
+        brister.append(f"ingenting föll på «{svar}» — rättningen tiger")
     return brister
 
 
@@ -128,6 +138,40 @@ def _spannet_räknar_rätt() -> list[str]:
         if not any(len(str(o).split()) > 1 for o in ut.ord):
             brister.append(f"{språk}: provet träffar inget flerordigt uppslag "
                            f"i {ut.text!r} — fallet har tappat sin poäng")
+    return brister
+
+
+def _falsifiera() -> list[str]:
+    """Varje gammalt läge ska fälla sitt prov.
+
+    Ett prov som inte går att fälla är ingen invariant utan en förhoppning —
+    samma uppställning som `passprovet` och `övervakningsprov`.
+    """
+    import sprakprog.rattning as R
+
+    def utan_villkor(betyg, formkort, korten):
+        """Det läge jag byggde först: ogradera formkorten oavsett om någon
+        annan bär felet. Då tiger rättningen på «How many book …»."""
+        for formens in formkort.values():
+            for kort in formens:
+                betyg.pop(kort, None)
+
+    fall = [("stegen ograderade formkortet utan att någon annan bar felet",
+             "_stegen", utan_villkor)]
+    brister = []
+    print("\nfalsifiering — varje gammalt läge ska fälla sitt prov:")
+    for namn, attr, ersättning in fall:
+        gammalt = getattr(R, attr)
+        setattr(R, attr, ersättning)
+        try:
+            fel = [b for f in FALL for b in _fall(*f)]
+        finally:
+            setattr(R, attr, gammalt)
+        if fel:
+            print(f"  ✓ föll  {namn}  ({len(fel)} fynd)")
+        else:
+            print(f"  ✗ STUMT  {namn}")
+            brister.append(f"{namn} gav inga fynd — provet vaktar inte regeln")
     return brister
 
 
@@ -152,6 +196,7 @@ def main() -> int:
             print(f"      {b}")
         brister += fel
 
+    brister += _falsifiera()
     print(f"\n{len(FALL) + 1} kontroller, {len(brister)} brister."
           if brister else f"\n{len(FALL) + 1} kontroller, allt håller.")
     return 1 if brister else 0

@@ -12,8 +12,15 @@ står i svaret. Diffen säger vilka positioner som stämmer.
 Ett uppslag är inte alltid ett skrivet ord: "how many" och "inte längre" är
 ett uppslag och två ord. `_spann` översätter mellan de två räkningarna.
 
-VAD SOM INTE ÄR BYGGT ÄN. Version ett jämför med en variant: den mening som
-ställdes. Flera godtagna varianter (6.5) och omrättningen (7.2) kommer med
+PREREKVISITSTEGEN (7.3 steg 1) gör att ett ordslarv inte fäller grammatiken:
+ordkortet gäller lexemet och inte den ställda formen, ordföljdsregeln graderas
+på platsen och inte på stavningen, och ett formkort ograderas när ett annat kort
+bär felet — men bara då, för rättningen får aldrig tiga.
+
+VAD SOM INTE ÄR BYGGT ÄN. Steg 1:s tredje punkt — att skilja «en form som inte
+finns» från «den form ett annat utfall hade gett» — och steg 2, minsta
+förklaring, kräver båda att meningen renderas om (6.5). Version ett jämför med
+en variant: den mening som ställdes. Flera godtagna varianter (6.5) och omrättningen (7.2) kommer med
 entydighetsfiltret respektive gränssnittet. Sammansmälta ord — franskans «du»,
 där två uppslag blir ETT skrivet ord — går åt andra hållet än `_spann` och
 görs när ett språk som smälter samman ord kommer in.
@@ -22,6 +29,7 @@ görs när ett språk som smälter samman ord kommer in.
 from __future__ import annotations
 
 import difflib
+from collections import Counter
 from dataclasses import dataclass
 
 from ..kortmodell import Formtabell, Kort, meningens_kort
@@ -30,6 +38,47 @@ from ..rendering.spår import Utskrift
 #: Betygen som räknas fram ur diffen (7.2). `Hard` och `Easy` kommer bara från
 #: användarens omrättning.
 RÄTT, FEL = "good", "again"
+
+#: Korten som gäller STRÄNGEN i ett ords böjning (3.4). De är ordkortets
+#: prerekvisit i 7.3: kan man inte ordet kan man inte heller dess form.
+FORMKORT = frozenset({"ändelse", "oregelbunden"})
+
+
+#: Vad användaren skrev på ett uppslags plats, sett från KORTEN där (7.3).
+KÄNT = "känt"              #: exakt den ställda formen
+ANNAN_FORM = "annan form"  #: en annan form av rätt lexem — «stand» för «stands»
+OKÄNT = "okänt"            #: ingen form av lexemet, eller inget ord alls
+
+
+def _läget(tabell: Formtabell, o, sträcka: range, lika: set[int],
+           motpart: dict) -> str:
+    """Vilket av de tre lägena svaret är i på ett uppslags plats.
+
+    Skillnaden mellan ANNAN_FORM och OKÄNT är hela prerekvisitstegen: skrev
+    användaren en annan form av rätt lexem KAN hen ordet, och det är cellvalet
+    som brast. Skrev hen något annat vet vi ingenting om formen.
+    """
+    if all(i in lika for i in sträcka):
+        return KÄNT
+    skrivet = [motpart.get(i) for i in sträcka]
+    if any(x is None for x in skrivet):
+        return OKÄNT
+    try:
+        lexem = tabell.u.lexem(o.koncept, o.variant)
+        former = {f.lower() for f in tabell.u._celler(lexem).values() if f}
+    except Exception:
+        return OKÄNT
+    return ANNAN_FORM if " ".join(skrivet).lower() in former else OKÄNT
+
+
+def _är_ordföljd(kort: Kort) -> bool:
+    """En regel som PLACERAR ord, till skillnad från en som väljer form.
+
+    Samma skillnad som prerekvisitstegen i 7.3 vilar på, och samma som
+    `Passet._åtskilda` gör: «ett ordföljdsbeslut placerar ordet, det väljer
+    inte dess form».
+    """
+    return kort.typ == "regel" and kort.nyckel[0] == "ordning"
 
 
 class Rättningsfel(Exception):
@@ -54,34 +103,67 @@ class Rättning:
         return sorted((k for k, b in self.betyg.items() if b == FEL), key=str)
 
 
-def _jämför(facit: list[str], svar: list[str]) -> tuple[set[int], set[int], list]:
-    """Vilka av facits ord som stämmer, var svaret lagt till ord, och diffen.
+@dataclass(frozen=True, slots=True)
+class Jämförelse:
+    """Hur svaret skiljer sig från facit, per position i FACIT.
+
+    `ersatt` och `saknad` skiljer två fall som båda är «inte lika» men betyder
+    olika saker för attributionen (7.3): ett ERSATT ord står på sin plats med
+    fel form, ett SAKNAT ord finns inte i svaret alls. Ordföljdsregeln bryr sig
+    bara om det andra — «för ett ord på fel plats den regel som placerade det».
+    """
+    lika: set[int]
+    ersatt: set[int]
+    saknad: set[int]
+    tillagda: set[int]
+    diff: list
+    #: facits position → det ord användaren skrev där, eller None när inget
+    #: ord i svaret hamnade på platsen. Utan det går «fel lexem» inte att
+    #: skilja från «rätt lexem i fel form» (7.3 steg 1).
+    motpart: dict
+
+
+def _jämför(facit: list[str], svar: list[str]) -> Jämförelse:
+    """Vilka av facits ord som stämmer, hur de övriga avviker, och diffen.
 
     De tillagda orden räknas per lucka: lucka `i` ligger före facits ord `i`,
     och lucka `len(facit)` sist, som i spåret.
     """
     lika: set[int] = set()
+    ersatt: set[int] = set()
+    saknad: set[int] = set()
     tillagda: set[int] = set()
+    motpart: dict[int, str | None] = {}
     diff: list[tuple[str | None, str | None]] = []
     for tagg, i1, i2, j1, j2 in difflib.SequenceMatcher(
             a=facit, b=svar, autojunk=False).get_opcodes():
         if tagg == "equal":
             lika.update(range(i1, i2))
+            motpart.update(zip(range(i1, i2), (svar[j] for j in range(j1, j2))))
             diff.extend((facit[i], svar[j]) for i, j in zip(range(i1, i2), range(j1, j2)))
         elif tagg == "insert":
             tillagda.add(i1)
             diff.extend((None, svar[j]) for j in range(j1, j2))
         elif tagg == "delete":
+            saknad.update(range(i1, i2))
+            motpart.update({i: None for i in range(i1, i2)})
             diff.extend((facit[i], None) for i in range(i1, i2))
         else:
             # Ett utbytt stycke kan också ha fler ord i svaret än i facit, och de
             # orden är tillagda i styckets båda ändar.
             if j2 - j1 > i2 - i1:
                 tillagda.update({i1, i2})
+            # De facitord som har en motpart i stycket är ERSATTA; blir stycket
+            # kortare i svaret saknar resten motpart.
+            par = min(i2 - i1, j2 - j1)
+            ersatt.update(range(i1, i1 + par))
+            saknad.update(range(i1 + par, i2))
+            motpart.update(zip(range(i1, i1 + par), (svar[j] for j in range(j1, j1 + par))))
+            motpart.update({i: None for i in range(i1 + par, i2)})
             diff.extend((facit[i] if i < i2 else None, svar[j] if j < j2 else None)
                         for i, j in zip(range(i1, max(i2, i1 + j2 - j1)),
                                         range(j1, max(j2, j1 + i2 - i1))))
-    return lika, tillagda, diff
+    return Jämförelse(lika, ersatt, saknad, tillagda, diff, motpart)
 
 
 #: Tecken som MENINGEN får av `spec.slutar` och av versaliseringen i
@@ -149,26 +231,129 @@ def _spann(ut: Utskrift, facit: list[str]) -> list[range]:
     return spann
 
 
+def _stegen(betyg: dict, formkort: dict, korten: list) -> None:
+    """Prerekvisitstegen som efterpass: ta bort formkortens betyg där ett annat
+    kort redan bär felet (7.3 steg 1).
+
+    Villkoret «ett annat kort bär det» är inte pynt. Stegen förutsätter att det
+    finns ett beslut att lägga skulden på, och ibland finns det inte: «How many
+    books» blir plural av frågedeterminantens krav, inte av något `val`-kort.
+    Ograderades pluraländelsen ändå föll ingenting alls, och «How many book …»
+    blev ett perfekt svar. Rättningen får aldrig tiga.
+    """
+    for k, formens in formkort.items():
+        andra = [kort for kort, platser in korten
+                 if kort.typ not in FORMKORT and betyg.get(kort) == FEL
+                 and ("ord", k) in platser]
+        if andra:
+            for kort in formens:
+                betyg.pop(kort, None)
+
+
 def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
-    """Betyget per kort, räknat ur diffen mellan facit och svaret."""
+    """Betyget per kort, räknat ur diffen mellan facit och svaret (7.3).
+
+    PREREKVISITSTEGEN är steg 1 i 7.3: «Kan man inte ordet kan man inte heller
+    dess form.» Utan den var rättningen rent positionell — varje kort som
+    bestämde ett avvikande ord föll — och ett ordslarv skrev falska betyg på
+    grammatiken. Mätt på «Time suits.» besvarad «Time fits.»: fem kort föll,
+    men fyra av dem hade gjort allt rätt. Ordföljden var riktig, kongruensen
+    riktig, tempus riktigt, ändelsen riktig; bara lexemet var fel.
+
+    Två av stegets tre punkter går att bygga utan omrenderingarna:
+
+    1. **Föll `ord` är formkorten ograderade.** Ändelsen och den oregelbundna
+       formen gäller strängen i ordets böjning, och den böjningen prövades
+       aldrig — användaren skrev ett annat ord.
+    2. **Ordföljdsregeln graderas på PLATSEN, inte på formen.** 7.3 säger vilka
+       kort en avvikande position har: «formens kort, och FÖR ETT ORD PÅ FEL
+       PLATS den regel som placerade det». Ett ord som står rätt men är
+       felstavat säger ingenting om ordföljden, och regeln ska inte falla för
+       det. Ett ord är på fel plats när dess sträng finns i svaret men inte där
+       den skulle, eller när den inte finns alls.
+
+    Den tredje punkten — «förklarar ett beslut som väljer cell avvikelsen, har
+    beslutet fallit» — kräver att meningen renderas om med ett annat utfall, och
+    det är entydighetsfiltret (6.5). Tills det finns graderas cellbesluten som
+    förut: de faller med sin position. Konsekvensen står i 7.3 själv: «Har
+    användaren i själva verket valt rätt men glömt ändelsen får valet skulden;
+    det kommer tillbaka snart och klaras.»
+    """
     facit = ut.text.split()
     spann = _spann(ut, facit)
     # Attributionen jämför utan satsens form; diffen som visas behåller den.
-    lika, tillagda, _ = _jämför(_avskalad(facit), _avskalad(svar.split()))
-    *_, diff = _jämför(facit, svar.split())
+    skalat_facit, skalat_svar = _avskalad(facit), _avskalad(svar.split())
+    j = _jämför(skalat_facit, skalat_svar)
+    lika, tillagda = j.lika, j.tillagda
+    diff = _jämför(facit, svar.split()).diff
+
+    # PÅ FEL PLATS: strängen finns i svaret men inte här, eller inte alls.
+    # «Time fits» rör inte ordföljden — «suits» finns inte i svaret, så ordet
+    # står kvar på sin plats med fel form. «Stands time» gör det: «time» finns,
+    # fast någon annanstans.
+    kvar_i_svaret = Counter(skalat_svar)
+    for i in lika:
+        kvar_i_svaret[skalat_facit[i]] -= 1
+    fel_plats = {i for i in j.ersatt if kvar_i_svaret[skalat_facit[i]] > 0} | j.saknad
+
+    korten = meningens_kort(tabell, ut)
+
+    def positionerna(platser) -> set[int]:
+        return {i for sort, k in platser if sort == "ord" for i in spann[k]}
+
+    läget = {k: _läget(tabell, o, spann[k], lika, j.motpart)
+             for k, o in enumerate(ut.ord)}
+
     betyg: dict[Kort, str] = {}
-    for kort, platser in meningens_kort(tabell, ut):
-        ord_ = {i for sort, j in platser if sort == "ord" for i in spann[j]}
+    formkort: dict[int, list[Kort]] = {}
+    for kort, platser in korten:
+        uppslagen = {k for sort, k in platser if sort == "ord"}
+        lägen = {läget[k] for k in uppslagen}
+        if kort.typ in FORMKORT and lägen - {KÄNT}:
+            for k in uppslagen:
+                formkort.setdefault(k, []).append(kort)
+        ord_ = positionerna(platser)
         # Lucka `j` ligger före uppslag `j`, alltså vid spannets början, och
         # lucka `len(ord)` sist av allt.
-        luckor = {spann[j].start if j < len(spann) else len(facit)
-                  for sort, j in platser if sort == "lucka"}
+        luckor = {spann[k].start if k < len(spann) else len(facit)
+                  for sort, k in platser if sort == "lucka"}
+        if kort.typ == "ord":
+            # Ordkortet gäller LEXEMET: klarat om svaret är en form reglerna
+            # kan bygga av rätt lexem (3.3), som glosan. Krävdes exakt den
+            # ställda formen föll ordet för en glömd ändelse — och då blev
+            # ändelsekortet ograderat av stegen ovan, alltså föll ingen för
+            # felet.
+            prövad = OKÄNT not in lägen
+        elif _är_ordföljd(kort):
+            prövad = not (ord_ & fel_plats)
+        else:
+            prövad = ord_ <= lika
         # En lucka är prövad bara när svaret varken lade till ett ord där eller
         # ändrade orden runt den: annars säger den ingenting om kortet.
-        rätt = ord_ <= lika and all(
+        rätt = prövad and all(
             i not in tillagda and (i == 0 or i - 1 in lika) and (i == len(facit) or i in lika)
             for i in luckor)
         # Ett kort kan stå på flera platser i samma mening; faller en faller kortet.
         if betyg.get(kort) != FEL:
             betyg[kort] = RÄTT if rätt else FEL
+
+    # 7.3 STEG 1, prerekvisitstegen, som ett efterpass: «Föll `ord` är
+    # formkorten ograderade», och skrev användaren en annan form av rätt lexem
+    # var det cellvalet som brast — «har användaren i själva verket valt rätt
+    # men glömt ändelsen får valet skulden; det kommer tillbaka snart och
+    # klaras, och formkortet mäts en annan gång».
+    #
+    # MEN BARA NÄR NÅGON ANNAN TAR SKULDEN. Stegen förutsätter att det finns ett
+    # beslut att lägga den på, och ibland finns det inte: «How many books» blir
+    # plural av frågedeterminantens krav, inte av något `val`-kort. Ograderades
+    # pluraländelsen ändå föll ingenting alls, och «How many book …» blev ett
+    # perfekt svar. Då är formkortet det enda kort som kan bära felet, och det
+    # gör det. Rättningen får aldrig tiga.
+    #
+    # Att ogradera BESLUTEN vore dessutom att läsa stegen bredare än den är:
+    # `val/bestämning/bestämd_artikel` väljer inte ordets cell utan vilket ord
+    # som skrivs, och skrev användaren «a» för «the» syns det att beslutet
+    # brast. Punkt 3 i stegen — att skilja en form som inte finns från ett annat
+    # utfall — kräver omrenderingarna i 6.5.
+    _stegen(betyg, formkort, korten)
     return Rättning(len(lika) == len(facit) and not tillagda, betyg, tuple(diff))

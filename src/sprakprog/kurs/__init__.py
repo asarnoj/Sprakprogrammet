@@ -27,6 +27,7 @@ import json
 import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
+from statistics import median
 
 from ..kortmodell import Kort
 
@@ -302,6 +303,46 @@ class Kursdata:
             "INSERT OR IGNORE INTO infört (kurs_id, språk, typ, nyckel, tid, mening_id) "
             "VALUES (?, ?, ?, ?, ?, ?)", (self.id, *_kolumner(kort), nu(), mening_id))
         self.conn.commit()
+
+    def införda_åldrar(self, dag: str | None = None) -> list[int]:
+        """Hur många dygn sedan varje infört kort infördes — E(t) i 5.5.
+
+        «Arbetsbördan är summan av varje korts arbetsprofil, förskjuten till den
+        dag kortet presenterades.»
+        """
+        idag = date.fromisoformat(dag or self.dag())
+        gräns = self.inställning("dygnsgräns")
+        return [(idag - date.fromisoformat(dygnet(r["tid"], gräns))).days
+                for r in self.conn.execute(
+                    "SELECT tid FROM infört WHERE kurs_id = ?", (self.id,))]
+
+    def introsekunder(self) -> float | None:
+        """Mediantiden för en introövning, ur kursens egen logg (5.5).
+
+        DEN DYRASTE MÄTTA KOSTNADEN GÄLLER ÄVEN GLOSAN. Glosfasens tid var
+        hårdkodad till noll fram till 2026-09-26, så äldre rader saknar den, och
+        en glosa som räknas gratis släpper in fler nya kort — motsatsen till vad
+        5.5 kräver. Tills glosorna är mätta används introövningens tid för båda:
+        den är en övre gräns, eftersom en glosa är ett ord och en övning en hel
+        mening.
+        """
+        tider = [r["sekunder"] for r in self.conn.execute(
+            """SELECT sekunder FROM mening WHERE kurs_id = ? AND fas = 'intro'
+               AND sekunder IS NOT NULL AND sekunder > 0""", (self.id,))]
+        return median(tider) if tider else None
+
+    def korttäthet(self) -> float | None:
+        """Hur många kort en mening bedömer i median — tätheten i 5.5 och 6.3.
+
+        «Den fasta kostnaden per mening dominerar, så tiden per kort beror på
+        hur tätt meningarna packas.» Tätheten är alltså inte ett antagande utan
+        något kursen visar: mötena räknas per mening.
+        """
+        per_mening = [r["n"] for r in self.conn.execute(
+            """SELECT count(*) AS n FROM möte
+               WHERE kurs_id = ? AND mening_id IS NOT NULL
+               GROUP BY mening_id""", (self.id,))]
+        return median(per_mening) if per_mening else None
 
     def införda(self) -> set[Kort]:
         return {_kort(r) for r in self.conn.execute(

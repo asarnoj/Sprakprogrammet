@@ -781,6 +781,74 @@ kräver.
 dagens arbete varje dag. Missas dagar växer arbetsbördan, och tidsmodellen svarar med
 färre nya kort (5.5).
 
+#### Dagsplanen: vilken mening som bär vilket kort (avgjort 2026-09-21)
+
+Att bestämma dagens KORT räcker inte. Villkor 8 i 6.1 låter en källmening ställas en
+gång per dag, så materialet FÖRBRUKAS medan dagen går: ett kort som var prövbart på
+morgonen kan vara oåtkomligt på eftermiddagen. Passet lade därför upp varje övning för
+sig och tog slut mitt i — fyra presenterade ord gick inte att pröva alls, och dagen
+förklarades klar med fulla högar.
+
+Planen läggs i stället före passet och är en TILLDELNING: en lektion och en egen
+introövning per mönsterkort, och egna meningar reserverade åt huvuddelen. Tre saker
+följer av att den ska hålla:
+
+- **Ordförrådet är ett val, inte ett utfall.** Varje ord en mening använder och
+  användaren inte kan är ett kort dagen måste betala för (5.4, 5.6). Utan ett val tog
+  planen de meningar generatorn råkade räkna upp först, och de kommer substantiv för
+  substantiv: femton meningar blev femton substantiv och ETT verb. Ett återkombinerande
+  ordförråd ger lika många meningar för en bråkdel. Hur många ord per ordklass följer
+  av vad planen ska räcka till: med c ordklasser i meningen och m ord i varje finns m^c
+  källmeningar, och planen behöver 2P åt lektionerna och övningarna plus m åt
+  huvuddelen, alltså det minsta m där **m^c − m ≥ 2P**. Orden nomineras ur vad som
+  FAKTISKT går att bygga — nivå 1 har `bestämning/naken`, och då duger bara oräknebara
+  substantiv — och väljs sedan på frekvens (5.6).
+- **Flera kort får dela lektionsmening.** Villkor 8 gäller meningar som STÄLLS;
+  lektionen visar. Samma mening gås igenom en gång per kort, med olika kort markerat
+  varje gång, och det är dessutom den introduktion som bygger upp steg för steg. Egna
+  lektionsmeningar kostade lika många källmeningar som övningarna och gjorde fyra av
+  dagens tretton kort omöjliga att införa.
+- **Huvuddelens täckning reserveras FÖRE övningarna.** Introfasen bokför ingenting
+  (5.4), så ett kort blir infört först genom att gå rätt i en mening, och dagen tar
+  slut när högarna är tomma (5.3). Täckningen är det hårda kravet och övningarna har
+  många meningar att välja på; matchades övningarna först åt de upp just de meningar
+  som bar ett ord ingen annan mening bar.
+
+- **Materialet räknas per ÖVNINGSFORM, inte per kortfamilj** (avgjort 2026-09-26).
+  Tabellen i 5.4 delar korten efter hur de övas: ett innehållsord får en glosa, som inte
+  kräver någon mening, medan regler, ändelser, oregelbundna former OCH funktionsord får
+  en mening och därför behöver eget material. Räkningen använde `familj != "ord"`, och ett
+  funktionsord har familjen «ord»: nivån `ord:demonstrativ_fjärran` fick noll
+  mönsterkort, taket en mening, och den enda meningen gick till lektionen. Kursen
+  stannade där.
+- **Ett infört ord är material bara om det går att använda på nivån.** Införda ord kostar
+  ingenting och är dessutom bättre lånekort (5.4), men de får inte räknas utan att
+  byggvillkoren tillfrågats: nivå 2 kräver artikel, alltså ett RÄKNEBART substantiv, och
+  dag ett lär bara ut oräknebara eftersom nivå 1 kräver naken fras. Fyra substantiv fanns,
+  talet stämde, och ändå fanns bara fem källmeningar i hela nivån.
+- **Uppgiften märks med det kort den TILLDELATS.** Planen bygger uppgiften när
+  källmeningen först dyker upp och märker den med det kort som råkade samla in den;
+  matchningen ger den sedan till ett annat. Följer märkningen inte med läser bedömningen
+  i 5.4 ett annat korts betyg, och kan godkänna en övning vars eget kort föll.
+- **Tilldelningen sprids över orden.** En matchning får välja fritt bland lika goda
+  meningar, och den fria tog den första varje gång: tre av fem introövningar hamnade på
+  `passa`, som då hade EN mening kvar i huvuddelen medan `sitta` hade fyra. Föll `passa`
+  fanns ingen mening att ta om det med. Hur många omtag en dag behöver går inte att veta
+  i förväg — det beror på användaren — men ett ord vars meningar alla är förbrukade har
+  garanterat noll, och spridningen är dagens enda reserv mot fel.
+
+Ett kort planen inte kan ge en mening hamnar i karantän (3.10). **Dag ett ska karantänen
+vara tom** — annars går kursen inte att börja. Att dagens meningar för ett INFÖRANDE tar
+slut är däremot ingen karantän: villkor 8 gäller bara i dag, och kortet börjar om i
+morgon.
+
+**Meningsfasen väljer ur planen, inte ur generatorn.** Planen har redan räknat upp
+dagens meningar, och att fråga generatorn om samma meningar kostade 18 s per val — efter
+ETT felsvar faller flera kort på en gång och ska alla ha var sin ny mening, så passet
+kröp i minuter mellan övningarna. Hela stegen i 6.3 tas därför inom planen först. Mätt
+på nivå 1: **median 0,01 s per val** mot 10–20 s. Sökningen finns kvar som sista ord,
+eftersom planen samlar in med ett tak och inte är garanterat uttömmande.
+
 ### 5.2 Planen är en fråga, inte en tabell
 
 | | Vad det är | Innehåller |
@@ -855,6 +923,26 @@ rak — och får två exempel; en regel med tre utfall får tre.
   alla blir rätt är så hög som möjligt. Ett mönsterkort presenteras alltså med ett ord
   användaren kan väl, så att bara mönstret är nytt. Senare *prövas* det helst på ett nytt
   ord (6.4).
+
+  **«Kan väl» mäts i två steg, och ordningen mellan dem följer av `p`:s platshållare**
+  (avgjort 2026-09-26). Måttet på vad användaren kan är FSRS:s retrievability — stability
+  gånger tiden sedan senaste mötet, alltså «repeterat länge, ofta rätt, nyligen
+  genomgått». Det behöver inte hittas på. Men ett kort som bara är PRESENTERAT i dag har
+  inget FSRS-tillstånd, och `p` ger då retentionsmålet (5.1): samma tal som ett kort
+  användaren drillat i en vecka, och ofta ett HÖGRE, eftersom det drillade kortets R har
+  hunnit sjunka. Sorterat på `p` ensamt vinner därför orden som glosades för tre minuter
+  sedan, och övningen prövar två nya saker i stället för en. Nyckeln är alltså
+
+      (antalet OINFÖRDA lånekort, sedan risken ur `p`)
+
+  Infört betyder att kortet gått rätt i en mening (5.1) — det är ett mått vi har, och det
+  skiljer det prövade från det oprövade. **Dag ett är ingenting infört**, så båda talen är
+  lika för varje mening, och då finns inget bättre än det som just gicks igenom.
+
+  Satsen är ett MAXIMUM, inte ett golv. Finns inget infört ord som duger är ett nytt det
+  bästa som finns, och nivå 2 är just så: den kräver ett räknebart substantiv, och nivå 1
+  lär bara ut oräknebara eftersom den kräver naken fras. Mätt över åtta nivåer: 15 okända
+  lånekort med regeln mot 18 utan, och hela skillnaden ligger på nivå 2 — 4 mot 7.
 - **Regelns mening byggs som alla andra meningar** (6.4). Introfasen har ingen egen
   generator.
 
@@ -862,8 +950,33 @@ rak — och får två exempel; en regel med tre utfall får tre.
 i introfasens kö. Fel på lånekorten spelar ingen roll, utom när de döljer det nya kortet
 (R5); då görs övningen om.
 
+**Att döljas syns på att målet självt faller** (avgjort 2026-09-26). Rättningen knyter
+varje avvikelse till de kort som bestämde ordet (7.3), så ett lånefel som rör målets
+positioner fäller målet. Villkoret «målet gick rätt» är därför båda reglerna ovan på en
+gång, och behöver inget eget mått. Bedömdes hela meningen föll en övning som gjort sitt:
+«En stad faller.» besvarad «A city fall.» hade artikeln — övningens kort — helt rätt men
+saknade verbets `-s`, och åtta kort föll ur dagen för ett fel på ett lånekort. Sist i en
+TOM kö är dessutom samma fråga igen, direkt, med facit i minnet; finns inget annat kort
+att lägga emellan pausas fasen i stället.
+
 **Ordningen inom dagen följer kraven.** Ett kort presenteras efter de kort det kräver, så
 att lånekorten redan är införda eller presenterade.
+
+**Kravordningen räcker hela vägen, och friheten som blir över är verkligt fri**
+(avgjort 2026-09-22). Regeln ovan är en PARTIELL ordning, och det som fyllde resten var
+slump: introfasen frågade kort för kort «vilka av mina ord är inte utlärda än» och fick
+3, 1, 1, 0, 0 plus en svans på 1. Orden kom i klumpar mellan strukturkorten, och några
+lärdes ut sist av allt. Planen (5.1) visste hela tiden varenda ord dagen behövde — frågan
+ställdes lokalt om något som var känt globalt, vilket är samma hål som gav materialbristen
+och de långsamma valen.
+
+Ställd om hela planen ger regeln en ordning av sig själv, i tre lager:
+
+| Frihet | Vad som avgör den |
+|---|---|
+| innehållsord kontra mönsterkort | kraven. Innehållsordets övning är en GLOSA, och en glosa kräver ingen mening — kortet kräver alltså ingenting och går alltid först. Mönsterkortets övning är en mening, som kräver sina ord. Mätt på engelskan: av 119 ordkort som kräver en regel är 119 FUNKTIONSORD, som enligt tabellen ovan också övas med en mening, och noll innehållsord |
+| mellan orden | den nya täckningen (5.6) — i version ett ordfrekvensen. Var bokstavsordning efter svensk konceptnyckel, samma slump som lade `he` på nivå 79 |
+| mellan nivåns mönsterkort | ingenting, och det är riktigt: en nivå ÄR en starkt sammanhängande komponent (4.1), så korten kräver varandra ömsesidigt och ingen ordning kan respektera kraven. Nivå 1 har 20 krav mellan sina 5 kort. Därför paketet (3.10) |
 
 **Dag ett.** Den första nivån är de kort en enkel mening kräver (4.2), och de väljs som
 ett paket (3.10). Lånekorten är då de kort som presenterats tidigare samma dag. Passet
@@ -929,6 +1042,49 @@ vinner ofta, eftersom de ger mycket täckning (5.6).
 
 **Innan användarens egen historik finns** används FSRS standardparametrar och tiderna
 ur den gamla loggen (6.3), tills historiken räcker för att ersätta dem.
+
+#### Byggd 2026-09-27 — `passet/tid.py`
+
+**`k(a)` är ett väntevärde, räknat med HOPSLAGNA tillstånd.** Varje repetition grenar
+sig — rätt med sannolikhet R, fel med 1 − R — så en exakt uppräkning växer som 2^n. Att
+i stället gallra de minsta grenarna är fel åt farligt håll: de grenar som faller ofta är
+just de som ger många repetitioner, så gallringen underskattar arbetet och släpper in
+FLER nya kort. Mätt: gallring vid 1e-6 gav 7,88 repetitioner på ett år mot den gamla
+modulens uppmätta 8,4, och att skärpa gränsen slutade konvergera innan den blev rätt.
+Lösningen är att tillstånd i samma ruta räknas som ett; då är antalet levande tillstånd
+bundet av rutnätet. Upplösningen är mätt fram — en dubblering flyttar årssumman under en
+promille — och profilen möter den gamla Monte Carlo-mätningen: **3,685 repetitioner
+första månaden mot 3,7, och 8,37 första året mot 8,4.**
+
+**Växelkursen är mätt, och 6.3:s påstående höll.** `ordbok/verktyg/meningstidsmätning.py`
+räknar fram meningens kostnad ur den gamla loggen: **sekunder = 13,4 + 2,8 × kort**. Den
+fasta kostnaden är alltså fem gånger kortets, vilket är oberoende bekräftelse på varför
+arbetet räknas i meningar. Mätpunkterna är inte monotona vid den urvalsstorleken, så
+formen tas ur 6.3:s eget påstående — «den fasta kostnaden per mening dominerar» — och
+anpassningen mäter dess två tal.
+
+**Horisonten måste gå förbi slutdagen**, vilket är en rättelse av formeln ovan: ett kort
+kostar arbete i över ett år, så arbetsbördan fortsätter efter sista införandet. Men den
+bär inte talet, och det ska stå rätt: den korta horisonten ger 30 kort vid tjugo minuter
+mot 27 med den hela, eftersom dagarna efter slutdagen aldrig binder. **Det som tämjer
+tempot är introduktionskostnaden** — utan den gav en timme om dagen 265 nya kort och en
+kurs på sex dagar.
+
+**Glosfasens tid var hårdkodad till noll** fram till i dag, så 5.5:s «tid per introövning,
+med omtag» gick inte att mäta för ord. Tills de mätta raderna finns används
+introövningens kostnad för båda: en övning är en hel mening och en glosa ett ord, så det
+är en övre gräns — riktningen 5.5 kräver.
+
+**Grinden.** Budgeten är n plus det sparade, och ett paket tas helt eller inte alls
+(3.10), så ett paket som inte ryms väntar tills det gör det. Mätt på engelskans 951
+kort: fem minuter om dagen ger fyra nya kort och nivå 1:s paket på sju ryms inte — det
+sparas. Tio minuter ger tio kort och 96 dagar, tjugo ger 27 och 36 dagar.
+
+Tempot växer FASTARE än tiden, och det är riktigt: den bindande dagen är sista
+införandedagen, och en kortare kurs hinner bara samla en del av kortets livstidskostnad
+innan dess — 56 % vid tjugo minuter, 41 % vid sextio. Resten sprids över året efteråt och
+ryms. Ett prov som krävde linjäritet fällde därför en korrekt modell och fick skrivas om
+till det som verkligen är påståendet: **ingen dag spränger budgeten.**
 
 ### 5.6 Vilka nya kort: införandeordningen
 
@@ -1026,6 +1182,27 @@ nästa nivå, med mönsterkorten före orden.
   och den här noteringen faller bort. Ingen annan del behöver ändras: kandidatmängden är
   det enda som är avsmalnat.
 
+**Täckningen ordnar NIVÅERNA, inte orden inom en nivå** (avgjort 2026-09-26). Löftet
+ovan — att täckningen ersätter både urvalet och ordningen — visade sig gälla halvt.
+För nivåordningen vann den stort (`ordningsmätning.py`). För ORDVALET inom en bestämd
+nivå ger den ingenting, och det är mätt: `ordbok/verktyg/ordvalsmätning.py` jämför tre
+ordningar på samma mått, engelskan över sex nivåer och 34 kort.
+
+    ordfrekvens          17,19 %
+    total användning     17,07 %
+    närsynt täckning     16,97 %
+
+Skälet står i 5.6 själv: «ett kort som kräver något som inte är infört ger ingenting
+ensamt». Ett ords värde ligger i alla dess former, och de flesta cellerna är inte
+upplåsta än — så «ny täckning nu» mäter fel horisont, medan frekvensen fångar hela.
+Kriteriet hör alltså till de kort som GRINDAR: en regel låser upp olika mycket, och där
+avgör täckningen. Inom en nivå konkurrerar orden om samma meningsformer, och då skiljer
+bara hur ofta språket använder dem.
+
+**Kvar av noteringen är därför bara KANDIDATMÄNGDEN**, inte ordningen: att låta dagen
+välja bland varje upplåst kort i stället för bara nästa nivås. Det kräver att dagen har
+en budget att fördela, alltså tidsmodellen (5.5).
+
 ### 5.7 Två rattar
 
 > **Tidsratten bestämmer vad dagen innehåller. Svårighetsratten bestämmer hur
@@ -1068,6 +1245,25 @@ En mening får ställas endast om:
 
 Två regler kan kräva former som inte går ihop. Då är meningen inte svår utan
 omöjlig att bygga, och sökningen fortsätter.
+
+**Villkor 8 gallrar på KÄLLTEXT, och sökningen får inte gallra på kort** (avgjort
+2026-09-21). Generatorn har två sparsamheter som båda antar att en mening per
+korttäckning räcker: `per_mall` tar en mening per mall, och `grupperat` prövar ett ord
+per kortsignatur — `stå`, `sitta`, `passa` och `falla` är alla regelbundna verb och
+blev ETT ord. Båda är rätt tills just den meningen är förbrukad, och då blir sökningen
+blind: var «Kärlek står.» ställd fanns ingen mening alls för `kärlek`, fast fyra stod
+oställda i dagens plan. Passet svarade att materialet var slut med fulla högar.
+
+Därför: taket per mall är antalet ställda meningar plus en — fler kan inte vara
+uteslutna — och grupperingen körs först för farten, men ett ogrupperat svep följer när
+det grupperade uteslöt något på källtexten. Samma signatur ger samma kort och därmed
+samma risk och samma åtskillnad, så det ogrupperade svepet kan bara hitta en annan
+KÄLLTEXT; uteslöts ingenting behöver det inte köras.
+
+**Reservsteg 1 lär inte ut.** Ensamövningen (6.3) byggs bara av kort användaren redan
+mött. Fick den fylla ut med nya ord dök outlärda ord upp mitt i meningsfasen —
+«Kärlek ligger.», med `ligga` aldrig visat — och det blev ett kort dagen aldrig
+planerade för. Att lära ut ord är introfasens sak, med glosan först (5.4).
 
 ### 6.2 Urvalsregeln
 
@@ -1558,6 +1754,30 @@ det. Rättaren går igenom de tolkningar som stämmer med svaret, i två steg:
    flera kort som felat oberoende av varandra. `ett stort hus` → `en stor hus`
    avviker på två ställen, och genuskortet förklarar båda.
 
+**Tre saker som steg 1 vilar på, och som stod underförstådda** (avgjort 2026-09-26).
+Utan dem var rättningen rent positionell — varje kort som bestämde ett avvikande ord föll
+— och «Time suits.» besvarad «Time fits.» fällde FEM kort, varav fyra hade gjort allt
+rätt: ordföljden, kongruensen, tempus och ändelsen. Ett ordslarv skrev alltså falska
+FSRS-betyg på grammatiken.
+
+- **Ordkortet gäller LEXEMET, inte den ställda formen.** Ett svar är klarat om det är en
+  form reglerna kan bygga av rätt lexem (3.3), som glosan. Krävdes exakt formen föll ordet
+  för en glömd ändelse — och då ograderade stegen ändelsekortet, så ingen bar felet.
+- **«Fel plats» betyder att ordet flyttat, inte att det är felstavat.** Regeln som
+  placerade ett ord får skulden bara för ett ord på fel plats, och ett ord har flyttat när
+  dess sträng finns i svaret men inte där den skulle, eller inte finns alls. «Time fits»
+  rör inte ordföljden; «stands Time» gör det.
+- **Ett formkort ograderas bara när något ANNAT kort bär felet.** Stegen förutsätter att
+  det finns ett beslut att lägga skulden på, och ibland finns det inte: engelskans «how
+  many books» blir plural av frågedeterminantens krav, inte av något `val`-kort.
+  Ograderades pluraländelsen ändå föll ingenting, och «how many book …» blev ett perfekt
+  svar. Då är formkortet det enda kort som kan bära felet. **Rättningen får aldrig tiga.**
+
+Punkt 3 i stegen — att skilja «en form som inte finns» från «den form ett annat utfall
+hade gett» — kräver att meningen renderas om, alltså entydighetsfiltret (6.5). Tills det
+finns graderas cellbesluten positionellt, och 7.3 säger själv vad det kostar: «har
+användaren i själva verket valt rätt men glömt ändelsen får valet skulden».
+
 **Vad «förklara» betyder beror på korttypen:**
 
 | Kort | Förklarar avvikelserna när |
@@ -1883,9 +2103,9 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     5a  entydighetsfiltret och märkningen  kräver 2; varianterna och källmeningens märkning (6.5); behövs av 4 och 5
     5   sökningen                          kräver 5a och 3c; värdet, budgeten, villkoren 6–8 i 6.1; svarstiden mäts med en tidig prototyp innan steg 6–9 byggs
     5b  aspektkrav på koncept              parallellt (6.5)
-    6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6); passet/: två faser, glosan för innehållsord och meningen för funktionsord (5.4), ensamövningen som reservsteg 1 (6.3), villkor 1, 4, 5, 6 och 8 i 6.1; tidsmodellen och täckningen kvar, och villkor 3 och 7 kräver 5a
+    6   dagspasset och införandet          kräver 4 och 5; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6); passet/: två faser, glosan för innehållsord och meningen för funktionsord (5.4), ensamövningen som reservsteg 1 (6.3), villkor 1, 4, 5, 6 och 8 i 6.1; tidsmodellen byggd (`passet/tid.py`), täckningen ordnar nivåerna men inte orden inom en nivå (5.6); villkor 3 och 7 kräver 5a
     7   urvalet                            kräver 6; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
-    8   rättningen                         kräver 5; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4); rattning/: diffen per kort och omrättningen byggda, parningen mot flera varianter och prerekvisiten kvar
+    8   rättningen                         kräver 5; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4); rattning/: diffen per kort, omrättningen och prerekvisitstegen byggda; parningen mot flera varianter kvar, liksom stegens tredje punkt och minsta förklaring, som båda kräver 5a
     9   gränssnittet                       kräver 6–8; introövningarna (5.4), meningen och rättningen med omrättning och flaggor (7.2), knappen för nya nivåer (4.4), inställningarna för tid, dygnsgräns och svårighet (5.1, 5.7)
     9b  den gamla kärnan raderas           kräver 9; när det nya passet går att använda från början till slut (8.1); skarven i Uppslag.ordning tas bort
     P1  lektionerna                        parallellt — punkt 10
@@ -2017,6 +2237,8 @@ eller av mätningar, utom:
 | `kvant_båda` kräver bestämd form i svenskan — "båda **böckerna**" | ingen kolumn bär den egenskapen, så konceptet hålls utanför kartan | en kolumn som säger att bestämningen tvingar fram bestämd form, eller samma sak som ett `numeruskrav` för species |
 | `alla` och `några` tar singular framför ett ORÄKNEBART huvudord — "all mat", "some water" | `numeruskrav` är en flat bitmask och kan inte säga "plural om räknebar"; fraserna går inte att bygga | villkora kravet på `räknebar`, eller lämna det — mängden sägs med en naken fras |
 | engelskan kan inte bygga "all the books" | en bestämd kvantifierad fras kräver ett förbestämningsled som inte finns i specen; renderaren vägrar hellre än tappar bestämdheten | ett förbestämningsled i `Nominalfras`, om något kort behöver det |
+| substantivets NUMERUS ägs av inget kort: det kommer ur meningens innehåll, inte ur ett `val`-beslut | ett numerusfel går inte att attribuera. «Time suits.» besvarad «times suits.» fäller `regel:val/bestämning/naken` — den nakna frasens regel, som satt i luckan före ordet — eftersom «times» är en FORM av `tid` och ordkortet därför klarar sig (7.3). Skulden landar, men på fel kort | antingen ett kort för numerusvalet, eller att attributionen får säga «ingen bär detta» i stället för att ta närmaste granne |
+| nio verb ställer inget semantiskt krav på sitt subjekt: `pos_stå`, `pos_sitta`, `pos_ligga`, `gen_passa`, `gen_skydda`, `gen_växa`, `per_lukta`, `per_smaka`, `eko_v_kosta` (de elva övriga utan krav — modalverben, kopulorna, `börja` — tar med rätta vilket subjekt som helst) | meningarna är grammatiska men befängda: «Water sits.», «Love suits.» Dag ett använder tre av dem, så det är det första en användare ser | en `tagg` på subjektsplatsen i deras mönster (§11 i `docs/BITMASK.md`). Koncepten delas av alla sju språken, så ändringen gäller alla |
 
 ---
 

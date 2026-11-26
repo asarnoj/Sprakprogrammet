@@ -108,7 +108,13 @@ def introfasen_bokför_ingenting(p: Passet, data: Kursdata) -> list[str]:
 
 
 def introövningen_har_ett_mål(p: Passet) -> list[str]:
-    """5.4. Bara det nya kortet är mål; resten är lånekort."""
+    """5.4. Bara det nya kortet är mål; resten är lånekort.
+
+    Prövas på BÅDA vägarna: `presentera`, och dagsplanens tilldelning. Planen
+    bygger uppgiften när källmeningen först dyker upp och märker den med det
+    kort som råkade samla in den; matchningen ger den sedan till ett annat.
+    Följer märkningen inte med läser bedömningen i 5.4 fel korts betyg.
+    """
     brister = []
     for kort in p.kandidater()[:3]:
         uppgift = p.presentera(kort, paket=p.nästa_nivå())
@@ -117,6 +123,15 @@ def introövningen_har_ett_mål(p: Passet) -> list[str]:
         if uppgift.mål != frozenset({kort}):
             brister.append(f"{kort}: introövningen hade målen "
                            f"{sorted(map(str, uppgift.mål))}")
+    plan = p.dagsplan()
+    for kort, uppgift in plan.introövningar:
+        if uppgift.mål != frozenset({kort}):
+            brister.append(f"{kort}: planens introövning «{uppgift.källtext}» "
+                           f"är märkt {sorted(map(str, uppgift.mål))}")
+    for kort, uppgift in plan.lektioner.items():
+        if uppgift.mål != frozenset({kort}):
+            brister.append(f"{kort}: planens lektion «{uppgift.källtext}» "
+                           f"är märkt {sorted(map(str, uppgift.mål))}")
     return brister
 
 
@@ -183,6 +198,27 @@ def paketet_införs_helt(p: Passet, data: Kursdata) -> list[str]:
              f"paketet föll: {sorted(map(str, infört))}"] if infört else [])
 
 
+def _introfasen(p: Passet, plan) -> None:
+    """Gå igenom introfasen som passet gör den (`passet/__main__._introfas`).
+
+    Proven körde förut en introfas som inte längre finns: de presenterade
+    mönsterkorten men aldrig ORDEN. Då var ingenting tillåtet att bygga av,
+    och ensamövningen — som inte längre hittar på ord — kunde inte svara.
+    Vägen genom dagen ska prövas som den går.
+    """
+    for kort, övning in plan.introövningar:
+        lektion = plan.lektioner.get(kort)
+        for glosa in p.glosorna(*[u for u in (lektion, övning) if u is not None]):
+            p.data.presentera(glosa.kort)
+        if lektion is not None:
+            p.ställ(lektion, "lektion")
+        p.ställ(övning, "intro")
+        p.klarat_introövningen(kort)
+    for glosa in p.glosorna(*plan.meningsfasen):
+        p.data.presentera(glosa.kort)
+    p.uppdatera()
+
+
 def dag_ett_går_att_komma_igenom(p: Passet, data: Kursdata) -> list[str]:
     """6.3: budgeten kan aldrig göra ett kort onåbart.
 
@@ -190,13 +226,9 @@ def dag_ett_går_att_komma_igenom(p: Passet, data: Kursdata) -> list[str]:
     varje mening med flera mål ogiltig. Utan ensamövningen (reservsteg 1)
     fanns då ingen uppgift alls, och passet gick inte att komma igenom.
     """
-    nivån = p.nästa_nivå()
-    for kort in p.kandidater():
-        uppgift = p.presentera(kort, paket=nivån)
-        if uppgift is not None:
-            p.ställ(uppgift, "intro")
-    p.uppdatera()
-    utan = [k for k in sorted(p.svaga(), key=str) if p.uppgift(k) is None]
+    plan = p.dagsplan()
+    _introfasen(p, plan)
+    utan = [k for k in sorted(p.svaga(), key=str) if p.uppgift(k, plan) is None]
     return ([f"{len(utan)} svaga kort utan uppgift efter introfasen: "
              f"{sorted(map(str, utan))}"] if utan else [])
 
@@ -237,20 +269,18 @@ def korten_införs_när_de_går_rätt(p: Passet, data: Kursdata) -> list[str]:
     räknade oinförda kort. Provet går hela vägen: presentera, svara RÄTT,
     och kräv att korten är inne.
     """
-    nivån = p.nästa_nivå()
-    for kort in p.att_presentera():
-        uppgift = p.presentera(kort, paket=nivån)
-        if uppgift is not None:
-            p.ställ(uppgift, "intro")
-    p.uppdatera()
+    plan = p.dagsplan()
+    _introfasen(p, plan)
     if p.att_presentera():
         return [f"{len(p.att_presentera())} kort kvar att presentera efter "
                 f"introfasen — den tar aldrig slut"]
-    for _ in range(12):
+    # Dagen tar slut när högarna är tomma (5.3). Ett varv per kort i planen
+    # räcker när varje svar är rätt; behövs fler är något fel.
+    for _ in range(len(plan.kort)):
         svaga = sorted(p.svaga(), key=str)
         if not svaga:
             break
-        uppgift = p.uppgift(svaga[0])
+        uppgift = p.uppgift(svaga[0], plan)
         if uppgift is None:
             break
         uppgift = p.ställ(uppgift)
@@ -258,9 +288,13 @@ def korten_införs_när_de_går_rätt(p: Passet, data: Kursdata) -> list[str]:
         if not rättning.rätt:
             return [f"ett svar lika med facit underkändes: «{uppgift.facit}» "
                     f"fällde {sorted(map(str, rättning.fel))}"]
-        p.bokför(uppgift, rättning)
-    return ([] if data.införda() else
-            ["inget kort infördes trots att varje svar var lika med facit"])
+        p.bokför(uppgift, rättning, paket=p.paket())
+    # Dagen slutar när högarna är tomma (5.3), och med bara rätta svar ska
+    # varje kort i planen vara inne.
+    kvar = plan.kort - data.införda()
+    return ([f"{len(kvar)} av planens {len(plan.kort)} kort infördes inte "
+             f"trots att varje svar var lika med facit: "
+             f"{sorted(map(str, kvar))[:6]}"] if kvar else [])
 
 
 def orden_lärs_ut_före_mönstret(p: Passet, data: Kursdata) -> list[str]:
@@ -269,20 +303,27 @@ def orden_lärs_ut_före_mönstret(p: Passet, data: Kursdata) -> list[str]:
     Introövningen för SVO byggdes med «Tid står.», där varken `tid` eller
     `står` någonsin visats: tre okända saker prövades och en av dem kallades
     mål. Innehållsorden ska ha sin glosa först.
+
+    Prövas på den väg passet FAKTISKT går: dagsplanens lektion och övning,
+    och `glosorna` som introfasen läser dem ur.
     """
-    nivån = p.nästa_nivå()
-    kort = p.att_presentera()[0]
-    steg = p.introsteg(kort, paket=nivån)
-    if steg is None:
-        return ["ingen övning gick att bygga"]
-    glosor, uppgift = steg
+    plan = p.dagsplan()
+    if not plan.introövningar:
+        return ["dagsplanen är tom"]
+    brister = []
     kända = data.införda() | data.presenterade()
-    lärda = {g.kort for g in glosor}
-    okända = [k for k in uppgift.träff.kort - kända - lärda - {kort}
-              if p.glosa(k) is not None]
-    return ([f"{kort}: övningen har {len(okända)} olärda innehållsord "
-             f"{sorted(map(str, okända))} som ingen glosa täcker"]
-            if okända else [])
+    for kort, uppgift in plan.introövningar:
+        lektion = plan.lektioner.get(kort)
+        glosor = p.glosorna(*[u for u in (lektion, uppgift) if u is not None])
+        lärda = {g.kort for g in glosor}
+        orden = set(uppgift.träff.kort) | (set(lektion.träff.kort) if lektion else set())
+        okända = [k for k in orden - kända - lärda - {kort}
+                  if p.glosa(k) is not None]
+        if okända:
+            brister.append(f"{kort}: övningen har {len(okända)} olärda "
+                           f"innehållsord {sorted(map(str, okända))} "
+                           "som ingen glosa täcker")
+    return brister
 
 
 def presenterat_betyder_klarat(p: Passet, data: Kursdata) -> list[str]:
@@ -321,7 +362,17 @@ def dagsplanen_är_genomförbar(p: Passet, data: Kursdata) -> list[str]:
     if delade:
         brister.append(f"samma mening i båda faserna: {sorted(delade)}")
 
-    planerade = {k for k, _ in plan.introövningar}
+    # Lektionen VISAR facit. Ställs samma mening sedan mäter den minnet av
+    # facit och inte kortet — samma skäl som villkor 8 i 6.1 ger.
+    lästa = {u.källtext for u in plan.lektioner.values()}
+    ställda = set(texter) | {u.källtext for u in plan.meningsfasen}
+    if lästa & ställda:
+        brister.append(f"en läst lektionsmening ställs: {sorted(lästa & ställda)}")
+
+    # ORDEN RÄKNAS MED, inte bara mönsterkorten. Ett presenterat ord ligger
+    # kvar i högen tills det gått rätt i en mening (5.1), så ett ord som
+    # ingen mening i huvuddelen bär gör att dagen aldrig tar slut (5.3).
+    planerade = plan.kort
     i_karantän = {k for k, _ in plan.karantän}
     utan = [k for k in p.kandidater()
             if k not in planerade and k not in i_karantän
@@ -345,6 +396,116 @@ def dagsplanen_är_genomförbar(p: Passet, data: Kursdata) -> list[str]:
     # Julius frågade om när räknaren sa fem och passet lärde ut tolv.
     if not plan.orden or not (plan.orden <= plan.kort):
         brister.append("ordförrådet ingår inte i dagens kortmängd")
+
+    # DAG ETT FÅR INGEN KARANTÄN. «Karantänen är felhantering, inte
+    # förlåtelse» (3.10): ett kort där är en felrapport som ska leda till en
+    # rättelse, inte ett läge planen får nöja sig med. På dag ett betyder den
+    # dessutom att kursen inte går att börja. Kursen här är ny, så mängden
+    # ska vara tom.
+    if plan.karantän:
+        brister.append("karantän redan dag ett: " + ", ".join(
+            f"{k} ({orsak})" for k, orsak in plan.karantän))
+    return brister
+
+
+def meningen_använder_bara_tillåtet(p: Passet, data: Kursdata) -> list[str]:
+    """6.1 punkt 1 och 5.1. En mening får bara använda infört eller presenterat.
+
+    Introfasen KAN pausa: ett kort som inte går rätt blir inte presenterat.
+    Dagsplanens meningar är byggda i förväg, av det planen TÄNKTE presentera,
+    och gick därför förbi villkoret helt — en körning införde 13 kort men hade
+    presenterat 12, alltså ett kort användaren aldrig fått se.
+
+    Provet presenterar bara HALVA planen, som en pausad introfas, och kräver
+    att ingen uppgift då använder resten.
+    """
+    plan = p.dagsplan()
+    if not plan.introövningar:
+        return ["dagsplanen är tom"]
+    halva = sorted(plan.kort, key=str)[:len(plan.kort) // 2]
+    for k in halva:
+        data.presentera(k)
+    p.uppdatera()
+    tillåtna = data.tillåtna()
+    brister = []
+    for kortet in sorted(p.svaga(), key=str):
+        uppgift = p.uppgift(kortet, plan)
+        if uppgift is None:
+            continue
+        otillåtna = uppgift.träff.kort - tillåtna - {kortet}
+        if otillåtna:
+            brister.append(f"«{uppgift.källtext}» använder {len(otillåtna)} "
+                           f"opresenterade kort: {sorted(map(str, otillåtna))}")
+    return brister
+
+
+def _oinförda_lån(plan, införda, nivå) -> int:
+    """Hur många lånekort i planens introövningar användaren INTE kan.
+
+    Nivåns egna kort räknas inte: de kräver varandra (4.1) och införs som
+    paket (3.10), så de går inte att välja bort.
+    """
+    return sum(1 for k, u in plan.introövningar for x in u.träff.kort - {k}
+               if x not in införda and x not in nivå)
+
+
+def lånekorten_är_de_kända(p, data) -> list[str]:
+    """5.4. «Lånekorten väljs så att sannolikheten att alla blir rätt är så hög
+    som möjligt — ett mönsterkort presenteras med ett ord användaren kan väl, så
+    att bara mönstret är nytt.»
+
+    SATSEN ÄR JÄMFÖRANDE, inte ett golv, och det är mätt fram. «Så hög som
+    möjligt» är ett maximum: finns inget infört ord som duger är ett nytt det
+    bästa som finns. Nivå 2 är just så — den kräver ett RÄKNEBART substantiv,
+    och dag ett lär bara ut oräknebara, eftersom nivå 1 kräver naken fras. Ett
+    prov som krävde noll okända lånekort där fällde alltså koden för att
+    verkligheten inte erbjöd något bättre.
+
+    Kravet är därför: vikten får aldrig göra det sämre, och där det finns något
+    att välja på ska den göra det bättre. Mätt över åtta nivåer: 15 okända
+    lånekort med vikten mot 18 utan, och hela skillnaden ligger på nivå 2
+    (4 mot 7). Dag ett är noll mot noll — då finns ingenting att låna av, och
+    då har regeln ingenting att säga.
+
+    Prövas på första och andra nivån, för det är där skillnaden finns.
+    """
+    from sprakprog.passet import Passet as P
+
+    def två_nivåer() -> list[int]:
+        # Egen färsk kurs: jämförelsen ska börja från samma läge båda gångerna.
+        with tempfile.TemporaryDirectory() as mapp:
+            q, d = _passet(Path(mapp) / "lån.db")
+            ut = []
+            for _ in range(2):
+                nivå, införda = q.nästa_nivå(), set(d.införda())
+                plan = q.dagsplan()
+                if not plan.introövningar:
+                    break
+                ut.append(_oinförda_lån(plan, införda, nivå))
+                for k in plan.kort:
+                    d.presentera(k)
+                q.uppdatera()
+                for u in plan.meningsfasen:
+                    u2 = q.ställ(u)
+                    q.bokför(u2, q.rätta(u2, u2.facit, 1.0), paket=q.paket())
+                q.uppdatera()
+            return ut
+
+    med = två_nivåer()
+    gammal = P.lånevikt
+    P.lånevikt = lambda self, per_text: (lambda text, kort: ())
+    try:
+        utan = två_nivåer()
+    finally:
+        P.lånevikt = gammal
+
+    if len(med) != len(utan) or not med:
+        return [f"kunde inte jämföra: {med} mot {utan}"]
+    brister = [f"nivå {i + 1}: vikten gav {a} okända lånekort, utan den {b}"
+               for i, (a, b) in enumerate(zip(med, utan)) if a > b]
+    if not brister and med == utan:
+        brister.append(f"vikten ändrade ingenting: {med} i båda fallen — "
+                       "regeln är inte i bruk")
     return brister
 
 
@@ -361,6 +522,8 @@ INVARIANTER = [
     ("orden lärs ut före mönstret", orden_lärs_ut_före_mönstret, True),
     ("presenterat betyder klarat", presenterat_betyder_klarat, True),
     ("dagsplanen är genomförbar", dagsplanen_är_genomförbar, True),
+    ("meningen använder bara tillåtet", meningen_använder_bara_tillåtet, True),
+    ("lånekorten är de kända", lånekorten_är_de_kända, True),
 ]
 
 
@@ -387,7 +550,24 @@ def _falsifiera(mapp: Path) -> list[str]:
          (Passet, "_fritt_ord", lambda self, kort: kort.familj == "ord")),
         ("ensamövningen fanns inte",
          "dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True,
-         (Passet, "ensamövning", lambda self, kort: None)),
+         (Passet, "ensamövning", lambda self, kort, plan=None: None)),
+        # Ordförrådet var paketets egna ord och inget mer. Då finns en enda
+        # källmening — «Tid står.» — och fyra av fem nivåkort hamnade i
+        # karantän redan dag ett.
+        # Planens meningar är färdigbyggda; utan omprövningen av villkor 1
+        # släpps kort som introfasen aldrig hann presentera.
+        ("planens meningar prövades inte mot villkor 1",
+         "meningen använder bara tillåtet", meningen_använder_bara_tillåtet, True,
+         (Passet, "tillåten_mening", lambda self, uppgift, mål: True)),
+        # Märkningen följde inte med matchningen: uppgiften bar det kort som
+        # råkade samla in källmeningen.
+        ("planens uppgifter bar fel kort som mål",
+         "introövningen har ett enda mål", introövningen_har_ett_mål, False,
+         (Passet, "märk", lambda self, uppgift, kort: uppgift)),
+        ("ordförrådet räckte inte till fler meningar",
+         "dagsplanen är genomförbar", dagsplanen_är_genomförbar, True,
+         (Passet, "_ordförråd", lambda self, korten, tillåtna: frozenset(
+             k for k in self.paket() if k.familj == "ord"))),
     ]
     for i, (gammalt, invariant, fn, med_data, (klass, namn, ers)) in enumerate(fall):
         p, data = _passet(mapp / f"fals{i}.db")
