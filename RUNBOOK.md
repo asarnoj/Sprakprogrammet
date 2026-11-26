@@ -48,8 +48,18 @@ for m in ordbok/migrationer/*.sql; do sqlite3 sprak.db < "$m"; done   # efter VA
 (Migrationerna taggar ja-adjektivtyp, verbvalens och substantivsemantik —
 importen bygger om databasen från CSV och tappar taggningen, därav omkörningen.)
 
-(Om `sprak.db` redan följde med och `SELECT COUNT(*) FROM Koncept` ger 724 —
-hoppa över det här steget.)
+**Importsteget måste köras** även om `sprak.db` följde med. En medskickad
+databas kan vara byggd före ordklassen `Possessiv` lades till (2026-08-01) och
+saknar då de nio possessivkoncepten — körningen skulle tyst hoppa över dem.
+
+Kontroll efter import:
+
+```bash
+sqlite3 sprak.db "SELECT COUNT(*) FROM Koncept; SELECT COUNT(*) FROM Lexem WHERE koncept_id IN (SELECT id FROM Koncept WHERE ordklass='Possessiv');"
+```
+
+Förväntat: **733** koncept och **65** possessivlexem. Får du 724 och 0 är
+databasen för gammal — kör importen med `--återinitiera`.
 
 ## 4. Testa i liten skala först
 

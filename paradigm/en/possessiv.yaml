@@ -1,0 +1,34 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för engelska possessiver.
+
+    Ägarens person/numerus/genus är lexikalt (ett Koncept per ägare:
+    poss_1sg, poss_3sg_fem, …). Engelska possessiver kongruerar inte
+    med det ägda substantivet — inga genus-, numerus- eller kasusaxlar.
+
+    Den enda distinktionen är attributiv vs. självständig form:
+      my book   (attributiv — determinerare framför substantivet)
+      it's mine (självständig — ersätter hela nominalfrasen)
+
+    Dessa särskiljs med species-axeln: Obest = attributiv,
+    Best = självständig. Konventionen är gemensam för alla språk i
+    projektet och motiveras av att den självständiga formen tar bestämd
+    artikel i de romanska språken (le mien, el mío, il mio).
+
+    "his" och "its" är identiska i båda cellerna — två rader med samma
+    sträng, eftersom species är en IntEnum-axel och inte kollapsas.
+
+    Aktiva axlar: species.
+
+celler:
+  - id: obest
+    species: Obest
+    not: "Attributiv: my, your, his, her, its, our, their — 'my book'."
+
+  - id: best
+    species: Best
+    not: "Självständig: mine, yours, his, hers, its, ours, theirs — 'it's mine'."

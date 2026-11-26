@@ -82,6 +82,19 @@ Per slot-fil. Subjekt: io, tu, lui, lei, Lei, noi, voi, loro. Objekt
 (direkt): mi, ti, lo, la, ci, vi, li, le; indirekt: mi, ti, gli, le, ci, vi,
 gli. Följ cellbeskrivningarna i slot-filen.
 
+## Possessiv
+
+4 celler: m_sg, f_sg, m_pl, f_pl. Kongruensen gäller det ÄGDA substantivet
+— "suo" är både hans och hennes, och cellens genus syftar på det ägda.
+
+- mio/mia/miei/mie, tuo/tua/tuoi/tue, suo/sua/suoi/sue,
+  nostro/nostra/nostri/nostre, vostro/vostra/vostri/vostre.
+- **loro** är helt oböjligt — fyll alla fyra cellerna med "loro".
+- Observera det oregelbundna maskulina pluralet: miei, tuoi, suoi
+  (inte "mii").
+- Skriv **utan artikel** — renderaren sätter il/la/i/le. Attributiv och
+  självständig form är identiska i italienskan, därför ingen species-axel.
+
 ## Frågepronomen
 
 chi och cosa är oböjliga.

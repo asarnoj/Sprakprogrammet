@@ -95,6 +95,7 @@ def _ladda_instruktioner(språk: str, ordklass: str) -> str:
 @dataclass
 class Statistik:
     behandlade_lemman: int = 0
+    behandlade_lexem: int = 0   # ≥ lemman: flera lexem kan dela lemmasträng
     skrivna_celler: int = 0
     tomma_celler: int = 0       # LLM returnerade "" — OK för defektiva
     saknade_celler: int = 0     # LLM returnerade inte cell-ID alls
@@ -102,6 +103,7 @@ class Statistik:
 
     def skriv_ut(self) -> None:
         print(f"Lemman behandlade : {self.behandlade_lemman}")
+        print(f"Lexem skrivna     : {self.behandlade_lexem}")
         print(f"Celler skrivna    : {self.skrivna_celler}")
         print(f"Tomma (defektiva) : {self.tomma_celler}")
         print(f"Saknade (LLM-miss): {self.saknade_celler}")
@@ -337,55 +339,69 @@ def generera_former(
 
     instruktioner = _ladda_instruktioner(språk, ordklass)
 
-    # Hämta lexem från DB om ingen lista angavs.
+    # Hämta (lexem_id, lemma)-par att behandla.
+    #
+    # Ett lemma kan höra till FLERA lexem inom samma (språk, ordklass) —
+    # homonymer under olika koncept (sv "fisk" = mat_fisk + djur_fisk,
+    # fr "temps" = väd_väder + tid_tid) och possessiver som delar form
+    # (es "su" ligger under fem koncept). Alla ska ha egna Former-rader,
+    # därför nycklas allt på lexem_id och inte på lemmasträngen.
+    #
     # ja-adjektiv av typ 'no' (substantiviska) och 'verbfras' böjs inte i
     # adjektivparadigmet — de hoppas över (se setup.sql / KONVENTIONER.md).
-    if not lemman:
-        villkor = ""
-        if språk == "ja" and ordklass == "Adjektiv":
-            villkor = ("  AND (l.ja_adjektiv_typ IS NULL"
-                       "       OR l.ja_adjektiv_typ IN ('i', 'na'))\n")
-        rader = conn.execute(
-            f"""SELECT l.lemma FROM Lexem l
-               JOIN Koncept k ON k.id = l.koncept_id
-               WHERE l.språk = ? AND k.ordklass = ?
-               {villkor}ORDER BY l.lemma""",
-            (språk, ordklass),
-        ).fetchall()
-        lemman = [r["lemma"] for r in rader]
+    villkor = ""
+    if språk == "ja" and ordklass == "Adjektiv":
+        villkor = ("  AND (l.ja_adjektiv_typ IS NULL"
+                   "       OR l.ja_adjektiv_typ IN ('i', 'na'))\n")
 
-    if not lemman:
+    par: list[tuple[int, str]] = []
+    if lemman:
+        for lemma in lemman:
+            rader = conn.execute(
+                f"""SELECT l.id, l.lemma FROM Lexem l
+                   JOIN Koncept k ON k.id = l.koncept_id
+                   WHERE l.lemma = ? AND l.språk = ? AND k.ordklass = ?
+                   {villkor}""",
+                (lemma, språk, ordklass),
+            ).fetchall()
+            if not rader:
+                stat.fel.append(f"Lexem ej funnet i DB: {lemma!r} ({språk}/{ordklass})")
+            par.extend((r["id"], r["lemma"]) for r in rader)
+    else:
+        par = [
+            (r["id"], r["lemma"])
+            for r in conn.execute(
+                f"""SELECT l.id, l.lemma FROM Lexem l
+                   JOIN Koncept k ON k.id = l.koncept_id
+                   WHERE l.språk = ? AND k.ordklass = ?
+                   {villkor}ORDER BY l.lemma""",
+                (språk, ordklass),
+            )
+        ]
+
+    if not par:
         print(f"  Inga lexem funna för {språk}/{ordklass}.")
         return stat
 
-    # Hämta lexem_id per lemma
-    lexem_id_map: dict[str, int] = {}
-    for lemma in lemman:
-        rad = conn.execute(
-            """SELECT l.id FROM Lexem l
-               JOIN Koncept k ON k.id = l.koncept_id
-               WHERE l.lemma = ? AND l.språk = ? AND k.ordklass = ?""",
-            (lemma, språk, ordklass),
-        ).fetchone()
-        if rad:
-            lexem_id_map[lemma] = rad["id"]
-        else:
-            stat.fel.append(f"Lexem ej funnet i DB: {lemma!r} ({språk}/{ordklass})")
-
-    lemman_att_bearbeta = [l for l in lemman if l in lexem_id_map]
-
     if fortsätt:
-        före = len(lemman_att_bearbeta)
-        lemman_att_bearbeta = [
-            l for l in lemman_att_bearbeta
+        före = len(par)
+        par = [
+            (lexem_id, lemma) for lexem_id, lemma in par
             if conn.execute(
                 "SELECT 1 FROM Former WHERE lexem_id = ? LIMIT 1",
-                (lexem_id_map[l],),
+                (lexem_id,),
             ).fetchone() is None
         ]
-        hoppade = före - len(lemman_att_bearbeta)
+        hoppade = före - len(par)
         if hoppade and verbose:
             print(f"  --fortsätt: hoppar över {hoppade} redan genererade lexem")
+
+    # Gruppera på lemma: LLM:en behöver bara böja varje sträng en gång, även
+    # när flera lexem delar den. Resultatet fördelas sedan till alla lexem.
+    lexem_per_lemma: dict[str, list[int]] = {}
+    for lexem_id, lemma in par:
+        lexem_per_lemma.setdefault(lemma, []).append(lexem_id)
+    lemman_att_bearbeta = list(lexem_per_lemma)
 
     if not shutil.which("claude"):
         stat.fel.append("'claude' CLI hittades inte — installera Claude Code och logga in.")
@@ -433,13 +449,18 @@ def generera_former(
                     if cell.id not in former:
                         stat.saknade_celler += 1
 
-                _kollaps_och_skriv(
-                    lexem_id=lexem_id_map[lemma],
-                    former=former,
-                    slot=slot,
-                    conn=conn,
-                    stat=stat,
-                    torkörning=torkörning,
-                )
+                # Samma former skrivs till varje lexem som delar lemmat —
+                # egna rader per lexem_id, så att båda konceptbetydelserna
+                # (mat_fisk och djur_fisk) går att rendera.
+                for lexem_id in lexem_per_lemma[lemma]:
+                    stat.behandlade_lexem += 1
+                    _kollaps_och_skriv(
+                        lexem_id=lexem_id,
+                        former=former,
+                        slot=slot,
+                        conn=conn,
+                        stat=stat,
+                        torkörning=torkörning,
+                    )
 
     return stat

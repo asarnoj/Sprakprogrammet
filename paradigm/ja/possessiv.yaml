@@ -1,0 +1,23 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Possessiv
+  beskrivning: >
+    Inflektionsrum för japanska possessiver.
+
+    Japanska bildar possessiv med partikeln の efter pronomenet
+    (私の, 彼女の). Konstruktionen böjs inte — varken efter ägaren eller
+    efter det ägda substantivet.
+
+    Lemmat innehåller の, enligt samma princip som övriga flerordslemman
+    (KONVENTIONER.md §6): den oböjliga satelliten står kvar oförändrad.
+    Alternativet — att låta renderaren foga の till pronomenlexemet —
+    skulle kräva att renderaren vet att just possessiver bildas så, och
+    ger ingen vinst så länge formen ändå är invariant.
+
+    Aktiva axlar: inga.
+
+celler:
+  - id: jisho
+    not: "Invariant: 私の, あなたの, 彼の, 彼女の, 私たちの, 彼らの."

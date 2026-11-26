@@ -1,0 +1,74 @@
+---
+meta:
+  version: 2
+  språk: fr
+  ordklass: Possessiv
+  beskrivning: >
+    Fullständigt inflektionsrum för franska possessiver.
+
+    Ägarens person/numerus är lexikalt (ett Koncept per ägare: poss_1sg,
+    poss_3sg_fem, …). Axlarna här uttrycker kongruens med det ÄGDA
+    substantivet. Franskan har ingen genusdistinktion hos ägaren —
+    "son livre" betyder både hans och hennes bok; genus i cellen syftar
+    på "livre", inte på ägaren.
+
+    Attributiv (species=Obest): mon/ma/mes. Ingen genusdistinktion i
+    plural — mes gäller båda genus (genus=Alla).
+
+    Självständig (species=Best): mien/mienne/miens/miennes. Här FINNS
+    genusdistinktion i plural, därför fyra celler i stället för tre.
+    Lagras utan artikel — renderaren sätter le/la/les ("le mien").
+
+    Ägare i plural saknar genusdistinktion i singular: notre/votre/leur
+    fyller obest_m_sg och obest_f_sg med samma sträng. Självständiga
+    formerna (nôtre/vôtre/leur) böjs bara i numerus.
+
+    Elision (ma → mon framför vokal: "mon amie") är renderarens ansvar,
+    inte en egen cell.
+
+    Aktiva axlar: genus, numerus, species.
+
+celler:
+  # ── Attributiv (determinerare) ──
+  - id: obest_m_sg
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    not: "mon, ton, son, notre, votre, leur — 'mon livre'."
+
+  - id: obest_f_sg
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    not: "ma, ta, sa, notre, votre, leur — 'ma voiture'."
+
+  - id: obest_a_pl
+    species: Obest
+    genus: Alla
+    numerus: Pl
+    not: "mes, tes, ses, nos, vos, leurs — genusneutral plural."
+
+  # ── Självständig (pronominell) ──
+  - id: best_m_sg
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    not: "mien, tien, sien, nôtre, vôtre, leur — 'le mien'."
+
+  - id: best_f_sg
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    not: "mienne, tienne, sienne, nôtre, vôtre, leur — 'la mienne'."
+
+  - id: best_m_pl
+    species: Best
+    genus: UtrMask
+    numerus: Pl
+    not: "miens, tiens, siens, nôtres, vôtres, leurs — 'les miens'."
+
+  - id: best_f_pl
+    species: Best
+    genus: NeuFem
+    numerus: Pl
+    not: "miennes, tiennes, siennes, nôtres, vôtres, leurs — 'les miennes'."

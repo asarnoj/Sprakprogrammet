@@ -75,7 +75,7 @@ Schemat per cell:
 
 | Fält      | Typ       | Obligatorisk | Beskrivning |
 |-----------|-----------|:------------:|-------------|
-| `id`      | str       | ja           | Mänskligt läsbar etikett. Följer cell-ID-konvention (§7). Behöver INTE vara unikt inom filen — en cell unikidentifieras av hela sin axeltupel. Typiskt fall där id återanvänds: aktiv/passiv-par i sv verb (`pres` förekommer både med `diates: Aktiv` och `diates: Passiv`). |
+| `id`      | str       | ja           | Mänskligt läsbar etikett. Följer cell-ID-konvention (§7). **Måste vara unikt inom filen** — se varningen nedan. |
 | `tempus`  | list[str] | villkorad    | Lista av namnkonstanter från `_legend.yaml/tempus`. OR:as till bitmask. |
 | `kasus`   | list[str] | villkorad    | Som ovan; från `_legend.yaml/kasus`. |
 | `numerus` | str       | villkorad    | EN namnkonstant från `_legend.yaml/numerus`. |
@@ -88,6 +88,28 @@ Schemat per cell:
 
 Inga `ex`, `kollaps_med`, eller `lexem_input` — dessa har tagits bort i v2.
 Exempel hör hemma i tester (Steg 4-validering), inte i schemat.
+
+### Cell-ID:n måste vara unika
+
+*Rättat 2026-08-01. Tidigare versioner av det här dokumentet påstod att id
+inte behövde vara unikt, eftersom en cell unikidentifieras av sin axeltupel.
+Det stämmer konceptuellt men inte i praktiken.*
+
+Cell-ID:t är **JSON-nyckeln i LLM-svaret**. Två celler med samma id kan
+därför inte båda besvaras — och pipelinen tappar den ena tyst:
+
+- `_bygg_prompt` listar samma id två gånger; modellen kan bara svara en gång.
+- `_kollaps_och_skriv` bygger `{c.id: c for c in slot.celler}`, där den
+  sista cellen skriver över den första. Formen lagras då med FEL axelvärden.
+- Kontrollräkningen `saknade_celler` hittar id:t i svaret och rapporterar
+  noll fel. Körningen ser lyckad ut.
+
+Detta drabbade `sv/verb.yaml`, där aktiv- och passivparen delade id
+(`inf`, `pres`, `pret`, `sup`). Hela den svenska s-passiven försvann och de
+fyra aktiva formerna lagrades med `diates=Passiv`. Passivcellerna heter nu
+`inf_passiv` osv.
+
+`ladda_slot` avvisar sedan dess filer med duplicerade cell-ID:n.
 
 ---
 

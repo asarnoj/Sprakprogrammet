@@ -12,10 +12,9 @@ meta:
     Passiv (synthetisk -s-suffix): inf, pres, pret, sup. Ingen produktiv
     passiv imperativ.
 
-    Cellerna delar id mellan aktiv- och passiv-paren (t.ex. id=pres
-    förekommer två gånger). Unikheten av en cell bestäms av hela
-    axeltupeln inkl. diates, inte av id ensam — pipelinen indexerar
-    på axelvärden. id är en mänskligt läsbar etikett.
+    Passivcellerna har suffixet _passiv i sitt id. Cell-ID:n MÅSTE vara
+    unika inom filen — de används som JSON-nycklar i LLM-svaret, och två
+    celler med samma id gör att den ena tyst tappas bort (SCHEMA.md §7).
 
     Defektiva paradigm hanteras via lexem-modifierare:
       • Modalverb (kunna, vilja, skola, må, böra) — markeras "ingen_imp";
@@ -55,19 +54,19 @@ celler:
     diates: Aktiv
 
   # ── Passiv (synthetiskt -s-suffix) ──
-  - id: inf
+  - id: inf_passiv
     tempus: [Inf]
     diates: Passiv
 
-  - id: pres
+  - id: pres_passiv
     tempus: [Pres]
     diates: Passiv
 
-  - id: pret
+  - id: pret_passiv
     tempus: [Pret]
     diates: Passiv
 
-  - id: sup
+  - id: sup_passiv
     tempus: [Sup]
     diates: Passiv
 

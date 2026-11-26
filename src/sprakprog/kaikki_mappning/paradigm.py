@@ -7,6 +7,7 @@ sina axlar uttryckta som int (för bitmask-axlar) eller None.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -85,6 +86,18 @@ def ladda_slot(språk: str, ordklass: str, legend: dict[str, dict[str, int]] | N
                 continue
             axlar[axel] = _resolve_axelvärde(axel, v, legend, fil.name, cell_id)
         celler.append(Cell(id=cell_id, axlar=axlar, not_kommentar=c.get("not")))
+
+    # Cell-ID:t blir JSON-nyckel i LLM-svaret. Två celler med samma id kan
+    # därför inte båda besvaras, och den ena tappas TYST (se SCHEMA.md §4).
+    # Vägra läsa filen i stället — felet är annars osynligt i statistiken.
+    antal = Counter(c.id for c in celler)
+    dubbletter = sorted(cid for cid, n in antal.items() if n > 1)
+    if dubbletter:
+        raise ValueError(
+            f"Duplicerade cell-ID:n i {fil.name}: {', '.join(dubbletter)}. "
+            f"Cell-ID:n måste vara unika inom filen — ge dem särskiljande "
+            f"suffix (t.ex. inf/inf_passiv). Se SCHEMA.md §4."
+        )
 
     return Slot(
         språk=meta.get("språk", språk),
