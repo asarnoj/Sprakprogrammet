@@ -338,6 +338,10 @@ class Samplare:
         # Bara de verb vars mönster har Bisatsfras i frastypen. Bisatsen
         # byggs som en egen enkel sats — utan bisats i sin tur, och utan
         # fråga eller imperativ, som inte är argument.
+        #
+        # SATSEN ÄR OBJEKTET, den står inte bredvid det. Slotten den fyller
+        # måste därför tömmas: "hon vet att han kom", inte "hon vet en typ
+        # att han kom". Utan tömningen byggde samplaren just det.
         if ("bisats" in self.tillåtet and m.verb in self.o.bisatsverb
                 and not m.fråga and m.modus is Satsmodus.INDIKATIV
                 and m.fråga_om is None
@@ -354,8 +358,10 @@ class Samplare:
                     inre = Mening(inre_verb, inre_subjekt)
                     if "tempus" in self.tillåtet:
                         inre = _med(inre, tid=r.choice(list(Tidsreferens)))
+                    slot = self.o.bisatsverb[m.verb]
                     m = _med(m, bisats=Bisats(r.choice(ARGUMENTSUBJUNKTIONER),
-                                              inre))
+                                              inre),
+                             **({slot: None} if slot in ("objekt", "io") else {}))
         return m
 
 
