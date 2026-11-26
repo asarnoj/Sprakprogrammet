@@ -26,20 +26,29 @@
 
 /* ── substantiv, klassvis ─────────────────────────── */
 
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 2;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 3;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 4;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 10;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 18;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 260;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 1026;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 1090;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 2050;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 2052;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 4098;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 4106;
-UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 16386;
-UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 65535 = 32770;
+/* Nollställ de tre nya bitarna först, så att filen är idempotent och kan
+   köras om. Masken 131071 är bitarna 1..65536, alltså allt UTOM de tre nya.
+
+   Första versionen använde 65535 här och strök NATURFENOMEN (65536) på
+   köpet: solen matchades då som ren KONKRET och fick både ÖVERLÅTBAR och
+   HANTERBAR. Tio ord drabbades och det syntes inte i någon statistikrad —
+   bara i att "en dyr sol" passerade valideringen. */
+UPDATE Koncept SET semantik = semantik & 131071 WHERE ordklass = 'Substantiv';
+
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 2;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 3;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 4;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 10;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 18;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 260;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 1026;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 1090;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 2050;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 2052;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 4098;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 4106;
+UPDATE Koncept SET semantik = semantik | 393216 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 16386;
+UPDATE Koncept SET semantik = semantik | 131072 WHERE ordklass = 'Substantiv' AND semantik & 131071 = 32770;
 
 /* ── ÖPPNINGSBAR, per ord ─────────────────────────── */
 

@@ -68,6 +68,7 @@ class Validator:
         self.conn.row_factory = sqlite3.Row
         self._krav: dict[str, dict[str, int]] = {}
         self._semantik: dict[str, int | None] = {}
+        self._attributkrav: dict[str, int | None] = {}
 
     def krav_för(self, verb: str) -> dict[str, int]:
         """Slot → krävd bitmask, ur det universella mönstret."""
@@ -88,6 +89,32 @@ class Validator:
             self._semantik[koncept] = rad["semantik"] if rad else None
         return self._semantik[koncept]
 
+    def attributkrav(self, koncept: str) -> int | None:
+        """Vad ett adjektiv kräver av huvudordet. NULL = inget krav."""
+        if koncept not in self._attributkrav:
+            rad = self.conn.execute(
+                "SELECT attributkrav FROM Koncept WHERE nyckel = ?",
+                (koncept,)).fetchone()
+            self._attributkrav[koncept] = rad["attributkrav"] if rad else None
+        return self._attributkrav[koncept]
+
+    def _attributbrott(self, slot: str, nf: Nominalfras) -> list[Brott]:
+        """Får adjektiven beskriva huvudordet?
+
+        Kravet går åt motsatt håll mot verbets: adjektivet begränsar vad det
+        får fästa på, i stället för att öppna en plats.
+        """
+        huvud = self.semantik(nf.koncept)
+        ut = []
+        for attribut in nf.attribut:
+            krävd = self.attributkrav(attribut)
+            if krävd is None:
+                continue
+            if huvud is None or huvud & krävd != krävd:
+                ut.append(Brott(f"{slot}.attribut={attribut}", nf.koncept,
+                                krävd, huvud))
+        return ut
+
     def validera(self, m: Mening) -> list[Brott]:
         """Alla krav specen bryter mot. Tom lista = välformad."""
         krav = self.krav_för(m.verb)
@@ -101,6 +128,11 @@ class Validator:
             faktisk = self.semantik(nf.koncept)
             if faktisk is None or faktisk & krävd != krävd:
                 brott.append(Brott(slot, nf.koncept, krävd, faktisk))
+
+        for slot, nf in (("subjekt", m.subjekt), ("objekt", m.objekt),
+                         ("io", m.io)):
+            if nf is not None:
+                brott += self._attributbrott(slot, nf)
 
         return brott
 
