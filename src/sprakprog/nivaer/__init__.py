@@ -171,8 +171,14 @@ class Nivåkarta:
 
 def rita_nivåer(krav: Krav, kort: Iterable[Kort],
                 rapport: Callable[[str], None] | None = print,
-                krymp: bool = False) -> Nivåkarta:
-    """Varje korts krav, grafen och nivåerna (4.1, 4.2)."""
+                krymp: bool = False, täckning=None) -> Nivåkarta:
+    """Varje korts krav, grafen och nivåerna (4.1, 4.2).
+
+    Med `täckning` ordnas nivåerna efter ny täckning per kort (5.6) i stället
+    för i den godtyckliga ordning den topologiska sorteringen råkar ge. Utan
+    den behålls komponentordningen, så att nivåerna går att räkna fram även
+    innan användningarna är mätta.
+    """
     mängder: dict = {}
     for k in sorted(kort, key=str):
         t, frågor = time.perf_counter(), krav.frågor
@@ -184,5 +190,9 @@ def rita_nivåer(krav: Krav, kort: Iterable[Kort],
                     f"{time.perf_counter() - t:.1f} s)")
     valda = {k: m for k, m in mängder.items() if m is not None}
     kanter = {k: {d for d in m if d in valda} for k, m in valda.items()}
-    return Nivåkarta(valda, starka_komponenter(valda, kanter),
+    nivåer = starka_komponenter(valda, kanter)
+    if täckning is not None:
+        from .tackning import ordna_nivåer
+        nivåer = ordna_nivåer(nivåer, valda, täckning)
+    return Nivåkarta(valda, nivåer,
                      sorted((k for k, m in mängder.items() if m is None), key=str))

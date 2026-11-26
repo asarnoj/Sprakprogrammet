@@ -196,3 +196,64 @@ class Täckning:
         """
         nya = {k for k in mängd if k not in införda}
         return self.ny_täckning(mängd, införda) / len(nya) if nya else 0.0
+
+
+def ordna_nivåer(nivåer: list[frozenset], krav: dict,
+                 täckning: "Täckning") -> list[frozenset]:
+    """Nivåerna i den ordning som ger mest ny täckning per kort (5.6).
+
+    Nivåerna är grafens starka komponenter, och deras ordning är en TOPOLOGISK
+    sortering — men en sådan har enorm frihet. 132 av engelskans 164 nivåer
+    har ett enda kort, och deras inbördes ordning är obunden av kraven.
+    Ordningen var därför `sorted(noder, key=str)`, alltså bokstavsordning
+    efter svensk konceptnyckel: artikeln på nivå 3 och pronomenet `jag` på 72.
+
+    Här väljs i stället vid varje steg den öppna nivå som låser upp mest, och
+    måttet är KÄRNAN 5.6:s eget: de användningar som blir sägbara, delade med
+    hur många kort det kostar. Mätt med `ordningsmätning.py`, andel av
+    engelskan som är sägbar efter N nivåer:
+
+        ordning              5      10      25      50     100
+        alfabetisk        43,7    44,3    48,6    60,1    82,3
+        täckning          48,2    53,7    58,7    69,9    83,4
+
+    GIRIGHETEN ÄR NÄRSYNT, och det syns i svansen: en ordning som i stället
+    tar den nivå flest andra väntar på når 92,1 % efter hundra nivåer mot
+    täckningens 83,4. Den betalar för det tidigt — 29,4 % efter fem nivåer mot
+    48,2 — och det är tidigt en kurs avgörs. Att se längre fram än ett steg är
+    en möjlig förbättring; att byta bort början för svansen är det inte.
+
+    Bara ord får fylla ut det som saknas. Ett mönsterkort ur en annan nivå
+    räknas inte som tillgängligt, eftersom nivåerna är grindar (4.5).
+    """
+    nivåkort = {x for n in nivåer for x in n}
+
+    def värde(nivå: frozenset, öppnade: set) -> float:
+        tillgängligt = öppnade | nivå
+        v = 0.0
+        for k, andel in täckning.vikt.items():
+            if k <= öppnade or not (k & nivå):
+                continue
+            if any(x in nivåkort for x in k - tillgängligt):
+                continue
+            v += andel / len(k - öppnade)
+        return v
+
+    öppnade: set = set()
+    kvar = list(range(len(nivåer)))
+    ut: list[frozenset] = []
+    while kvar:
+        möjliga = [i for i in kvar if all(
+            k in öppnade for x in nivåer[i] for k in krav.get(x, ())
+            if k not in nivåer[i])]
+        if not möjliga:
+            # Kraven går inte ihop — lämna resten i den ordning de kom, så att
+            # ingenting tappas bort tyst.
+            ut += [nivåer[i] for i in kvar]
+            break
+        # `-i` håller ordningen densamma varje gång när värdena är lika (5.6).
+        bäst = max(möjliga, key=lambda i: (värde(nivåer[i], öppnade), -i))
+        ut.append(nivåer[bäst])
+        öppnade |= nivåer[bäst]
+        kvar.remove(bäst)
+    return ut

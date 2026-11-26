@@ -31,6 +31,10 @@ def main() -> None:
                    help="krymp varje krav till en bevisat minsta mängd (dyrt, 4.2)")
     p.add_argument("--kontroll", action="store_true",
                    help="hoppa inte över något: pröva varje bevis mot renderingen")
+    p.add_argument("--användningar", metavar="FIL",
+                   default=str(ROT / "ordbok" / "nivålistor" / "användningar.csv"),
+                   help="ordna nivåerna efter ny täckning per kort (5.6); "
+                        "utan filen behålls komponentordningen")
     a = p.parse_args()
 
     karta = ladda(a.karta)
@@ -53,7 +57,16 @@ def main() -> None:
 
     krav = Krav(s, nivå)
     t = time.perf_counter()
-    karta_ = rita_nivåer(krav, kort, rapport=lambda r: print(r, flush=True), krymp=a.krymp)
+    täckning = None
+    if a.användningar and Path(a.användningar).exists():
+        from .tackning import Täckning, läs_användningar, väljare_ur_karta
+        täckning = Täckning(s.tabell,
+                            läs_användningar(a.användningar, språk),
+                            väljare_ur_karta(karta))
+        print(f"  täckningen ordnar nivåerna: {len(täckning.vikt)} kravmängder",
+              flush=True)
+    karta_ = rita_nivåer(krav, kort, rapport=lambda r: print(r, flush=True),
+                         krymp=a.krymp, täckning=täckning)
     print(f"\n{krav.frågor} frågor, {time.perf_counter() - t:.0f} s")
     print(f"förklaringar: {dict(sorted(s.statistik.items()))}")
 
