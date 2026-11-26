@@ -1,0 +1,161 @@
+"""Prov för rättningens positioner: bär rätt kort rätt ord?
+
+VARFÖR DET HÄR PROVET FINNS. Rättningen räknar i SKRIVNA ORD — den delar
+facit på blanksteg — men spåret räknar UPPSLAG, och det är inte samma sak.
+Ett uppslag är ett ord för spåret och kan vara flera på pappret: "how many",
+"hur många", "inte längre", "den här". Läses det ena indexet som det andra
+glider allt efter det första flerordiga uppslaget ett steg.
+
+FELET SOM FAKTISKT HÄNDE. Med facit "How many books does the girl read?" gav
+
+    "How many book does the girl read?"     fel numerus på substantivet
+        → substantivet godkändes, och do, kongruens och inversion
+          underkändes: sex kort som inte hade gjort något
+
+    "How many books does the girl reads?"   fel form på verbet
+        → INGET kort underkändes alls. Svaret var fel och rättningen
+          hittade ingenting.
+
+Det slog mot `interr_det_hur_många` och `interr_det_hur_mycket`, som båda är
+prövbara nivåkort och alltså kommer att läras ut.
+
+VARFÖR DET ÄR VÄRT ETT EGET NÄT. Rättningen är den enda delen som kan skriva
+FALSKA rader i inlärarloggen, och en falsk rad larmar inte — den ser riktig
+ut. Samma skäl som `attributionsprov` finns av, en våning ner: det provet
+frågar vilken KORTTYP som fick skulden, det här frågar vilket ORD kortet står
+på.
+
+VAD PROVET GÖR. Bygger meningar med flerordiga uppslag, ändrar ETT ord i
+svaret, och kräver att kortet som bär just det ordet faller — och att kort
+som inte rör ordet inte faller. Fallen är valda så att det ändrade ordet
+ligger EFTER det flerordiga uppslaget, för det är där glidningen syns.
+
+Kör:  python ordbok/verktyg/rättningsprov.py
+"""
+
+from __future__ import annotations
+
+import sqlite3
+import sys
+from pathlib import Path
+
+ROT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROT / "src"))
+
+from sprakprog.kortmodell import Formtabell                      # noqa: E402
+from sprakprog.rattning import Rättningsfel, rätta               # noqa: E402
+from sprakprog.rendering import spåra                            # noqa: E402
+from sprakprog.rendering import spec as S                        # noqa: E402
+from sprakprog.rendering.en import EngelskRenderare              # noqa: E402
+from sprakprog.rendering.sv import SvenskRenderare               # noqa: E402
+
+RENDERARE = {"en": EngelskRenderare, "sv": SvenskRenderare}
+
+#: En fråga med "how many" / "hur många": ett uppslag, två skrivna ord, och
+#: fyra ord efter sig att glida på.
+HUR_MÅNGA = S.Mening(
+    verb="kom_läsa",
+    subjekt=S.Nominalfras("pers_flicka", S.Bestämdhet.BESTÄMD),
+    objekt=S.Nominalfras("skol_bok", numerus=S.Numerus.PL,
+                         frågedeterminant="interr_det_hur_många"),
+    fråga_om="objekt")
+
+#: Svenskan smälter inte ihop frågedeterminanten — "hur många" saknar sin
+#: pluralcell — men den har flerordiga VERB: "litar på" är ett uppslag och
+#: två ord, med objektet efter sig att glida på.
+LITAR_PÅ = S.Mening(
+    verb="gen_lita",
+    subjekt=S.Nominalfras("pers_flicka", S.Bestämdhet.BESTÄMD),
+    objekt=S.Nominalfras("pers_pojke", S.Bestämdhet.BESTÄMD))
+
+#: (språk, mening, svar, kort som MÅSTE falla, kort som INTE får falla)
+FALL = [
+    ("en", HUR_MÅNGA, "How many book does the girl read?",
+     ["ändelse:Substantiv/regelbunden/pl"],
+     ["regel:val/kongruens/3sg", "ord:artikel_bestamd", "ord:pers_flicka"]),
+    ("en", HUR_MÅNGA, "How many books does the girl reads?",
+     ["ord:kom_läsa"],
+     ["ord:skol_bok", "ord:artikel_bestamd", "ord:pers_flicka"]),
+    ("en", HUR_MÅNGA, "How many books does the boy read?",
+     ["ord:pers_flicka"],
+     ["ord:skol_bok", "ord:kom_läsa", "regel:val/kongruens/3sg"]),
+    ("en", HUR_MÅNGA, "How many books does a girl read?",
+     ["ord:artikel_bestamd", "regel:val/bestämning/bestämd_artikel"],
+     ["ord:pers_flicka", "ord:kom_läsa", "ord:skol_bok"]),
+    ("en", HUR_MÅNGA, None, [], []),          # facit mot sig självt
+    ("sv", LITAR_PÅ, "Flickan litar på pojke.",
+     ["ord:pers_pojke"],
+     ["ord:pers_flicka", "ord:gen_lita"]),
+    ("sv", LITAR_PÅ, "Flickan litar på flickan.",
+     ["ord:pers_pojke"],
+     ["ord:gen_lita"]),
+    ("sv", LITAR_PÅ, None, [], []),
+]
+
+
+def _fall(språk: str, mening, svar, måste_falla, får_inte_falla) -> list[str]:
+    renderare = RENDERARE[språk](sqlite3.connect(ROT / "sprak.db"))
+    ut = spåra(renderare, mening)
+    tabell = Formtabell(renderare.u)
+    brister: list[str] = []
+
+    if svar is None:                      # bara: facit rättar sig mot sig självt
+        svar, måste_falla = ut.text, []
+    res = rätta(tabell, ut, svar)
+    fallna = {str(k) for k, b in res.betyg.items() if b != "good"}
+
+    for kort in måste_falla:
+        if kort not in fallna:
+            brister.append(f"{kort} bar ordet som ändrades men gick fri")
+    for kort in får_inte_falla:
+        if kort in fallna:
+            brister.append(f"{kort} föll fast dess ord stod kvar")
+    if svar == ut.text and fallna:
+        brister.append(f"perfekt svar underkände {sorted(fallna)}")
+    return brister
+
+
+def _spannet_räknar_rätt() -> list[str]:
+    """Varje uppslags ordantal måste summera till meningens."""
+    brister = []
+    for språk in RENDERARE:
+        renderare = RENDERARE[språk](sqlite3.connect(ROT / "sprak.db"))
+        ut = spåra(renderare, HUR_MÅNGA if språk == "en" else LITAR_PÅ)
+        skrivna = sum(len(str(o).split()) for o in ut.ord)
+        if skrivna != len(ut.text.split()):
+            brister.append(f"{språk}: {skrivna} uppslagsord mot "
+                           f"{len(ut.text.split())} i {ut.text!r}")
+        if not any(len(str(o).split()) > 1 for o in ut.ord):
+            brister.append(f"{språk}: provet träffar inget flerordigt uppslag "
+                           f"i {ut.text!r} — fallet har tappat sin poäng")
+    return brister
+
+
+def main() -> int:
+    brister: list[str] = []
+    print("── uppslag mot skrivna ord ──")
+    for b in (fel := _spannet_räknar_rätt()):
+        print(f"  ✗ {b}")
+    brister += fel
+    if not fel:
+        print("  ✓ spannen summerar till meningens ordantal")
+
+    print("\n── vilket kort bär vilket ord ──")
+    for språk, mening, svar, måste, får_inte in FALL:
+        try:
+            fel = _fall(språk, mening, svar, måste, får_inte)
+        except Rättningsfel as e:
+            fel = [f"rättningen vägrade: {e}"]
+        etikett = svar if svar else "facit mot sig självt"
+        print(f"  {'✓' if not fel else '✗'} {språk}  {etikett}")
+        for b in fel:
+            print(f"      {b}")
+        brister += fel
+
+    print(f"\n{len(FALL) + 1} kontroller, {len(brister)} brister."
+          if brister else f"\n{len(FALL) + 1} kontroller, allt håller.")
+    return 1 if brister else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

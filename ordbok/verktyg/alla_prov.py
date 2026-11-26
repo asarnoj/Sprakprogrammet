@@ -48,6 +48,7 @@ HÄR = Path(__file__).resolve().parent
 NÄT = [
     ("omkastningsprov.py",   False),
     ("attributionsprov.py",  False),
+    ("rättningsprov.py",     False),
     ("arbetsbördeprov.py",   False),
     ("samplarprov.py",       False),
     ("strukturprov.py",      False),

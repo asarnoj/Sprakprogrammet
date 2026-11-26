@@ -9,11 +9,14 @@ Enheten är renderarens positioner (7.3). Spåret säger vilka utskrivna ord var
 kort bestämde, och luckorna säger var ett kort hade lagt till ett ord som inte
 står i svaret. Diffen säger vilka positioner som stämmer.
 
+Ett uppslag är inte alltid ett skrivet ord: "how many" och "inte längre" är
+ett uppslag och två ord. `_spann` översätter mellan de två räkningarna.
+
 VAD SOM INTE ÄR BYGGT ÄN. Version ett jämför med en variant: den mening som
 ställdes. Flera godtagna varianter (6.5) och omrättningen (7.2) kommer med
-entydighetsfiltret respektive gränssnittet. Sammansmälta ord — franskans «du» —
-kräver att positionerna spåras genom sammansmältningen, och det görs när ett
-språk som smälter samman ord kommer in.
+entydighetsfiltret respektive gränssnittet. Sammansmälta ord — franskans «du»,
+där två uppslag blir ETT skrivet ord — går åt andra hållet än `_spann` och
+görs när ett språk som smälter samman ord kommer in.
 """
 
 from __future__ import annotations
@@ -27,6 +30,14 @@ from ..rendering.spår import Utskrift
 #: Betygen som räknas fram ur diffen (7.2). `Hard` och `Easy` kommer bara från
 #: användarens omrättning.
 RÄTT, FEL = "good", "again"
+
+
+class Rättningsfel(Exception):
+    """Rättningen kan inte säga vilket kort som bär vilket ord.
+
+    Kastas hellre än att betygsätta på en gissning: en falsk rad i loggen ger
+    ett kort en repetition det inte förtjänat, och det som brast får ingen.
+    """
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,14 +84,51 @@ def _jämför(facit: list[str], svar: list[str]) -> tuple[set[int], set[int], li
     return lika, tillagda, diff
 
 
+def _spann(ut: Utskrift, facit: list[str]) -> list[range]:
+    """Var varje uppslag står i den skrivna texten.
+
+    Spåret räknar UPPSLAG och texten räknar SKRIVNA ORD, och det är inte
+    samma sak. Ett uppslag är ett ord för spåret men kan vara flera på
+    pappret: "how many", "inte längre", "den här". Läses spårets index som
+    ett ordindex glider allt efter det första flerordiga uppslaget ett steg,
+    och rättningen skyller på grannen i stället för på den skyldige.
+
+    Felet var inte teoretiskt. Med facit "How many books does the girl
+    read?" gav svaret "How many book does the girl read?" — fel numerus på
+    substantivet — godkänt substantiv och underkänt do, kongruens och
+    inversion, sex kort som inte hade gjort något. Och svaret "...the girl
+    reads?" gick igenom helt, fast det var fel.
+
+    Motsatsen — flera uppslag som smälter ihop till ETT skrivet ord, som
+    franskans «du» — får samma svar när den dagen kommer: spannet är tomt
+    eller delat i stället för ett ord långt (KÄRNAN 7.3).
+    """
+    spann: list[range] = []
+    nästa = 0
+    for o in ut.ord:
+        antal = len(str(o).split())
+        spann.append(range(nästa, nästa + antal))
+        nästa += antal
+    if nästa != len(facit):
+        raise Rättningsfel(
+            f"uppslagen är {nästa} skrivna ord men meningen har {len(facit)}: "
+            f"{ut.text!r}. Rättningen kan inte säga vilket kort som bär vilket "
+            f"ord, och vägrar hellre än gissar")
+    return spann
+
+
 def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     """Betyget per kort, räknat ur diffen mellan facit och svaret."""
     facit = ut.text.split()
+    spann = _spann(ut, facit)
     lika, tillagda, diff = _jämför(facit, svar.split())
     betyg: dict[Kort, str] = {}
     for kort, platser in meningens_kort(tabell, ut):
-        ord_ = {i for sort, i in platser if sort == "ord"}
-        luckor = {i for sort, i in platser if sort == "lucka"}
+        ord_ = {i for sort, j in platser if sort == "ord" for i in spann[j]}
+        # Lucka `j` ligger före uppslag `j`, alltså vid spannets början, och
+        # lucka `len(ord)` sist av allt.
+        luckor = {spann[j].start if j < len(spann) else len(facit)
+                  for sort, j in platser if sort == "lucka"}
         # En lucka är prövad bara när svaret varken lade till ett ord där eller
         # ändrade orden runt den: annars säger den ingenting om kortet.
         rätt = ord_ <= lika and all(
