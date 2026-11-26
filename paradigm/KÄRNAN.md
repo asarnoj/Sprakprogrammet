@@ -370,6 +370,73 @@ Obegränsat per dagspass; flera i samma mening när budgeten tillåter. Budgeten
 mäter dock **svårighet, inte möjlighet**: två regler kan kräva oförenliga
 former, och då blir meningen inte svår utan obyggbar. Sökningen går vidare.
 
+### Urvalet: hur meningen väljs
+
+*Skrivet 2026-09-10, sedan Julius sagt att han inte har skillsetet att designa
+algoritmen själv men vill vara med och bestämma aspekterna.*
+
+**Läget vid varje steg:**
+
+    F   förfallna kort som ännu inte klarats i dag
+    N   nya kort dagen tillåter, ännu inte införda
+    I   införda kort — det meningen FÅR röra
+    B   budgeten, Σ(1−R) per mening
+
+Ett steg: välj en målmängd ur `F ∪ N`, bygg en mening som täcker den inom `B`,
+bedöm, lägg tillbaka det som föll i `F`.
+
+#### Problemet är online, inte statiskt
+
+Julius: *«ifall användaren svarar fel, förändrar det vad resten av meningarna
+borde vara?»* — Ja. Ett fel lägger till arbete, så **universum växer medan man
+löser problemet**. Det utesluter exakt optimering av hela dagen: första
+felsvaret ogiltigförklarar planen. Kvar är att välja varje steg väl.
+
+#### Girigt är säkert här, och det är axiomets förtjänst
+
+Girig täckning har ett känt haveri: den kan lämna ett kort som ingen
+kvarvarande mening når. **Under axiomet kan det inte hända** — planen byggs mot
+byggbarheten, och byggbarheten kan inte sjunka under dagen eftersom inga kort
+försvinner. Ett kort som gick att nå i morse går att nå i kväll.
+
+Ingen framblick behövs alltså för korrekthetens skull. Girigt val av nästa
+mening är **rätt**, inte bara billigt.
+
+#### Budgeten fördelar risk, inte kort
+
+    korttillstånd                R      kostnad 1−R    ryms i 1,5
+
+    nytt kort, aldrig sett     0,00        1,00             2
+    förfallet på sin dag       0,90        0,10            15
+    lite försenat              0,80        0,20             8
+    sitter, inte förfallet     0,99        0,01           150
+
+**Budgeten binder på nya kort.** Ett nytt kort äter två tredjedelar av en
+menings budget; resten räcker till fem förfallna. Den typiska meningen blir
+**ett nytt kort och några förfallna** — härlett, inte valt. Det är svaret på
+frågan «ett förfallet kort per mening eller flera»: flera, och budgeten säger
+hur många.
+
+#### Variation särskiljer, den styr inte
+
+Bland meningar med samma täckning och godtagbar budget vinner den som **minst
+liknar de senaste** — annan konstruktionstyp, annan längd. Variationen kostar
+då aldrig täckning; den bryter bara likheter.
+
+#### Utfyllnadsplatserna
+
+En plats som inte bär ett mål fylls med ett kort som är infört, har högt `R`
+— alltså nästan gratis i budgeten — och **setts minst nyligen**. Samma
+kriterium som variationen, tillämpat på ord i stället för på form.
+
+#### Komplexiteten ligger i dragningen
+
+    2 000 samplingar → 1 692 kandidater → 727 distinkta kortmängder
+
+Täckningsbeslutet över några hundra mängder är försumbart. **Kostnaden är att
+dra mängderna** — sampla och rendera. Algoritmen är O(samplingar), och det som
+går att optimera är hur få samplingar som räcker, inte hur täckningen räknas.
+
 ---
 
 ## 6 · Bedömningen
@@ -605,75 +672,95 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-*Omgång 1–5 avklarade. Fjorton punkter strukna, två nya födda. Kvar är två,
-och den översta är ett avsnitt som ska skrivas — inte ett val.*
+*Omgång 1–6 avklarade. Femton punkter strukna. Kvar är en.*
 
 ---
 
-### 1 · Meningsurvalet — avsnittet som ska skrivas
+### 1 · Korttypernas mix skiljer sig mellan språken
 
-**Problemets form**, mätt på franskan som den ser ut i dag:
+**Idag.** Korttyperna är desamma i alla språk, men fördelningen är det inte:
 
-    införda kort                                85
-    byggbara kandidater av 2 000 försök      1 692
-    DISTINKTA kortmängder                      727    ← sökrummets bredd
-    införda kort per mening                   3–13, typvärde 7
+    typ         sv    en    de    fr    ja
+    egenskap     0   140   382   427     0
+    form         0     3    11    30   145
+    ord          0   203   199   227   200
+    stam         0   206    86   105    55
+    system       0     5    10    16     4
+    ordföljd     0     3     6     3     4
+    rektion      0     0     6     2     0
 
-Det är ett **övertäckningsproblem**: universum är dagens förfallna kort,
-mängderna är de byggbara meningarna, kostnaden är Σ(1−R) per mening. NP-svårt
-i allmänhet men litet här, och mängderna går bara att **sampla**, inte räkna
-upp.
+**Luckan.** Specens korttabell visar franskan. Den säger aldrig att japanskan
+har **noll** egenskapskort och **flest** formkort, eller att svenskan inte har
+några kort alls därför att ingen kurs har svenska som målspråk.
 
-**Men Julius ställde frågan som ändrar problemklassen:** *«ifall användaren
-svarar fel, förändrar det vad resten av meningarna borde vara?»*
-
-Ja. Ett fel lägger till arbete — kortet ska tas igen samma dag. **Universum
-växer alltså medan man löser problemet.** Det är inte en statisk instans utan
-ett **online-problem**, och det betyder att en exakt lösning för hela dagen är
-bortkastad: första felsvaret ogiltigförklarar den.
-
-Det räddar delvis giriga metoder. Det som återstår att designa är hur långt
-framåt varje steg ska titta:
-
-- **rent girigt** — välj meningen som täcker mest just nu
-- **girigt med framblick** — välj så att resten fortfarande går att täcka
-- **omplanera efter varje svar** — dyrast, men enda sättet att svara på hur
-  ett fel ändrar resten
-
-**Frågan «ett förfallet kort per mening eller flera» har redan ett svar i
-budgeten:**
-
-    korttillstånd                R      kostnad 1−R    ryms i 1,5
-    nytt kort, aldrig sett     0,00        1,00             2
-    förfallet på sin dag       0,90        0,10            15
-    lite försenat              0,80        0,20             8
-    sitter, inte förfallet     0,99        0,01           150
-
-**Budgeten binder på NYA kort, inte på förfallna.** Ett nytt kort äter två
-tredjedelar av en menings budget; femton förfallna på sin dag ryms. Frågan är
-alltså inte hur många förfallna en mening får bära — det är många — utan hur
-många **nya**, och där är svaret ungefär ett.
-
-**Kvar att designa:** framblicken, variationen i längd och konstruktionstyp,
-spridningen i svårighetsgrad, och hur en plats som inte är ett mål får sitt
-ord.
-
----
-
-### 2 · Korttabellen är franskspecifik
-
-**Idag.** `egenskap`-kort finns bara i tre språk. Japanskan har inga alls.
-
-**Luckan.** Specen säger aldrig vilka korttyper som finns per språk.
+Det är inget fel — japanskan har inget genus — men en läsare som bygger mot
+tabellen antar att alla typer finns överallt.
 
 **Alternativ.**
 
 - **a)** Tabellen får en kolumn per språk.
-- **b)** Korttyperna är en möjlig mängd som varje språk fyller efter behov.
+- **b)** Specen säger att korttyperna är en möjlig mängd som varje språk fyller
+  efter behov, och visar mixen som en mätning i stället för som en norm.
 
 ---
 
 ## 12 · Beslut ur omgångarna
+
+### Omgång 6 (2026-09-10)
+
+#### Efterfrågemätningen stryks — den går inte att mäta rent
+
+Julius: *«jag vill endast ha detta ifall vi verkligen kan mäta det bra. Hur ska
+man avgöra något sådant när meningar i teorin kan bli oändligt stora och helt
+olika?»*
+
+Två versioner prövades och båda föll.
+
+**Den samplade** — räkna hur ofta varje ordklass efterfrågas i genererade
+kandidater — har **exakt samma fel som exponeringsmätningen som ströks i
+omgång 2**: den mäter samplarens fördelning, inte språkets. Att jag byggde om
+det felet en omgång senare är värt att skriva ner.
+
+**Den strukturella** — räkna hur många införda kort som kan fylla varje roll —
+ger ingen diskriminering. Mätt: varje franskt verb kan stå med **alla 736
+koncept**. Selektionsrestriktionerna är inte finkorniga nog för att någon roll
+ska kunna vara «tom».
+
+Julius villkor var att måttet skulle gå att mäta bra. Det gör det inte, och
+idén läggs ner. **Införandeordningen förblir frekvens inom ordklass.**
+
+#### Japanskan är inte svårare, den är annorlunda formad
+
+Julius: *«har inte alla språk samma kortmetodik? Kanske japanskan är lite
+svårare?»*
+
+Metodiken är densamma; mixen är helt annan.
+
+    typ         fr    ja
+    egenskap   427     0     inget genus, inga böjningsklasser
+    form        30   145     femton gånger fler helformer
+    stam       105    55
+    system      16     4
+
+    böjningsdimensioner i bruk
+    fr   diates, genus, grad, numerus, person, tempus      6
+    ja   diates, grad, tempus                              3
+    de   + kasus, species                                  8
+
+    distinkta former:  de 13 617 · fr 7 900 · ja 2 495
+
+**Japanskan har färre dimensioner och färre former än både franskan och
+tyskan** — den är enklare mätt så. Det den har mycket av är helformer, därför
+att verbformerna är agglutinerande och lärs som helheter: 食べる, 食べます,
+食べた.
+
+Och det **stämmer med kortmodellen från omgång 3**: `ord` + `ändelse` +
+`oregelbunden`. Japanskan hamnar nästan helt i `oregelbunden`, vilket är rätt —
+dess former lärs som helheter. Modellen behöver inte anpassas per språk; den
+fördelar sig själv.
+
+---
+
 
 ### Omgång 5 (2026-09-10)
 
