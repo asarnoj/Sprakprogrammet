@@ -93,6 +93,11 @@ class Brott:
                     f"{self.krav}:a person syftar på talsituationen, så de "
                     f"två leden kan inte vara olika — och koreferens kräver "
                     f"ett reflexivt verb som specen inte bad om")
+        if self.slot == "självständig":
+            return (f"självständig={self.koncept}: huvudordet skrivs inte ut "
+                    f"och står ingen annanstans i satsen — «min» utan «min "
+                    f"bok» någonstans gör konceptet omöjligt att återskapa, "
+                    f"och specen bär då ett val som ingenting hänger på")
         if self.slot == "tempus":
             tillåtna = "/".join(n for b, n in TIDSNAMN.items() if self.krav & b)
             return (f"adverbial={self.koncept}: kräver {tillåtna}, "
@@ -267,6 +272,51 @@ class Validator:
                                 else _slå_ihop(alternativ), huvud))
         return ut
 
+    @staticmethod
+    def _nominalfraser(m: Mening):
+        """Varje nominalfras i satsen, också i bisatser och i ägarled."""
+        att_gå = [m.subjekt, m.objekt, m.io, m.jämförelse]
+        if isinstance(m.predikativ, Nominalfras):
+            att_gå.append(m.predikativ)
+        for a in m.adverbial:
+            if not isinstance(a, str):
+                att_gå.append(getattr(a, "komplement", None))
+        while att_gå:
+            nf = att_gå.pop()
+            if nf is None:
+                continue
+            yield nf
+            att_gå.append(nf.ägare)
+        for b in (m.bisats, *(a for a in m.adverbial if isinstance(a, Bisats))):
+            if b is not None:
+                yield from Validator._nominalfraser(b.sats)
+
+    def _utan_antecedent(self, m: Mening) -> list[Brott]:
+        """En självständig possessiv måste ha sitt huvudord i samma sats.
+
+        `självständig` skriver inte ut huvudordet: «boken är min» säger
+        `min`, inte `min bok`. Står konceptet ingen annanstans i satsen
+        försvinner det ur meningen helt — och då är det ett FRITT VÄRDE UTAN
+        VERKAN. «Min ser.» byggd av hund och byggd av katt ger samma
+        källmening, samma målmening och samma kort; specen bär ett val som
+        ingenting hänger på.
+
+        Det är samma sorts redundans som kartan annars vaktar mot, och den
+        kostar dubbelt: sökningen går igenom likvärdiga specar, och
+        användaren får en mening vars innehåll ingen kan återskapa.
+
+        «Boken är min» duger, för där står boken. «Min ser» gör det inte.
+        """
+        fraser = list(self._nominalfraser(m))
+        brott = []
+        for i, nf in enumerate(fraser):
+            if not nf.självständig:
+                continue
+            if not any(a.koncept == nf.koncept and not a.självständig
+                       for j, a in enumerate(fraser) if j != i):
+                brott.append(Brott("självständig", nf.koncept, 0, None))
+        return brott
+
     def validera(self, m: Mening) -> list[Brott]:
         """Alla krav specen bryter mot. Tom lista = välformad."""
         krav = self.krav_för(m.verb)
@@ -295,6 +345,8 @@ class Validator:
                          ("io", m.io)):
             if nf is not None:
                 brott += self._attributbrott(slot, nf)
+
+        brott += self._utan_antecedent(m)
 
         brott += self._deixisbrott(m)
 
