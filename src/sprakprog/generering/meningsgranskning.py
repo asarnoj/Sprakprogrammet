@@ -155,6 +155,21 @@ def korpus_ur_svep(språk_db: sqlite3.Connection,
 
 # ── kontroller som inte behöver någon modell ─────────────────────────
 
+#: Ord som FÅR stå två gånger i rad, per språk. Sluten och lexikal, som
+#: `ELIDERAR` i franskans renderare.
+#:
+#: Bara franskan har fallet, och skälet är exakt: `nous` och `vous` är de enda
+#: pronomen vars SUBJEKTSFORM är identisk med deras klitikum. "Nous nous
+#: dépêchons" är därför korrekt franska — första `nous` är subjektet, andra är
+#: reflexivpronomenet. De andra språken skiljer formerna åt (vi/oss, wir/uns,
+#: noi/ci, nosotros/nos) och kan inte producera dubbleringen.
+#:
+#: Kontrollen rapporterade tre fynd när reflexiva verb byggdes 2026-08-26, och
+#: alla tre var det här. Att lista undantaget är att göra kontrollen skarpare;
+#: att ta bort kontrollen vore att förlora den.
+ÄKTA_DUBBLERING = {"fr": frozenset({"nous", "vous"})}
+
+
 def strukturkontroller(poster: list[Post]) -> list[dict]:
     """Fel som går att se utan att kunna språket.
 
@@ -196,7 +211,8 @@ def strukturkontroller(poster: list[Post]) -> list[dict]:
         elif p.språk not in ORDMELLANRUM and len(p.text.strip()) < 3:
             anmärk(p, "saknat_led", "", f"bara {len(p.text.strip())} tecken")
         for a, b in zip(ord_, ord_[1:]):
-            if a.lower() == b.lower() and a.isalpha():
+            if (a.lower() == b.lower() and a.isalpha()
+                    and a.lower() not in ÄKTA_DUBBLERING.get(p.språk, ())):
                 anmärk(p, "överflödigt_led", a, f"{a!r} står två gånger i rad")
                 break
         for o in ord_:

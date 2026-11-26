@@ -2765,6 +2765,57 @@ sortens fel som kostat mest i det här projektet.
 
 ### E2 ✓ — Hur många betyg per kort och dag?
 
+#### JULIUS INVÄNDNING, OCH VAD MÄTNINGEN SÄGER (2026-08-27)
+
+*"Jag är rädd att det är fel. Alltså att det är okej att ge en dålig dom och
+fälla kortet trots att jag precis klarade det. Jag tycker det ändå är logiskt
+att mata in all data i FSRS."*
+
+**Det scenariot är redan beteendet.** Regeln är inte "en dom per dygn" rakt
+av utan asymmetrisk, och grenen som fäller ett nyss klarat kort finns:
+
+    rätt + redan bedömt idag   →  hoppas över
+    fel  + redan FÄLLT idag    →  hoppas över
+    fel  + redan bedömt RÄTT   →  BOKFÖRS
+
+Mätt på ett riktigt kort, rätt och sedan fel samma dygn:
+S 2,307 → 0,775 och D 2,12 → 7,39. Felet slår igenom fullt ut.
+
+**Och asymmetrin är FSRS egen, inte vår.** Samma kort, S = 10,96, upprepade
+svar samma dygn:
+
+| sekvens | S | nästa förfallodag |
+|---|---|---|
+| Good | 34,797 | 1 okt |
+| Good, Good | 34,797 | 1 okt |
+| Good, Good, Good | 34,797 | 1 okt |
+| Again | 1,459 | 28 aug |
+| Again, Again | 0,505 | 28 aug |
+| Again, Again, Again | 0,188 | 28 aug |
+
+**Upprepade rätt gör bokstavligen ingenting** — korttidsformeln klämmer
+faktorn till 1,0 samma dygn, samma sak som `extranytta` mätte som noll
+procent. Att hoppa över dem kastar alltså ingen information; FSRS hade
+ignorerat dem ändå.
+
+**Upprepade fel sammansätts däremot hårt**, 1,459 → 0,505 → 0,188. Att mata
+in alla tre vore inte att lämna mer information till modellen utan att utnyttja
+att den saknar en modell för massade fel: tre fel på samma kort inom tio
+minuter är EN observation — "jag kan inte det här" — inte tre. Regeln bevarar
+det första felet helt och avvisar bara upprepningen.
+
+**Julius princip om att bara hoppa över för ett mer fundamentalt kort är
+redan implementerad** och heter `skyddad` (E5): ett fallerat ordkort tar sina
+form- och stamkort ur betygsättningen, därför att formen aldrig prövades.
+
+**Det som INTE stämmer med förväntan är "again idag".** Ett fällt kort
+schemaläggs till I MORGON, inte till idag — FSRS minsta intervall är ett
+dygn (B7). Återförsöket samma pass ligger i passkön som en `igen`-rad, inte i
+schemat. Ser man bara på `förfaller` ser det därför ut som att felet inte
+gjorde något idag.
+
+
+
 En mening rör flera kort, och samma kort kan stå i flera meningar samma dag.
 Utan regel får ett vanligt kort tio betyg om dagen.
 
@@ -3764,6 +3815,41 @@ ingenting. Det höjer deras stabilitet på ingenting alls. Står som `?`.
 
 Regressionsnätet fryser 490 renderade meningar som förväntad utdata. Varje
 ändring som rör deras text faller.
+
+#### VERIFIERINGSMASKINEN FANNS OCH HADE ALDRIG KÖRTS (2026-08-27)
+
+Julius: *"Det är inte svårt att fixa en bugg MEN det är svårt att verifiera
+vad som är trasigt. Jag kan inte verifiera eftersom det tar för mycket tid
+och eftersom jag inte är expert på grammatik. Just nu känns mycket som en
+svart låda."*
+
+`ordbok granska-meningar` var byggt för precis det, med fyra modellfria
+kontroller som uttryckligen skrevs för att *"kunna köras som ett
+regressionstest"*. **Det stod ändå utanför sviten, och ingen rapport hade
+någonsin skrivits.**
+
+Det är nu ett nät, `strukturprov.py`, över svepkorpusen plus varje mening som
+faktiskt ställts. Kontrollerna kräver varken expert eller modell:
+
+    saknat_led        renderingen kraschade, eller gav färre än två led
+    överflödigt_led   samma ord två gånger i rad
+    lexikalt          en intern nyckel läckte ut som ett ord
+    kongruens         TVÅ OLIKA SPECAR RENDERAR IDENTISKT
+
+Den sista går inte att se genom att läsa en mening i taget, och det är den
+som gör nätet värt mer än en stavningskontroll: skiljer sig specarna men inte
+texten har renderaren tappat en distinktion.
+
+**Nätet fällde min egen ändring i samma andetag.** Reflexivbygget gav tre
+fynd — `Nous nous dépêchons` — som alla var falsklarm: franskans `nous` och
+`vous` är de enda pronomen vars subjektsform sammanfaller med klitikat.
+Undantaget är nu en sluten lista. Att lista det gör kontrollen skarpare; att
+ta bort kontrollen hade förlorat den.
+
+**Modellgranskningen är fortfarande manuell och hör inte hemma i sviten** —
+den ringer ut, kostar tid och pengar, och `_vägra_i_claude_code` hindrar den
+från att köras härifrån. Den spärren är riktig: den som skrev renderaren ska
+inte vara den som ensam intygar att den är rätt.
 
 #### JAG RAPPORTERADE GRÖNT PÅ EN INAKTUELL KÖRNING (2026-08-26)
 

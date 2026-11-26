@@ -50,6 +50,7 @@ NÄT = [
     ("attributionsprov.py",  False),
     ("arbetsbördeprov.py",   False),
     ("samplarprov.py",       False),
+    ("strukturprov.py",      False),
     ("ordföljdsprov.py",     True),
     ("renderarbild.py",      True),
     ("introduktionsprov.py", True),
