@@ -2336,6 +2336,44 @@ prioritet väljer VAD, slumpen föreslår HUR, poängen avgör VILKEN. Det tredj
 ledet är fortfarande det som inte är trimmat, och det är vad resten av C4
 handlar om.
 
+
+#### MÄTT OCH FÖRKASTAT: "REDAN AVKLARAT" SOM POÄNGTERM (2026-09-04)
+
+Jag föreslog en term som skulle straffa meningar fulla av kort som redan
+bedömts idag, efter att ha sett att **127 av Julius 212 kortmöten var
+`redan_bedömd`** — sextio procent av tiden på kort E2 ändå vägrar bokföra.
+
+**Julius avvisade premissen, och han har rätt:** *"Det ska vara okej att
+använda kort som redan har tränats idag eller som inte tillhör dagens kort…
+Anledningen varför de tas med är för att kunna bygga bra meningar som är på
+en rimlig nivå. Ifall vi bygger meningar på endast kort om användaren just nu
+ska lära sig blir allting överväldigande."*
+
+Fyllnaden är alltså inte slöseri utan konstruktionen. En term som straffar
+den hade drivit systemet mot precis det han inte vill ha.
+
+**Och mätningen gav honom rätt en gång till.** Jag prövade om poängsättaren
+ändå belönar täckning av kort som inte kan bokföras — samma feltyp som
+tomgångsspärren rättade. Den gör inte det: över en simulerad dag följdes
+`täckta` och `bokförs` åt nästan exakt (2/2, 3/3, 1/1). Ett bedömt kort
+lämnar `förfallna`, så termen kan inte räkna det.
+
+**Sex av tjugo meningar tog mindre täckning än som fanns**, och det såg först
+ut som en lucka. Varje fall visade sig vara en dokumenterad regel som vann:
+
+    mening 19, 20    98–100 % av kandidaterna hade OKÄNDA ord (C5)
+    mening 18        127 av 127 kandidater var ordagranna upprepningar;
+                     den valda serverades som `nödfall` (B8)
+
+Alltså inget att laga. Posten står kvar som ett NEGATIVT RESULTAT: den frågan
+är ställd, mätt och besvarad, och nästa gång någon ser sextioprocentssiffran
+ska den inte utredas om.
+
+**Det mätningen DÄREMOT visade** är att dagens sista meningar kan bli
+ordagranna upprepningar när ordförrådet tagit slut — `Tu as.` serverad som
+nödfall. Det är B8 som arbetar och inte ett fel, men det syns numera i
+dagboken och är värt att veta när man läser den.
+
 #### LÖSNING (delvis, 2026-08-23 — inte byggd)
 
 **Halva frågan försvinner med C2.** Fyra av de åtta vikterna är inte vikter
