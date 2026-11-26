@@ -442,6 +442,22 @@ class Mening:
     att tyst producera en form som inte finns.
     """
 
+    negation: str = "neg_inte"
+    """VILKET negationsadverb satsen nekas med, när `negerad` är sann.
+
+    "inte", "aldrig", "inte längre", "inte heller" — samma plats i satsen,
+    olika betydelse, och betydelsen hör till meningen och inte till språket.
+    De tre senare låg oåtkomliga tills fältet fanns: renderarna slog upp
+    `neg_inte` rakt av.
+
+    Förvalet är den enkla negationen, som alla sju språk har. Att det är ett
+    värde och inte None gör att varje nekad sats har EXAKT en specifikation
+    — med None hade `negation=None` och `negation="neg_inte"` gett samma
+    text ur två olika specar.
+
+    Läses inte alls när `negerad` är falsk.
+    """
+
 
 #: Alla specobjekt läser ett äldre facit likadant (`_återställ`).
 for _klass in (Attribut, Nominalfras, Prepositionsfras, Bisats, Mening):

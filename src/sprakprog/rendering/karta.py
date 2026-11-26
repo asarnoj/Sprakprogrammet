@@ -92,6 +92,10 @@ FÄLTKLASSER = {
     ("Mening", "predikativ"): ("Adjektiv",),
     ("Mening", "fråga_om"): ("Frågadverb",),
     ("Mening", "adverbial"): ("Adverb",),
+    # neg_heller står avsiktligt utanför: dess engelska lemma "not either"
+    # är diskontinuerligt och går inte att slå upp som ett ord.
+    ("Mening", "negation"): ("Negationsadverb/satsnegation",
+                             "Negationsadverb/satsadverbial"),
     ("Nominalfras", "koncept"): ("Substantiv", "Pronomen",
                                  "Kvantifikator/huvudord"),
     ("Nominalfras", "possessiv"): ("Possessiv",),
@@ -203,6 +207,7 @@ def _domän(k: _Kontext, klass: str, namn: str) -> list:
             "diates": _enumdomän(S.Diates),
             "fråga": _booldomän(),
             "negerad": _booldomän(),
+            "negation": [("symbol", sym(("Mening", "negation")))],
             "tid": _enumdomän(S.Tidsreferens),
             "aspekt": _enumdomän(S.Aspekt),
             "bisats": [ingen, ("bisats", lambda: _lat(LatBisats, kör, väg, begr, rel))],
@@ -571,6 +576,9 @@ class SymUppslag:
 
     def kontrollera_naken(self, nf):
         return Uppslag.kontrollera_naken(self, nf)
+
+    def kontrollera_räkneord(self, nf):
+        return Uppslag.kontrollera_räkneord(self, nf)
 
     def frågepronomen(self, koncept):
         return Uppslag.frågepronomen(self, koncept)

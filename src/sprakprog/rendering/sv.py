@@ -629,7 +629,7 @@ class SvenskRenderare:
             # BIFF: negationen kilar in sig mellan subjektet och verbet.
             ord = [*subjekt]
             if m.negerad:
-                negation = self.u.form_för("neg_inte", "inv")
+                negation = self.u.form_för(m.negation, "inv")
                 self.u.ordning("biff", [negation], [verb[0]])
                 ord.append(negation)
             self.u.ordning("rak_ordföljd_i_bisats", subjekt, [verb[0]])
@@ -662,7 +662,7 @@ class SvenskRenderare:
             if m.negerad:
                 # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
                 # inte "ska ge inte". Därför delas verbfrasen här.
-                negation = self.u.form_för("neg_inte", "inv")
+                negation = self.u.form_för(m.negation, "inv")
                 ord.append(negation)
                 self.u.ordning("negation_efter_finit", [verb[0]], [negation])
                 self.u.ordning("negation_före_infinit", [negation], verb[1:])

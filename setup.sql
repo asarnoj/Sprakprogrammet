@@ -102,6 +102,10 @@ CREATE TABLE Koncept (
          Kvantifikator  'bestämning'  varje bok, alla böcker
                         'huvudord'    ingen läser, något hände
                                       (en: nobody, nothing, someone)
+         Negationsadverb 'satsnegation'  inte — utlöser engelskans do
+                         'satsadverbial' aldrig, inte längre — gör inte det:
+                                      "she never reads", aldrig "she does
+                                      never read"
 
        Varför kolumnen behövs: renderaren får inte titta på konceptnycklar
        (Symbol kastar Förbigång vid jämförelse och uppslagning), så den kan
@@ -116,7 +120,8 @@ CREATE TABLE Koncept (
        "ingen" på svenska). Se paradigm/sv/räkneord.yaml, som kallar sitt
        eget paradigm heterogent av precis detta skäl. */
     roll         TEXT    CHECK (roll IN (
-                     'grundtal', 'ordningstal', 'bestämning', 'huvudord'
+                     'grundtal', 'ordningstal', 'bestämning', 'huvudord',
+                     'satsnegation', 'satsadverbial'
                  ))
 );
 

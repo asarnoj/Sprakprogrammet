@@ -441,8 +441,13 @@ class EngelskRenderare:
         # Subjektsfrågan gör det inte — frågeordet står redan på subjektets
         # plats: "who reads the book?".
         inversion = not bisats and (m.fråga or (frågeord is not None and not subjektsfråga))
+        # Satsnegationen "not" kräver ett finit hjälpverb att fästa vid och
+        # tar do när inget finns. De negerande SATSADVERBIALEN gör inte det:
+        # "she never reads", aldrig "she does never read".
+        satsnegation = m.negerad and self.u.ordklass(
+            self.u.lexem(m.negation)) == "Negationsadverb/satsnegation"
         with self.u.led("verb"):
-            verb = self.verbfras(m, satsart, m.negerad or inversion)
+            verb = self.verbfras(m, satsart, satsnegation or inversion)
 
         if subjektsfråga:
             subjekt, frågeord = frågeord, None
@@ -463,11 +468,22 @@ class EngelskRenderare:
             self.u.ordning("frågeord_först", frågeord, ord[:1])
             ord[0:0] = frågeord
         if m.negerad:
-            # Not står efter det finita hjälpverbet: "has not read", "does not
-            # read", "is not happy".
-            negation = self.u.form_för("neg_inte", "inv")
-            ord.append(negation)
-            self.u.ordning("negation_efter_finit", [verb[0]], [negation])
+            negation = self.u.form_för(m.negation, "inv")
+            if satsnegation or len(verb) > 1:
+                # Not står efter det finita hjälpverbet: "has not read",
+                # "does not read", "is not happy". Ett satsadverbial står på
+                # samma plats så länge det FINNS ett hjälpverb att stå efter:
+                # "she has never read".
+                ord.append(negation)
+                self.u.ordning(
+                    "negation_efter_finit" if satsnegation
+                    else "satsadverbial_efter_hjälpverb", [verb[0]], [negation])
+            else:
+                # Utan hjälpverb tar satsadverbialet plats FÖRE huvudverbet,
+                # som är finit: "she never reads". Det är hela skillnaden mot
+                # not, som i stället hämtar in do.
+                ord.insert(ord.index(verb[0]), negation)
+                self.u.ordning("satsadverbial_före_finit", [negation], [verb[0]])
             self.u.ordning("negation_före_infinit", [negation], verb[1:])
         ord.extend(verb[1:])
 
