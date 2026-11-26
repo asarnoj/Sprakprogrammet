@@ -148,6 +148,13 @@ class JapanskRenderare:
 
     def rendera(self, m: Mening) -> str:
         """SOV: ämne, adverbial, indirekt objekt, objekt, verb."""
+        if m.komplement is not None:
+            raise RenderingsFel(
+                "ja: infinitivkomplement finns inte i japanskan. Modalitet "
+                "uttrycks med suffix och konstruktioner på HUVUDVERBET — "
+                "読みたい (vill), 読める (kan), 読まなければならない (måste) — "
+                "inte med ett styrande verb plus infinitiv. Kräver en egen "
+                "modell och är inte byggt")
         delar = [self.nominalfras(m.subjekt) + TOPIK]
         for adverbial in m.adverbial:
             delar.append(self.u.form_för(adverbial, "inv") + "、")

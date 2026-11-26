@@ -79,6 +79,21 @@ class Uppslag:
                 rader, self._slot_för(lexem["ordklass"]))
         return self._cellcache[lexem["id"]]
 
+    def infinitivmarkör(self, verb: str) -> str | None:
+        """Konceptnyckeln för markören framför ett infinitivkomplement.
+
+        None = ren infinitiv. Läses ur det språkspecifika mönstret, samma
+        väg som kasusrektionen och den romanska io-prepositionen.
+        """
+        rad = self.conn.execute(
+            """SELECT p.nyckel FROM Mönster m
+               JOIN Koncept k ON k.id = m.koncept_id
+               JOIN MönsterKrav mk ON mk.mönster_id = m.id
+               JOIN Koncept p ON p.id = mk.preposition_koncept_id
+               WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = 'komplement'""",
+            (verb, self.språk)).fetchone()
+        return rad["nyckel"] if rad else None
+
     def _slot_för(self, ordklass: str):
         if ordklass not in self._slot:
             self._slot[ordklass] = ladda_slot(

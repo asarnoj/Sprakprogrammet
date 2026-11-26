@@ -241,6 +241,14 @@ class TyskRenderare:
         if m.predikativ is not None:
             mittelfeld += self.predikativ(m)
 
+        if m.komplement is not None:
+            # Komplementet hamnar i satsklammern, sist i satsen, med zu
+            # omedelbart före: "sie versucht das Buch zu lesen".
+            markör = self.u.infinitivmarkör(m.verb)
+            if markör is not None:
+                infinit.append(self.u.form_för(markör, "inv"))
+            infinit.append(self.u.form_för(m.komplement, "inf"))
+
         ord = [*vorfeld, finit, *mittelfeld, *infinit]
         mening = " ".join(ord)
         return mening[0].upper() + mening[1:] + "."

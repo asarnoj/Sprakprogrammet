@@ -339,6 +339,11 @@ class RomanskRenderare:
         ord += efter
         ord += verb[1:]
 
+        if m.komplement is not None:
+            markör = self.u.infinitivmarkör(m.verb)
+            if markör is not None:
+                ord.append(self.u.form_för(markör, "inv"))
+            ord.append(self.u.form_för(m.komplement, "inf"))
         if m.predikativ is not None:
             ord += self.predikativ(m)
         if m.objekt is not None and cod is None:

@@ -121,6 +121,17 @@ class Mening:
     läkare", inte "hon är en läkare" — men med artikel i engelskan.
     """
     adverbial: tuple[str, ...] = field(default=())
+    komplement: str | None = None
+    """Infinitivkomplement: "hon vill läsa", "hon börjar att läsa".
+
+    Ett verbkoncept som styrs av huvudverbet och står i infinitiv. Första
+    gången en mening innehåller ett andra verb.
+
+    Markören framför infinitiven — att, to, zu, à, di — är LEXIKAL per verb
+    och per språk, och ligger i MönsterKrav.preposition_koncept_id på det
+    språkspecifika mönstret. Ingen rad = ren infinitiv, vilket är fallet för
+    de flesta modalverb.
+    """
     negerad: bool = False
     """Nekande sats: "flickan läser inte boken".
 

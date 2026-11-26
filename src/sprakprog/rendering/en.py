@@ -135,6 +135,20 @@ class EngelskRenderare:
 
     def rendera(self, m: Mening) -> str:
         ord = [*self.nominalfras(m.subjekt, "subjekt"), *self.verbdelar(m)]
+        if m.komplement is not None:
+            # Engelskan varierar inte bara MARKÖREN utan också FORMEN:
+            # "try to read" men "stop reading". Vilket ett verb tar är
+            # lexikalt precis som markören, men mekanismen i MönsterKrav
+            # bär bara markören. Med nuvarande ordförråd är stop det enda
+            # verb som kräver gerundium — kommer fler behöver formen bli
+            # data, inte en rad kod.
+            if m.verb == "asp_sluta":
+                ord.append(self.u.form_för(m.komplement, "gerund"))
+            else:
+                markör = self.u.infinitivmarkör(m.verb)
+                if markör is not None:
+                    ord.append(self.u.form_för(markör, "inv"))
+                ord.append(self.u.form_för(m.komplement, "inf_imp"))
         if m.predikativ is not None:
             ord += self.predikativ(m)
         for nf in (m.io, m.objekt):
