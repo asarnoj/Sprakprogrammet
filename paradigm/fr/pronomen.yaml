@@ -25,23 +25,16 @@ meta:
 celler:
   - id: sujet
     kasus: [Nom]
-    # je, tu, il, elle, nous, vous, ils, elles.
-    # P3: genus avgör il (UtrMask) / elle (NeuFem) / ils / elles.
+    not: "je, tu, il, elle, nous, vous, ils, elles. P3: genus avgör il (UtrMask) / elle (NeuFem) / ils / elles."
 
   - id: cod
     kasus: [Ack]
-    # me, te, le, la, nous, vous, les.
-    # P3 sg: le (UtrMask) / la (NeuFem).
+    not: "me, te, le, la, nous, vous, les. P3 sg: le (UtrMask) / la (NeuFem)."
 
   - id: coi
     kasus: [Dat]
-    # me, te, lui, nous, vous, leur.
-    # P3 sg/pl: lui/leur (genus-neutralt i dativ — samma form m/f).
+    not: "me, te, lui, nous, vous, leur. P3 sg/pl: lui/leur (genus-neutralt i dativ — samma form m/f)."
 
   - id: tonique
     kasus: [Gen]
-    # moi, toi, lui, elle, nous, vous, eux, elles.
-    # P3: genus avgör lui (UtrMask sg) / elle (NeuFem sg) /
-    #     eux (UtrMask pl) / elles (NeuFem pl).
-    # Används efter preposition ("avec moi"), vid betoning ("moi, je..."),
-    # ensamt ("qui? — moi").
+    not: "OBS: Gen-biten är bara en etikett — franskan har ingen genitiv. Cellen är den TONISKA formen (disjunktiv): moi, toi, lui, elle, nous, vous, eux, elles. Används efter preposition ('avec moi'), vid betoning ('moi, je...'), ensamt ('qui? — moi'). Ange pronomenet ENSAMT — inte 'de lui'."

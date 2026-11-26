@@ -77,6 +77,11 @@ nous/nous, vous/vous, ils/les+leur, elles/les+leur. Följ cellbeskrivningarna;
 vid en enda objektcell: ange direkt objekt-formen (me, te, le, la, nous,
 vous, les).
 
+**Tonique-cellen har `kasus=Gen`** — en ren etikett, inte en genitiv
+(franskan saknar kasus). Cellen ska innehålla den disjunktiva formen:
+moi, toi, lui, elle, nous, vous, eux, elles. Skriv pronomenet ensamt —
+aldrig "de lui".
+
 ## Possessiv
 
 7 celler. Kongruensen gäller det ÄGDA substantivet, aldrig ägaren:

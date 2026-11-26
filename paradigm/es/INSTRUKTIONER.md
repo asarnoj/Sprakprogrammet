@@ -73,7 +73,12 @@ infinitivo, gerundio, participio (4 genus/numerus-former).
 
 Per slot-fil. Subjekt: yo, tú, él, ella, usted, nosotros/nosotras, vosotros/
 vosotras, ellos, ellas, ustedes. Objekt (direkt): me, te, lo, la, nos, os,
-los, las; indirekt: le/les. Följ cellbeskrivningarna i slot-filen.
+los, las; indirekt: le/les.
+
+**Tónico-cellen har `kasus=Gen`** — det är en ren etikett, inte en genitiv
+(spanskan saknar kasus). Cellen ska innehålla den betonade formen efter
+preposition: mí, ti, él, ella, nosotros/as, vosotros/as, ellos, ellas.
+Skriv pronomenet ensamt — aldrig "de él" och aldrig possessiva "suyo".
 
 ## Possessiv
 
