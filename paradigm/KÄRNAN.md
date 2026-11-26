@@ -4,9 +4,10 @@ Den fullständiga specifikationen av kärnan — korten, nivåerna, dagspasset,
 meningsbygget och bedömningen — så som den ska byggas. Filen beskriver målet,
 inte ändringar i den kod som finns.
 
-> **Läge 2026-09-12.** Specen är avgjord utom tre frågor, samlade i punkt 10.
-> **En av dem blockerar bygget:** kortmodellen (10.1), som väntar på Julius
-> regelbundenhetsregel för svenska verb.
+> **Läge 2026-09-12.** Specen är avgjord utom en fråga (punkt 10), och den
+> blockerar inget. Kortmodellen och aspektvalet avgjordes samma dag. Det som
+> står först i tur är arbete, inte beslut: språkens böjningsregler (steg 0) och
+> renderarnas redovisning (steg 1), som kan göras samtidigt.
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -23,7 +24,7 @@ misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
 7. Bedömningen
 8. Koden
 9. Byggordningen
-10. Öppna frågor
+10. Öppen fråga
 11. Acceptans
 12. Kända fel i data och kod
 
@@ -119,7 +120,10 @@ Ett kort är **ett läromoment: något användaren ska kunna producera, och som 
 att klara eller missa oberoende av andra kort.** Två test:
 
 - **Isoleringstestet** — går det att lära ut ensamt? Annars kan det inte planeras.
-- **Produktionstestet** — är facit något en människa faktiskt skriver?
+- **Produktionstestet** — övas kortet genom att användaren skriver en riktig
+  form? Kortet bedöms på sin del av formen: ett ändelsekort på `-ais` i
+  `parlais`, ett undantagskort på `aur-` i `aurai`. En klasskod som `K0` ingår
+  aldrig i någon form och klarar därför inte testet.
 
 Ett kort tillhör ingen nivå. En nivå *öppnar* kort; därefter är ett kort bara ett
 kort.
@@ -141,9 +145,9 @@ skriver ett ord, och den listan är sluten:
 **Två familjer.** Ordfamiljen växer med ordförrådet. Mönsterfamiljen växer inte
 alls — det är det som gör något till ett mönster.
 
-*Om formkunskapen ska delas i `ändelse` och `oregelbunden`, och om det behövs en
-tredje formkomponent, är öppen fråga 10.1. Resten av punkt 3 gäller oavsett
-svaret.*
+Kunskapen om former delas i mönster (`ändelse`, och `regel` för
+ljudanpassningar) och undantag (`oregelbunden`). Var gränsen går avgörs av
+förutsägbarhetsprincipen i 3.4.
 
 ### 3.3 `ord`
 
@@ -156,38 +160,90 @@ att ordet hämtades ur minnet, och kortet är prerekvisit för alla formkort:
 
 Införs som glosa: betydelse → form.
 
-### 3.4 `ändelse` och `oregelbunden`
+### 3.4 Former: förutsägbarhetsprincipen
 
-**Ett ändelsekort är en ändelsesträng för en (ordklass, böjningsklass)** — inget
-ord ingår i nyckeln. Celler som delar sträng inom samma klass är samma kort,
-eftersom de inte lär ut två saker:
+Hur ett ords former blir kort avgörs av en enda princip:
 
-    fr, -er-verb   -e     imp_2sg · pres_1sg · pres_3sg · subj_1sg · subj_3sg
-                   -ais   imperf_1sg · imperf_2sg
-                   ...    45 celler blir 33 kort
+> **Ett ord får ett eget formkort precis där formen inte går att förutsäga ur det
+> användaren redan kan: ordet självt, språkets regler och ordets andra kort.**
 
-Mätt över `ordbok/ändelser.tsv`: 831 rader blir **394 ändelsekort för sju
-språk**, varav 39 i tyskan. Talen gäller dagens tabeller, som är fel dragna
-(10.1). Slutsatsen att mönsterfamiljen är liten håller; de exakta talen gör det
-inte.
+Ett ord utan formkort är regelbundet och kostar ingenting. Vad som räknas som en
+regel följer av att ett mönster bara kan mätas genom att användaren skriver rätt
+på ett ord hen inte har övat (6.4):
 
-**Ett `oregelbunden`-kort betyder «just det här ordet bryter mönstret här».** Det
-gäller både suppletiva former (`vais`) och avvikande baser (`aur-`). Enheten
-följer `stamgrupp` i `stammar.tsv`:
+> **En regel är ett mönster som gäller för nya ord, och vars villkor syns i ordet
+> eller i något användaren redan kan.**
 
-| `stamgrupp` | Vad det är | Kort |
+Ett mönster som bara gäller en sluten grupp ord går aldrig att pröva på ett nytt
+ord och kan därför inte mätas som mönster. Det räknas som kunskap om varje ord.
+I oklara fall gäller det försiktiga valet, kort per ord: det kostar några kort
+men påstår aldrig att användaren kan ett mönster hen inte kan.
+
+#### Tre sorters formkunskap
+
+| Kort | Vad det är | Exempel |
 |---|---|---|
-| ≥ 0 | en bas som delas av flera celler — `aur-` | ett per grupp |
-| −1 | en form utan delad bas — `vais` | ett per form |
+| `ändelse` | ändelsen för en cell i en klass | imparfait 1 sg för -er-verb: `-ais` |
+| `regel` | en ljudanpassning som beror på stammens ljud, inte på klassen | tyskans `arbeit-e-st`, japanskans `飲ん-で` |
+| `oregelbunden` | den minsta bit av ett ords form som inte går att förutsäga | `köper`, `gick`, `aur-`, `vais` |
 
-**Regelbundenhet spåras inte, bara undantagen.** Ett ord utan undantagskort är
-regelbundet och kostar ingenting. Användaren lär sig mönstret och sedan
-undantagen, precis som en människa gör.
+**Ett ändelsekort gäller en cell, inte en sträng.** Presens `-e` och konjunktiv
+`-e` är två kort: man kan kunna det ena utan det andra, och renderaren fattar
+beslutet per cell (R3). Mängden är sluten och växer inte med ordförrådet. Dagens
+`ordbok/ändelser.tsv` har 831 rader för sju språk, men tabellerna görs om i
+steg 0.
 
-**Böjningsklassen är inget kort.** Den går att läsa ur lemmat — i franskan
-stämmer «-er → K0, annars K1» för 165 av 174 verb — och de nio avvikande bärs av
-`oregelbunden`. Klassen avgör vilka kort som *finns*. Användaren får aldrig
-frågan vilken klass ett ord tillhör.
+**En ljudanpassning är ett eget kort bara när den beror på ljudet.** Beror den på
+klassen hör den till klassens ändelser: svenskans `köpte` är er-klassens mönster,
+ingen egen regel.
+
+#### Klassen, och vilken som är standard
+
+En klass som syns i ordet är ingen kunskap — franskans `-er` visar sin klass. En
+klass som inte syns är det. `arbeta` och `köpa` slutar båda på `-a` men blir
+`arbetar` och `köper`; `choisir` och `partir` slutar båda på `-ir` men blir
+`choisissons` och `partons`.
+
+Då gäller **den produktiva klassen som standard** — den klass nya ord får:
+`googla → googlar → googlade`, och nya franska `-ir`-verb tar `-iss-`. Ett ord
+som avviker får ett kort på den första form som visar avvikelsen, och resten
+följer:
+
+| Form | Går den att förutsäga? | Kort |
+|---|---|---|
+| `arbetar`, `arbetade` | ja — ar-verb är standard | inga |
+| `köper` | nej — `köpa` ser ut som `arbeta` | ett |
+| `köpte` | ja, när man vet att det heter `köper` | inget |
+| `gick` | nej | ett |
+
+Kunskapen *«köpa är ett er-verb»* behöver alltså ingen klasskod. Den visas med en
+riktig form. Användaren får aldrig frågan vilken klass ett ord tillhör.
+
+#### Enheten för ett undantag
+
+**Kortet är den minsta bit som inte går att förutsäga:**
+
+    avoir   aur-                      en bas som ger tolv celler    ett kort
+    aller   vais · vas · va · vont    ingen gemensam bas            fyra kort
+
+En bas som ger flera celler är ett kort; en form utan gemensam bas är ett eget
+kort. Det motsvarar `stamgrupp ≥ 0` och `stamgrupp = −1` i `stammar.tsv`, men
+följer nu av principen i stället för av stränganalysen.
+
+#### Hur reglerna tas fram
+
+Principen kräver att varje språks regler skrivs ner: klasserna med sina synliga
+villkor, ändelserna per cell och ljudreglerna. De kontrolleras mekaniskt:
+
+    generera alla former i databasen med reglerna
+    varje form som reglerna inte ger är antingen
+        ett undantagskort, eller
+        en regel som saknas
+
+Det är en kontroll av att reglerna stämmer, inte statistik, och en människa
+granskar bara listan över avvikelser. Svenskan görs först, eftersom Julius kan
+bedöma den; övriga språk tas fram ur standardgrammatiker och kontrolleras på
+samma sätt.
 
 **Basen härleds ur de renderade formerna, inte ur lemmasträngen.** Annars blir
 lexem som böjs i två led fel (`sœur aînée` blev `sœurs aînée`), och flerordslexem
@@ -243,7 +299,7 @@ Vad måste användaren veta för att skriva ett ord?
 | 1 | vilket ord | `ord` |
 | 2 | ordets egenskap som syns på grannen | `egenskap` |
 | 3 | vad det styrande ordet kräver | `rektion` |
-| 4 | vilken cell — kongruens, bestämdhet | `regel`, när renderaren redovisat (8.3) |
+| 4 | vilken cell — kongruens, bestämdhet, tempus | `regel`, när renderaren redovisat (8.3) |
 | 5 | vilken sträng cellen har | se nedan |
 | 6 | var ordet står | `regel` |
 
@@ -254,12 +310,17 @@ Givet rätt ord och rätt cell kan strängen bli fel på fem sätt:
 | a | kan inte mönstret | `ändelse` |
 | b | kan mönstret, men ordet är ett undantag — `gådde` | `oregelbunden` |
 | c | minns undantaget fel | `oregelbunden` |
-| d | använde fel klass — `finit` i stället för `finis` | behövs inte — klassen läses ur lemmat (3.4) |
-| e | missade en ljudanpassning — `arbeitst` | **saknas** — öppen fråga 10.1 |
+| d | använde standardklassen på ett ord som avviker — `köpade` | `oregelbunden` på formen som visar klassen (`köper`) |
+| e | missade en ljudanpassning — `arbeitst` | `regel` (3.4) |
 
-**Modellen har två kända hål.** Det ena är (e). Det andra är valet av aspekt och
-modus när ingenting i meningen styr det. Det är ingen formfråga utan en fråga om
-vad meningen betyder (10.2).
+**Aspekt och modus.** Valet mellan till exempel imparfait och passé composé är
+ingen formfråga utan en fråga om vad meningen betyder. Det blir ett `regel`-kort
+där renderaren väljer tempus utifrån aspekten, och uppgiften görs entydig genom
+att källmeningen visar valet (6.5). Samma sak gäller modus som inte styrs av ett
+ord.
+
+Därmed finns inga kända hål i täckningen, förutsatt att renderarna redovisar sina
+beslut (steg 1).
 
 ### 3.9 Oböjliga ord
 
@@ -578,8 +639,8 @@ billigare per kort (mätt ur loggen):
          4               20,5          5,1
          8               24,9          3,1
 
-Den fasta kostnaden per mening dominerar. **När påfyllningen ska sluta är öppen
-fråga 10.3.**
+Den fasta kostnaden per mening dominerar. **När påfyllningen ska sluta är den
+öppna frågan i punkt 10.**
 
 ### 6.4 Att bygga mot ett kort
 
@@ -614,6 +675,14 @@ betydelser (`fråga`, `får`, `hälsa` …). För de flesta av dem avgör mening
 eftersom betydelserna har olika ordklass. Två införda ord för samma koncept i
 målspråket — tyskans `glauben` och `finden` — är samma sorts fall och hör till
 samma tabell.
+
+**Aspekt och modus löses genom att källmeningen visar valet.** Är både
+imparfait och passé composé upplåsta får en dåtidsmening bara ställas om den
+innehåller ett ord som avgör valet: «jag arbetade **varje dag**», «jag arbetade
+**igår**». Generatorn lägger till ett sådant ord när meningen annars vore
+tvetydig. Användaren tränar då just det som är svårt — att läsa valet ur
+sammanhanget. Tabellen behöver därför för varje sådan punkt en lista över vilka
+ord i källspråket som pekar mot vilket alternativ.
 
 Tabellen finns inte ännu (steg 5b).
 
@@ -729,8 +798,8 @@ Byggs inte i version ett. När det byggs:
 - **Gränsen kommer från FSRS:** `MAX_DIFFICULTY = 10.0`. När svårigheten nått taket
   och kortet ändå faller kan schemaläggaren inte justera mer.
 - **Åtgärden är att granska kortet, inte att stänga av det.** Ett kort som ständigt
-  faller är ofta två läromoment i ett — ett `oregelbunden`-kort som gäller sex
-  celler kan behöva bli sex kort.
+  faller är ofta fel avgränsat, och det tyder på att en regel i 3.4 saknas eller
+  är fel för just det ordet.
 - **Inom en dag finns i dag ingen utväg.** Dagen tar slut först när again-högen är
   tom, även om användaren inte klarar ett visst kort.
 
@@ -796,129 +865,42 @@ fattas tyst.
 
 ## 9 · Byggordningen
 
-    0   regelbundenhetsregel per språk       blockerar 3 — svenskan först (10.1)
-    1   renderarna redovisar sina beslut     allt annat bygger på detta
-    2   nivåstegarna och grafen              följer ur 1; kontrollera att grafen är acyklisk
-    3   kortmodellen                         kräver 0
-    3b  ändelsetabellerna görs om            kräver 0
-    4   dagspasset och införandet            kräver 2 och 3
-    5   meningsbygget                        kräver 4
-    5b  neutraliseringstabellerna            kräver 1; en per språkpar
-    6   rättningen                           kräver 1
-    7   lektioner och frekvenslista          parallellt
-    7b  provsviten                           parallellt — finns inte i dag
+    0   böjningsreglerna per språk         skrivs och kontrolleras mot alla former (3.4); svenskan först
+    1   renderarna redovisar sina beslut   allt annat bygger på detta
+    2   nivåstegarna och grafen            följer ur 1; kontrollera att grafen är acyklisk
+    3   kortmodellen                       kräver 0; ändelser, ljudregler och undantag genereras ur reglerna
+    4   dagspasset och införandet          kräver 2 och 3
+    5   meningsbygget                      kräver 4
+    5b  neutraliseringstabellerna          kräver 1; en per språkpar, med ord som avgör aspekt
+    6   rättningen                         kräver 1
+    7   lektioner och frekvenslista        parallellt
+    7b  provsviten                         parallellt — finns inte i dag
+
+**Steg 0 och 1 är oberoende och kan göras samtidigt.** Steg 0 kräver
+språkkunskap, steg 1 kodarbete i renderarna.
 
 **Steg 1 är det billigaste sättet att upptäcka om modellen håller.** När
 renderarna redovisar går det att mäta hur många regler en mening faktiskt
 använder, och alltså om attributionen fungerar med 133 regelkort i stället för
 dagens tre. Håller den inte syns det innan något har raderats.
 
-**Rent arbete, utan kvarstående beslut:** renderarnas redovisade beslut, omkring
-133 lektionstexter, den semantiska frekvenslistan (japanskan för hand), en
-neutraliseringstabell per språkpar, och datafelen i punkt 12.
+**Rent arbete, utan kvarstående beslut:** böjningsreglerna för sju språk,
+renderarnas redovisade beslut, omkring 133 lektionstexter, den semantiska
+frekvenslistan (japanskan för hand), en neutraliseringstabell per språkpar, och
+datafelen i punkt 12.
 
 ---
 
-## 10 · Öppna frågor
+## 10 · Öppen fråga
 
-### 10.1 Kortmodellen — blockerar bygget
-
-**Frågan:** ska kunskapen om former delas upp i mönster och undantag, eller ska
-varje kombination av lexem och cell vara ett eget kort?
-
-| Modell | Kort | Styrka | Svaghet |
-|---|---|---|---|
-| **Uppdelad** | `ord` + `ändelse` + `oregelbunden` (+ ev. ljudregler) | mönstret mäts och överförs till nya ord; få kort | kräver att gränsen mellan stam och ändelse är rätt dragen |
-| **Ord + form** | `ord` + ett formkort per lexem och cell | enkel; kräver ingen gräns | mäter aldrig om användaren har generaliserat |
-
-**Kostnaden för ord + form**, mätt i `Former` jämfört med `stammar.tsv` och
-`ändelser.tsv`:
-
-    språk   ord+form   uppdelad   kvot
-    de       13 617      2 733    5,0x
-    es        9 936      1 953    5,1x
-    it        9 204      2 223    4,1x
-    fr        7 900      1 702    4,6x
-    sv        4 757      1 745    2,7x
-    ja        2 495      1 137    2,2x
-    en        2 138        817    2,6x
-
-Viktigare än antalet: kan användaren redan `parler` i elva celler blir
-`regarder` en enda introduktionsövning i den uppdelade modellen, men elva i ord +
-form. Och i ord + form går det aldrig att se om rätt `parlais`, `regardais` och
-`travaillais` betyder att hen kan imparfait, eller bara kan tre ord.
-
-**Varför frågan inte kan avgöras i dag: gränsen är fel dragen.** Datan har två
-delar, `stam` och `ändelse`. Allt som ändelsetabellen inte kan uttrycka hamnar i
-stammen, och då ser regelbundna verb oregelbundna ut. Antal stamgrupper per verb:
-
-    språk    1    2    3    4    5    6    7    8    9   median
-    de       0    0   11   52   62   19   13    2    0     5
-    ja       0    2    0    3   72   89    3    0    0     6
-    sv       1    7   65   18   13   36   21   12    1     4
-    it       0   55   34   14   42    6    9    4    3     3
-    es       0   71   41   14   19   11    7    3    1     3
-    fr       0   93   21   22    9   18    7    4    0     2
-    en      57   80   30    2    0    0    0    0    0     2
-
-Tyskans helt regelbundna `arbeiten` har fem stamgrupper
-(`arbeit · arbeite · arbeitet · arbeitete · gearbeitet`); starka `finden` har sex.
-Svenskans dåtidsändelse är tom i `ändelser.tsv`, så `arbetade` lagras som ett
-undantag. Japanskan har bara en verbklass, så godan-verbens `飲んだ` och `飲んで`
-lagras som hela former (43 % av verben har sådana rader).
-
-**Hypotesen:** det saknas en tredje del — **ljudanpassningen**, en regel för hur
-ändelsen fogas till stammen:
-
-    sv   åka -> åkte            -te   + slutvokalen faller bort
-    de   arbeiten -> arbeitete  -te   + e skjuts in efter t/d
-    ja   飲む -> 飲んで           -て   + godan-växlingen む -> んで
-    fr   finir -> finissons     -ons  + -iss- i andra konjugationen
-
-En sådan regel finns redan som korttyp: `regel`. Om hypotesen håller krymper
-`oregelbunden` kraftigt, och den uppdelade modellen fungerar. Hypotesen är visad
-på fyra exempel, inte prövad på datan.
-
-**Provet som avgör:**
-
-    1  Julius skriver regelbundenhetsregeln för svenska verb
-       (förslag: «lemmat + de/te/dde, slutvokalen får falla bort» — gav 102 svaga, 66 starka)
-    2  stamanalysen körs om med regeln
-    3  medianen stamgrupper per svenskt verb mäts
-
-       i dag      4
-       1–2        uppdelad modell, ljudanpassningar som regelkort
-       fortf. 4   ord + form
-
-Oavsett utfall gäller definitionen av `ord`-kortet (3.3), prerekvisitregeln (7.3)
-och hur `oregelbunden`-kort avgränsas (3.4).
-
-### 10.2 Aspekt och modus — priset måste godkännas
-
-Renderaren får aspekten som indata: generatorn bestämmer om det blir imparfait
-eller passé composé. Systemet lär alltså ut «skriv imperfekt när imperfekt
-efterfrågas», men aldrig «den här situationen kräver imperfekt» — ett av de
-svåraste momenten i franska, spanska och italienska. Samma sak gäller modus när
-inget ord i meningen styr det.
-
-Svenskan gör inte den skillnaden, så med «jag arbetade» kan valet inte prövas
-utan att bryta mot R2. Tre vägar:
-
-| | Väg | Pris |
-|---|---|---|
-| **a** | aspektvalet ligger utanför projektet | ett verkligt läromoment tränas inte; det ska då stå uttryckligen |
-| **b** | en egen uppgiftstyp, t.ex. ett tvåval utifrån svensk kontext | bryter formen «en mening, ett facit» |
-| **c** | källmeningen visar valet: «jag arbetade **varje dag**» | svenskan blir mer markerad än naturlig svenska, och mer ju fler nivåer som låses upp |
-
-(c) följer direkt av entydighetsfiltret (6.5) och kräver ingen ny mekanism.
-**Det som återstår att besluta är om priset för (c) är acceptabelt.**
-
-### 10.3 När påfyllningen ska sluta
+### När påfyllningen ska sluta
 
 Budgeten tillåter långa meningar, och långa meningar är billiga per kort, men
 något måste avgöra när en mening är lång nog. Det är den enda öppna parametern i
 meningsbygget, och det enda stället där en smaksak — «ibland långa, ibland korta
 meningar» — kan få avgöra. Blir det ett val ska det stå som ett val.
+
+Frågan blockerar inget och besvaras bäst när meningsbygget finns och kan mätas.
 
 ---
 
@@ -933,6 +915,7 @@ meningar» — kan få avgöra. Blir det ett val ska det stå som ett val.
 | meningar med P(≥2 fel) > τ | ej styrt | 0 |
 | mål som inte är ensamt svaga på sin plats | ej mätt | 0 |
 | uppgifter med mer än ett rätt svar | ej mätt | 0 |
+| former i databasen som varken reglerna ger eller ett undantagskort täcker | ej mätt | 0 |
 | kortmöten där rättaren inte kan avgöra vilket kort som föll | ≤ 31 % av felen | mäts, ska minska |
 
 **Det som bara kan prövas med användare.** Allt ovan följer av grundreglerna
@@ -951,8 +934,8 @@ eller av mätningar, utom:
 
 | Fel | Följd | Åtgärd |
 |---|---|---|
-| gränsen mellan stam och ändelse är fel dragen i sex av sju språk | regelbundna ord blir undantag | 10.1, steg 0 och 3b |
-| japanskan har bara en verbklass (ichidan) | godan-verbens former lagras som hela former | steg 3b |
+| gränsen mellan stam och ändelse är dragen med stränganalys — tyskans helt regelbundna `arbeiten` har fem stamgrupper, svenskans dåtidsändelse är tom | regelbundna ord blir undantag | genereras om ur böjningsreglerna (3.4, steg 0) |
+| japanskan har bara en verbklass (ichidan) | godan-verbens former lagras som hela former | steg 0 |
 | italienskan saknar obestämd artikel i plural (`un · uno · una`) | 29 % av alla meningsspecar faller på italienskan | lägg till formerna |
 | tyska fraslexem med adjektiv först (`älterer Bruder`) | 79 specar faller | böj båda leden, som `sœur aînée` |
 | japanskans `no`- och verbfrasadjektiv (36 st) saknar former | orden kan inte renderas | en form per ord, giltig i alla celler (3.9) |
@@ -970,7 +953,7 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | Idé | Varför den föll |
 |---|---|
 | `böjningsklass` som kort | facit är en klasskod som ingen skriver; 541 kort som aldrig mötts eller införts |
-| `stam` och `form` som egna korttyper | en stam är inget man producerar, och stam och form är samma läromoment |
+| `stam` och `form` som egna korttyper | en regelbunden stam går att förutsäga och är ingen kunskap; en oregelbunden är ett undantagskort, och stam och form är samma läromoment |
 | nya kort under meningsfasen | bryter mot R1; det var så planens 7 nya kort blev 25 |
 | budgeten Σ(1−R) ≤ 1,5 | mäter förväntat antal fel, inte om felet går att knyta till ett kort; tillåter meningar som blir fel 79 % av gångerna |
 | egna regler för variation och utfyllnad | «senast sedd för längst sedan» och «lägst R» är samma sak; båda följer av urvalsregeln |
@@ -986,6 +969,13 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | viktade betyg när attributionen är osäker | FSRS tar bara hela betyg; bryter mot R4 |
 | `Hard` och `Easy` räknade fram ur svarstiden | avvisat (E3); betyget ska vara användarens eget, inte en gissning |
 | undanhållande, ett-betyg-per-dygn, medföljande kort, nödutgångar | skadebegränsning för meningar vars innehåll upptäcktes i efterhand; R1 tar bort orsaken |
+| ord + form: ett kort per lexem och cell | under R1 måste varje form införas innan den används, så en regelbunden form kostar en övning; enda utvägen är att räkna mönstret som kunskap, och då är det den uppdelade modellen. Bokför dessutom symptom i stället för orsaker |
+| gränsen mellan stam och ändelse dragen med stränganalys | gjorde `arbetade` till ett undantag; gränsen följer av förutsägbarhetsprincipen (3.4) |
+| en regelbundenhetsregel per språk, på en rad | för lite — det som behövs är språkets produktiva böjningsregler, kontrollerade mot alla former |
+| böjningsklassen läses alltid ur lemmat | syns inte på svenska (`arbeta`/`köpa`) eller för franska `-ir`-verb (`choisir`/`partir`); att regeln träffade 165 av 174 franska verb dolde det |
+| ändelsekort per sträng, där celler med samma ändelse slås ihop | klarar inte isoleringstestet: presens `-e` och konjunktiv `-e` är olika kunskap |
+| aspektvalet utanför projektet, båda svaren godtas | användaren lär sig böja imparfait men aldrig när formen ska användas |
+| en egen övningstyp för aspektvalet | bryter formen «en mening, ett facit»; källmeningen kan visa valet i stället |
 
 ---
 
