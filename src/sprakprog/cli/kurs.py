@@ -29,6 +29,20 @@ def kör(args: argparse.Namespace) -> int:
         if källa == mål:
             print("Käll- och målspråk måste skilja sig.")
             return 1
+        # EN KURS PER MÅLSPRÅK — se `EN_KURS_PER_MÅLSPRÅK` i webb/__init__.py
+        # för hela skälet. Kortleken är gemensam per målspråk.
+        from ..webb import EN_KURS_PER_MÅLSPRÅK
+        egen = kort_db.execute(
+            "SELECT 1 FROM Kurs WHERE källspråk = ? AND målspråk = ?",
+            (källa, mål)).fetchone()
+        fanns = kort_db.execute(
+            "SELECT id, källspråk FROM Kurs WHERE målspråk = ? AND källspråk <> ?",
+            (mål, källa)).fetchone()
+        if egen is None and fanns is not None:
+            print(EN_KURS_PER_MÅLSPRÅK.format(
+                mål=mål, fanns=f"{fanns['källspråk']}→{mål}, kurs {fanns['id']}"))
+            print(f"\n  Ta bort den med:  ordbok kurs --ta-bort {fanns['id']}")
+            return 1
         kort_db.execute(
             """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
                                  meningar_per_dag, startad)
@@ -45,6 +59,30 @@ def kör(args: argparse.Namespace) -> int:
             r = befolka(kort_db, språk_db, {mål}, nivå=args.nivå, cefr=args.cefr)
         print(f"✓ kurs {källa} → {mål}, nivå {args.nivå}, {args.cefr}")
         print(f"  {r['totalt']} kort ({r['nya']} nya)")
+
+    if args.ta_bort is not None:
+        rad = kort_db.execute("SELECT * FROM Kurs WHERE id = ?",
+                              (args.ta_bort,)).fetchone()
+        if rad is None:
+            print(f"Ingen kurs med id {args.ta_bort}.")
+            return 1
+        # BARA KURSRADEN. Korten hör till MÅLSPRÅKET och inte till kursen —
+        # det är hela skälet till att två kurser mot samma språk inte går att
+        # köra — så en annan kurs mot samma mål ska behålla dem. Finns ingen
+        # sådan står kortleken kvar orörd och kan användas igen; att radera
+        # den vore en nollställning, och den har en egen knapp med en egen
+        # bekräftelse.
+        kvar = kort_db.execute(
+            "SELECT COUNT(*) AS n FROM Kurs WHERE målspråk = ? AND id <> ?",
+            (rad["målspråk"], rad["id"])).fetchone()["n"]
+        kort_db.execute("DELETE FROM Pass WHERE kurs_id = ?", (rad["id"],))
+        kort_db.execute("DELETE FROM Kurs WHERE id = ?", (rad["id"],))
+        kort_db.commit()
+        print(f"✓ kurs {rad['källspråk']} → {rad['målspråk']} borttagen "
+              f"(id {rad['id']}).")
+        print(f"  Kortleken för {rad['målspråk']} är ORÖRD — den hör till "
+              f"målspråket, inte till kursen." +
+              ("" if kvar else " Ingen kurs använder den just nu."))
 
     rader = kort_db.execute("SELECT * FROM Kurs ORDER BY målspråk").fetchall()
     if not rader:
@@ -70,6 +108,9 @@ def kör_webb(args: argparse.Namespace) -> int:
 
 def lägg_till_parser(sub) -> None:
     p = sub.add_parser("kurs", help="Skapa och visa kurser")
+    p.add_argument("--ta-bort", type=int, dest="ta_bort", metavar="ID",
+                   help="Ta bort en kurs. Kortleken hör till målspråket och "
+                        "rörs inte — använd nollställningen för den.")
     p.add_argument("--ny", nargs=2, metavar=("KÄLLSPRÅK", "MÅLSPRÅK"),
                    choices=SPRÅK, help="skapa eller uppdatera en kurs")
     p.add_argument("--nivå", type=int, default=4,

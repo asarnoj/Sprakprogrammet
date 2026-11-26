@@ -55,6 +55,28 @@ from .ordbok import Ordbok
 SIDA = Path(__file__).parent / "sida.html"
 
 
+#: EN KURS PER MÅLSPRÅK — en TILLFÄLLIG spärr, inte en språkregel.
+#:
+#: `Kort` har `språk` men ingen `kurs_id`, så alla kurser mot samma målspråk
+#: övar SAMMA kortlek. Julius körde sv→fr och en→fr och trodde att de var
+#: skilda åt. De delade allt: nollställning av den ena raderade den andras
+#: kortlek, `nollställ` byggde om den på nivå 1 medan grannkursen stod kvar på
+#: nivå 2, och dagens frysta inflödestak slogs upp med `WHERE målspråk = ?` —
+#: en enda rad för två kurser, trots att taket härleds ur `minuter_per_dag`
+#: som är per kurs (10 respektive 20 hos honom).
+#:
+#: Konfigurationen är alltså inte byggd, och att tyst låta den skapas var det
+#: sämsta av alternativen. Spärren står HÄR och inte i schemat därför att
+#: `UNIQUE (källspråk, målspråk)` inte går att skärpa till `UNIQUE (målspråk)`
+#: i en databas som redan bryter mot den nya regeln — och Julius databas gör
+#: det. En kodspärr fungerar på både nya och befintliga databaser och lyfts
+#: med en rad den dag kortleken blir per kurs.
+EN_KURS_PER_MÅLSPRÅK = ("Det finns redan en kurs mot {mål} ({fanns}). Alla kurser mot samma "
+         "målspråk delar kortlek — `Kort` har ingen kurs_id — så två kurser "
+         "mot {mål} skulle öva samma kort och nollställa varandra. Ta bort "
+         "den befintliga först om du vill byta källspråk.")
+
+
 class Övningstjänst:
     """Generatorerna och deras tillstånd, en per kurs."""
 
@@ -133,6 +155,30 @@ class Övningstjänst:
                 or målspråk not in self.SPRÅKNAMN:
             return None
         with self.lås:
+            # EN KURS PER MÅLSPRÅK. Se `EN_KURS_PER_MÅLSPRÅK` nedan.
+            #
+            # SPÄRREN GÄLLER BARA NYA KURSER. Att öppna en kurs som redan
+            # finns går alltid — anropet är då en uppdatering av
+            # `senast_öppnad`, inte ett försök att skapa något. Utan
+            # undantaget låste spärren ute användaren från BÅDA sina kurser
+            # så snart dubbletten redan fanns i databasen, vilket är att
+            # straffa ett läge i stället för att hindra det.
+            egen = self.kort_db.execute(
+                "SELECT 1 FROM Kurs WHERE källspråk = ? AND målspråk = ?",
+                (källspråk, målspråk)).fetchone()
+            fanns = self.kort_db.execute(
+                "SELECT källspråk FROM Kurs WHERE målspråk = ? AND källspråk <> ?",
+                (målspråk, källspråk)).fetchone()
+            if egen is None and fanns is not None:
+                # NYCKELN, inte prosan. `EN_KURS_PER_MÅLSPRÅK` är svensk text
+                # och hör hemma i loggar och i CLI:t; gränssnittet är engelskt
+                # och har sin text i `T`. Samma uppdelning som anmärkningarna
+                # fick — se `Anmärkning.nyckel`.
+                return {"fel": EN_KURS_PER_MÅLSPRÅK.format(
+                            mål=målspråk,
+                            fanns=f"{fanns['källspråk']}→{målspråk}"),
+                        "nyckel": "en_kurs_per_målspråk",
+                        "arg": f"{fanns['källspråk']}→{målspråk}"}
             nu = datetime.now(UTC).isoformat()
             self.kort_db.execute(
                 """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr, budget,

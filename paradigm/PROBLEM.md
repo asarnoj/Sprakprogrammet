@@ -1041,7 +1041,26 @@ delar mer än han kan se:
 
 **Det här är inte en bugg utan en obyggd konfiguration.** Antingen ska
 kortleken bli per kurs (`kurs_id` på `Kort`, en stor ändring), eller så ska
-en andra kurs mot samma målspråk vägras. Frågan är Julius.
+en andra kurs mot samma målspråk vägras.
+
+**BESLUTAT 2026-08-27: vägra, tills vidare.** Julius körde sv→fr och en→fr
+och trodde att de var skilda åt. Spärren ligger i KODEN och inte i schemat:
+`UNIQUE (källspråk, målspråk)` går inte att skärpa till `UNIQUE (målspråk)` i
+en databas som redan bryter mot den nya regeln, och hans gör det. En kodspärr
+verkar på både nya och befintliga databaser och lyfts med en rad den dag
+kortleken blir per kurs.
+
+**Spärren gäller bara NYA kurser, och det är den svåra halvan.** `ny_kurs` är
+också vägen man ÖPPNAR en kurs på, så en spärr utan undantag låste ute
+användaren från båda sina kurser så snart dubbletten fanns. Jag skrev det
+felet först. Invarianten i `tjänsteprov` prövar därför båda riktningarna: att
+en ny kurs vägras OCH att den befintliga går att öppna.
+
+`ordbok kurs --ta-bort ID` finns nu, och tar bara bort KURSRADEN. Korten hör
+till målspråket — det är hela skälet till att spärren behövs — så en annan
+kurs mot samma mål behåller dem, och finns ingen sådan står kortleken kvar
+orörd. Att radera den vore en nollställning, och den har en egen knapp med en
+egen bekräftelse.
 
 
 

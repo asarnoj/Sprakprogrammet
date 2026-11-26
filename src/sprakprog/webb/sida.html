@@ -487,6 +487,7 @@ const T = {
   //: Kort som skrevs av för att ingen mening kunde nå dem (B8). De fick
   //: INGET betyg — ett kort utan mätning är ärligt, ett med påhittad
   //: mätning är värre än tomt (D3) — och kommer tillbaka i morgon.
+  en_kurs_per_målspråk: f => `A course into this language already exists (${f}). All courses sharing a target language share one deck, so a second one would practise the same cards and reset the other. Remove the existing course first.`,
   oåtkomliga:   n => `${n} card${n === 1 ? "" : "s"} could not be reached by ` +
                      `any sentence today and were left ungraded.`,
   oövad:        "Practise a little and the pace shows up here.",
@@ -1452,7 +1453,10 @@ $("k-skapa").addEventListener("click", async () => {
   const ny = await hämta("/api/kurs", {method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({källspråk: a, målspråk: b})});
-  if (ny.fel) { sätt("k-varning", ny.fel); return; }
+  if (ny.fel) {
+    // Nyckeln när backend skickar en, annars texten som den kom. Backend
+    // skickar prosa bara för fel som aldrig når en användare.
+    sätt("k-varning", ny.nyckel ? T[ny.nyckel](ny.arg) : ny.fel); return; }
   // KURSEN ÖPPNAS PÅ HEMSKÄRMEN. Lektionen hör till att STARTA passet, inte
   // till att skapa kursen — den poppade förut upp mitt i ett kursbyte, utan
   // att man bett om den.

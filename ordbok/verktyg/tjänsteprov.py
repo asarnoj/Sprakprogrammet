@@ -340,7 +340,42 @@ def prov_extraövningen_går_att_köra(tj, kort, kurs) -> list[str]:
     return []
 
 
+def prov_en_kurs_per_målspråk(tj, kort, kurs) -> list[str]:
+    """En ANDRA kurs mot ett upptaget målspråk ska vägras — men bara en ny.
+
+    `Kort` har `språk` och ingen `kurs_id`, så alla kurser mot samma målspråk
+    övar samma kortlek. Julius körde sv→fr och en→fr och trodde att de var
+    skilda: nollställning av den ena raderade den andras kort, och dagens
+    frysta inflödestak slogs upp per språk fast det härleds ur
+    `minuter_per_dag`, som är per kurs.
+
+    TVÅ HALVOR, OCH BÅDA MÅSTE HÅLLA. Att vägra är lätt; att vägra FÖR MYCKET
+    är det verkliga felet, och jag gjorde det på första försöket. Spärren
+    stängde ute användaren från kurser som redan fanns, eftersom `ny_kurs`
+    också är vägen man ÖPPNAR en kurs på. Provet kontrollerar därför båda
+    riktningarna.
+    """
+    fel: list[str] = []
+    mål = kurs["målspråk"]
+    upptagen = {k["källspråk"] for k in kort.execute(
+        "SELECT källspråk FROM Kurs WHERE målspråk = ?", (mål,))}
+    ny_källa = next((s for s in ("sv", "en", "de", "it", "es")
+                     if s not in upptagen and s != mål), None)
+    if ny_källa is not None:
+        r = tj.ny_kurs(ny_källa, mål)
+        if r is None or "fel" not in r:
+            fel.append(f"[{mål}] en andra kurs {ny_källa}→{mål} skapades — "
+                       f"kortleken delas och kurserna nollställer varandra")
+    # Och den befintliga ska fortfarande gå att öppna.
+    r = tj.ny_kurs(kurs["källspråk"], mål)
+    if r is None or "fel" in r:
+        fel.append(f"[{mål}] den BEFINTLIGA kursen {kurs['källspråk']}→{mål} "
+                   f"vägrades — spärren stänger ute i stället för att hindra")
+    return fel
+
+
 PROV = [
+    ("en kurs per målspråk", prov_en_kurs_per_målspråk),
     ("dagsbudgeten hålls av alla vägar in", prov_glosbudget),
     ("extraövningen går att köra", prov_extraövningen_går_att_köra),
     ("passet tar slut", lambda tj, k, kurs: prov_dagen_tar_slut(tj, kurs)),
@@ -380,6 +415,39 @@ def _sabotera(namn: str):
                                  "källa": None} for r in rader], "kvar": 0}
         Övningstjänst.glosor = utan_budget
         return lambda: setattr(Övningstjänst, "glosor", äkta)
+
+    if namn == "en kurs per målspråk":
+        # Före spärren: `ny_kurs` skapade glatt en andra kurs mot samma mål.
+        äkta = Övningstjänst.ny_kurs
+        def utan_spärr(själv, källspråk, målspråk, nivå=1, cefr="A1"):
+            import sprakprog.webb as w
+            gammal, w.EN_KURS_PER_MÅLSPRÅK = w.EN_KURS_PER_MÅLSPRÅK, None
+            try:
+                # Med texten borta kastar formateringen, så spärren hoppas
+                # över — samma utfall som när den inte fanns.
+                try:
+                    return äkta(själv, källspråk, målspråk, nivå, cefr)
+                except AttributeError:
+                    pass
+            finally:
+                w.EN_KURS_PER_MÅLSPRÅK = gammal
+            with själv.lås:
+                from datetime import UTC, datetime
+                nu = datetime.now(UTC).isoformat()
+                själv.kort_db.execute(
+                    """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr,
+                                         budget, meningar_per_dag, startad,
+                                         senast_öppnad)
+                       VALUES (?,?,?,?,1.5,20,?,?)
+                       ON CONFLICT (källspråk, målspråk) DO UPDATE SET
+                           senast_öppnad = excluded.senast_öppnad""",
+                    (källspråk, målspråk, nivå, cefr, nu, nu))
+                själv.kort_db.commit()
+                return dict(själv.kort_db.execute(
+                    "SELECT * FROM Kurs WHERE källspråk=? AND målspråk=?",
+                    (källspråk, målspråk)).fetchone())
+        Övningstjänst.ny_kurs = utan_spärr
+        return lambda: setattr(Övningstjänst, "ny_kurs", äkta)
 
     if namn == "extraövningen går att köra":
         # Den trasiga frågan, återinförd: fyra platshållare, tre bindningar.
