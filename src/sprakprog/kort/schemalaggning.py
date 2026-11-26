@@ -755,12 +755,6 @@ class Schemaläggare:
                 if r["typ"] in ("form", "stam") and r["koncept"] in fallna_ord}
 
 
-#: Förval för hur mycket användaren vill öva, när kursen inte säger något.
-#: DET ENDA VALDA TALET I UPPLÅSNINGEN — och det är användarens val och inte
-#: vårt: en uppgift om hens dygn, som ingen mätning kan ersätta. Allt annat
-#: räknas fram (se `upplåsningsläge`).
-STANDARD_MENINGAR_PER_DAG = 20
-
 #: Så många osedda kort får en mening introducera gratis; över det straffar
 #: poängsättaren varje ytterligare. Talet bor här och inte i `poang.py`
 #: därför att det styr TAKTEN nytt material kommer in i, vilket är en
@@ -1230,6 +1224,51 @@ def kort_per_mening(kort_db: sqlite3.Connection, språk: str) -> float | None:
     return rad["rep"] / rad["meningar"] if rad["meningar"] else None
 
 
+def meningstakt(kort_db: sqlite3.Connection, språk: str) -> float | None:
+    """Hur många meningar användaren gör en dag hen övar. MÄTT, inte satt.
+
+    DET HÄR ÄR INGET MÅL, och det är hela poängen med att det mäts. B5 tog
+    bort meningsmålet: dagen tar slut när KORTEN är gjorda, aldrig efter N
+    meningar, eftersom FSRS bygger på att rätt kort repeteras i tid. Antalet
+    meningar per dygn är därmed ett UTFALL — och det är precis den storhet
+    `exponeringsgräns` behöver, som ställer en faktafråga och inte en
+    styrfråga: möts det här kortet mer än en gång om dagen?
+
+    Talet stod tidigare i `Kurs.meningar_per_dag`, en kolumn från tiden före
+    B4 som ingen någonsin ändrat. Alla fyra kurser hade 20, och Julius
+    verkliga franska dagar var 5, 10, 11, 13, 18, 21.
+
+    MEDELVÄRDET, OCH DET ÄR HÄRLETT OCH INTE VALT. Villkoret gränsen bygger
+    på är `exponering × meningar_per_dag ≥ 1`, alltså VÄNTAT antal möten per
+    dygn — och väntevärdet över dagar är medelvärdet. Medianen var det första
+    utkastet, som en dämpning mot enstaka maratondagar, men en dämpning är ett
+    val formeln inte ber om. Skillnaden är liten: franskans dagar ger
+    medelvärde 13,0 och median 12,0.
+
+    BARA DAGAR MED AKTIVITET RÄKNAS. En dag utan övning möter ingenting, och
+    att räkna den som noll hade sagt att korten möts mer sällan än de gör.
+    Frågan gäller de dagar användaren faktiskt sitter ner.
+
+    INGET FÖNSTER, alltså hela historiken. Ett fönster hade krävt en längd,
+    och en längd är ett tal någon väljer — precis det som gjorde 20 till ett
+    problem. Priset är att en gammal takt dröjer kvar.
+
+    FELET LUTAR ÅT RÄTT HÅLL när historiken är tunn. Få dagar ger vanligen ett
+    lågt tal, alltså en HÖG gräns, alltså färre kort lyfta ur schemat — och
+    det är den ofarliga sidan: ett allestädes närvarande kort som ändå
+    schemaläggs växer bara i stabilitet och förfaller aldrig, medan ett
+    sällsynt kort som lyfts ur schemat förlorar spacing det behöver. Tyskan
+    har två övade dagar (1 och 9 meningar) och får därför gränsen 0,2.
+
+    None när kursen aldrig övats. Anroparen ska då INTE gissa: se
+    `sätt_schemalagt`.
+    """
+    rad = kort_db.execute(
+        """SELECT COUNT(*) AS meningar, COUNT(DISTINCT date(tidpunkt)) AS dagar
+           FROM Mening WHERE språk = ?""", (språk,)).fetchone()
+    return rad["meningar"] / rad["dagar"] if rad["dagar"] else None
+
+
 def redo_för_nivå(byggbarhet: float | None, kandidater: int) -> bool | None:
     """Går nästa nivå att ÖVA, eller blir varje mening en ordlektion?
 
@@ -1316,28 +1355,6 @@ def upplåsningsläge(kort_db: sqlite3.Connection, språk: str,
             "nästa_nivå_kort": nästa_nivå_kort}
 
 
-def _kapacitetsval(kort_db: sqlite3.Connection, språk: str,
-                   meningar_per_dag: int | None) -> int:
-    """Kursens `meningar_per_dag`, eller förvalet.
-
-    KVARLEVA MED EN ENDA KVARVARANDE UPPGIFT. B4 gjorde minuter till
-    användarens ratt, och kolumnen ersattes — men växelkursen mellan minuter
-    och kort kräver en mätning som inte finns dag ett. Tills dess är
-    `meningar_per_dag × kort_per_mening` reservmålet i `dagsplan` (B4:
-    "reservvägen byter enhet på MÅLET, inte på räkningen").
-
-    Den bodde tidigare också i `upplåsningsläge`, där den var indata till en
-    kapacitetsgrind som B2 gjorde överflödig och `per_kort` gjorde fel med en
-    faktor 5–28. Den vägen är borta; det här är det sista stället talet styr
-    något.
-    """
-    if meningar_per_dag is not None:
-        return meningar_per_dag
-    rad = kort_db.execute(
-        "SELECT meningar_per_dag FROM Kurs WHERE målspråk = ?", (språk,)).fetchone()
-    return rad["meningar_per_dag"] if rad else STANDARD_MENINGAR_PER_DAG
-
-
 def _infört_idag(kort_db: sqlite3.Connection, språk: str,
                  nu: datetime | None) -> int:
     """Hur många kort som förbrukats av dagen. Egen funktion för att den ska
@@ -1348,8 +1365,7 @@ def _infört_idag(kort_db: sqlite3.Connection, språk: str,
         (språk, dygnets_början(nu))).fetchone()[0]
 
 
-def dagsplan(kort_db: sqlite3.Connection, språk: str,
-             meningar_per_dag: int | None = None, *, passkö: int = 0,
+def dagsplan(kort_db: sqlite3.Connection, språk: str, *, passkö: int = 0,
              minuter_per_dag: float | None = None,
              nu: datetime | None = None) -> dict:
     """Dagens arbete, och hur mycket nytt som får komma in i det.
@@ -1383,7 +1399,6 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
     nytt förs in och stiger igen när korten mognar — eller när extraövningen
     flyttar fram förfallodagar. Det är samma mekanism i båda fallen.
     """
-    meningar_per_dag = _kapacitetsval(kort_db, språk, meningar_per_dag)
     if minuter_per_dag is None:
         rad = kort_db.execute(
             "SELECT minuter_per_dag FROM Kurs WHERE målspråk = ?",
@@ -1439,20 +1454,23 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
     # minuter omräknade till repetitioner via sekunder per repetition, mätt
     # ur den egna loggen.
     #
-    # SAKNAS DEN MÄTNINGEN faller vi tillbaka på det gamla måttet för
-    # MÅLET — meningar × kort per mening — men aldrig på det gamla måttet för
-    # KOSTNADEN. `per_kort` behandlade kortets nuvarande takt som evig och var
-    # därför fel med en faktor fem till trettio; kostnadskurvan kommer numera
-    # ur en FSRS-simulering. Reservvägen byter alltså bara enhet på målet, inte
-    # på räkningen.
+    # SAKNAS DEN MÄTNINGEN FINNS INGET MÅL, och då sätts inget tak. Här stod
+    # en reservväg — `meningar_per_dag × kort_per_mening` — och den var samma
+    # sorts fel som funktionen dömer ut trettio rader ner: "Ett fast
+    # kallstartstal fanns här innan (först 40 kort, sedan 10) och båda var
+    # samma sorts fel: en konstant som stod in för en mätning." Kolumnen stod
+    # på 20 i alla fyra kurser, satt av ingen, kvar sedan före B4.
+    #
+    # Utan tak begränsas dagen av passets egen LÄNGD, och det är redan svaret
+    # på en oövad kurs: man kan inte räkna ut någons inlärningskurva innan hen
+    # börjat. Reservvägen var dessutom död i praktiken — alla fyra kurser har
+    # en mätt sekunder-per-repetition, så grenen kunde aldrig tas.
     from .arbetsborda import måltakt, nya_idag
     # DAGENS TAK SÄTTS EN GÅNG, ur läget vid dygnets början. Saldot rör sig
     # (via `infört_idag`), men taket gör det inte — annars är "dagens
     # tilldelning" inte ett tal utan en följd av hur fort man råkat svara.
     dygnsstart = dygnets_början(nu)
     mål_rep = måltakt(kort_db, språk, minuter_per_dag)
-    if mål_rep is None and k:
-        mål_rep = meningar_per_dag * k
     beslut = nya_idag(kort_db, språk, mål_rep_per_dag=mål_rep, nu=nu)
     # HÅLLBAR INFÖRSELTAKT, kort per dygn. Det är en TAKT och inte ett lager,
     # till skillnad från `upplåsningsläge["rum"]` som fortfarande räknar
@@ -1554,8 +1572,11 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
     # ett tak B5 tog bort: dagen tar slut när KORTEN är gjorda, aldrig efter
     # N meningar. Ingen läste den. Samma sak med `belastning`, `per_kort`
     # och `kapacitet_kort` längre ner — noll läsare utanför den här filen.
+    # `mål` LÅG HÄR OCH ÄR BORTA (2026-09-04), av samma skäl som
+    # `kvar_meningar` en gång: det var `meningar_per_dag`, alltså ett målantal
+    # meningar B5 avskaffat, och gränssnittet hade ingen läsare för talet.
     return {"språk": språk,
-            "mål": meningar_per_dag, "gjort": gjort,
+            "gjort": gjort,
             "förfallna": förfallna, "igen": passkö, "nya": nya,
             "nya_extra": nya_extra, "tidiga": tidiga,
             "att_göra": finns_idag,

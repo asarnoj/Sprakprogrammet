@@ -4094,11 +4094,12 @@ det finns någon väg att göra det. `i_larm` utesluter dagens rörda kort av de
 skälet. Det är samma fälla `kommande` redan undviker, men skarpare — den högen
 vore inte bara verkningslös utan låsande, eftersom passet väntar på den.
 
-`övervakningsprov.py` — sju invarianter, sju sabotage, alla faller. Det
-förkastade måttet ovan är ett av dem: invariant 2 är dess gravsten.
+`övervakningsprov.py` — sju invarianter, sju sabotage, alla faller (tio efter
+lösning II nedan). Det förkastade måttet ovan är ett av dem: invariant 2 är
+dess gravsten.
 
-**VAD SOM INTE ÄR LÖST.** Två av de tre iakttagelserna ovan står kvar, och
-båda hör till B3 och inte hit.
+**VAD SOM INTE ÄR LÖST.** En av de tre iakttagelserna ovan står kvar, och den
+hör till B3 och inte hit.
 
 Den tredje — "tyskans exponering är omätt (1 112 kort)" — **är inte längre
 sann, mätt 2026-09-04**: samtliga fyra språk har noll omätta kort, och tyskan
@@ -4117,23 +4118,79 @@ Kvar står:
    ett ord som mest förekommer i frågor får en exponering mätt i en värld
    utan frågor.
 
-2. **`exponeringsgräns` följer `Kurs.meningar_per_dag` och inte den uppmätta
-   takten.** Kolumnen står på 20 i alla fyra kurserna och har aldrig ändrats;
-   B4 gjorde minuter till användarens ratt och lämnade den här kvar. Gränsen
-   är därför fast 0,05 i praktiken.
+2. ~~`exponeringsgräns` följer `Kurs.meningar_per_dag`~~ — **LÖST 2026-09-04,
+   se nedan.**
 
-   **Vad det kostar, mätt 2026-09-04.** Julius verkliga franska takt är 13,
-   21, 18, 5, 11, 10 meningar per dag — median 12, inte 20. Vid 12 blir
-   gränsen 1/12 = 0,083, och NIO franska kort ligger mellan 0,05 och 0,083:
-   `coûter`, `coût`, `enfant`, `femme`, `mère`, `frère`, `chien`,
-   `professeur`, `médecin`. De är övervakade idag på grund av ett tal ingen
-   satt, och de möts i själva verket bara en halv gång om dagen — alltså
-   precis den sortens kort spacing FUNGERAR på. Det är 9 av franskans 20
-   övervakade kort.
+#### LÖSNING 2026-09-04 (II) — gränsen mäts, och kolumnen är borta
 
-   E6:s larm mildrar detta men botar det inte: ett övervakat kort som går
-   sönder kommer nu tillbaka, medan ett som bara går långsamt sämre inte gör
-   det. Att räkna om gränsen är fortfarande ett beslut och inte en rättelse.
+Julius reste frågan själv: *"Jag är rädd att meningar per dag är en gammal
+variabel innan jag använde minuter som input för hur långt varje dagspass ska
+vara."* Den var det, och den var dessutom fortfarande styrande.
+
+**TRE LÄSARE FANNS, OCH BARA EN LEVDE.**
+
+    exponeringsgräns      avgjorde vilka kort som schemaläggs      LEVDE
+    dagsplan, reservmål   meningar × kort_per_mening när takt      död — alla
+                          saknas                                   kurser har en
+                                                                   mätt takt
+    dagsplan["mål"]       skickades till gränssnittet              död — ingen
+                                                                   läsare i html
+
+Den levande läsaren var den som gjorde skada. Kolumnen stod på 20 i alla fyra
+kurserna, satt av ingen, medan Julius verkliga franska dagar var 5, 10, 11,
+13, 18 och 21 meningar.
+
+**ATT I STÄLLET GÅ VIA MINUTERNA MÄTTES OCH FÖRKASTADES.** Det var den
+uppenbara vägen — minuter är ju ratten — men `måltakt / kort_per_mening` gav
+**170,8 meningar om dagen på 20 minuter** för engelskan. Talet kommer ur att
+sekunder-per-repetition mäts på en historik som nästan bara är drill, där ett
+svar tar ett par sekunder. Vägen minuter → meningar går genom ett mått en
+snedvriden historik förstör tyst.
+
+**RÄTT STORHET STOD REDAN I `Mening`.** Efter B5 finns inget målantal meningar
+alls — dagen tar slut när korten är gjorda — så antalet meningar per dag är
+ett UTFALL, och gränsen ställer just en faktafråga: möts kortet mer än en gång
+om dagen? `meningstakt` räknar meningar per övad dag ur loggen.
+
+MEDELVÄRDET, HÄRLETT: villkoret är `exponering × meningar_per_dag ≥ 1`, alltså
+VÄNTAT antal möten, och väntevärdet över dagar är medelvärdet. Medianen var
+första utkastet — en dämpning mot maratondagar — men en dämpning är ett val
+formeln inte ber om. Franskan ger 13,0 mot medianens 12,0.
+
+**Utfallet, mätt över hela beståndet:**
+
+    språk   takt    ur schemat före → efter
+    de       5,0        21 → 11
+    en      16,0         8 →  8
+    fr      13,0        20 → 11
+    ja        —          6 →  0     aldrig övad
+
+Japanskans sex kort var lyfta ur schemat på ett antagande om en dag som aldrig
+inträffat. En kurs utan meningslogg lyfter nu ingenting: att lämna kortet
+schemalagt är den ofarliga sidan — ett allestädes närvarande kort som ändå
+schemaläggs växer bara i stabilitet och förfaller aldrig, medan ett sällsynt
+kort utan schema förlorar spacing det behöver.
+
+**GRÄNSEN RÄKNAS OM DÄR DEN LÄSES.** Talet ändrar sig medan användaren övar,
+till skillnad från 20, så `_rader` kör `sätt_schemalagt` precis innan den
+frågar efter förfallna och larmade kort. Inte i `dagsplan`: planen LÄSER dagen
+och får inte ändra den — samma lärdom som dagboken fick, att ett vittne inte
+får bygga om det det ska vittna om.
+
+**KOLUMNEN ÄR BORTA** (`kurs_utan_meningar_per_dag.sql`), tillsammans med
+`--meningar-per-dag`, `STANDARD_MENINGAR_PER_DAG`, `_kapacitetsval`,
+reservmålet och `dagsplan["mål"]`. Att lämna kvar en kolumn ingen läser är en
+inbjudan att läsa den igen, och det hade redan hänt en gång: `db.py` skrev
+"en kolumn som ingen längre läser skadar ingen" medan `exponeringsgräns` läste
+den och avgjorde vilka kort som fick spacing.
+
+`övervakningsprov.py` är nu 10 invarianter och 10 sabotage. De tre nya: en
+oövad kurs lyfter inget ur schemat, gränsen följer takten, och passet räknar
+om den när dagen byggs.
+
+**KVAR EFTER BÅDA LÖSNINGARNA** står alltså bara punkt 1: exponeringen mäts i
+en värld av enbart enkla påståendesatser. Det är en fråga om mätningens
+UNDERLAG och hör till B3.
 
 ### E7 ? — FSRS-parametrarna är biblioteksförval
 

@@ -354,6 +354,17 @@ Uppdelningen står därför kvar, med en väg tillbaka tillagd:
 Fönstret och tröskeln kommer båda ur retentionsmålet och inte ur ett val — se
 E6:s lösning i `PROBLEM.md` och `Schemaläggare.i_larm`.
 
+**OCH GRÄNSEN MELLAN DE TVÅ SORTERNA ÄR NUMERA MÄTT (2026-09-04).** "Gränsen
+sätts på uppmätt exponeringsfrekvens, inte på en tumregel" ovan var sant om
+ena faktorn och falskt om den andra: `exponering × meningar_per_dag` hade en
+mätt exponering och ett SATT antal meningar, hämtat ur `Kurs.meningar_per_dag`
+— en kolumn från tiden före B4 som stod på 20 i varje kurs. Antalet meningar
+per dag kommer nu ur `Mening` (`meningstakt`), och kolumnen finns inte kvar.
+
+Att i stället härleda talet ur minuterna mättes och förkastades: vägen
+`måltakt / kort_per_mening` gav 170,8 meningar om dagen på 20 minuter för
+engelskan, eftersom sekunder-per-repetition kommer ur en drillad historik.
+
 ### Misslyckade kort
 
 **Inga relearning-steg behövs.** Ett kort som fallerat får hög prioritet i

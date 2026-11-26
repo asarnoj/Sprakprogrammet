@@ -33,6 +33,7 @@ from __future__ import annotations
 import sqlite3
 from datetime import UTC, datetime
 
+from .befolka import sätt_schemalagt
 from .schemalaggning import (
     Schemaläggare, _kort_per_koncept, dygnets_början,
 )
@@ -248,6 +249,19 @@ def _rader(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict,
     svåra de än är att nå (B5), och når man dem inte finns nödutgången (B8).
     """
     språk = kurs["målspråk"]
+    # GRÄNSEN MELLAN SCHEMALAGT OCH ÖVERVAKAT RÄKNAS OM HÄR, precis innan den
+    # läses. Den bygger på hur många meningar användaren gör en övad dag
+    # (`meningstakt`), och det talet ändrar sig medan hen övar — förut kom det
+    # ur `Kurs.meningar_per_dag`, som stod stilla på 20 och därför inte
+    # behövde räknas om för att vara lika fel varje dag.
+    #
+    # HÄR OCH INTE I `dagsplan`: planen LÄSER dagen och får inte ändra den,
+    # vilket dagboken redan fick lära sig — ett vittne som bygger om det det
+    # ska vittna om är inget vittne. `_rader` skriver redan, körs en gång per
+    # dygn och pass, och är den enda punkt där `schemalagt` faktiskt används.
+    # Att räkna om på samma ställe som flaggan läses gör att de två inte kan
+    # hinna gå isär.
+    sätt_schemalagt(kort_db, språk=språk)
     s = Schemaläggare(kort_db)
     rader: list[tuple[int, str]] = []
 

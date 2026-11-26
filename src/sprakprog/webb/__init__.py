@@ -222,8 +222,8 @@ class Övningstjänst:
             nu = datetime.now(UTC).isoformat()
             self.kort_db.execute(
                 """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
-                                     meningar_per_dag, startad, senast_öppnad)
-                   VALUES (?,?,?,?,1.5,20,?,?)
+                                     startad, senast_öppnad)
+                   VALUES (?,?,?,?,1.5,?,?)
                    ON CONFLICT (källspråk, målspråk) DO UPDATE SET
                        senast_öppnad = excluded.senast_öppnad""",
                 (källspråk, målspråk, nivå, cefr, nu, nu))
@@ -826,7 +826,7 @@ class Övningstjänst:
                 "idag": {"att_göra": p["att_göra"], "förfallna": p["förfallna"],
                          "igen": p["igen"], "nya": p["nya"],
                          "övervakade": p.get("övervakade", 0),
-                         "gjort": p["gjort"], "mål": p["mål"], "klar": p["klar"],
+                         "gjort": p["gjort"], "klar": p["klar"],
                          "finns": p["att_göra"],
                          # UPPDELNINGEN, färdigräknad. Sidan ska inte
                          # härleda den — se `pass_.läget`.
@@ -1262,7 +1262,7 @@ class Övningstjänst:
         och en omräkning av taket. Alla tre är borta — passet vet vad det
         innehåller, och det som är onåbart står skrivet i tabellen.
         """
-        p = dagsplan(self.kort_db, kurs["målspråk"], kurs["meningar_per_dag"],
+        p = dagsplan(self.kort_db, kurs["målspråk"],
                      minuter_per_dag=kurs["minuter_per_dag"])
         # NÅBARHETEN MÄTS BARA NÄR ETT PASS FAKTISKT SKA BYGGAS. Den kostar
         # några hundra renderingar; att göra det vid varje läsning av dagen
@@ -1295,7 +1295,7 @@ class Övningstjänst:
         p = self._dagsplan(kurs)
         if not p["klar"]:
             return None
-        plan = dagsplan(self.kort_db, kurs["målspråk"], kurs["meningar_per_dag"],
+        plan = dagsplan(self.kort_db, kurs["målspråk"],
                         minuter_per_dag=kurs["minuter_per_dag"])
         return passlager.starta(self.kort_db, kurs, plan, läge="extra")
 

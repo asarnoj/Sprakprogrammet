@@ -2,7 +2,7 @@
 
 En kurs är ett par av käll- och målspråk med sina två nivåtak och sina två
 inställningar. Den är också det enda stället användarens egna VAL bor:
-`budget` och `meningar_per_dag`. Allt annat i systemet är härlett eller mätt.
+`budget` och `minuter_per_dag`. Allt annat i systemet är härlett eller mätt.
 """
 
 from __future__ import annotations
@@ -45,12 +45,12 @@ def kör(args: argparse.Namespace) -> int:
             return 1
         kort_db.execute(
             """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
-                                 meningar_per_dag, startad)
-               VALUES (?,?,?,?,?,?,?)
+                                 startad)
+               VALUES (?,?,?,?,?,?)
                ON CONFLICT (källspråk, målspråk) DO UPDATE SET
                    nivå = excluded.nivå, cefr = excluded.cefr""",
             (källa, mål, args.nivå, args.cefr, args.budget,
-             args.meningar_per_dag, datetime.now(UTC).isoformat()))
+             datetime.now(UTC).isoformat()))
         kort_db.commit()
         # Att skapa kursen ÄR att befolka den. Nivån avgör vilka kort som
         # finns (se schemalaggning.upplåsningsläge), så en kurs utan
@@ -88,10 +88,10 @@ def kör(args: argparse.Namespace) -> int:
     if not rader:
         print("Ingen kurs finns. Skapa en med `ordbok kurs --ny sv de`.")
         return 0
-    print(f"\n{'kurs':>10}{'nivå':>6}{'cefr':>6}{'budget':>8}{'meningar/dag':>14}")
+    print(f"\n{'kurs':>10}{'nivå':>6}{'cefr':>6}{'budget':>8}{'minuter/dag':>13}")
     for k in rader:
         print(f"{k['källspråk'] + ' → ' + k['målspråk']:>10}{k['nivå']:6}"
-              f"{k['cefr']:>6}{k['budget']:8.1f}{k['meningar_per_dag']:14}")
+              f"{k['cefr']:>6}{k['budget']:8.1f}{k['minuter_per_dag']:13}")
     return 0
 
 
@@ -119,8 +119,6 @@ def lägg_till_parser(sub) -> None:
                    help="tak på ordförrådets CEFR-nivå")
     p.add_argument("--budget", type=float, default=1.5,
                    help="Σ(1−R) att sikta på per mening")
-    p.add_argument("--meningar-per-dag", type=int, dest="meningar_per_dag",
-                   default=20, help="hur mycket du vill öva — styr upplåsningen")
     p.set_defaults(func=kör)
 
     w = sub.add_parser("webb", help="Kör övningsgränssnittet lokalt")

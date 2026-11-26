@@ -46,11 +46,19 @@ sys.path.insert(0, str(ROT / "src"))
 from sprakprog.db import anslut                                   # noqa: E402
 from sprakprog.generator import Generator                         # noqa: E402
 from sprakprog.kort import pass_ as passlager                     # noqa: E402
+from sprakprog.kort.befolka import sätt_schemalagt                # noqa: E402
 from sprakprog.kort.db import anslut_kort                         # noqa: E402
 from sprakprog.kort import schemalaggning as sch                  # noqa: E402
 from sprakprog.kort.schemalaggning import (                       # noqa: E402
     FEL, LARMFÖNSTER, RÄTT, Schemaläggare, dagsplan,
 )
+
+#: Modulen `befolka`, hämtad ur `sys.modules` och inte med `import ... as`.
+#: `sprakprog.kort.__init__` gör `from .befolka import befolka`, vilket binder
+#: OM paketets attribut `befolka` från modulen till funktionen — så
+#: `import sprakprog.kort.befolka as bef` ger funktionen. Sabotaget behöver
+#: modulen för att kunna byta ut `exponeringsgräns` i den.
+bef = sys.modules[sätt_schemalagt.__module__]
 
 #: Språket proven körs mot. Franskan är den enda kursen med en verklig
 #: repetitionslogg, och proven skriver sin egen logg ändå — men beståndet av
@@ -113,6 +121,29 @@ def _sätt_logg(kort: sqlite3.Connection, kort_id: int,
     kort.commit()
 
 
+def _sätt_meningslogg(kort: sqlite3.Connection, per_dag: list[int]) -> None:
+    """Skriv om meningsloggen: en post per element, i lika många dygn.
+
+    Det är den här loggen `meningstakt` mäter, och därmed det enda som numera
+    avgör var gränsen mellan schemalagt och övervakat går.
+    """
+    kort.execute("DELETE FROM Mening WHERE språk = ?", (SPRÅK,))
+    for dag, antal in enumerate(per_dag):
+        stund = (datetime(2026, 1, 1, 12, tzinfo=UTC)
+                 + timedelta(days=dag)).isoformat()
+        for _ in range(antal):
+            kort.execute(
+                "INSERT INTO Mening (tidpunkt, språk, spec, text) "
+                "VALUES (?,?,'{}','x')", (stund, SPRÅK))
+    kort.commit()
+
+
+def _övervakade(kort: sqlite3.Connection) -> int:
+    return kort.execute(
+        "SELECT COUNT(*) FROM Kort WHERE språk = ? AND schemalagt = 0",
+        (SPRÅK,)).fetchone()[0]
+
+
 def _kurs(kort: sqlite3.Connection) -> sqlite3.Row:
     return kort.execute("SELECT * FROM Kurs WHERE målspråk = ? LIMIT 1",
                         (SPRÅK,)).fetchone()
@@ -165,8 +196,7 @@ def prov_passet_tar_in(kort) -> list[str]:
     kurs = _kurs(kort)
     kort.execute("DELETE FROM Passkort"); kort.execute("DELETE FROM Pass")
     kort.commit()
-    plan = dagsplan(kort, SPRÅK, kurs["meningar_per_dag"],
-                    minuter_per_dag=kurs["minuter_per_dag"])
+    plan = dagsplan(kort, SPRÅK, minuter_per_dag=kurs["minuter_per_dag"])
     p = passlager.starta(kort, kurs, plan)
     roller = {r["kort_id"]: r["roll"] for r in kort.execute(
         "SELECT kort_id, roll FROM Passkort WHERE pass_id = ?", (p["id"],))}
@@ -260,6 +290,72 @@ def prov_summan_stämmer(kort) -> list[str]:
     return []
 
 
+def prov_oövad_lyfter_inget(kort) -> list[str]:
+    """En kurs som aldrig övats får inga kort lyfta ur schemat.
+
+    GRÄNSEN ÄR EN MÄTNING OCH INTE ETT TAL, och det här är den skarpaste
+    formen av påståendet. Förut kom antalet meningar per dag ur
+    `Kurs.meningar_per_dag`, som svarade 20 även för en kurs där användaren
+    aldrig gjort en enda mening — och 20 lyfte kort ur schemat på ett
+    antagande om en dag som inte inträffat. Japanskan hade sex sådana kort.
+
+    Att lämna kortet schemalagt är dessutom den ofarliga sidan: ett
+    allestädes närvarande kort som schemaläggs växer bara i stabilitet och
+    förfaller aldrig, medan ett sällsynt kort utan schema förlorar spacing.
+    """
+    _sätt_meningslogg(kort, [])
+    sätt_schemalagt(kort, språk=SPRÅK)
+    n = _övervakade(kort)
+    if n:
+        return [f"{n} kort lyftes ur schemat trots att kursen aldrig övats — "
+                f"gränsen kom från något annat än en mätning"]
+    return []
+
+
+def prov_gränsen_följer_takten(kort) -> list[str]:
+    """Övar man mer möts korten oftare, och fler faller ur schemat.
+
+    Riktningen är hela innehållet: gränsen är 1/takt, så en högre takt ger en
+    LÄGRE gräns och därmed fler övervakade kort. Ett fast tal — vilket som
+    helst — ger samma svar på båda loggarna.
+    """
+    _sätt_meningslogg(kort, [5, 5, 5])
+    sätt_schemalagt(kort, språk=SPRÅK)
+    lugnt = _övervakade(kort)
+    _sätt_meningslogg(kort, [40, 40, 40])
+    sätt_schemalagt(kort, språk=SPRÅK)
+    flitigt = _övervakade(kort)
+    if not lugnt < flitigt:
+        return [f"5 meningar/dag gav {lugnt} övervakade kort och 40 gav "
+                f"{flitigt} — takten styr inte gränsen"]
+    return []
+
+
+def prov_passet_räknar_om(kort) -> list[str]:
+    """Gränsen räknas om när dagen byggs, inte bara när `befolka` körs.
+
+    Talet ändrar sig medan användaren övar. Förut behövde det aldrig räknas
+    om — det stod stilla på 20 — så flaggan kunde vara satt vid en körning av
+    `ordbok kort` för veckor sedan och ändå styra dagens kö.
+    """
+    _sätt_meningslogg(kort, [40, 40, 40])
+    sätt_schemalagt(kort, språk=SPRÅK)
+    flitigt = _övervakade(kort)
+    # Takten faller, men ingen rör flaggan — bara dagen byggs.
+    _sätt_meningslogg(kort, [5, 5, 5])
+    kurs = _kurs(kort)
+    kort.execute("DELETE FROM Passkort"); kort.execute("DELETE FROM Pass")
+    kort.commit()
+    plan = dagsplan(kort, SPRÅK, minuter_per_dag=kurs["minuter_per_dag"])
+    passlager.starta(kort, kurs, plan)
+    efter = _övervakade(kort)
+    if not efter < flitigt:
+        return [f"takten föll från 40 till 5 meningar/dag men antalet "
+                f"övervakade kort stod kvar på {efter} (var {flitigt}) — "
+                f"gränsen räknades inte om när passet byggdes"]
+    return []
+
+
 PROV = [
     ("larmet fångar ett trasigt kort",      prov_larmet_fångar),
     ("larmet tiger om ett friskt kort",     prov_larmet_tiger),
@@ -268,6 +364,9 @@ PROV = [
     ("redan mött idag låser inte passet",   prov_ingen_låsning),
     ("generatorn ser samma larm",           prov_generatorn_ser),
     ("uppdelningen summerar till att_göra", prov_summan_stämmer),
+    ("oövad kurs lyfter inget ur schemat",  prov_oövad_lyfter_inget),
+    ("gränsen följer den mätta takten",     prov_gränsen_följer_takten),
+    ("passet räknar om gränsen",            prov_passet_räknar_om),
 ]
 
 
@@ -356,6 +455,27 @@ def _sabotage_delar_utan_övervakad():
     return lambda: setattr(passlager, "DELAR", gammal)
 
 
+def _sabotage_takten_är_ett_tal():
+    """det gamla läget: takten är 20, mätt eller ej"""
+    gammal = sch.meningstakt
+    sch.meningstakt = lambda kort_db, språk: 20.0
+    return lambda: setattr(sch, "meningstakt", gammal)
+
+
+def _sabotage_gränsen_är_fast():
+    """gränsen slutar följa takten"""
+    gammal = bef.exponeringsgräns
+    bef.exponeringsgräns = lambda takt: 0.05
+    return lambda: setattr(bef, "exponeringsgräns", gammal)
+
+
+def _sabotage_passet_räknar_inte_om():
+    """dagen byggs på flaggan som råkar stå där"""
+    gammal = passlager.sätt_schemalagt
+    passlager.sätt_schemalagt = lambda kort_db, takt=None, *, språk=None: 0
+    return lambda: setattr(passlager, "sätt_schemalagt", gammal)
+
+
 #: (sabotage, vilket prov det ska fälla)
 SABOTAGE = [
     (_sabotage_tröskeln_av,           0),
@@ -365,6 +485,9 @@ SABOTAGE = [
     (_sabotage_dagens_rörda_med,      4),
     (_sabotage_generatorn_utan_larm,  5),
     (_sabotage_delar_utan_övervakad,  6),
+    (_sabotage_takten_är_ett_tal,     7),
+    (_sabotage_gränsen_är_fast,       8),
+    (_sabotage_passet_räknar_inte_om, 9),
 ]
 
 

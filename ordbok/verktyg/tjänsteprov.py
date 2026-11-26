@@ -916,9 +916,8 @@ def _sabotera(namn: str):
                 nu = datetime.now(UTC).isoformat()
                 själv.kort_db.execute(
                     """INSERT INTO Kurs (källspråk, målspråk, nivå, cefr,
-                                         budget, meningar_per_dag, startad,
-                                         senast_öppnad)
-                       VALUES (?,?,?,?,1.5,20,?,?)
+                                         budget, startad, senast_öppnad)
+                       VALUES (?,?,?,?,1.5,?,?)
                        ON CONFLICT (källspråk, målspråk) DO UPDATE SET
                            senast_öppnad = excluded.senast_öppnad""",
                     (källspråk, målspråk, nivå, cefr, nu, nu))

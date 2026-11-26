@@ -1083,8 +1083,9 @@ async function nästa() {
   // DAGEN ÄR KLAR NÄR KORTEN ÄR GJORDA, inte efter N meningar. FSRS bygger på
   // att rätt kort repeteras i tid; ett pass som slutar med förfallna kort kvar
   // bryter mot det, och ett som fortsätter efter att allt är gjort ger massade
-  // repetitioner utan värde. `meningar_per_dag` är kvar som kapacitetsmått och
-  // tak för nytt material, men avslutar inte längre passet.
+  // repetitioner utan värde. `meningar_per_dag` fanns kvar som kapacitetsmått
+  // efter att B5 tagit bort dess ursprungliga jobb; den är borta helt sedan
+  // 2026-09-04. Taket på nytt material kommer ur minuterna.
   if (!extraläge && d.klar) { rensaUtfall(); return slut(d); }
 
   const u = await hämta(`/api/uppgift/${kurs.id}${extraläge ? "?extra=1" : ""}`);

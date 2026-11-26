@@ -54,6 +54,17 @@ from sprakprog.rendering import Uppslag                  # noqa: E402
 #: så det behövs fler än man tror. Mätt: vid 400 saknades fortfarande två.
 KANDIDATER = 1500
 
+#: Takten gränsen räknas med. En KULISS OCH INTE EN MÄTNING: påståendena här
+#: gäller EXPONERINGEN — att mätningen skiljer grundordföljden från
+#: konstruktionsreglerna — inte hur mycket någon råkar öva.
+#:
+#: Sedan 2026-09-04 kommer takten annars ur `Mening` (`meningstakt`), och
+#: japanskan har aldrig övats: den hade då fått takten None, alltså INGA kort
+#: ur schemat, och provet hade fallit på en egenskap hos loggen i stället för
+#: hos renderaren. Att talet står här och inte i koden är hela skillnaden — i
+#: koden var samma tal en tyst inställning som ingen satt.
+TAKT = 20.0
+
 #: Svepets storlek när exponeringen mäts. Bara grundordföljden behöver
 #: mätas här, och den träffar varje mening.
 SVEP = 300
@@ -118,7 +129,7 @@ def prov_e6_delar_upp(kort, kurs, språk_db) -> list[str]:
     if len(ORDFÖLJD.get(s, [])) < 2:
         return []
     mät_exponering(kort, språk_db, s, meningar=SVEP)
-    sätt_schemalagt(kort, språk=s)
+    sätt_schemalagt(kort, TAKT, språk=s)
     rader = kort.execute(
         "SELECT egenskap, exponering, schemalagt FROM Kort "
         "WHERE språk = ? AND typ = 'ordföljd'", (s,)).fetchall()
@@ -166,7 +177,7 @@ def prov_skulden(kort, kurs, språk_db) -> list[str]:
     # skillnad — provet skulle mäta något annat än det påstår. Uppsättningen
     # hör alltså till provet och inte till en tidigare invariant.
     mät_exponering(kort, språk_db, s, meningar=SVEP)
-    sätt_schemalagt(kort, språk=s)
+    sätt_schemalagt(kort, TAKT, språk=s)
     g = _generator(kort, kurs, språk_db)
     fel: list[str] = []
     entydiga = flertydiga = 0

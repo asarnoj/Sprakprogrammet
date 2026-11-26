@@ -95,10 +95,10 @@ def _fr_kurser(kort) -> list:
     nu = datetime.now(UTC).isoformat()
     kort.execute(
         """INSERT OR IGNORE INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
-                                       meningar_per_dag, startad, senast_öppnad)
-           VALUES ('en', ?, ?, ?, ?, ?, ?, ?)""",
+                                       startad, senast_öppnad)
+           VALUES ('en', ?, ?, ?, ?, ?, ?)""",
         (förlaga["målspråk"], förlaga["nivå"], förlaga["cefr"], förlaga["budget"],
-         förlaga["meningar_per_dag"], nu, nu))
+         nu, nu))
     kort.commit()
     return kort.execute(
         "SELECT * FROM Kurs WHERE målspråk = ? ORDER BY id",

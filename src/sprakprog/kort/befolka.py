@@ -815,7 +815,7 @@ def _rang(språk_db: sqlite3.Connection, språk: str, cefr: str) -> dict[str, in
     return {k: i for i, k in enumerate(sorted(rå, key=nyckel))}
 
 
-def exponeringsgräns(meningar_per_dag: int) -> float:
+def exponeringsgräns(meningar_per_dag: float) -> float:
     """Över så många möten per mening slutar schemaläggning ha en spak.
 
     RÄKNAS, står inte i koden. Ett kort möts `exponering × meningar_per_dag`
@@ -824,20 +824,52 @@ def exponeringsgräns(meningar_per_dag: int) -> float:
     är gränsen 1/meningar_per_dag.
 
     Talet stod tidigare som 0,05 med härledningen i en kommentar, vilket var
-    rätt uträknat för 20 meningar om dagen och tyst fel för alla andra. Nu när
-    takten är användarens val måste gränsen följa den. Se GENERATOR.md,
-    "Schemalagda kort mot mätta kort".
+    rätt uträknat för 20 meningar om dagen och tyst fel för alla andra.
+
+    OCH SEDAN VAR DET FEL PÅ ETT ANDRA SÄTT: talet hämtades ur
+    `Kurs.meningar_per_dag`, en kolumn från tiden FÖRE B4. Julius avskaffade
+    den ratten själv, med skälet att den motsäger FSRS — man styr inte NÄR
+    aktiva kort ska repeteras, bara hur mycket NYTT som förs in — och bytte
+    till minuter. Kolumnen stod kvar på 20 i alla fyra kurserna, satt av
+    ingen, medan hans verkliga franska dagar var 5, 10, 11, 13, 18, 21.
+
+    ARGUMENTET ÄR NU MÄTT (`meningstakt`) och inte satt, och det är rätt sort
+    av tal här: gränsen ställer en FAKTAFRÅGA — möts kortet mer än en gång om
+    dagen? — och inte en styrfråga. Efter B5 finns inget målantal meningar
+    alls; antalet är ett utfall, och det utfallet står i `Mening`.
+
+    Att i stället gå via minuterna (`måltakt / kort_per_mening`) mättes och
+    förkastades: engelskan fick 170,8 meningar om dagen på 20 minuter,
+    eftersom sekunder-per-repetition kommer ur en historik som nästan bara är
+    drill. Vägen minuter → meningar går genom ett mått en snedvriden historik
+    förstör tyst. Meningsräkningen är rå och har inget sådant led.
+
+    Se GENERATOR.md, "Schemalagda kort mot mätta kort".
     """
     return 1.0 / meningar_per_dag
 
 
 def sätt_schemalagt(kort_db: sqlite3.Connection,
-                    meningar_per_dag: int | None = None, *,
+                    takt: float | None = None, *,
                     språk: str | None = None) -> int:
     """Kort som möts oftare än gränsen mäts men schemaläggs inte.
 
     Kräver att `exponering` är mätt. Omätta kort lämnas schemalagda — att
     gissa vore att bygga in en tumregel där beslutet säger mätning.
+
+    OCH NU GÄLLER SAMMA REGEL FÖR TAKTEN. `takt` är meningar per övad dag,
+    mätt ur `Mening` av `meningstakt`. Saknas den — kursen är aldrig övad —
+    lyfts INGENTING ur schemat. Förut kom talet ur `Kurs.meningar_per_dag`,
+    som alltid svarade 20 oavsett om användaren gjort en enda mening, så en
+    orörd kurs fick kort utlyfta ur schemat på ett antagande om en dag som
+    aldrig inträffat.
+
+    ATT LÄMNA KORTET SCHEMALAGT ÄR DEN OFARLIGA SIDAN, och det är därför den
+    här vägen får vara trubbig. Ett allestädes närvarande kort som ändå
+    schemaläggs betygsätts vid varje möte, växer i stabilitet och förfaller
+    aldrig — det löser sig självt. Ett sällsynt kort som felaktigt lyfts UR
+    schemat förlorar däremot spacing det behöver, och märks bara om E6:s larm
+    hinner fånga det.
 
     SKRIVNINGEN ÄR SPRÅKVIS, och det var den inte. `UPDATE Kort SET
     schemalagt = …` utan `WHERE språk` skrev om ALLA språks flagga vid varje
@@ -851,28 +883,29 @@ def sätt_schemalagt(kort_db: sqlite3.Connection,
     syntes. Skrivningar i det här lagret ska aldrig sträcka sig utanför det
     språk anroparen bad om.
 
-    `meningar_per_dag` hämtas nu ur KURSEN för språket i fråga. Talet är i
-    övrigt en kvarleva efter B4 — användarens ratt är minuter — och E6 säger
-    att gränsen egentligen ska följa den uppmätta takten. Att räkna om den
-    är ett beslut och inte en rättelse, så den står kvar som den är; det som
-    ändrats är bara att den inte längre är någon annans.
+    Utan `språk` görs nu ETT VARV PER SPRÅK i stället för en skrivning över
+    allt: takten är olika i olika kurser, och en gemensam siffra vore samma
+    sammanblandning som `MIN(meningar_per_dag)` en gång var.
     """
-    from .schemalaggning import STANDARD_MENINGAR_PER_DAG
-    if meningar_per_dag is None:
-        rad = kort_db.execute(
-            "SELECT MIN(meningar_per_dag) AS m FROM Kurs"
-            + (" WHERE målspråk = ?" if språk else ""),
-            (språk,) if språk else ()).fetchone()
-        meningar_per_dag = (rad["m"] if rad and rad["m"] else STANDARD_MENINGAR_PER_DAG)
-    kort_db.execute(
-        "UPDATE Kort SET schemalagt = (exponering IS NULL OR exponering <= ?)"
-        + (" WHERE språk = ?" if språk else ""),
-        (exponeringsgräns(meningar_per_dag),) + ((språk,) if språk else ()))
+    from .schemalaggning import meningstakt
+    if språk is None:
+        return sum(sätt_schemalagt(kort_db, takt, språk=r[0])
+                   for r in kort_db.execute(
+                       "SELECT DISTINCT språk FROM Kort ORDER BY språk"))
+    if takt is None:
+        takt = meningstakt(kort_db, språk)
+    if takt:
+        kort_db.execute(
+            "UPDATE Kort SET schemalagt = "
+            "(exponering IS NULL OR exponering <= ?) WHERE språk = ?",
+            (exponeringsgräns(takt), språk))
+    else:
+        kort_db.execute("UPDATE Kort SET schemalagt = 1 WHERE språk = ?",
+                        (språk,))
     kort_db.commit()
     return kort_db.execute(
-        "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0"
-        + (" AND språk = ?" if språk else ""),
-        (språk,) if språk else ()).fetchone()[0]
+        "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0 AND språk = ?",
+        (språk,)).fetchone()[0]
 
 
 def sammanfattning(kort_db: sqlite3.Connection) -> list[sqlite3.Row]:

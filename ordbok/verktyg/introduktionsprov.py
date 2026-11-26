@@ -40,6 +40,7 @@ from __future__ import annotations
 import sqlite3
 import sys
 import tempfile
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 ROT = Path(__file__).resolve().parents[2]
@@ -61,6 +62,13 @@ DRILLADE = (6, 12, 25)
 #: Meningar per läge. Läckan var inte sällsynt — den träffade var tredje
 #: mening — så tolv räcker gott för att den ska synas.
 MENINGAR = 12
+
+#: Meningar per dygn i den logg `prov_tjänsten` skriver åt sig själv. En
+#: KULISS: gränsen mellan schemalagt och övervakat mäts sedan 2026-09-04 ur
+#: `Mening`, och `nollställ` tömmer den tabellen. Läget som läckte var en
+#: ÖVAD kurs, och provet måste därför ställa upp den förutsättningen i stället
+#: för att ärva den — se `prov_tjänsten`.
+MENINGSTAKT = 20
 
 #: Dagens tak på nya kort. Måste vara > 0, annars fylls kön aldrig på med
 #: osedda kort och provet mäter ingenting.
@@ -300,6 +308,16 @@ def prov_tjänsten(kort: sqlite3.Connection, kurs: sqlite3.Row,
         return []
     tj = _frödd_tjänst(kort)
     tj.nollställ(kurs["id"], "RESET")
+    # EN ÖVAD KURS, för det var läget som läckte. `nollställ` tömmer `Mening`,
+    # och gränsen mellan schemalagt och övervakat mäts därifrån: en kurs utan
+    # meningslogg lyfter inga kort ur schemat, eftersom systemet då inte vet
+    # hur ofta korten möts.
+    #
+    # Utan raden nedan blev varje kort `schemalagt = 1`, och väg 3:s sabotage
+    # hade ingenting att grinda — det filtrerar på just den flaggan. Provet
+    # rapporterade STUMT fast felet var återinfört, alltså precis den sortens
+    # ärvd förutsättning docstringen ovan varnar för.
+    _öva_på_pappret(kort, kurs["målspråk"], MENINGSTAKT)
     kurs = kort.execute("SELECT * FROM Kurs WHERE id = ?", (kurs["id"],)).fetchone()
     for o in tj.glosor(kurs["id"], n)["ord"]:
         tj.glossvar(kurs["id"], o["kort_id"], True)
@@ -313,6 +331,23 @@ def prov_tjänsten(kort: sqlite3.Connection, kurs: sqlite3.Row,
     läckta = _sedda_ord(kort, kurs["målspråk"]) - efter_drill
     return [f"passet införde {k!r} utan att drillen gjort det"
             for k in sorted(läckta)]
+
+
+def _öva_på_pappret(kort: sqlite3.Connection, språk: str, per_dag: int,
+                    dagar: int = 3) -> None:
+    """Skriv en meningslogg utan att öva. Provets egen förutsättning.
+
+    DATERAD BAKÅT: `dagsplan` räknar dagens meningar som gjort arbete, så en
+    logg som såg ut att vara dagens hade krympt passet provet ska köra.
+    """
+    for d in range(dagar):
+        stund = (datetime(2026, 1, 1, 12, tzinfo=UTC)
+                 + timedelta(days=d)).isoformat()
+        for _ in range(per_dag):
+            kort.execute(
+                "INSERT INTO Mening (tidpunkt, språk, spec, text) "
+                "VALUES (?,?,'{}','x')", (stund, språk))
+    kort.commit()
 
 
 def _frödd_tjänst(kort: sqlite3.Connection) -> Övningstjänst:

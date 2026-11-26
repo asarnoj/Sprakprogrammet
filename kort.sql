@@ -300,11 +300,12 @@ CREATE INDEX idx_repetition_kort ON Repetition(kort_id, tidpunkt);
    vilka KONSTRUKTIONER som finns, CEFR vilka ORD. Båda behövs — en kurs som
    bara känner sin stegnivå vet halva sin nivå.
 
-   `meningar_per_dag` är hur mycket användaren vill öva. Det är ett VAL och
+   `minuter_per_dag` är hur mycket användaren vill öva. Det är ett VAL och
    ingen härledning — en uppgift om användarens liv, som systemet omöjligt kan
    räkna ut. Det står här bredvid `budget` därför att de är samma sorts tal:
-   de två inställningar hela kursen styrs av. Upplåsningen räknas fram ur det
-   här talet, FSRS egna intervall, och en mätning (schemalaggning.py).
+   de två inställningar hela kursen styrs av. Hur mycket NYTT som förs in
+   räknas fram ur det talet, FSRS egna intervall, och en mätning
+   (kort/arbetsborda.py).
    ─────────────────────────────────────────────────────────────────────────── */
 CREATE TABLE Kurs (
     id        INTEGER PRIMARY KEY,
@@ -329,7 +330,6 @@ CREATE TABLE Kurs (
        mening rymmer. Arbetsbördan regleras i stället genom hur mycket nytt
        som förs in — se kort/arbetsborda.py. */
     minuter_per_dag INTEGER NOT NULL DEFAULT 20,
-    meningar_per_dag INTEGER NOT NULL DEFAULT 20,
     startad   TEXT    NOT NULL,
     /* När kursen senast öppnades. Programmet startar i den som användes
        sist — en kurs man höll på med igår är den man vill fortsätta med. */

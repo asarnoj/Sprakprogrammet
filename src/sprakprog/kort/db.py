@@ -33,7 +33,6 @@ KOPIOR_ATT_SPARA = 30
 #: borttagna. Behövs något annat är det en riktig migrering med datakopiering,
 #: och den ska skrivas för hand och köras medvetet.
 TILLÄGG = (
-    ("Kurs", "meningar_per_dag", "INTEGER NOT NULL DEFAULT 20"),
     ("Repetition", "r_före", "REAL"),
     ("Mening", "sedda", "INTEGER"),
     ("Mening", "nya", "INTEGER"),
@@ -45,9 +44,12 @@ TILLÄGG = (
     # (`ordbok/migrationer/kort_betyglos_rad.sql`).
     ("Mening", "millisekunder", "INTEGER"),
     ("Repetition", "millisekunder", "INTEGER"),
-    # B4: användarens val är MINUTER, inte meningar. `meningar_per_dag` står
-    # kvar tills alla vägar går genom det nya talet — tillägg får vara
-    # additiva, och en kolumn som ingen längre läser skadar ingen.
+    # B4: användarens val är MINUTER, inte meningar.
+    #
+    # `meningar_per_dag` stod kvar här med motiveringen "en kolumn som ingen
+    # längre läser skadar ingen". Den var fel: `exponeringsgräns` läste den,
+    # och talet 20 avgjorde i en månad vilka kort som fick spacing. Kolumnen
+    # är borta sedan 2026-09-04 — se `kurs_utan_meningar_per_dag.sql`.
     ("Kurs", "minuter_per_dag", "INTEGER NOT NULL DEFAULT 20"),
     # Dagens tilldelning, BESLUTAD en gång per dygn. Se `dagsplan`.
     ("Kurs", "tak_datum", "TEXT"),
@@ -150,6 +152,12 @@ OMBYGGNADER = (
      """SELECT 1 FROM sqlite_master
         WHERE type = 'table' AND name = 'Passkort'
           AND sql NOT LIKE '%övervakad%'"""),
+    # Kolumnen som ingen satte men som styrde vilka kort som schemalades.
+    # Måste ligga i OMBYGGNADER och inte bara som en borttagen TILLÄGG-rad:
+    # en befintlig databas har kolumnen kvar tills något faktiskt släpper den.
+    ("kurs_utan_meningar_per_dag.sql",
+     """SELECT 1 FROM pragma_table_info('Kurs')
+        WHERE name = 'meningar_per_dag'"""),
 )
 
 
