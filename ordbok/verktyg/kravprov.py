@@ -26,6 +26,13 @@ TVÅ ORSAKER, mätta 2026-09-27:
    ändrad 09-20 23:29, renderaren 09-20 och 09-21. Kraven beskrev meningar
    grammatiken inte längre byggde.
 
+NÄTET STÄLLER TVÅ FRÅGOR, för grinden har två moment. Nivån öppnas när
+föregångarnas kort är införda, men ett kort KÖAS så snart dess eget krav är
+infört (4.5) — och kravet kan vara en bråkdel av nivåerna under. Den första
+frågan gäller nivån, den andra kravet ensamt. Den andra kom till 2026-11-03,
+efter att `regel:val/satsart/imperativ` visat sig ha kravet TOMT och ändå behöva
+`ord:pronomen_2pl`: upplåst dag ett, obyggbar, i karantän varje dag.
+
 FRÅGAN NÄTET STÄLLER ÄR PASSETS EGEN, inte kravets. Nivå i prövas med alla kort
 ur nivå 1…i tillåtna — grindens läge när nivån öppnas — plus nivåns egna som
 lånekort, eftersom nivåns kort kräver varandra (4.1). Det är mer tillåtet än
@@ -133,8 +140,60 @@ def varje_kort_går_att_införa() -> list[str]:
                       d["källspråk"], rapport)
 
 
+def _kraven() -> dict[Kort, frozenset[Kort]]:
+    return {_kort(k): frozenset(map(_kort, m)) for k, m in _nivåfilen()["krav"]}
+
+
+def kravet_räcker_för_att_bygga() -> list[str]:
+    """Kravet, och bara kravet, ska räcka för att BYGGA kortets mening (4.2).
+
+    VARFÖR DEN HÄR FRÅGAN SKILJER SIG FRÅN DEN OVAN. Provet ovan ställer
+    grindens fråga om NIVÅN: nivå i prövas med nivå 1…i tillåtna. Men grinden
+    köar ett kort så snart dess KRAV är infört (4.5), och kravet kan vara en
+    liten del av nivåerna under. Ett kort kan alltså erbjudas långt innan dess
+    nivå öppnas, och då är det kravet ensamt som ska räcka.
+
+    Det gjorde det inte. `regel:val/satsart/imperativ` hade kravet TOMT —
+    beviset «Se!» → «See!» prövar bara `ord:per_se` och kortet självt, och
+    imperativens subjekt skrivs inte ut, alltså prövas det inte (6.2). Tomt krav
+    betyder upplåst dag ett (4.5), så dagsplanen valde kortet från första dagen,
+    ingen mening gick att bygga, och kortet hamnade i karantän varje dag: emot
+    5.1, som kräver att dag ett:s karantän är tom, och emot §11:s nollkrav.
+    Kortet självt ligger på nivå 82 och dess subjekt på nivå 26.
+
+    FRÅGAN ÄR BILLIG ÅT RÄTT HÅLL. Ett ja kostar ~1 s, ett nej hela rummet
+    (§12). Håller kraven är varje svar ett ja, och genomgången tar minuter.
+    Faller ett kort tar just det kortet lång tid — och det är då nätet gör sitt
+    jobb, så tiden per kort skrivs ut medan det går.
+    """
+    d = _nivåfilen()
+    if not d.get("källspråk"):
+        return [f"{NIVÅER.name} bär inget källspråk (4.2)"]
+    s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), ladda(KARTA),
+                      d["källspråk"])
+    fritt = _fritt(s, {})
+    brister: list[str] = []
+    kraven = _kraven()
+    for k, krav in sorted(kraven.items(), key=lambda x: str(x[0])):
+        här = krav | {k}
+        t0 = time.perf_counter()
+        träff = s.finns(k, lambda x: x in här or fritt(x))
+        dt = time.perf_counter() - t0
+        if träff is None:
+            brister.append(
+                f"{k}: kravet räcker inte för att bygga meningen — "
+                f"grinden köar kortet när {len(krav)} kort är införda, och "
+                "sökningen svarar nej")
+        if träff is None or dt > 20:
+            print(f"      {dt:>7.1f} s  {'ja' if träff else 'GÅR INTE'}  {k}",
+                  flush=True)
+    return brister
+
+
 PROV = [("varje kort går att införa när dess nivå öppnas",
-         varje_kort_går_att_införa)]
+         varje_kort_går_att_införa),
+        ("kravet räcker för att bygga kortets mening",
+         kravet_räcker_för_att_bygga)]
 
 
 def _falsifiera() -> list[str]:
@@ -156,6 +215,36 @@ def _falsifiera() -> list[str]:
     return ["provet vaktar inte ordningen — sista nivån först går igenom"]
 
 
+def _falsifiera_kravet() -> list[str]:
+    """Ett tomt krav på ett kort som behöver ett ord ska fällas.
+
+    Det är regressionen ordagrant: `regel:val/satsart/imperativ` hade kravet
+    TOMT och behövde ändå `ord:pronomen_2pl`. Märker provet inte det mäter det
+    ingenting, och kortet går tillbaka till karantänen.
+    """
+    mål = Kort("en", "regel", ("val", "satsart", "imperativ"))
+    kraven = _kraven()
+    print("\nfalsifiering — ett tomt krav på imperativen ska fällas:")
+    if mål not in kraven:
+        print(f"  ✗ STUMT  {mål} finns inte i {NIVÅER.name}")
+        return [f"falsifieringen kan inte köras: inget krav för {mål}"]
+    if not kraven[mål]:
+        print(f"  ✗ STUMT  kravet för {mål} ÄR tomt i filen")
+        return [f"{mål} har tomt krav i {NIVÅER.name} — felet är tillbaka"]
+    d = _nivåfilen()
+    s = Sammansättare(sqlite3.connect(ROT / "sprak.db"), ladda(KARTA),
+                      d["källspråk"])
+    fritt = _fritt(s, {})
+    t0 = time.perf_counter()
+    träff = s.finns(mål, lambda x: x == mål or fritt(x))
+    dt = time.perf_counter() - t0
+    if träff is None:
+        print(f"  ✓ föll  tomt krav för {mål}  ({dt:.1f} s)")
+        return []
+    print(f"  ✗ STUMT  tomt krav för {mål} gick igenom  ({dt:.1f} s)")
+    return [f"provet vaktar inte kravet — {mål} går att bygga utan det"]
+
+
 def main() -> int:
     brister: list[str] = []
     for namn, fn in PROV:
@@ -171,6 +260,7 @@ def main() -> int:
     # artefakterna byggda ur en annan grammatik prövar båda svaren fel version.
     if not brister:
         brister += _falsifiera()
+        brister += _falsifiera_kravet()
     print(f"\n{len(PROV)} kontroller, "
           + (f"{len(brister)} brister." if brister else "alla håller."))
     return 1 if brister else 0

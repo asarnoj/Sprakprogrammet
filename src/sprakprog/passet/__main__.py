@@ -72,7 +72,27 @@ def _nivåfil(fil: str, källspråk: str, språk: str) -> tuple[
 
     krav = {kort(k): frozenset(map(kort, m)) for k, m in data["krav"]}
     bevis = {kort(k): frozenset(map(kort, m)) for k, m in data.get("bevis", [])}
-    return krav, [frozenset(map(kort, n)) for n in data["nivåer"]], bevis
+    nivåerna = [frozenset(map(kort, n)) for n in data["nivåer"]]
+
+    # ETT OPRÖVBART KORT FÅR INTE NÅ PASSET. Nivåbygget skriver listan över de
+    # kort ingen mening prövar, men passet läste den aldrig — bara en utskrift i
+    # `sprakprog.nivaer` gjorde det. I dag står de tretton korten
+    # (konjunktionerna, relativpronomenen, `kvant_båda`, `neg_heller`) varken i
+    # `nivåer` eller i `krav`, så grinden kan inte köa dem och kontrollen är
+    # tyst. Den finns för att ett läckage annars syns först som ett kort i
+    # karantän — exakt det utfall det tomma kravet gav (4.2, §12) — och 5.1
+    # kräver att dag ett:s karantän är tom, §11 att den alltid är det.
+    oprövbara = {kort(r) for r in data.get("oprövbara", [])}
+    erbjudna = set(krav) | {k for nivån in nivåerna for k in nivån}
+    läckta = sorted(str(k) for k in oprövbara & erbjudna)
+    if läckta:
+        raise SystemExit(
+            f"{fil} räknar dessa kort som oprövbara och erbjuder dem ändå:\n"
+            + "".join(f"    {rad}\n" for rad in läckta)
+            + "Ett oprövbart kort som grinden köar går inte att bygga en mening "
+              "kring och hamnar i karantän (5.1, §11). Bygg om nivåerna.")
+
+    return krav, nivåerna, bevis
 
 
 #: Hur långt fram arbetsprofilen räknas. Ett kort kostar arbete i över ett år
