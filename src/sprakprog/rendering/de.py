@@ -406,6 +406,24 @@ class TyskRenderare:
                 raise RenderingsFel(
                     f"de/{verb['lemma']}: hjälpverb={hjälp!r} — perfekt kan "
                     f"inte byggas utan att veta om det är haben eller sein")
+            if m.tid is Tidsreferens.FRAMTID:
+                # FUTUR II: "sie wird eine Katze gekauft haben". Werden bär
+                # finitheten, och slutfältet får participet FÖLJT AV
+                # hjälpverbets infinitiv.
+                #
+                # Grenen saknades, och `perfekt` prövas före `framtid` i den
+                # här kedjan — så `perfekt + framtid` gav ett vanligt
+                # perfekt, "sie hat eine Katze gekauft". Modellgranskningen
+                # 2026-08-29 flaggade konstruktionen i ALLA SJU språken:
+                # varje renderare tappade framtiden på samma sätt. De tre
+                # romanska rättades i `romansk.py` genom att hjälpverbet får
+                # futurumstam; tyskan behöver en egen form, eftersom futurum
+                # här är ett eget hjälpverb och inte en stam.
+                return (self.u.form_för("modal_ska", f"pres_{person}{numerus}"),
+                        [self.u.form(verb, "part2"),
+                         self.u.form_för(
+                             "verb_ha" if hjälp == "ha" else "verb_vara",
+                             "inf")])
             return (self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
                                     f"{stam}_{person}{numerus}"),
                     [self.u.form(verb, "part2")])
@@ -484,7 +502,19 @@ class TyskRenderare:
         finit, infinit = self.verbdelar(m)
 
         # Ett obestämt objekt drar till sig negationen i tyskan.
+        #
+        # MEN BARA OM DET FAKTISKT SKRIVS UT. Frågas objektet efter ersätts
+        # det av frågeordet, och då finns ingen nominalfras att sätta `kein`
+        # på — samtidigt som `nicht` undertrycktes i tron att `kein` bar
+        # negationen. Följden var att den försvann helt: specen sa
+        # `negerad=True` och meningen blev `Was kauft sie?`, alltså en annan
+        # mening än den som beställdes. Facit hade då inte stämt med
+        # uppgiften, och användaren fått fel på ett rätt svar.
+        #
+        # Funnet av modellgranskningen 2026-08-29, och bara i tyskan: de sex
+        # andra språken renderade negationen i objektsfrågan.
         kein_objekt = (m.negerad and m.objekt is not None
+                       and m.fråga_om != "objekt"
                        and m.objekt.bestämdhet is Bestämdhet.OBESTÄMD
                        and m.objekt.possessiv is None and m.objekt.ägare is None)
 
@@ -579,8 +609,22 @@ class TyskRenderare:
                 # varför felet bara syntes i futurum och perfekt.
                 zu_fras = [self.u.form_för(markör, "inv"),
                            self.u.form_för(m.komplement, "inf")]
-                infinit = ([*zu_fras, *infinit] if bisats
-                           else [*infinit, *zu_fras])
+                if bisats:
+                    infinit = [*zu_fras, *infinit]
+                else:
+                    # HUVUDSATS: FRASEN LIGGER I EFTERFÄLTET, inte i
+                    # klammern. Att lägga den i `infinit` såg rätt ut så
+                    # länge slutfältet var tomt, men PARTIKELN läggs till
+                    # `infinit` längre ned — och hamnade då efter frasen:
+                    # `Sie fängt zu arbeiten an` för `Sie fängt an zu
+                    # arbeiten`. Partikeln stänger klammern; zu-frasen står
+                    # utanför den. Modellgranskningen 2026-08-29 flaggade
+                    # båda fallen, `anfangen` och `aufhören`.
+                    #
+                    # FÖRST i efterfältet, före en eventuell bisats: det
+                    # heter "sie fängt an zu arbeiten, als er kommt" och
+                    # inte "sie fängt an, als er kommt, zu arbeiten".
+                    efterfält[0:0] = zu_fras
 
         # Tyskan har V2 i påstående men V1 i ja/nej-fråga: det finita
         # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.

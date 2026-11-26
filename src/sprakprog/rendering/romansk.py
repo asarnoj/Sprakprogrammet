@@ -86,6 +86,14 @@ class RomanskRenderare:
         """Ska bestämd artikel stå före possessiven? Bara italienskan."""
         return False
 
+    def obestämd_under_negation(self, roll: str, negerad: bool) -> str | None:
+        """Ersätter negationen den obestämda artikeln? Sträng, annars None.
+
+        Franskan gör det (`ne trouve pas de chat`); spanskan och italienskan
+        gör det inte. Se `FranskRenderare`.
+        """
+        return None
+
     def artikelcell(self, genus: int, numerus: Numerus, huvudord: str,
                     bestämd: bool) -> str:
         """Cell i artikelparadigmet. `huvudord` behövs bara för italienskan."""
@@ -130,7 +138,8 @@ class RomanskRenderare:
 
     # ── nominalfras ──────────────────────────────────────────────────
 
-    def nominalfras(self, nf: Nominalfras, roll: str = "objekt") -> list[str]:
+    def nominalfras(self, nf: Nominalfras, roll: str = "objekt", *,
+                    negerad: bool = False) -> list[str]:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
@@ -207,9 +216,14 @@ class RomanskRenderare:
                     genus, nf.numerus, huvudform, bestämd=True)))
         else:
             bestämd = nf.bestämdhet is Bestämdhet.BESTÄMD
-            före.append(self.u.form_för(
-                "artikel_bestamd" if bestämd else "artikel_obestamd",
-                self.artikelcell(genus, nf.numerus, huvudform, bestämd)))
+            ersatt = (None if bestämd else
+                      self.obestämd_under_negation(roll, negerad))
+            if ersatt is not None:
+                före.append(ersatt)
+            else:
+                före.append(self.u.form_för(
+                    "artikel_bestamd" if bestämd else "artikel_obestamd",
+                    self.artikelcell(genus, nf.numerus, huvudform, bestämd)))
 
         # Adjektivets plats är lexikal, inte regelstyrd: de flesta romanska
         # adjektiv står efter substantivet, men en liten grupp står före.
@@ -351,13 +365,31 @@ class RomanskRenderare:
                 cell = f"pp_{_kön(objgenus)}_{_tal(objnumerus)}"
             else:
                 cell = "pp_msc_sg"
-            # Pluskvamperfekt: hjälpverbet i imperfekt. "elle avait lu".
-            # I konjunktiv är det HJÄLPVERBET som byter modus: "qu'il ait
-            # lu", "que haya leído", "che abbia letto". Participet är
-            # oförändrat, precis som i indikativ.
-            hjälpstam = (self.konjunktivstam(m) if m.modus is Satsmodus.KONJUNKTIV
-                         else "imperf" if m.aspekt is Aspekt.PERFEKT
-                         and m.tid is Tidsreferens.FÖRFLUTEN else "pres")
+            # HJÄLPVERBET BÄR TEMPUS, participet är oföränderligt. Det är
+            # hela poängen med en sammansatt form, och tre fall följer:
+            #
+            #   pluskvamperfekt   imperfekt   "elle avait lu"
+            #   futurum exaktum   futurum     "elle aura lu"
+            #   perfekt           presens     "elle a lu"
+            #
+            # FUTURUM SAKNADES och föll igenom till presens, så `perfekt +
+            # framtid` gav ett vanligt perfekt: `Elle a acheté un chat` för
+            # `elle aura acheté un chat`. Modellgranskningen 2026-08-29
+            # flaggade konstruktionen i ALLA SJU språken — varje renderare
+            # tappade framtiden på samma sätt, vilket är signaturen för ett
+            # hål i den delade formen och inte sju buggar. Här rättas de tre
+            # romanska: `aura acheté`, `habrá comprado`, `avrà comprato`.
+            #
+            # I konjunktiv är det likaså HJÄLPVERBET som byter modus:
+            # "qu'il ait lu", "que haya leído", "che abbia letto".
+            if m.modus is Satsmodus.KONJUNKTIV:
+                hjälpstam = self.konjunktivstam(m)
+            elif m.aspekt is Aspekt.PERFEKT and m.tid is Tidsreferens.FÖRFLUTEN:
+                hjälpstam = "imperf"
+            elif m.aspekt is Aspekt.PERFEKT and m.tid is Tidsreferens.FRAMTID:
+                hjälpstam = "fut"
+            else:
+                hjälpstam = "pres"
             return [self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
                                     f"{hjälpstam}_{person}{numerus}",
                                     "hjälpverb" if hjälp == "ha" else None),
@@ -711,7 +743,8 @@ class RomanskRenderare:
         if m.predikativ is not None:
             ord += self.predikativ(m)
         if m.objekt is not None and cod is None and m.fråga_om != "objekt":
-            ord += self.nominalfras(m.objekt, "objekt")
+            ord += self.nominalfras(m.objekt, "objekt",
+                                    negerad=m.negerad)
         if (m.io is not None and self._pronomen(m.io) is None
                 and m.fråga_om != "io"):
             prep = self.preposition_för(m.verb, "io")

@@ -71,15 +71,41 @@ class FranskRenderare(RomanskRenderare):
         h aspiré-ord (héros) skulle kräva en flagga på Lexem, i stil med
         prenominal — skillnaden syns inte i stavningen.
         """
-        if första == "que" or första.endswith(" que"):
-            # que elideras framför vokal: "qu'il est venu", "parce qu'elle
-            # lit", "est-ce qu'elle lit". Regeln gäller ORDET que, inte
-            # ändelsen -que: "la bibliothèque a" elideras inte. Därför krävs
-            # mellanslag före i de sammansatta subjunktionerna, som alla är
-            # flerordiga (parce que, bien que, jusqu'à ce que).
-            return andra[:1].lower() in self.VOKAL | {"h"}
-        return (första in ELIDERAR
+        # SISTA ORDET AVGÖR, inte hela strängen. Regeln gäller ORDET — "la
+        # bibliothèque a" elideras inte, för sista ordet är `bibliothèque`
+        # och inte `que`.
+        #
+        # DET GÄLLER FLERORDIGA LEXEM OCKSÅ, och det var felet. `que` hade
+        # ett eget undantag (`parce que`, `bien que`), men prepositionerna
+        # inte: `à côté de`, `au-dessus de`, `en dehors de`, `le long de` och
+        # `à l'intérieur de` är ETT lexem var, och medlemskapstestet mot
+        # ELIDERAR läste hela strängen. Modellgranskningen 2026-08-29:
+        # `Elle joue devant le chien à côté de un chat` — `de un` i stället
+        # för `d'un`, obligatorisk elision.
+        return (första.rsplit(" ", 1)[-1] in ELIDERAR | {"que"}
                 and andra[:1].lower() in self.VOKAL | {"h"})
+
+    def obestämd_under_negation(self, roll: str, negerad: bool) -> str | None:
+        """`un/une/des` → `de` på det direkta objektet efter negation.
+
+        `Elle ne trouve pas de chat`, inte `pas un chat`. Regeln är
+        obligatorisk i franskan och gäller det DIREKTA OBJEKTET till det
+        negerade verbet — därav `roll`-villkoret. Ett prepositionsobjekt
+        behåller sin artikel: `elle ne joue pas avec un chat`.
+
+        KOPULAN ÄR UNDANTAGEN, och det behöver ingen kod: `ce n'est pas un
+        chat` behåller artikeln, och i specen är det ledet ett PREDIKATIV och
+        inte ett objekt, så det går aldrig genom den här vägen.
+
+        Elisionen sköts av `eliderar`, som redan har `de`: framför vokal blir
+        det `d'`.
+
+        Funnet av modellgranskningen 2026-08-29:
+        `Est-ce qu'elle ne trouve pas un chat?`
+        """
+        if negerad and roll == "objekt":
+            return self.u.form_för("prep_av", "inv")
+        return None
 
     def sammandrar(self, första: str, andra: str, nästa: str) -> bool:
         """ELISIONEN GÅR FÖRE SAMMANDRAGNINGEN i franskan.

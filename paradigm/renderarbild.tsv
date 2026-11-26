@@ -149,8 +149,8 @@ preteritum	de	Sie spielte.
 futurum	de	Sie wird den Hund machen.
 perfekt	de	Sie hat die Tür geschlossen.
 pluskvamperfekt	de	Sie hatte eine Katze gefunden.
-futurum-perfekt	de	Sie hat eine Katze gekauft.
-negation	de	Sie hilft dem Hunde nicht.
+futurum-perfekt	de	Sie wird eine Katze gekauft haben.
+negation	de	Sie hilft dem Hund nicht.
 negation-preteritum	de	Sie spielte nicht.
 ja-nej-fråga	de	Benutzt sie den Hund?
 fråga-negerad	de	Findet sie keine Katze?
@@ -170,13 +170,13 @@ komparativ	de	Sie ist lustiger.
 superlativ	de	Sie ist am schönsten.
 jämförelse	de	Sie ist netter als der Hund.
 attributiv-komparativ	de	Sie findet den lustigeren Hund.
-prepositionsfras	de	Sie arbeitet hinter dem Hunde.
-två-adverbial	de	Sie spielt vor dem Hunde neben einer Katze.
-infinitivkomplement	de	Sie fängt zu arbeiten an.
-infinitiv-negerad	de	Sie hört nicht zu spielen auf.
+prepositionsfras	de	Sie arbeitet hinter dem Hund.
+två-adverbial	de	Sie spielt vor dem Hund neben einer Katze.
+infinitivkomplement	de	Sie fängt an zu arbeiten.
+infinitiv-negerad	de	Sie hört nicht auf zu spielen.
 infinitiv-futurum	de	Sie wird anfangen zu machen.
 imperativ	de	Schließ die Tür!
-imperativ-plural	de	Helft dem Hunde!
+imperativ-plural	de	Helft dem Hund!
 modal-ren-infinitiv	de	Sie kann arbeiten.
 modal-futurum	de	Sie wird spielen sollen.
 modal-perfekt	de	Sie hat arbeiten können.
@@ -208,7 +208,7 @@ reflexiv-perfekt-alla	de	Wir haben uns gesorgt.
 reflexiv-objektsskifte	de	Wir haben uns nicht gesorgt.
 wh-subjekt	de	Wer findet den Hund?
 wh-objekt	de	Was findet sie?
-wh-negerad	de	Was kauft sie?
+wh-negerad	de	Was kauft sie nicht?
 intransitiv	fr	Elle vit.
 transitiv	fr	Elle trouve le chien.
 transitiv-obestämd	fr	Elle achète un chat.
@@ -219,11 +219,11 @@ preteritum	fr	Elle a joué.
 futurum	fr	Elle fera le chien.
 perfekt	fr	Elle a fermé la porte.
 pluskvamperfekt	fr	Elle avait trouvé un chat.
-futurum-perfekt	fr	Elle a acheté un chat.
+futurum-perfekt	fr	Elle aura acheté un chat.
 negation	fr	Elle n'aide pas le chien.
 negation-preteritum	fr	Elle n'a pas joué.
 ja-nej-fråga	fr	Est-ce qu'elle utilise le chien?
-fråga-negerad	fr	Est-ce qu'elle ne trouve pas un chat?
+fråga-negerad	fr	Est-ce qu'elle ne trouve pas de chat?
 passiv	fr	Le chien est fait.
 passiv-perfekt	fr	La porte a été fermée.
 passiv-futurum	fr	Un chat sera acheté.
@@ -241,7 +241,7 @@ superlativ	fr	Elle est la plus belle.
 jämförelse	fr	Elle est plus gentille que le chien.
 attributiv-komparativ	fr	Elle trouve le chien plus amusant.
 prepositionsfras	fr	Elle travaille derrière le chien.
-två-adverbial	fr	Elle joue devant le chien à côté de un chat.
+två-adverbial	fr	Elle joue devant le chien à côté d'un chat.
 infinitivkomplement	fr	Elle commence à travailler.
 infinitiv-negerad	fr	Elle n'arrête pas de jouer.
 infinitiv-futurum	fr	Elle commencera à faire.
@@ -289,7 +289,7 @@ preteritum	es	Ella jugó.
 futurum	es	Ella hará el perro.
 perfekt	es	Ella ha cerrado la puerta.
 pluskvamperfekt	es	Ella había encontrado un gato.
-futurum-perfekt	es	Ella ha comprado un gato.
+futurum-perfekt	es	Ella habrá comprado un gato.
 negation	es	Ella no ayuda el perro.
 negation-preteritum	es	Ella no jugó.
 ja-nej-fråga	es	¿Ella usa el perro?
@@ -359,7 +359,7 @@ preteritum	it	Lei ha giocato.
 futurum	it	Lei farà il cane.
 perfekt	it	Lei ha chiuso la porta.
 pluskvamperfekt	it	Lei aveva trovato un gatto.
-futurum-perfekt	it	Lei ha comprato un gatto.
+futurum-perfekt	it	Lei avrà comprato un gatto.
 negation	it	Lei non aiuta il cane.
 negation-preteritum	it	Lei non ha giocato.
 ja-nej-fråga	it	Lei usa il cane?

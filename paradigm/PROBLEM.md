@@ -2161,6 +2161,41 @@ sammandragningen ELIDERAD, medan `à l'enfant` är sammandragningen INSTÄLLD.
 Felet fanns hela tiden; ingen korpusmening hade råkat ställa `à` + `le`
 framför en vokal.
 
+**FUTURUM-PERFEKT VAR TRASIGT I ALLA SJU SPRÅKEN**, och det är svepets
+näst största fynd. Varje renderare tappade framtiden när aspekten var
+perfekt och gav ett vanligt perfekt: `Elle a acheté`, `Sie hat gekauft`,
+`She has bought`, `Hon har köpt`. Signaturen är densamma som för korpusfelet
+— sju oberoende renderare gör inte samma fel av en slump.
+
+Orsaken skiljer sig åt men är samma sorts hål: hjälpverbet ska bära tempus,
+och grenen för framtid saknades. De tre romanska rättades på ett ställe
+(`hjälpstam = "fut"` → `aura acheté`, `habrá comprado`, `avrà comprato`);
+tyskan behövde en egen form, eftersom futurum där är ett eget hjälpverb och
+inte en stam (`wird eine Katze gekauft haben`). Engelskan, svenskan och
+japanskan står kvar.
+
+**Åtgärdat 2026-08-29 i franskan och tyskan** (Julius valde dem), 32 av 77
+anmärkningar:
+
+    fr   futur antérieur                    a acheté → aura acheté
+    fr   de-negation på direkt objekt       pas un chat → pas de chat
+    fr   elision efter flerordig preposition  de un → d'un
+    de   futur II                           wird gekauft haben
+    de   dativ-e i fem substantiv           dem Hunde → dem Hund
+    de   negation i objektsfråga            Was kauft sie → … sie nicht
+    de   zu-infinitiv efter lös partikel    fängt zu arbeiten an → fängt an zu arbeiten
+    es   futuro perfecto                    gratis, delad kod
+    it   futuro anteriore                   gratis, delad kod
+
+Två av dem är värda att nämna för sin form. **Elisionen** läste hela
+prepositionssträngen mot ELIDERAR, så `à côté de` matchade inte fast `de`
+gjorde det — `que` hade ett eget undantag för samma sak, och nu läser regeln
+sista ordet i stället. **Negationen i objektsfrågan** försvann därför att
+`kein_objekt` var sant medan objektet aldrig skrevs ut: `nicht` undertrycktes
+i tron att `kein` bar negationen, men `kein` hade ingen nominalfras att sitta
+på. Meningen blev en annan än den beställda, och facit hade inte stämt med
+uppgiften.
+
 **Öppet efter svepet:** `fys_göra` har en objektslot utan tagg, så `göra
 hunden` passerar valideringen. Restriktionerna är POSITIVA (`faktisk & krav
 == krav`) och det finns ingen bit som utesluter en hund men släpper in
