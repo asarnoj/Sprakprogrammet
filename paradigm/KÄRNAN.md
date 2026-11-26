@@ -71,6 +71,8 @@ klara eller missa oberoende av de andra — det är hela kriteriet.
 | `oregelbunden` | **just detta ord** bryter mönstret här | `stam` + `form` |
 | `egenskap: genus` | substantivets genus | oförändrat |
 | `egenskap: hjälpverb` | avoir eller être | oförändrat |
+| `egenskap: prenominal` | står adjektivet före eller efter | oförändrat |
+| `egenskap: ja_adjektiv_typ` | japanskans i-, na-, no- eller verbfrasadjektiv | oförändrat |
 | `rektion` | vilket kasus verbet styr | oförändrat |
 | `regel` | renderarens beslut — blir nivå **och** kort | `ordföljd`, utvidgad |
 
@@ -105,6 +107,33 @@ där. **Klassen är ändelsekortet plus undantagen** — den behöver ingen egen
 Franskan tappar därmed 210 kort. *(Den gamla modellens lek var 810 kort och
 blir 600 — båda mätta i `kort.db`. Den nya modellens totalsumma är inte
 bestämd, eftersom den hänger på punkt 11.1.)*
+
+### Vilka egenskaper som blir kort
+
+`sprak.db` drar redan gränsen: **`Lexem` har en rad per språk, `Koncept` har en
+rad för alla sju.** Det som måste läras per språk ligger därför på `Lexem`, och
+det som följer av betydelsen ligger på `Koncept`.
+
+| `Lexem` — blir kort | satt på | | `Koncept` — blir inte kort | |
+|---|---|---|---|---|
+| `genus` | de, es, fr, it, sv | | `valens` (transitivitet) | 174 koncept |
+| `hjälpverb` | de, fr, it | | `gradbarhet` | 111 |
+| `prenominal` | es, fr, it | | `räknebar` | 259 |
+| `ja_adjektiv_typ` | ja | | `semantik` | 323 |
+
+**Fördelningen bevisar gränsen.** `genus` är satt för de fem språk som har
+genus och saknas i engelskan och japanskan. `hjälpverb` finns bara i de tre
+språk där valet existerar. `prenominal` varierar **per ord inom språket** — 16
+av franskans 111 adjektiv står före substantivet, 95 efter — men är konstant 1
+i tyskan, engelskan, svenskan och japanskan, som alltid har adjektivet före.
+Kriteriet begränsar sig alltså själv till rätt språk.
+
+`variant` ligger på `Lexem` men blir inget kort: den skiljer homonymer åt, den
+är inget användaren producerar.
+
+*(`prenominal` är en lexikal egenskap och inte en `regel`, just därför att den
+varierar per ord. Renderaren har regeln — «adjektivet står där lexemet säger» —
+och ordet bär värdet.)*
 
 ### Genus
 
