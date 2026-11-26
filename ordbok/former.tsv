@@ -211,6 +211,8 @@ abs_kärlek	sv	kärlek	kärleken	1	2	7
 abs_kärlek	sv	kärlek	kärlekens	1	2	8					
 abs_kärlek	sv	kärlek	kärleks	1	1	8					
 abs_liv	de	Leben	Leben	1		7					
+abs_liv	de	Leben	Leben	2		4					
+abs_liv	de	Leben	Leben	2		11					
 abs_liv	de	Leben	Lebens	1		8					
 abs_liv	en	life	life	1		7					
 abs_liv	en	life	life's	1		8					
@@ -3034,6 +3036,9 @@ adj_ev_intressant	sv	intressant	intressant	1	1		2		1
 adj_ev_intressant	sv	intressant	intressanta	1	2		3		1		
 adj_ev_intressant	sv	intressant	intressanta	2	1		3		1		
 adj_ev_intressant	sv	intressant	intressanta	2	2		3		1		
+adj_ev_intressant	sv	intressant	intressantare						2		
+adj_ev_intressant	sv	intressant	intressantast						3		
+adj_ev_intressant	sv	intressant	intressantaste		2				3		
 adj_ev_intresserad	de	interessiert	interessierte	1	1	3	2		1		
 adj_ev_intresserad	de	interessiert	interessierte	1	2	1	1		1		
 adj_ev_intresserad	de	interessiert	interessierte	1	2	3	2		1		
@@ -3727,6 +3732,9 @@ adj_ev_populär	sv	populär	populär	1	1		1		1
 adj_ev_populär	sv	populär	populära	1	2		3		1		
 adj_ev_populär	sv	populär	populära	2	1		3		1		
 adj_ev_populär	sv	populär	populära	2	2		3		1		
+adj_ev_populär	sv	populär	populärare						2		
+adj_ev_populär	sv	populär	populärast						3		
+adj_ev_populär	sv	populär	populäraste		2				3		
 adj_ev_populär	sv	populär	populärt	1	1		2		1		
 adj_ev_rolig	de	lustig	lustige	1	1	3	2		1		
 adj_ev_rolig	de	lustig	lustige	1	2	1	1		1		
@@ -5364,8 +5372,6 @@ adj_k_halv	es	medio	medio	1			1		1
 adj_k_halv	es	medio	medios	2			1		1		
 adj_k_halv	fr	demi	demi	1			1		1		
 adj_k_halv	fr	demi	demie	1			2		1		
-adj_k_halv	fr	demi	demies	2			2		1		
-adj_k_halv	fr	demi	demis	2			1		1		
 adj_k_halv	it	mezzo	mezza	1			2		1		
 adj_k_halv	it	mezzo	mezze	2			2		1		
 adj_k_halv	it	mezzo	mezzi	2			1		1		
@@ -8554,6 +8560,10 @@ adj_s_liten	fr	petit	petit	1			1		1
 adj_s_liten	fr	petit	petite	1			2		1		
 adj_s_liten	fr	petit	petites	2			2		1		
 adj_s_liten	fr	petit	petits	2			1		1		
+adj_s_liten	it	piccolo	minore	1					2		
+adj_s_liten	it	piccolo	minore	1					3		
+adj_s_liten	it	piccolo	minori	2					2		
+adj_s_liten	it	piccolo	minori	2					3		
 adj_s_liten	it	piccolo	piccola	1			2		1		
 adj_s_liten	it	piccolo	piccole	2			2		1		
 adj_s_liten	it	piccolo	piccoli	2			1		1		
@@ -14782,6 +14792,7 @@ frågepronomen_sak	de	was	was			3
 frågepronomen_sak	de	was	wessen			8					
 frågepronomen_sak	en	what	what			7					
 frågepronomen_sak	es	qué	qué			7					
+frågepronomen_sak	fr	que	qu'est-ce qui			1					
 frågepronomen_sak	fr	que	que/quoi			6					
 frågepronomen_sak	it	cosa	cosa			7					
 frågepronomen_sak	ja	何	何								
@@ -19735,13 +19746,13 @@ färg_blå	de	blau	blauesten	1	3	12	3		3
 färg_blå	de	blau	blauesten	1	3	14	1		3		
 färg_blå	de	blau	blauesten	2	1	4			3		
 färg_blå	de	blau	blauesten	2	2	15			3		
+färg_blå	de	blau	blauesten	2	3	15			3		
 färg_blå	de	blau	blauester	1	1	1	1		3		
 färg_blå	de	blau	blauester	1	1	12	2		3		
 färg_blå	de	blau	blauester	1	3	1	1		3		
 färg_blå	de	blau	blauester	2	1	8			3		
 färg_blå	de	blau	blauestes	1	1	3	3		3		
 färg_blå	de	blau	blauestes	1	3	3	3		3		
-färg_blå	de	blau	blausten	2	3	15			3		
 färg_blå	en	blue	blue						1		
 färg_blå	en	blue	bluer						2		
 färg_blå	en	blue	bluest						3		
@@ -21533,10 +21544,13 @@ gen_förbereda	sv	förbereda	förbered					16			1
 gen_förbereda	sv	förbereda	förbereda					1			1
 gen_förbereda	sv	förbereda	förberedades					4			2
 gen_förbereda	sv	förbereda	förberedas					1			2
+gen_förbereda	sv	förbereda	förberedd	1	1		1	8			1
+gen_förbereda	sv	förbereda	förberedda				3	8			1
 gen_förbereda	sv	förbereda	förberedde					4			1
 gen_förbereda	sv	förbereda	förbereder					2			1
 gen_förbereda	sv	förbereda	förbereds					2			2
 gen_förbereda	sv	förbereda	förberett					8			1
+gen_förbereda	sv	förbereda	förberett	1	1		2	8			1
 gen_förbereda	sv	förbereda	förberetts					8			2
 gen_förbättra	de	verbessern	verbessere	1				16		2	1
 gen_förbättra	de	verbessern	verbessere	1				1024		3	1
@@ -21664,6 +21678,7 @@ gen_förbättra	it	migliorare	migliorassimo	2				5120		1	1
 gen_förbättra	it	migliorare	miglioraste	2				5124		2	1
 gen_förbättra	it	migliorare	migliorasti	1				4		2	1
 gen_förbättra	it	migliorare	migliorata	1			2	8			1
+gen_förbättra	it	migliorare	migliorate	2				2		2	1
 gen_förbättra	it	migliorare	migliorate	2			2	8			1
 gen_förbättra	it	migliorare	migliorati	2			1	8			1
 gen_förbättra	it	migliorare	migliorato	1			1	8			1
@@ -21689,7 +21704,7 @@ gen_förbättra	it	migliorare	migliori	1				1024		1	1
 gen_förbättra	it	migliorare	migliori	1				1026		2	1
 gen_förbättra	it	migliorare	migliori	1				1040		3	1
 gen_förbättra	it	migliorare	miglioriamo	2				1042		1	1
-gen_förbättra	it	migliorare	miglioriate	2				1042		2	1
+gen_förbättra	it	migliorare	miglioriate	2				1040		2	1
 gen_förbättra	it	migliorare	migliorino	2				1024		3	1
 gen_förbättra	it	migliorare	miglioro	1				2		1	1
 gen_förbättra	it	migliorare	migliorò	1				4		3	1
@@ -24699,7 +24714,7 @@ gen_spela	it	giocare	giocavo	1				4096		1	1
 gen_spela	it	giocare	giocherai	1				64		2	1
 gen_spela	it	giocare	giocheranno	2				64		3	1
 gen_spela	it	giocare	giocherebbe	1				2048		3	1
-gen_spela	it	giocare	giocherebbe	2				2048		3	1
+gen_spela	it	giocare	giocherebbero	2				2048		3	1
 gen_spela	it	giocare	giocherei	1				2048		1	1
 gen_spela	it	giocare	giocheremmo	2				2048		1	1
 gen_spela	it	giocare	giocheremo	2				64		1	1
@@ -24914,19 +24929,20 @@ gen_söka	sv	söka	sökt	1	1		2	8			1
 gen_söka	sv	söka	sökta				3	8			1
 gen_söka	sv	söka	sökte					4			1
 gen_söka	sv	söka	söktes					4			2
+gen_tycka	de	finden	Finden Sie	1				16		3	1
+gen_tycka	de	finden	Finden wir	2				16		1	1
 gen_tycka	de	finden	fand	1				4		1	1
 gen_tycka	de	finden	fand	1				4		3	1
 gen_tycka	de	finden	fanden	2				4		1	1
 gen_tycka	de	finden	fanden	2				4		3	1
+gen_tycka	de	finden	fandest	1				4		2	1
 gen_tycka	de	finden	fandet	2				4		2	1
-gen_tycka	de	finden	fandst	1				4		2	1
 gen_tycka	de	finden	finde	1				16		2	1
 gen_tycka	de	finden	finde	1				1024		3	1
 gen_tycka	de	finden	finde	1				1026		1	1
 gen_tycka	de	finden	finden					1			1
-gen_tycka	de	finden	finden	1				16		3	1
+gen_tycka	de	finden	finden	2				1026		1	1
 gen_tycka	de	finden	finden	2				1026		3	1
-gen_tycka	de	finden	finden	2				1042		1	1
 gen_tycka	de	finden	findend					128			1
 gen_tycka	de	finden	findest	1				1026		2	1
 gen_tycka	de	finden	findet	1				2		3	1
@@ -26120,6 +26136,10 @@ hem_frys	it	congelatore	congelatore	1
 hem_frys	it	congelatore	congelatori	2							
 hem_frys	ja	冷凍庫	冷凍庫								
 hem_frys	sv	frys	frys	1	1	15					
+hem_frys	sv	frys	frysar	2	1	7					
+hem_frys	sv	frys	frysarna	2	2	7					
+hem_frys	sv	frys	frysarnas	2	2	8					
+hem_frys	sv	frys	frysars	2	1	8					
 hem_frys	sv	frys	frysen	1	2	7					
 hem_frys	sv	frys	frysens	1	2	8					
 hem_fönster	de	Fenster	Fenster	1		7					
@@ -26484,9 +26504,10 @@ hem_vägg	fr	mur	murs	2
 hem_vägg	it	muro	muri	2							
 hem_vägg	it	muro	muro	1							
 hem_vägg	ja	壁	壁								
-hem_vägg	sv	vägg	vägarnas	2	2	15					
 hem_vägg	sv	vägg	vägg	1	1	7					
 hem_vägg	sv	vägg	väggar	2	1	7					
+hem_vägg	sv	vägg	väggarna	2	2	7					
+hem_vägg	sv	vägg	väggarnas	2	2	8					
 hem_vägg	sv	vägg	väggars	2	1	8					
 hem_vägg	sv	vägg	väggen	1	2	7					
 hem_vägg	sv	vägg	väggens	1	2	8					
@@ -26938,7 +26959,6 @@ kläd_tshirt	sv	t-shirt	t-shirten	1	2	7
 kläd_tshirt	sv	t-shirt	t-shirtens	1	2	8					
 kläd_tshirt	sv	t-shirt	t-shirts	1	1	8					
 kläd_underkläder	de	Unterwäsche	Unterwäsche	1		15					
-kläd_underkläder	de	Unterwäsche	Unterwäschen	2		15					
 kläd_underkläder	en	underwear	underwear	1		7					
 kläd_underkläder	en	underwear	underwear's	1		8					
 kläd_underkläder	es	ropa interior	ropa interior	1							
@@ -32265,9 +32285,10 @@ krop_huvud	it	testa	testa	1
 krop_huvud	it	testa	teste	2							
 krop_huvud	ja	頭	頭								
 krop_huvud	sv	huvud	huvud	1	1	7					
-krop_huvud	sv	huvud	huvud	2	1	15					
+krop_huvud	sv	huvud	huvuden	2	1	7					
 krop_huvud	sv	huvud	huvudena	2	2	7					
 krop_huvud	sv	huvud	huvudenas	2	2	8					
+krop_huvud	sv	huvud	huvudens	2	1	8					
 krop_huvud	sv	huvud	huvudet	1	2	7					
 krop_huvud	sv	huvud	huvudets	1	2	8					
 krop_huvud	sv	huvud	huvuds	1	1	8					
@@ -35565,7 +35586,6 @@ mat_frukt	es	fruta	frutas	2
 mat_frukt	fr	fruit	fruit	1							
 mat_frukt	fr	fruit	fruits	2							
 mat_frukt	it	frutta	frutta	1							
-mat_frukt	it	frutta	frutte	2							
 mat_frukt	ja	果物	果物								
 mat_frukt	sv	frukt	frukt	1	1	7					
 mat_frukt	sv	frukt	frukten	1	2	7					
@@ -35786,9 +35806,6 @@ mat_ris	fr	riz	riz	1
 mat_ris	it	riso	riso	1							
 mat_ris	ja	ご飯	ご飯								
 mat_ris	sv	ris	ris	1	1	15					
-mat_ris	sv	ris	ris	2	1	15					
-mat_ris	sv	ris	risen	2	2	7					
-mat_ris	sv	ris	risens	2	2	8					
 mat_ris	sv	ris	riset	1	2	7					
 mat_ris	sv	ris	risets	1	2	8					
 mat_salt	de	Salz	Salz	1		7					
@@ -37011,10 +37028,13 @@ modal_vill	es	querer	quisiste	1				4		2	1
 modal_vill	es	querer	quisisteis	2				4		2	1
 modal_vill	es	querer	quisiéramos	2				5120		1	1
 modal_vill	es	querer	quiso	1				4		3	1
+modal_vill	fr	vouloir	veuille	1				16		2	1
 modal_vill	fr	vouloir	veuille	1				1024		1	1
 modal_vill	fr	vouloir	veuille	1				1024		3	1
 modal_vill	fr	vouloir	veuillent	2				1024		3	1
 modal_vill	fr	vouloir	veuilles	1				1024		2	1
+modal_vill	fr	vouloir	veuillez	2				16		2	1
+modal_vill	fr	vouloir	veuillons	2				16		1	1
 modal_vill	fr	vouloir	veulent	2				2		3	1
 modal_vill	fr	vouloir	veut	1				2		3	1
 modal_vill	fr	vouloir	veux	1				2		1	1
@@ -39103,6 +39123,7 @@ plats_café	es	café	cafés	2
 plats_café	fr	café	café	1							
 plats_café	fr	café	cafés	2							
 plats_café	it	caffè	caffè	1							
+plats_café	it	caffè	caffè	2							
 plats_café	ja	カフェ	カフェ								
 plats_café	sv	café	café	1	1	7					
 plats_café	sv	café	caféerna	2	2	7					
@@ -40285,6 +40306,7 @@ pronomen_2pl	en	you	you			7
 pronomen_2pl	es	ustedes	les			4					
 pronomen_2pl	es	ustedes	los			2					
 pronomen_2pl	es	ustedes	ustedes			1					
+pronomen_2pl	es	ustedes	ustedes			8					
 pronomen_2pl	es	vosotros	os			6					
 pronomen_2pl	es	vosotros	vosotros/vosotras			9					
 pronomen_2pl	fr	vous	vous			15					
@@ -40406,6 +40428,7 @@ pronomen_reflexiv	es	se	se			6
 pronomen_reflexiv	es	se	sí			8					
 pronomen_reflexiv	fr	se	se			6					
 pronomen_reflexiv	it	si	si			6					
+pronomen_reflexiv	it	si	sé			8					
 pronomen_reflexiv	ja	自分	自分								
 pronomen_reflexiv	sv	sig	sig			7					
 rör_byta	de	tauschen	getauscht					8			1
@@ -44282,8 +44305,9 @@ skol_penna	sv	penna	pennorna	2	2	7
 skol_penna	sv	penna	pennornas	2	2	8					
 skol_penna	sv	penna	pennors	2	1	8					
 skol_professor	de	Professor	Professor	1		1					
-skol_professor	de	Professor	Professoren	1		14					
+skol_professor	de	Professor	Professor	1		6					
 skol_professor	de	Professor	Professoren	2		15					
+skol_professor	de	Professor	Professors	1		8					
 skol_professor	en	professor	professor	1		7					
 skol_professor	en	professor	professor's	1		8					
 skol_professor	en	professor	professors	2		7					
@@ -45237,6 +45261,7 @@ soc_gifta_sig	it	sposarsi	sposassimo	2				5120		1	1
 soc_gifta_sig	it	sposarsi	sposaste	2				5124		2	1
 soc_gifta_sig	it	sposarsi	sposasti	1				4		2	1
 soc_gifta_sig	it	sposarsi	sposata	1			2	8			1
+soc_gifta_sig	it	sposarsi	sposate	2				18		2	1
 soc_gifta_sig	it	sposarsi	sposate	2			2	8			1
 soc_gifta_sig	it	sposarsi	sposati	2			1	8			1
 soc_gifta_sig	it	sposarsi	sposato	1			1	8			1
@@ -45262,8 +45287,8 @@ soc_gifta_sig	it	sposarsi	sposi	1				1024		1	1
 soc_gifta_sig	it	sposarsi	sposi	1				1026		2	1
 soc_gifta_sig	it	sposarsi	sposi	1				1040		3	1
 soc_gifta_sig	it	sposarsi	sposiamo	2				1042		1	1
+soc_gifta_sig	it	sposarsi	sposiate	2				1024		2	1
 soc_gifta_sig	it	sposarsi	sposino	2				1024		3	1
-soc_gifta_sig	it	sposarsi	sposite	2				1042		2	1
 soc_gifta_sig	it	sposarsi	sposo	1				2		1	1
 soc_gifta_sig	it	sposarsi	sposò	1				4		3	1
 soc_gifta_sig	ja	結婚する	結婚される					1			2
@@ -47751,13 +47776,13 @@ väd_regn	sv	regn	regnets	1	2	8
 väd_regn	sv	regn	regns	1	1	8					
 väd_regn	sv	regn	regns	2	1	8					
 väd_snö	de	Schnee	Schnee	1		7					
-väd_snö	de	Schnee	Schnee	2		15					
 väd_snö	de	Schnee	Schnees	1		8					
 väd_snö	en	snow	snow	1		7					
 väd_snö	en	snow	snow's	1		8					
 väd_snö	es	nieve	nieve	1							
 väd_snö	es	nieve	nieves	2							
 väd_snö	fr	neige	neige	1							
+väd_snö	fr	neige	neiges	2							
 väd_snö	it	neve	neve	1							
 väd_snö	it	neve	nevi	2							
 väd_snö	ja	雪	雪								
@@ -47982,10 +48007,11 @@ yrke_chef	ja	上司	上司
 yrke_chef	sv	chef	chef	1	1	7					
 yrke_chef	sv	chef	chefen	1	2	7					
 yrke_chef	sv	chef	chefens	1	2	8					
+yrke_chef	sv	chef	chefer	2	1	7					
 yrke_chef	sv	chef	cheferna	2	2	7					
 yrke_chef	sv	chef	chefernas	2	2	8					
+yrke_chef	sv	chef	chefers	2	1	8					
 yrke_chef	sv	chef	chefs	1	1	8					
-yrke_chef	sv	chef	chefs	2	1	15					
 yrke_författare	de	Schriftsteller	Schriftsteller	1		7					
 yrke_författare	de	Schriftsteller	Schriftsteller	2		11					
 yrke_författare	de	Schriftsteller	Schriftstellern	2		4					
