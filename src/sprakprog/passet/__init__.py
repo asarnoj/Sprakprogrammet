@@ -654,8 +654,13 @@ class Passet:
         rad förbrukades den aldrig inom dagen: fyra nivåer gick igenom på fem
         minuter.
 
-        SPARAT. «Ett paket tas med helt, så en dag kan ge färre kort än n. Det
-        som inte används sparas till nästa dag» (5.5).
+        SPARAT ÄR EN DAGS OANVÄNDA TAKT, INTE EN BANK. «Det som inte används
+        sparas till NÄSTA dag» (5.5) — singular. Räknades budgeten som
+        `n + gårdagens sparande` och sparandet som `budget − dagens kort` växte
+        det utan gräns: 14, 29, 54, 79 … och vid dag trettio var budgeten
+        omkring sjuhundra medan dagen gav två kort. Då är budgeten ingen gräns
+        alls, och om kön en dag öppnar sig skulle en enda dag försöka ta
+        sjuhundra kort. Sparandet taks därför vid en dags takt.
         """
         if self.tidsmodell is None or self.kort_i_kursen is None:
             return None
@@ -664,7 +669,7 @@ class Passet:
             return None
         t = self.tidsmodell.tempo(minuter, self.data.införda_åldrar(), kvar)
         i_går = self.data.tempo(self.data.dag(_i_går()))
-        sparat = i_går[1] if i_går else 0.0
+        sparat = min(i_går[1], float(t.nya)) if i_går else 0.0
         return t, t.nya + sparat
 
     def paket(self) -> frozenset[Kort]:

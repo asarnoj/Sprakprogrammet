@@ -435,16 +435,24 @@ def main() -> None:
             svar = passet.tempo(a.minuter)
             if svar is not None:
                 tempot, budget = svar
+                # Talet är TAKTENS svar, inte planens: planen tar ett paket
+                # i taget ur nästa nivå (5.6, version ett), och en nivå har
+                # median ett kort. Skillnaden sägs rakt ut i stället för att
+                # lova en kurslängd som inte hålls.
+                extra = (f" ({budget - tempot.nya:.0f} sparat från i går)"
+                         if budget > tempot.nya else "")
                 print(f"  {a.minuter:.0f} min om dagen räcker till "
-                      f"{tempot.nya} nya kort; med sparat {budget:.1f}. "
-                      f"Kursen tar {tempot.slutdagen} dagar i det tempot.")
+                      f"{tempot.nya} nya kort{extra}.")
             print("  lägger dagens plan …")
             plan = passet.dagsplan(rapport=lambda r: print(r, flush=True))
             planens_dag = data.dag()
             nya = len(plan.kort - data.införda())
             if svar is not None:
-                # Det som inte gick åt sparas till i morgon (5.5).
-                data.spara_tempo(nya, max(0.0, budget - nya))
+                # Det som inte gick åt sparas till i morgon (5.5), och aldrig
+                # mer än en dags takt: sparandet är «till nästa dag», inte en
+                # bank. Lagras kapat, så att raden i `tempo` betyder det den
+                # säger.
+                data.spara_tempo(nya, min(max(0.0, budget - nya), float(tempot.nya)))
                 if nya > budget:
                     print(f"  ⚠ planen har {nya} nya kort men budgeten var "
                           f"{budget:.1f} — paketet togs helt (3.10).")
@@ -455,7 +463,10 @@ def main() -> None:
             val = ""
         svaga = sorted(passet.svaga(), key=str)
         if not svaga:
-            print("  inget svagt kort just nu — ta nästa nivå med n.")
+            # Att säga «ta nästa nivå med n» när planen redan är lagd är att
+            # be om något som `n` sedan vägrar (4.4).
+            print("  dagen är klar." if planens_dag == data.dag() else
+                  "  inget svagt kort just nu — ta nästa nivå med n.")
             continue
         # Meningsfasen körs tills högarna är tomma (5.3), inte en mening per
         # tangenttryck: dagen är klar när det svaga är klarat.
