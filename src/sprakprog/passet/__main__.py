@@ -15,7 +15,7 @@ import time
 from pathlib import Path
 
 from ..fsrslager import Lager
-from ..kortmodell import Kort
+from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
 from ..rendering.karta import ladda
 from ..sammansattning import Sammansättare
@@ -42,33 +42,126 @@ def _fråga(text: str) -> str:
         return "q"
 
 
-def _ställ(passet: Passet, uppgift) -> None:
-    """Ställ meningen, rätta svaret och låt användaren markera om (7.2)."""
-    uppgift = passet.ställ(uppgift)
+def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
+           paket: frozenset = frozenset()) -> bool:
+    """Ställ meningen och rätta svaret. Ger True när allt gick rätt.
+
+    I introfasen (`fas="intro"`) BOKFÖRS INGENTING (5.4). Övningen finns för
+    att användaren inte ska möta ny kunskap oförberedd, inte för FSRS; kortet
+    prövas på riktigt först i meningsfasen.
+    """
+    uppgift = passet.ställ(uppgift, fas)
     print(f"\n  {uppgift.källtext}")
     start = time.perf_counter()
     svar = _fråga("  > ")
     if svar == "q":
         raise SystemExit
     rättning = passet.rätta(uppgift, svar, time.perf_counter() - start)
+    intro = fas == "intro"
     if rättning.rätt:
+        if intro:
+            print("  rätt.")
+            return True
         val = _fråga("  rätt.    [enter] vidare · h svårt · e lätt\n  ")
         höjt = {k: "hard" if val == "h" else "easy" for k in rättning.betyg} \
             if val in ("h", "e") else None
-        passet.bokför(uppgift, rättning, höjt=höjt)
-        return
+        passet.bokför(uppgift, rättning, höjt=höjt, paket=paket)
+        return True
     print(f"  facit:   {uppgift.facit}")
     print(f"  fel i:   {', '.join(str(k) for k in rättning.fel) or '—'}")
+    if intro:
+        _fråga("  [enter] vidare\n  ")
+        return False
     val = _fråga("  [enter] vidare · r jag hade rätt · f flagga facit\n  ")
     if val == "r":
         # Rätt svar som facit inte hade: korten godkänns och facit granskas.
-        passet.bokför(uppgift, rättning, godkända=frozenset(rättning.betyg), flagga=svar)
+        passet.bokför(uppgift, rättning, godkända=frozenset(rättning.betyg),
+                      flagga=svar, paket=paket)
         print("  godkänt, och facit flaggat för granskning.")
-    elif val == "f":
-        passet.bokför(uppgift, rättning, flagga=svar)
+        return True
+    if val == "f":
+        passet.bokför(uppgift, rättning, flagga=svar, paket=paket)
         print("  facit flaggat.")
     else:
-        passet.bokför(uppgift, rättning)
+        passet.bokför(uppgift, rättning, paket=paket)
+    return False
+
+
+def _lektion(passet: Passet, uppgift, kort) -> None:
+    """Visa kortet i en färdig mening innan det prövas (5.4).
+
+    Utan det här är introövningen ett prov före undervisningen: användaren
+    möter regeln kall och kan omöjligt svara rätt. Exemplet visar meningen
+    med facit, och vilka ord kortet självt bestämde — positionerna räknas
+    fram, de skrivs inte för hand (6.2).
+
+    Meningen loggas som en ställd lektion, så att samma källmening inte kommer
+    igen som övning eller uppgift samma dag (6.1 punkt 8). Övningen blir
+    därför en ANNAN mening med samma kort som mål.
+    """
+    uppgift = passet.ställ(uppgift, "lektion")
+    orden = [str(o) for o in uppgift.ut.ord]
+    platserna = [p for k, ps in meningens_kort(passet.s.tabell, uppgift.ut)
+                 if k == kort for p in ps]
+    egna = {i for sort, i in platserna if sort == "ord"}
+    luckor = {i for sort, i in platserna if sort == "lucka"}
+    # En lucka är platsen där ett ord HADE stått: den nakna frasens uteblivna
+    # artikel syns bara så (6.2). Utan den vore lektionen tom för just de kort
+    # vars hela innebörd är att ingenting skrivs.
+    bitar = []
+    for i, o in enumerate(orden):
+        if i in luckor:
+            bitar.append("_")
+        bitar.append(f"[{o}]" if i in egna else o)
+    if len(orden) in luckor:
+        bitar.append("_")
+    print(f"    exempel:  {uppgift.källtext}")
+    print(f"              {uppgift.facit}")
+    if egna or luckor:
+        print(f"    kortet bestämmer:  {' '.join(bitar)}"
+              + ("    (_ = ordet som INTE skrivs)" if luckor else ""))
+
+
+def _introfas(passet: Passet) -> None:
+    """Presentera nästa nivås kort, ett i taget (5.1, 5.4).
+
+    En övning per kort, med kortet som enda mål och de andra korten i nivån
+    som lånekort. Ingenting bokförs: övningen finns för att användaren inte
+    ska möta ny kunskap oförberedd, och kortet prövas på riktigt först i
+    meningsfasen.
+
+    Ett kort som går fel läggs SIST i kön och görs om senare (5.4) — inte
+    direkt, eftersom användaren då har facit i färskt minne.
+    """
+    kö = passet.kandidater()
+    if not kö:
+        print("  inget kort att presentera nu.")
+        return
+    nivån = frozenset(kö)
+    print(f"  introfasen: {len(kö)} kort i nästa nivå. Inget bokförs här.")
+    kvar = list(kö)
+    medan_inget_gick = 0
+    while kvar:
+        kort = kvar.pop(0)
+        uppgift = passet.presentera(kort, paket=nivån)
+        if uppgift is None:
+            print(f"  {kort}: ingen övning går att bygga ännu — hoppas över.")
+            continue
+        print(f"\n  lär dig nu:  {kort}")
+        _lektion(passet, uppgift, kort)
+        övning = passet.presentera(kort, paket=nivån)
+        if övning is None:
+            print("  ingen andra mening att öva på — kortet prövas i meningsfasen.")
+            continue
+        if _ställ(passet, övning, fas="intro"):
+            medan_inget_gick = 0
+            continue
+        kvar.append(kort)          # sist i kön (5.4)
+        medan_inget_gick += 1
+        if medan_inget_gick >= len(kvar) + 1:
+            print("  inget kort går rätt just nu — introfasen pausas.")
+            return
+    print("\n  nivån är presenterad. Korten prövas nu i meningar.")
 
 
 def main() -> None:
@@ -91,25 +184,12 @@ def main() -> None:
     while True:
         läge = passet.läge()
         print(f"\n[{läge['dag']} {läge['tid']}]  införda {läge['införda']} · "
-              f"svaga {läge['svaga']} · att införa {läge['kandidater']}")
+              f"svaga {läge['svaga']} · nästa nivå {läge['kandidater']} kort")
         val = _fråga("> ")
         if val == "q":
             return
         if val == "n":
-            kandidater = passet.kandidater()
-            if not kandidater:
-                print("  inget kort går att införa nu.")
-                continue
-            paket = passet.paket(kandidater[0])
-            if paket is None:
-                print(f"  {kandidater[0]}: ingen mening inom budgeten ännu.")
-                continue
-            uppgift, nya = paket
-            print("  nya kort:", ", ".join(sorted(map(str, nya))))
-            for kort in nya:
-                data.presentera(kort)
-            passet.uppdatera()
-            _ställ(passet, uppgift)
+            _introfas(passet)
             continue
         svaga = sorted(passet.svaga(), key=str)
         if not svaga:

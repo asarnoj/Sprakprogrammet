@@ -198,7 +198,7 @@ class Passet:
 
     def bokför(self, uppgift: Uppgift, rättning: Rättning,
                godkända: frozenset = frozenset(), höjt: dict | None = None,
-               flagga: str | None = None) -> None:
+               flagga: str | None = None, paket: frozenset = frozenset()) -> None:
         """Betygen går till FSRS när användaren går vidare, inte när diffen
         räknats fram (7.2). Korten som gick rätt införs (5.1).
 
@@ -215,14 +215,25 @@ class Passet:
         höjt = höjt or {}
         if flagga is not None:
             self.data.rapportera_fel(flagga, mening_id=uppgift.mening_id)
+        betygen = {}
         for kort, mätt in rättning.betyg.items():
             betyg = RÄTT if kort in godkända else mätt
             if betyg == RÄTT:
                 betyg = höjt.get(kort, RÄTT)
+            betygen[kort] = (mätt, betyg)
             self.data.bokför(kort, mål=kort in uppgift.mål, betyg_diff=mätt,
                              betyg=betyg, mening_id=uppgift.mening_id)
-            if betyg != FEL:
-                self.data.inför(kort, uppgift.mening_id)
+        # ETT PAKET BLIR INFÖRT HELT ELLER INTE ALLS (5.1). Annars kunde ett
+        # verb stå som infört utan det pronomen det kräver, och nästa mening
+        # bygga på ett kort användaren aldrig klarat.
+        föll = {k for k, (_, betyg) in betygen.items() if betyg == FEL}
+        helt = not (paket & föll) if paket else True
+        for kort, (_, betyg) in betygen.items():
+            if betyg == FEL:
+                continue
+            if kort in paket and not helt:
+                continue
+            self.data.inför(kort, uppgift.mening_id)
         self.uppdatera()
 
     # ── introfasen ──
@@ -267,13 +278,26 @@ class Passet:
                              lambda träff: träff.kort - införda)
         return None if uppgift is None else (uppgift, uppgift.mål)
 
-    def presentera(self, kort: Kort) -> Uppgift | None:
-        """Introövningen: en mening med kortet som enda mål (5.4).
+    def presentera(self, kort: Kort, paket: frozenset = frozenset()) -> Uppgift | None:
+        """Introövningen: en mening med kortet som ENDA mål (5.4).
 
         Bokför ingenting. Kortet räknas som presenterat, och får därför användas
         i dagens meningar (5.1).
+
+        `paket` är de andra oinförda korten i samma nivå. De får vara lånekort
+        trots att de inte är införda, eftersom korten i en nivå kräver varandra
+        (4.1) — annars gick det första kortet i nivån inte att presentera alls.
+        Lånekorten väljs utan gränsvärde (5.4): bara det nya kortet är mål, och
+        budgeten gäller därför inte här.
         """
-        uppgift = self.uppgift(kort)
+        införda = self.data.införda()
+        presenterade = self.data.presenterade()
+
+        def tillåten(k: Kort) -> bool:
+            return (k == kort or k in införda or k in presenterade
+                    or k in paket or k.familj == "ord")
+
+        uppgift = self._välj(kort, tillåten, lambda träff: {kort})
         if uppgift is None:
             return None
         self.data.presentera(kort)
