@@ -48,6 +48,8 @@ HÄR = Path(__file__).resolve().parent
 #: (fil, tung). `tung` = bygger databaskopior och tar minuter.
 NÄT = [
     ("omkastningsprov.py",   False),
+    # Sökningens soundhet: samma fråga, samma svar, varm eller kall.
+    ("sökningsprov.py",      False),
     ("attributionsprov.py",  False),
     ("rättningsprov.py",     False),
     ("konstruktionsprov.py", False),

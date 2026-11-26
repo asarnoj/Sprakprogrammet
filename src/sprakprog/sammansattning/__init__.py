@@ -339,7 +339,11 @@ class Sammansättare:
                                                   for _, b, a in v.anrop) for v in vägar):
                             når.add((del_, etiketter))
                             ändrat = True
-            self._nåcache[mål] = (når, egen)
+            # MÅLET FÖLJER MED, för minnet i `_minnesnyckel` måste kunna
+            # nyckla på det. Ett `id()` hade räckt — `_vägordning` gör så — men
+            # ett kort är stabilt och läsbart, och `id` kan återanvändas om
+            # cachen någon gång töms.
+            self._nåcache[mål] = (når, egen, mål)
         return self._nåcache[mål]
 
     def _vägordning(self, del_: str, etiketter: tuple, nåbar, måste: bool):
@@ -397,7 +401,8 @@ class Sammansättare:
         # samma kedja och samma villkor under argumenten (`_projektion`). De
         # villkor den lägger till har namn under argumenten och kan inte krocka
         # med anroparens. Minnet töms när ett nytt bevis lärs (`_minnesnyckel`).
-        minne = self._minnesnyckel(nod, bindning, budget, tillåten, kedja, måste)
+        minne = self._minnesnyckel(nod, bindning, budget, tillåten, kedja,
+                                   måste, nåbar)
         samlade = None
         if minne is not None:
             minne = (minne, self._projektion(bindning, villkor, nod))
@@ -576,9 +581,33 @@ class Sammansättare:
         return frozenset(ut)
 
     def _minnesnyckel(self, nod: tuple, bindning: dict, budget: float,
-                      tillåten: Tillåten, kedja: tuple, måste: bool) -> tuple | None:
+                      tillåten: Tillåten, kedja: tuple, måste: bool,
+                      nåbar: tuple | None = None) -> tuple | None:
         """Nyckeln för minnet av vad delar gav, eller None för en del utan anrop,
-        som är billigare att gå igenom än att minnas."""
+        som är billigare att gå igenom än att minnas.
+
+        MÅLET MÅSTE VARA MED NÄR `måste` GÄLLER, och det saknades. Under `måste`
+        ger delen bara sammansättningar som innehåller målet, så svaret beror på
+        VILKET mål — men nyckeln bar bara boolen. En sökning efter
+        `ord:pronomen_1sg` lagrade därför «ingenting här» under en nyckel som en
+        senare sökning efter `ord:frågepronomen_person` återanvände, och
+        sökningen svarade att ingen mening fanns när tio fanns.
+
+        Mätt i `dagsplan`, samma kort och samma predikat: noll träffar med varmt
+        minne, tio med nollställt. KÄRNAN 3.10 säger att det inte får hända —
+        «sökningen är exakt (6.7) och hittar därför en mening för varje kort som
+        har ett bevis» — och ett tyst nej är ett fel i programmet.
+
+        Att det inte setts förr beror på skalan: minnet töms när predikatet byts,
+        och passet skapar ett predikat per anrop. Med en nivås fem kort hann
+        kollisionerna sällan skada; med tjugotvå kort ur tjugo nivåer växte minnet
+        till 55 679 poster och sex kort tappade sina meningar.
+
+        UTAN `måste` ÄR SVARET MÅLOBEROENDE, och de posterna delas fortfarande.
+        `nåbar` läses bara under `måste`: den tidiga returen, ordningen i
+        `_vägordning`, och `har`-grinden i `_ordval` gäller alla bara då. Därför
+        kostar rättelsen bara det minne som var osunt.
+        """
         if nod not in self._delar_med_anrop:
             return None
         # Minnet gäller för en fråga och så länge inga nya bevis lärts: ett bevis
@@ -586,7 +615,8 @@ class Sammansättare:
         if tillåten is not self._minne_för or len(self._bevismängd) != self._minne_bevis:
             self._minne_för, self._minne, self._sedda = tillåten, {}, set()
             self._minne_bevis = len(self._bevismängd)
-        return (nod, tuple(bindning.items()), budget, måste, kedja)
+        return (nod, tuple(bindning.items()), budget, måste, kedja,
+                nåbar[2] if måste and nåbar is not None else None)
 
     def _döpt(self, i: int, bindning: dict) -> tuple[list, list]:
         """Vägens villkor och händelser med meningens namn. Listorna delas och
