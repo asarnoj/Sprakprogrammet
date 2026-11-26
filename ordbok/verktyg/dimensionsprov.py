@@ -118,8 +118,14 @@ def prov_stegen_är_hel() -> list[str]:
         # räknar därför på UNIONEN av alla namn och inte per typ — annars
         # mäter det den gamla formen och faller på rätt data.
         alla = [n for _, namn in s for n in namn]
+        # DE NÅBARA CELLERNA, inte alla projicerade. Stegen utelämnar celler
+        # ingen spec kan producera — franskans konditionalis, tyskans
+        # konjunktiv — eftersom en nivå för dem låser upp ingenting. Att
+        # kräva dem här vore att kräva tomma nivåer.
+        nåbart = d.nåbara_celler(språk)
         väntat = sorted([*NIVÅ.values(),
-                         *(c for c, _ in d.projicera().get(språk, []))])
+                         *(c for c, _ in d.projicera().get(språk, [])
+                           if c in nåbart)])
         if sorted(alla) != väntat:
             saknas = set(väntat) - set(alla)
             extra = set(alla) - set(väntat)

@@ -4110,6 +4110,31 @@ Ordningen är nu presens först. Utfall:
 fem steg, engelskan fyra) mot tjugo konstruktioner, så den proportionella
 flätningen lägger konstruktioner först — och nivå 1–4 har ingen verbform alls.
 
+#### EN NIVÅ SOM LÅSER UPP INGENTING ÄR INGEN NIVÅ (2026-08-28)
+
+Paradigmen är fullständiga; specen är det inte. Franskan har konditionalis i
+`verb.yaml` men ingen konstruktion som bygger den, tyskan har båda
+konjunktiverna, japanskan `kond` och `vol`. Ett steg för en sådan cell låser
+upp ingenting: `nåbara` filtrerar bort kortet, och nivån blir en räknare som
+tickar utan verkan.
+
+Mätt vid nivå 21 med 1 500 kandidater — celler i stegen som INGEN spec kan
+producera:
+
+    fr   6 av 13 fria böjningssteg   hela konditionalisen + presensparticipet
+    de   3 av 8                      konj2_2sg, konj2_2pl, part1
+    ja   2 av 6                      kond, vol
+    sv, en   0
+
+`nåbara_celler(språk)` mäter dem och stegen utelämnar dem. Det är samma
+tomma läromoment som drev hopslagningen av ändelsekorten, fast på nivåns
+nivå i stället för kortets.
+
+**Efter alla tre ingreppen — hopslagning, grundböjning, nåbarhet — landar
+alla sju språken på 22 till 24 nivåer**, från tjugo konstruktioner plus två
+till fyra fria böjningssteg. Resten är antingen absorberat i en konstruktion
+eller bortfiltrerat som omöjligt.
+
 #### KONSTRUKTION OCH BÖJNING ÄR ETT LÄROMOMENT (2026-08-28)
 
 Beroendena var ordnade: cellerna före konstruktionen som kräver dem. Mätt

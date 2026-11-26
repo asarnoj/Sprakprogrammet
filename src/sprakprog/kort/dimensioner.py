@@ -287,6 +287,41 @@ def grundböjning(språk: str, ordklass: str = "Verb") -> frozenset[str]:
     return _grundcache[språk]
 
 
+_nåbarcache: dict[str, frozenset] = {}
+
+
+def nåbara_celler(språk: str, ordklass: str = "Verb",
+                  kandidater: int = 400) -> frozenset[str]:
+    """Celler som NÅGON spec kan producera. Mätt, inte härledd.
+
+    Paradigmen är fullständiga; specen är det inte. Franskan har
+    konditionalis i `verb.yaml` men ingen konstruktion som bygger den, och
+    tyskan har båda konjunktiverna. Ett steg för en sådan cell låser upp
+    ingenting: `nåbara` filtrerar bort kortet, och nivån blir en räknare som
+    tickar utan verkan — samma tomma läromoment som drev hopslagningen, fast
+    på nivåns nivå i stället för kortets.
+
+    Mätt vid nivå 21 med 1 500 kandidater: sex av franskans tretton
+    böjningssteg var onåbara (hela konditionalisen plus presensparticipet),
+    tre av tyskans åtta, två av japanskans sex. Svenskan och engelskan noll.
+
+    Samma väg som `befolka.nåbara` tar, och samma skäl — bakvägen från cell
+    till "kan specen producera den" finns inte.
+    """
+    if språk in _nåbarcache:
+        return _nåbarcache[språk]
+    from ..db import anslut
+    from .befolka import nåbara
+    db = anslut()
+    try:
+        celler = {c for _, _, c in nåbara(db, språk, 21, "C2",
+                                          kandidater=kandidater)}
+    finally:
+        db.close()
+    _nåbarcache[språk] = frozenset(celler)
+    return _nåbarcache[språk]
+
+
 def stege(språk: str,
           ordklass: str = "Verb") -> list[tuple[str, tuple[str, ...]]]:
     """Den sammanflätade stegen: [(typ, namn)] där typ är 'konstruktion' eller 'böjning'.
@@ -309,7 +344,11 @@ def stege(språk: str,
     from ..generator.urval import NIVÅ
     from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
 
-    böjning = [cell for cell, _ in projicera(ordklass=ordklass).get(språk, [])]
+    # BARA CELLER SPECEN KAN PRODUCERA. Se `nåbara_celler` — ett steg för en
+    # cell ingen mening kan bygga är en nivå som låser upp ingenting.
+    nåbart = nåbara_celler(språk, ordklass)
+    böjning = [cell for cell, _ in projicera(ordklass=ordklass).get(språk, [])
+               if cell in nåbart]
     konstruktioner = [NIVÅ[n] for n in sorted(NIVÅ)]
     if not böjning:
         return [("konstruktion", k) for k in konstruktioner]
