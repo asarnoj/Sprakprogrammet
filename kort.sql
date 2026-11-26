@@ -74,9 +74,18 @@ CREATE TABLE Kort (
     schemalagt INTEGER NOT NULL DEFAULT 1 CHECK (schemalagt IN (0, 1)),
 
     /* ── FSRS-tillstånd ──────────────────────────────────────────────────
-       Nollställt tills kortet setts första gången. `stabilitet` och
-       `svårighet` är algoritmens två tillståndsvariabler; `förfaller` är
-       det enda urvalet behöver läsa. Tiderna är ISO-8601 i UTC. */
+       Speglar fsrs.Card exakt, så att en rad går att lyfta in i biblioteket
+       och tillbaka utan översättningsförlust. `stabilitet` och `svårighet`
+       är algoritmens två tillståndsvariabler; `förfaller` är det enda
+       urvalet behöver läsa. Tiderna är ISO-8601 i UTC.
+
+       `tillstånd` och `steg` hör till inlärningsstegen. Vi kör UTAN sådana
+       (GENERATOR.md: "Inga relearning-steg behövs" — genereringen ersätter
+       Ankis tiominutersmekanik), men kolumnerna finns ändå: biblioteket
+       bär dem, och att tappa dem vid varje rundtur vore att tyst ändra
+       kortets tillstånd. */
+    tillstånd  INTEGER NOT NULL DEFAULT 1,
+    steg       INTEGER,
     stabilitet REAL,
     svårighet  REAL,
     förfaller  TEXT,

@@ -47,6 +47,17 @@ def kör(args: argparse.Namespace) -> int:
             print(f"✓ {sätt_schemalagt(kort_db)} kort möts för ofta för att "
                   f"schemaläggas — de mäts i stället")
 
+    if args.kö:
+        from ..kort import Schemaläggare, kö
+        s = Schemaläggare(kort_db)
+        rader = kö(kort_db, args.kö, args.antal)
+        print(f"\nKö för {args.kö}: {len(rader)} kort")
+        print(f"{'typ':10}{'facit':16}{'R':>6}{'förfaller':>22}{'antal':>7}")
+        for r in rader:
+            print(f"{r['typ']:10}{(r['facit'] or '')[:15]:16}"
+                  f"{s.retention(r):6.2f}{(r['förfaller'] or '—')[:19]:>22}{r['antal']:7}")
+        return 0
+
     print()
     print(f"{'':4}{'typ':12}{'antal':>7}{'schemalagda':>13}{'räckvidd':>10}")
     for rad in sammanfattning(kort_db):
@@ -66,5 +77,7 @@ def lägg_till_parser(sub) -> None:
                    help="mät exponering och sätt schemalagt/mätt")
     p.add_argument("--meningar", type=int, default=2000,
                    help="antal meningar per språk vid mätning")
+    p.add_argument("--kö", choices=SPRÅK, help="visa dagens kö för ett språk")
+    p.add_argument("--antal", type=int, default=20, help="kölängd")
     p.add_argument("--db", help="annan sökväg än kort.db")
     p.set_defaults(func=kör)
