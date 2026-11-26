@@ -126,6 +126,8 @@ class Övningstjänst:
         #: uppgift-id → (kortlägen, korrekt, omedföljande). Fylls av `svara`
         #: och läses av `bokför` för dagboken; se `kort/dagbok.py`.
         self._lägen: dict[int, tuple] = {}
+        #: uppgift-id → "dagens" eller "extra". Se `uppgift` och `bokför`.
+        self._uppgiftsläge: dict[int, str] = {}
         #: (kurs, extraläge) → id på den uppgift som lämnats ut men ännu inte
         #: besvarats. Se `uppgift`.
         self._pågående: dict[tuple[int, bool], int] = {}
@@ -441,6 +443,10 @@ class Övningstjänst:
             # servern och inte i webbläsaren: den ska inte gå att påverka,
             # och den ska överleva att sidan laddas om.
             self._öppna[id_] = (kurs["id"], f, time.monotonic())
+            # VILKET PASS UPPGIFTEN KOM UR. `bokför` behöver det, och hade
+            # det inte: den frågade alltid efter DAGENS pass, så ett fel i
+            # extraövningen skrev sin `igen`-rad där. Se `bokför`.
+            self._uppgiftsläge[id_] = "extra" if extra else "dagens"
             self._pågående[(kurs["id"], extra)] = id_
             return self._uppgiftssvar(id_, kurs, f)
 
@@ -710,7 +716,28 @@ class Övningstjänst:
             # ÖGONBLICKSBILDEN TAS FÖRE MUTATIONERNA. Ett felaktigt beslut
             # syns i ÖVERGÅNGEN och inte i sluttillståndet, så dagboken
             # måste ha båda ändarna. Se `kort/dagbok.py`.
-            pass_före = passlager.nuvarande(self.kort_db, kurs_id)
+            # ÅTERFÖRSÖKET HÖR TILL DET PASS FELET SKEDDE I.
+            #
+            # `nuvarande` har förvalet `läge="dagens"`, och `bokför` frågade
+            # utan läge. Ett fel i EXTRAÖVNINGEN skrev därför sin `igen`-rad
+            # i dagens pass — och en `igen`-rad gör dagen o-klar, medan
+            # extraövningen kräver att den ÄR klar. Julius 2026-09-04: *"när
+            # jag fick ett kort att repetera så avbröts keep practising och
+            # så behövde jag starta det vanliga passet"*.
+            #
+            # ATT FRIVILLIGT EXTRAARBETE UPPHÄVER EN AVKLARAD DAG ÄR BAKVÄNT.
+            # Dagens omfång bestämdes på morgonen ur dagens plan; ett kort
+            # som fälls i extraövningen ingick aldrig i den. Att straffa just
+            # det beteende systemet vill uppmuntra är dessutom en märklig
+            # styrning.
+            #
+            # B7 HÅLLS ÄNDÅ, inom sessionen: felet tas igen i extrapasset.
+            # Och lämnar man extraövningen är ingenting förlorat — FSRS har
+            # redan bokfört fallet, kortet står med sänkt stabilitet och
+            # kommer tillbaka av sig självt. Återförsöket är pedagogiskt,
+            # inte evidentiellt.
+            läge = self._uppgiftsläge.pop(id_, "dagens")
+            pass_före = passlager.nuvarande(self.kort_db, kurs_id, läge=läge)
             ögonblick = dagbok.före(
                 self.kort_db,
                 pass_före["id"] if pass_före is not None else None,
@@ -732,7 +759,7 @@ class Övningstjänst:
             # TALET som visas och frågan om dagen är klar kommer ur
             # `Passkort`. Två källor till samma sanning var precis vad som
             # gav "1 kvar" bredvid "klart för idag".
-            rad = passlager.nuvarande(self.kort_db, kurs_id)
+            rad = pass_före
             if rad is not None:
                 passlager.registrera(self.kort_db, rad["id"], utfall)
             # HELA CYKELN, inte bara skrivandet: att läsa rättelsen är också
@@ -850,7 +877,7 @@ class Övningstjänst:
                              """SELECT COUNT(*) FROM Kort WHERE språk = ?
                                 AND typ = 'ord'
                                 AND sedd IS NULL""", (språk,)).fetchone()[0])},
-                "extra": self._extraläge(p),
+                "extra": self._extraläge(p, kurs),
                 # `rum`, `saknas`, `krävs`, `kapacitet` och `plats` skickas
                 # INTE. De räknas med det gamla `per_kort`, som är fem till
                 # trettio gånger för högt, och de grindar ingenting efter F1.
@@ -1142,7 +1169,7 @@ class Övningstjänst:
         klarade = {k for k, v in utfall.items() if v}
         return len((g.passkö_ider() | fällda) - klarade)
 
-    def _extraläge(self, p: dict) -> dict:
+    def _extraläge(self, p: dict, kurs=None) -> dict:
         """Vad extraövningen har att ta av — noll tills dagen är gjord.
 
         Att öva extra före de förfallna korten är att välja bort det FSRS
@@ -1168,7 +1195,24 @@ class Övningstjänst:
         # extraövningens beroenden i extraövningens väg — `kommande()` hör
         # dit, och när `tjänsteprov` saboterar den för att pröva just den
         # invarianten ska felet inte slå ut hela dagsplanen.
-        return {"nya": 0, "tidiga": p["tidiga"], "finns": p["tidiga"],
+        # PASSETS SIFFROR VINNER ÖVER PLANENS, precis som i `_dagsplan`.
+        #
+        # `tidiga` räknas ur FÖRFALLODAGAR och vet ingenting om passet. Är
+        # extrapasset redan gjort — eller har B8 skrivit av det som inte gick
+        # att bygga — finns det ändå kort vars förfallodag ligger framåt, och
+        # knappen fortsatte lova dem. Mätt: extrapasset stod på 22 gjorda och
+        # 0 kvar medan `finns` sa 3, och `uppgift(extra=True)` svarade `tomt`.
+        # Julius 2026-09-04: *"jag kunde köra keep practising… sen avbröts
+        # det"*.
+        #
+        # Samma regel som överallt i det här lagret: talet som VISAS och
+        # talet som STYR måste vara samma. Finns inget extrapass ännu är
+        # planens tal det enda som finns, och då gäller det.
+        rad = (passlager.nuvarande(self.kort_db, kurs["id"], läge="extra")
+               if kurs is not None else None)
+        tillgängligt = (passlager.läget(self.kort_db, rad["id"])["att_göra"]
+                        if rad is not None else p["tidiga"])
+        return {"nya": 0, "tidiga": p["tidiga"], "finns": tillgängligt,
                 "låst": False,
                 "nytta": extranytta(self.kort_db, p["språk"])}
 

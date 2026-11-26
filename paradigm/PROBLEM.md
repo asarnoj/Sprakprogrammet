@@ -1542,6 +1542,36 @@ den halvan är avgjord i C9: `infört_idag` räknar numera varje kort som setts
 oavsett `schemalagt`, och de kort som meningar drar in utan att stå i passet
 är MEDFÖLJANDE enligt Julius regel (gratis vid rätt, dagens arbete vid fel).
 
+#### EXTRAÖVNINGEN AVBRÖT SIG SJÄLV (2026-09-04)
+
+Julius: *"jag kunde köra keep practising… sen när jag fick ett kort att
+repetera så avbröts keep practising och så behövde jag starta det vanliga
+passet som då hade ett kort på again."*
+
+**Två skilda fel, båda i samma knapp.**
+
+*Återförsöket hamnade i fel pass.* `bokför` frågade `passlager.nuvarande`
+utan läge, och förvalet är `dagens`. Ett fel i extraövningen skrev därför sin
+`igen`-rad i DAGENS pass — och en `igen`-rad gör dagen o-klar, medan
+extraövningen kräver att den ÄR klar. Den avbröt alltså sig själv.
+
+Att frivilligt extraarbete upphäver en avklarad dag är bakvänt: dagens
+omfång bestämdes ur dagens plan, och kortet som fälls ingick aldrig i den.
+Att straffa just det beteende systemet vill uppmuntra är dessutom en
+märklig styrning. B7 hålls ändå, inom sessionen — felet tas igen i
+extrapasset — och lämnar man extraövningen är ingenting förlorat: FSRS har
+redan bokfört fallet, kortet står med sänkt stabilitet och kommer tillbaka
+av sig självt. Återförsöket är pedagogiskt, inte evidentiellt.
+
+*Löftet kom från planen, inte från passet.* `_extraläge` räknade `tidiga`,
+alltså kort vars förfallodag ligger framåt — ett tal ur FÖRFALLODAGAR som
+inte vet något om passet. Mätt: extrapasset stod på 22 gjorda och 0 kvar
+medan knappen sa `finns: 3`, och `uppgift(extra=True)` svarade `tomt`.
+
+Samma regel som `_dagsplan` redan bär: **planen är politik, passet är
+tillstånd, och passets siffror vinner.** Finns ett extrapass styr dess
+`att_göra`; först när inget pass byggts är planens tal det enda som finns.
+
 ### B7 ✓ — Ett fel får inte lämnas ofixat
 
 #### ETT FEL KÖAS NU ÄVEN PÅ ETT OPLANERAT KORT (2026-08-27)

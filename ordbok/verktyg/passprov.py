@@ -290,7 +290,7 @@ def prov_minuterna_syns(tj, kort) -> list[str]:
     en dag vore att låta dagen krympa under användaren, alltså precis det
     passlagret byggdes för att få bort.
     """
-    fel, prövade = [], 0
+    fel, prövade, växte = [], 0, 0
     for kurs in kort.execute("SELECT * FROM Kurs ORDER BY id"):
         idag = tj.hem(kurs["id"])["idag"]
         # EN FÄRDIG DAG VÄXER INTE, och ska inte göra det. `tjänst` raderar
@@ -303,11 +303,18 @@ def prov_minuterna_syns(tj, kort) -> list[str]:
             continue
         prövade += 1
         före = idag["att_göra"]
-        tj.sätt_minuter(kurs["id"], 60)
+        tj.sätt_minuter(kurs["id"], 600)
         höjt = tj.hem(kurs["id"])["idag"]["att_göra"]
-        if höjt <= före:
-            fel.append(f"[{kurs['id']} {kurs['målspråk']}] 10 → 60 min gav "
-                       f"{före} → {höjt}")
+        # DAGEN VÄXER INTE ALLTID AV MER TID, och att kräva det var att mäta
+        # fel storhet. `nya_idag` tar `min(i_längden, idag)`, och det är ofta
+        # LÅNGTIDSVILLKORET som binder (B4: måltakt 96, tak idag 91, i
+        # längden 11). Då är det riktigt att tio timmar inte ger mer arbete —
+        # systemet kan inte tillverka repetitioner FSRS inte schemalagt.
+        #
+        # Provet faller därför tillbaka på det som MÅSTE gälla för varje
+        # kurs — dagen får aldrig krympa — och kräver tillväxt bara att den
+        # sker för NÅGON kurs. Är knappen frånkopplad växer ingen.
+        växte += höjt > före
         tj.sätt_minuter(kurs["id"], 2)
         sänkt = tj.hem(kurs["id"])["idag"]["att_göra"]
         if sänkt < höjt:
@@ -318,6 +325,9 @@ def prov_minuterna_syns(tj, kort) -> list[str]:
     # ett brott, inte ett godkännande.
     if not prövade:
         fel.append("ingen kurs hade arbete kvar — ratten prövades aldrig")
+    elif not växte:
+        fel.append(f"ingen av {prövade} kurser växte av 10 → 600 min — "
+                   f"ratten är frånkopplad")
     return fel
 
 

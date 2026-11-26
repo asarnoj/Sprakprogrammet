@@ -355,7 +355,7 @@ def prov_extraövningen_går_att_köra(tj, kort, kurs) -> list[str]:
     # då i stället för att rapportera det fel det just hade fångat.
     if fel:
         return fel
-    extra = tj._extraläge(tj._dagsplan(kurs))
+    extra = tj._extraläge(tj._dagsplan(kurs), kurs)
     if not extra["finns"]:
         return []
     try:
@@ -367,7 +367,7 @@ def prov_extraövningen_går_att_köra(tj, kort, kurs) -> list[str]:
         # ATT INGET GÅR ATT BYGGA ÄR ETT GILTIGT SVAR (B8) — men då ska talet
         # sluta lovas. Det är samma regel som allt annat här: den som VISAS
         # och den som STYR måste vara samma.
-        kvar = tj._extraläge(tj._dagsplan(kurs))["finns"]
+        kvar = tj._extraläge(tj._dagsplan(kurs), kurs)["finns"]
         return ([] if not kvar else
                 [f"extraläget gav {u!r} men lovar fortfarande {kvar} kort"])
     return []
@@ -702,6 +702,61 @@ def prov_nödutgången_frågar_om_sökningen(tj, kurs) -> list[str]:
     return fel
 
 
+def prov_extrafel_stannar_i_extrapasset(tj, kurs) -> list[str]:
+    """Ett fel i extraövningen får inte öppna en avklarad dag.
+
+    Julius 2026-09-04: *"när jag fick ett kort att repetera så avbröts keep
+    practising och så behövde jag starta det vanliga passet som då hade ett
+    kort på again."*
+
+    `bokför` frågade `passlager.nuvarande` UTAN läge, och förvalet är
+    `dagens`. Ett fel i extraövningen skrev därför sin `igen`-rad i dagens
+    pass — och en `igen`-rad gör dagen o-klar, medan extraövningen kräver
+    att den ÄR klar. Den avbröt alltså sig själv.
+
+    ATT FRIVILLIGT EXTRAARBETE UPPHÄVER EN AVKLARAD DAG ÄR BAKVÄNT. Dagens
+    omfång bestämdes ur dagens plan; kortet som fälls ingick aldrig i den.
+    B7 hålls ändå, inom sessionen: felet tas igen i extrapasset. Och lämnar
+    man extraövningen är ingenting förlorat — FSRS har redan bokfört fallet.
+
+    Provet bygger båda passen och bokför ett fel som är märkt `extra`.
+    """
+    from sprakprog.kort import pass_ as passlager
+    fel = []
+    # EGEN TJÄNST. Provet nollställer kursen och bygger ett extrapass, och
+    # med den DELADE tjänsten slog det ut `extraövningen går att köra` som
+    # kördes efteråt. Samma fälla som `prov_dagen_tar_slut` redan hade.
+    tj = _egen_tjänst(kurs)
+    tj.nollställ(kurs["id"], "RESET")
+    tj._dagsplan(kurs)                       # bygger dagens pass
+    dagens = passlager.nuvarande(tj.kort_db, kurs["id"])
+    extra = passlager.starta(tj.kort_db, kurs, tj._dagsplan(kurs), läge="extra")
+    if dagens is None or extra is None:
+        return [f"[{kurs['målspråk']}] passen gick inte att bygga — provet "
+                f"kunde inte mäta"]
+    # VILKET KORT SOM HELST DUGER. Provet mäter VAR `igen`-raden hamnar,
+    # inte vad kortet är — och efter nollställningen är inget kort sett.
+    kid = tj.kort_db.execute(
+        "SELECT id FROM Kort WHERE språk = ? LIMIT 1",
+        (kurs["målspråk"],)).fetchone()
+    if kid is None:
+        return [f"[{kurs['målspråk']}] inga kort alls — provet kunde inte mäta"]
+    före_dagens = passlager.läget(tj.kort_db, dagens["id"])["igen"]
+    före_extra = passlager.läget(tj.kort_db, extra["id"])["igen"]
+    passlager.registrera(tj.kort_db, extra["id"], {kid["id"]: False})
+    efter_dagens = passlager.läget(tj.kort_db, dagens["id"])["igen"]
+    efter_extra = passlager.läget(tj.kort_db, extra["id"])["igen"]
+    if efter_dagens != före_dagens:
+        fel.append(f"[{kurs['målspråk']}] ett fel i extraövningen lade en "
+                   f"`igen`-rad i DAGENS pass ({före_dagens} → "
+                   f"{efter_dagens}) — dagen öppnas av frivilligt arbete")
+    if efter_extra != före_extra + 1:
+        fel.append(f"[{kurs['målspråk']}] felet lades inte i extrapasset "
+                   f"({före_extra} → {efter_extra}) — B7 bryts, "
+                   f"återförsöket försvinner")
+    return fel
+
+
 PROV = [
     ("en kurs per målspråk", prov_en_kurs_per_målspråk),
     ("inget redan bedömt väntar", prov_inget_redan_bedömt_väntar),
@@ -721,6 +776,8 @@ PROV = [
      lambda tj, k, kurs: prov_dagboken_fångar_övergången(tj, kurs)),
     ("nödutgången frågar om sökningen, inte om vinnaren",
      lambda tj, k, kurs: prov_nödutgången_frågar_om_sökningen(tj, kurs)),
+    ("fel i extraövningen stannar i extrapasset",
+     lambda tj, k, kurs: prov_extrafel_stannar_i_extrapasset(tj, kurs)),
 ]
 
 
@@ -761,6 +818,23 @@ def _sabotera(namn: str):
         äkta = passlager._stäng_redan_bedömda
         passlager._stäng_redan_bedömda = lambda *a, **kw: 0
         return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
+
+    if namn == "fel i extraövningen stannar i extrapasset":
+        # Före rättelsen: `bokför` frågade alltid efter DAGENS pass, oavsett
+        # var uppgiften kom ifrån. Sabotaget flyttar registreringen dit.
+        from sprakprog.kort import pass_ as _p
+        äkta = _p.registrera
+
+        def i_dagens(kort_db, pass_id, utfall, nu=None):
+            rad = kort_db.execute(
+                """SELECT p2.id FROM Pass p1 JOIN Pass p2
+                     ON p2.kurs_id = p1.kurs_id AND p2.datum = p1.datum
+                   WHERE p1.id = ? AND p2.läge = 'dagens'""",
+                (pass_id,)).fetchone()
+            return äkta(kort_db, rad[0] if rad else pass_id, utfall, nu)
+
+        _p.registrera = i_dagens
+        return lambda: setattr(_p, "registrera", äkta)
 
     if namn == "nödutgången frågar om sökningen, inte om vinnaren":
         # Före rättelsen: villkoret läste bara vinnarens täckning.
