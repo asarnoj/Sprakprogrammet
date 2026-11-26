@@ -12,7 +12,7 @@ Två svep:
                 och saknade former: celler som är tomma, lexem utan genus,
                 paradigm som inte går att slå upp.
 
-Kör: python ordbok/verktyg/rendera_prov.py [--alla]
+Kör: python ordbok/verktyg/rendera_prov.py [--språk sv|de] [--alla]
 """
 import sqlite3
 import sys
@@ -20,19 +20,23 @@ from collections import Counter
 
 from sprakprog.rendering import (
     Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, SvenskRenderare,
-    Tidsreferens,
+    Tidsreferens, TyskRenderare,
 )
+
+SPRÅK = "sv"
+if "--språk" in sys.argv:
+    SPRÅK = sys.argv[sys.argv.index("--språk") + 1]
 
 conn = sqlite3.connect("sprak.db")
 conn.row_factory = sqlite3.Row
-r = SvenskRenderare(conn)
+r = {"sv": SvenskRenderare, "de": TyskRenderare}[SPRÅK](conn)
 
 
 def koncept(ordklass, **filter):
     sql = """SELECT k.nyckel, l.lemma, l.genus FROM Lexem l
              JOIN Koncept k ON k.id = l.koncept_id
-             WHERE l.språk = 'sv' AND k.ordklass = ?"""
-    param = [ordklass]
+             WHERE l.språk = ? AND k.ordklass = ?"""
+    param = [SPRÅK, ordklass]
     if "genus" in filter:
         sql += " AND l.genus = ?"
         param.append(filter["genus"])
@@ -48,13 +52,14 @@ print("═" * 72)
 print("GRAMMATISKT SVEP — samma ord, alla kombinationer")
 print("═" * 72)
 
+# de kodar neutrum som 3 (_legend.yaml: Alla), sv som 2.
 utrum = koncept("Substantiv", genus=1)[0]
-neutrum = koncept("Substantiv", genus=2)[0]
+neutrum = koncept("Substantiv", genus=3 if SPRÅK == "de" else 2)[0]
 subjekt = Nominalfras("pers_flicka", Bestämdhet.BESTÄMD)
 
 rader = 0
 for huvud in (utrum, neutrum):
-    print(f"\n── {huvud['lemma']} ({'utrum' if huvud['genus'] == 1 else 'neutrum'}) ──")
+    print(f"\n── {huvud['lemma']} (genus={huvud['genus']}) ──")
     for best in Bestämdhet:
         for num in Numerus:
             for attribut in ((), ("färg_röd",)):

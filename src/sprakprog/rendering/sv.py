@@ -83,8 +83,20 @@ class SvenskRenderare:
 
     # ── nominalfras ──────────────────────────────────────────────────
 
-    def nominalfras(self, nf: Nominalfras) -> list[str]:
+    def nominalfras(self, nf: Nominalfras, *, subjekt: bool = False) -> list[str]:
         huvud = self.u.lexem(nf.koncept)
+
+        # Svenskan har kasus — men bara på pronomen. "jag" mot "mig" är den
+        # enda morfologiska kasusdistinktionen språket har kvar, och därför
+        # behöver renderaren veta om frasen är subjekt. Det syntes inte
+        # förrän tyskan tvingade fram rollbegreppet.
+        if huvud["ordklass"] == "Pronomen":
+            if nf.attribut or nf.possessiv is not None:
+                raise RenderingsFel(
+                    f"sv/{huvud['lemma']}: ett pronomen kan inte ta artikel, "
+                    f"attribut eller possessiv")
+            return [self.u.form(huvud, "nom" if subjekt else "ack_dat")]
+
         genus = huvud["genus"]
         if genus is None:
             raise RenderingsFel(
@@ -177,7 +189,7 @@ class SvenskRenderare:
         kräva en riktig ordföljdsmodell, och den byggs när det andra språket
         visar vilken form den behöver ha, inte innan.
         """
-        ord = list(self.nominalfras(m.subjekt))
+        ord = list(self.nominalfras(m.subjekt, subjekt=True))
         ord.extend(self.verbfras(m))
         for nf in (m.io, m.objekt):
             if nf is not None:
