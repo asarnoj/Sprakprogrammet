@@ -49,6 +49,7 @@ NÄT = [
     ("omkastningsprov.py",   False),
     ("attributionsprov.py",  False),
     ("rättningsprov.py",     False),
+    ("konstruktionsprov.py", False),
     ("arbetsbördeprov.py",   False),
     ("samplarprov.py",       False),
     ("strukturprov.py",      False),

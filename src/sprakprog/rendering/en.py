@@ -206,6 +206,16 @@ class EngelskRenderare:
             # "each book", "all books", "no book".
             if nf.kvantifikator is None:
                 raise RenderingsFel("en: frasen har ingen kvantifikator")
+            if nf.bestämdhet is Bestämdhet.BESTÄMD:
+                # "all the books" kräver att artikeln står KVAR framför
+                # huvudordet, och det är ett förbestämningsled som inte är
+                # byggt. Svenskan klarar sig utan, eftersom bestämdheten
+                # sitter som suffix på substantivet — "alla böckerna" — men
+                # här skulle bestämdheten bara försvinna ur meningen.
+                raise RenderingsFel(
+                    f"en/{nf.kvantifikator}: en bestämd kvantifierad fras — "
+                    f"'all the books' — kräver ett förbestämningsled som inte "
+                    f"är byggt")
             före = [self.u.form_för(nf.kvantifikator, "inv")]
         elif bestämning == "bestämd_artikel" and artikel:
             före = [self.u.form_för("artikel_bestamd", "inv")]
