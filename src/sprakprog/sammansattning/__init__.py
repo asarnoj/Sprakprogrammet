@@ -150,6 +150,7 @@ class Sammansättare:
         self.validator = Validator(conn)
         self.conn = conn
         self._rader: dict[str, list] = {}
+        self._nivåtabell: dict[str, str] = {}
         self._kandidatcache: dict = {}
         self._signaturer: dict = {}
         self._nåcache: dict = {}
@@ -924,6 +925,18 @@ class Sammansättare:
                        if v.get(f"{rot}.subjunktion") == "symbol" else None)
         return S.Bisats(subjunktion, self._mening(v, f"{rot}.sats", ordet))
 
+    #: Ordens ordning tills frekvenserna finns (5.6): CEFR-nivån i databasen,
+    #: och sedan konceptets nyckel, så att ordningen blir densamma varje gång.
+    NIVÅER = ("A1", "A2", "B1")
+
+    def _nivå(self, koncept: str) -> int:
+        """Hur grundläggande ordet är. Ett ord utan nivå kommer sist."""
+        if not self._nivåtabell:
+            self._nivåtabell = {r[0]: r[1] for r in self.conn.execute(
+                "SELECT nyckel, nivå FROM Koncept")}
+        nivå = self._nivåtabell.get(koncept)
+        return self.NIVÅER.index(nivå) if nivå in self.NIVÅER else len(self.NIVÅER)
+
     def _lexemen(self, ordklass: str) -> list:
         if ordklass not in self._rader:
             self._rader[ordklass] = self.conn.execute(
@@ -983,9 +996,10 @@ class Sammansättare:
             krav = frozenset(lexkrav.get(text, ()))
         nyckel = (klasser, krav)
         if nyckel not in self._kandidatcache:
-            self._kandidatcache[nyckel] = [
-                lexem for ordklass in klasser for lexem in self._lexemen(ordklass)
-                if all(self._uppfyller(lexem, vad, svar) for vad, svar in krav)]
+            self._kandidatcache[nyckel] = sorted(
+                (lexem for ordklass in klasser for lexem in self._lexemen(ordklass)
+                 if all(self._uppfyller(lexem, vad, svar) for vad, svar in krav)),
+                key=lambda lexem: (self._nivå(lexem["nyckel"]), lexem["nyckel"]))
         kandidater = self._kandidatcache[nyckel]
         if tillåten is None:
             return kandidater
