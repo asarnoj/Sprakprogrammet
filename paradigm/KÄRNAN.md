@@ -4,8 +4,9 @@ Den fullständiga specifikationen av kärnan — korten, nivåerna, dagspasset,
 meningsbygget och bedömningen — så som den ska byggas. Filen beskriver målet,
 inte ändringar i den kod som finns.
 
-> **Läge 2026-09-13.** Designen är avgjord utom frågorna i punkt 10, och ingen av
-> dem blockerar bygget. Steg 0 är gjort för svenska och väntar på granskning
+> **Läge 2026-09-13.** Designen är avgjord utom meningsgeneratorn och frågorna i punkt
+> 10. Generatorn är nästa designarbete och blockerar steg 4; frågorna blockerar inget.
+> Steg 0 är gjort för svenska och väntar på granskning
 > (`ordbok/regelkontroll/sv.md`). Steg 1 är inventerat men inte byggt
 > (`paradigm/TYSTA_BESLUT.md`). Nästa arbete är att bygga steg 1 och ta fram
 > böjningsreglerna för övriga språk.
@@ -66,16 +67,17 @@ Sex regler. Allt annat i specen följer av dem eller av en mätning.
 
 **R1 · Axiomet**
 
-> En mening får bara innehålla kort som är införda. Inga kort införs under
-> meningsfasen.
+> En mening får bara innehålla kort som är införda eller har presenterats i dag.
+> Inga kort presenteras under meningsfasen.
 
-Nya kort införs i dagspassets introfas (5.1). Inget kort får komma in för att en
-mening ska gå ihop — det var så planens 7 nya kort blev 25.
+Nya kort presenteras i dagspassets introfas och blir införda när de gått rätt i en
+mening (5.1). Inget kort får komma in för att en mening ska gå ihop — det var så
+planens 7 nya kort blev 25.
 
 **R2 · Entydigheten**
 
 > En uppgift är giltig endast om varje målkort ingår i varje korrekt svar som
-> går att bygga av användarens införda kort.
+> går att bygga av de kort meningen får använda.
 
 En mening har ofta flera korrekta översättningar: `leo` och `yo leo`, `igår läste
 hon` och `hon läste igår`, `sade` och `sa`. Det är inget fel i sig. Felet uppstår
@@ -83,8 +85,14 @@ när användaren kan svara rätt utan att målet prövas — då mäter rättnin
 ingenting. Tvetydighet i källmeningen är samma fall: «jag arbetade» har två
 franska översättningar, och imperfektkortet finns bara i den ena.
 
-Tillägget om införda kort behövs, annars skulle ett synonymt ord som användaren
-aldrig lärt sig göra uppgiften ogiltig. Varianterna hittas i 6.5 och bedöms i 7.3.
+Tillägget om kort meningen får använda behövs, annars skulle en variant som bygger på
+något användaren aldrig lärt sig göra uppgiften ogiltig. Varianterna hittas i 6.5 och
+bedöms i 7.3.
+
+**Synonymer är ett undantag.** Skriver användaren ett annat lexem för samma koncept ber
+systemet om ett annat ord i stället för att underkänna (7.4). Efter ledtråden innehåller
+varje korrekt svar målet, så R2 gäller för uppgiften som den då ser ut. Grammatiska
+varianter som `leo` och `yo leo` omfattas inte av undantaget.
 
 **R3 · Varje beslut renderaren fattar är ett kort**
 
@@ -100,7 +108,9 @@ tyst kan varken låsas eller rättas.
 > Om meningen var rätt eller fel är mätt. Vilket kort som bär skulden är
 > härlett. Loggen får bara innehålla det mätta och det entydigt härledda.
 
-Sannolikheter får styra vad som prövas härnäst — aldrig vad som skrivs.
+Sannolikheter får styra vad som prövas härnäst — aldrig vad som skrivs. Ett undantag
+är medvetet: **minsta förklaring** (7.3) väljer ett fel framför två oberoende, och det
+vilar på budgeten. Att två fel i samma mening är osannolika är precis vad τ anger (6.3).
 
 **R5 · Rättningen ska aldrig behöva gissa**
 
@@ -162,14 +172,22 @@ förutsägbarhetsprincipen i 3.4.
 
 ### 3.3 `ord`
 
-**Kortet klaras om användaren skriver någon form av rätt lexem.** Läromomentet är
-att ordet hämtades ur minnet, och kortet är prerekvisit för alla formkort:
+**Kortet klaras om användaren skriver en form reglerna kan bygga av rätt lexem.**
+Läromomentet är att ordet hämtades ur minnet, och kortet är prerekvisit för alla
+formkort:
 
-    strängen är en form av lexemet?
+    strängen är en form reglerna kan bygga av lexemet?
        nej -> ord föll; formkorten är OGRADERADE, de prövades aldrig
        ja  -> ord klarat; formkorten graderas mot cellen
 
-Införs som glosa: betydelse → form.
+En form reglerna kan bygga är varje form i databasen och varje form som går att få ur
+lexemet med någon cell, någon klass och någon ändelse, med eller utan ljudregler (3.4).
+Det måste vara så, eftersom felaktiga former är just det formkorten ska fånga: `köpade`
+är köpa med ar-klassens ändelse, så ordet klarades och undantagskortet `köper` föll
+(3.8). `hsu` går inte att bygga av `hus`, och där föll ordet. Är strängen ett annat
+lexem för samma koncept gäller 7.4.
+
+Presenteras som glosa: betydelse → form.
 
 ### 3.4 Former: förutsägbarhetsprincipen
 
@@ -232,7 +250,7 @@ riktig form. Användaren får aldrig frågan vilken klass ett ord tillhör.
 
 **«Den första formen» är den första i nivåordningen** (4.2): cellen vars regel öppnas
 tidigast. Öppnas flera celler av samma nivå spelar valet ingen roll för vad som kan
-prövas — kräver en form ett undantagskort som inte är infört, införs de som ett paket
+prövas — kräver en form ett undantagskort som inte är infört, väljs de som ett paket
 (3.10) — och cellerna tas då i registrets ordning (8.3). Steg 0 använder i dag en
 provisorisk cellordning, som byts när nivåerna finns.
 
@@ -444,8 +462,8 @@ sina andra former (`mí`, `me`).
 
 Tre saker gör brott omöjliga, inte bara ovanliga:
 
-1. **Beviset används.** De införda korten ändras inte under dagen, så beviset gäller
-   hela dagen. Hittar den vanliga sökningen ingen mening för ett kort används beviset.
+1. **Beviset används.** Det meningarna får använda ändras inte under meningsfasen, så
+   beviset gäller hela dagen. Hittar den vanliga sökningen ingen mening för ett kort används beviset.
    Slumpen i sökningen kan därför aldrig lämna ett kort.
 2. **Kontrollen körs varje gång något kan ha ändrats.** Ett infört kort kan bli
    oprövbart på två sätt: ett nytt kort införs (omkontrollen ovan), eller koden eller
@@ -455,11 +473,13 @@ Tre saker gör brott omöjliga, inte bara ovanliga:
    tills kursens alla nivåer är öppna, och invarianten kontrolleras varje dag. Det är
    där omöjligheten visas, innan något släpps.
 
+Budgeten kan inte orsaka ett brott: när ingen mening ryms tas reservstegen i 6.3.
+
 **Om den ändå bryts** — vid passets start, eller när generatorn under dagen inte hittar
 någon giltig mening för ett kort ens med beviset:
 
 - **En felrapport skrivs:** kortet, de införda korten, varje byggförsök och varför det
-  föll (ett saknat kort, ett byggvillkor, en variant som saknade kortet, budgeten), och
+  föll (ett saknat kort, ett byggvillkor, en variant som saknade kortet), och
   vad som ändrats sedan kortet senast var prövbart (vilket kort som infördes, vilken
   version).
 - **Kortet sätts i karantän:** inget betyg, FSRS-tillståndet orört, inte klarat. Passet
@@ -469,6 +489,18 @@ någon giltig mening för ett kort ens med beviset:
 
 Karantänen är felhantering, inte förlåtelse: inget räknas som klarat, och varje fall är
 en rapport som ska leda till en rättelse.
+
+#### När reglerna eller datan ändras
+
+Reglerna och datan ändras medan kurser pågår, med flit: en granskningsfråga besvaras,
+eller en användarflagga leder till en rättelse (3.4). Då kan kort försvinna — en form
+visar sig gå att förutsäga — eller tillkomma. Kortets identitet är dess nyckel (3.2):
+
+- **Ett kort som försvinner** behåller sin historik men används inte längre.
+- **Ett kort som tillkommer** är inte infört. Kräver ett infört kort det nya, presenteras
+  det nya i nästa introfas, före andra nya kort och oavsett tidsmodellen.
+- **Resten fångar kontrollen vid ny version** (punkt 2 ovan), som räknar med dagens
+  presenterade kort.
 
 ---
 
@@ -531,6 +563,22 @@ inte råkar dyka upp skulle missas.
 
 Ett krav på en konstruktion (`whfråga`) betyder de kort konstruktionen kräver i språket.
 
+**Krav med flera alternativ.** Många krav kan uppfyllas av flera kort. Franskans `je`
+kräver ett verb i 1 sg, som kan ha vilken klass ändelse som helst, och varje sådan
+ändelse kräver `je`. Blev kravet en kant till varje alternativ skulle alla kräva
+varandra, och `je` och alla klassers ändelser bli en enda nivå. Därför:
+
+- **Ett krav som ordförrådet kan uppfylla är alltid uppfyllt.** Subjektet kan vara vilket
+  substantiv som helst, och ord är upplåsta från början (3.1). Det blir ingen kant.
+- **Övriga krav med flera alternativ blir en kant till ett av dem**: det som ger mest
+  täckning per kort (5.6), räknat med hela ordförrådet. Vid lika avgör registrets
+  ordning.
+
+**Krav som följer av entydigheten står också i grafen.** När två kort konkurrerar om
+samma val, som imparfait och passé composé, kan vart och ett bara prövas i en mening med
+ett ord som avgör valet (6.5). Aspektregeln kräver därför något ord med `aspektkrav`.
+Annars vet införandet inte att ordet saknas, och kortet kan vänta hur länge som helst.
+
 En nivå kräver en annan när dess kort kräver den andras. Mellan nivåerna är grafen
 **acyklisk av konstruktion**, eftersom kort som kräver varandra redan hör till samma
 nivå (4.1). Den ger en **partiell** ordning: flera nivåer kan vara möjliga samtidigt,
@@ -558,10 +606,10 @@ det här* språket uttrycker dem, och det blir kort:
 
 ### 4.4 Grinden
 
-> **En nivå kan öppnas när föregångarnas kort har införts, mötts och gått rätt minst
-> en gång, och den prövningen inte skedde i dag.**
+> **En nivå kan öppnas när föregångarnas kort infördes en tidigare dag.**
 
-Föregångarnas kort är nivåkorten i 4.1 — de som inte växer med ordförrådet, oavsett
+Infört betyder att kortet har gått rätt i en mening (5.1); att klara introövningen
+räcker inte. Föregångarnas kort är nivåkorten i 4.1 — de som inte växer med ordförrådet, oavsett
 korttyp: regler, ändelser, `nous`. Ett enskilt ords kort räknas inte, annars skulle
 grinden bli långsammare för varje nytt ord i ordförrådet.
 
@@ -572,7 +620,7 @@ grinden bli långsammare för varje nytt ord i ordförrådet.
   införandet styrs av tidsmodellen (5.5), som mäter hur fort användaren klarar sina
   kort. Den som kämpar låser upp långsammare, utan att något tal är valt.
 - **Längs en kedja öppnas högst en nivå per dygn**, eftersom föregångarens kort måste
-  ha klarats en tidigare dag. Nivåer som inte beror på varandra behöver inte vänta på
+  ha införts en tidigare dag. Nivåer som inte beror på varandra behöver inte vänta på
   varandra.
 - **Ingen grind för arbetsbördan.** Att öppna en nivå lägger inga kort i passet, bara
   kandidater. Arbete tillkommer först när kort införs, och det taket sätter
@@ -590,7 +638,8 @@ grinden bli långsammare för varje nytt ord i ordförrådet.
 | **Införande** | vad *borde* läras nu | nej — ett omdöme (5.6) | minuter per dag |
 
 Att låsa upp tio nivåer ger en kö av kort, inte tio nivåers arbete samma dag. Ett
-kort som är upplåst men inte infört kan aldrig stå i en mening (R1).
+kort som är upplåst men varken infört eller presenterat i dag kan aldrig stå i en
+mening (R1).
 
 ---
 
@@ -598,26 +647,53 @@ kort som är upplåst men inte infört kan aldrig stå i en mening (R1).
 
 ### 5.1 Två faser
 
-| Fas | Vad som händer | Nya kort |
+| Fas | Vad som händer | Vilka kort |
 |---|---|---|
-| **1 · Introfasen** | dagens nya kort införs, en övning i taget | alla dagens nya |
-| **2 · Meningsfasen** | meningar översätts och rättas | **inga** |
+| **1 · Introfasen** | dagens nya kort presenteras, en övning i taget | bara dagens nya |
+| **2 · Meningsfasen** | meningar översätts och rättas | dagens nya och de förfallna; inga nya presenteras |
 
-Vilka nya kort dagen har är bestämt innan passet börjar. När meningsfasen startar
-är alltså varje kort som används infört, precis som R1 kräver.
+**Dagens kort** är de förfallna korten och dagens nya. Vilka nya kort dagen har är
+bestämt innan passet börjar.
+
+**Förfallna kort är aldrig med i introfasen.** Att öva ett förfallet kort precis före
+meningen gör det lätt att klara något som egentligen var svårt, och då mäter meningen
+fel sak. För ett nytt kort spelar det ingen roll: det är första gången, och introfasen
+finns för att lära ut det.
+
+**Presenterat och infört** är två steg:
+
+| | Betyder | Följd |
+|---|---|---|
+| **presenterat** | har klarat introövningen i dag | får användas i dagens meningar |
+| **infört** | har gått rätt i en mening | är inne i systemet och schemaläggs av FSRS |
+
+Ett nytt korts första FSRS-betyg kommer från dess första mening. Blir kortet inte
+infört under dagen — användaren avbryter, eller klarar det inte — börjar det om som nytt
+och kan väljas igen nästa dag; mötena finns kvar i loggen. **Ett paket (3.10) blir
+infört helt eller inte alls**, annars kunde ett verb vara infört utan det pronomen det
+kräver.
+
+**Ett dygn börjar klockan 04:00** i användarens lokala tid, som i Anki, så att den som
+övar strax efter midnatt räknas till föregående dag. Tiden är en inställning (R6), och
+04:00 är förvalet.
+
+**Varje dag utgår från läget som det är.** Beräkningarna förutsätter att användaren gör
+dagens arbete varje dag. Missas dagar växer arbetsbördan, och tidsmodellen svarar med
+färre nya kort (5.5).
 
 ### 5.2 Planen är en fråga, inte en tabell
 
 | | Vad det är | Innehåller |
 |---|---|---|
 | **Dagens mål** | det som måste klaras | förfallna kort (FSRS) + dagens nya |
-| **Det tillåtna** | vad en mening får använda | alla införda kort |
+| **Det tillåtna** | vad en mening får använda | införda kort + dagens presenterade |
 
 Vilka kort som är förfallna kan när som helst räknas fram ur mötena. **Det som lagras
 är det mätta och det valda:** möten med diffens och användarens betyg, flaggor, öppnade
-nivåer och vilken nivå som öppnade varje kort, dagens tilldelning av nya kort,
-karantän och felrapporter, och inställningar. Dessutom sparas bevisen (3.10), så att
-kontrollen inte behöver göras om. Förfallodagar, R och fönster räknas fram.
+nivåer och vilken nivå som öppnade varje kort, dagens tilldelning av nya kort, vilka som
+presenterats och införts, sparat tempo (5.5), karantän och felrapporter, och
+inställningar. Dessutom sparas bevisen (3.10), så att kontrollen inte behöver göras om.
+Förfallodagar, R och fönster räknas fram.
 
 Ett infört kort som inte är förfallet får användas i meningar. Det bokförs som
 alla andra, och går det fel hamnar det i dagens again-hög.
@@ -625,16 +701,16 @@ alla andra, och går det fel hamnar det i dagens again-hög.
 ### 5.3 Dagen tar slut när högarna är tomma
 
 Passet är klart när **new-, again- och due-högarna är tomma.** Varje fel ger mer
-arbete. Att varje infört kort går att nå garanteras av prövbarheten (3.10) och
-budgeten (6.3). Bryts det ändå är det ett fel i programmet, och 3.10 säger vad som
-händer.
+arbete. Att varje kort i dagens mål går att nå garanteras av prövbarheten (3.10) och
+reservstegen i budgeten (6.3). Bryts det ändå är det ett fel i programmet, och 3.10
+säger vad som händer.
 
 **Att passet kan dra ut på tiden är ett medvetet val.** Det som räknas är arbete som
 lyckas, inte nedlagd tid. Tidsratten styr hur mycket nytt som planeras (5.5), inte
 när passet slutar, och ett kort som användaren inte klarar ligger kvar tills det
 klaras.
 
-### 5.4 Introfasen: hur ett kort införs
+### 5.4 Introfasen: hur ett kort presenteras
 
 **En ruta per övning.** Användaren fyller i en sak i taget, aldrig en hel tabell:
 
@@ -661,7 +737,7 @@ produktionstestet (3.1):
 |---|---|
 | `ord` | glosa: betydelse → form. Är källordet tvetydigt (`får`) visar uppgiften vilken betydelse som avses; annars bryter övningen mot R2 |
 | böjningscell | en ruta i paradigmtabellen |
-| pronomen | en ruta i pronomentabellen, som en böjningscell. Formerna införs när de blir prövbara, ofta flera samma dag |
+| pronomen | en ruta i pronomentabellen, som en böjningscell. Formerna presenteras när de blir prövbara, ofta flera samma dag |
 | `egenskap` | formen där egenskapen syns: `ett hus` |
 | `rektion` | formen där kravet syns: `ich helfe dir` |
 | `regel` | en lektion med ett exempel per utfall av regelns val, och sedan en mening med regeln som enda mål |
@@ -669,32 +745,35 @@ produktionstestet (3.1):
 Lektionens exempel är inget valt antal. Omvänd ordföljd har två utfall — omvänd och
 rak — och får två exempel; en regel med tre utfall får tre.
 
-> **I en introövning graderas bara det nya kortet.** Övningens övriga kort — lånekorten —
-> graderas inte och bokförs inte, även om de blir fel.
+> **Introfasen bokför ingenting.** Den finns för att användaren inte ska möta ny kunskap
+> oförberedd, inte för FSRS. Kortet prövas på riktigt först i meningsfasen, och blir
+> infört där (5.1).
 
-- **Lånekorten bokförs inte**, eftersom urvalsregeln inte har valt dem och övningen inte
-  prövar dem. Introfasen finns bara för att införa.
-- **Lånekorten väljs utan gränsvärde.** Generatorn bygger övningen med det nya kortet
-  som enda mål och väljer lånekort så att sannolikheten att alla blir rätt är så hög som
-  möjligt. Ett mönsterkort införs alltså med ett ord användaren kan väl, så att bara
-  mönstret är nytt. Senare *prövas* det helst på ett nytt ord (6.4).
+- **Lånekorten** — övningens övriga kort — **väljs utan gränsvärde.** Generatorn bygger
+  övningen med det nya kortet som enda mål och väljer lånekort så att sannolikheten att
+  alla blir rätt är så hög som möjligt. Ett mönsterkort presenteras alltså med ett ord
+  användaren kan väl, så att bara mönstret är nytt. Senare *prövas* det helst på ett nytt
+  ord (6.4).
 - **Regelns mening byggs som alla andra meningar** (6.4). Introfasen har ingen egen
   generator.
 
-**En övning görs om tills svaret blir rätt.** Ett kort som misslyckas läggs sist i
-introfasens kö. Det första svar som går att gradera, givet efter att kortet visats, är
-kortets första FSRS-betyg; omtagen bokförs som vanliga möten (7.1). Döljer ett fel på
-ett lånekort det nya kortet går svaret inte att gradera (R5), och övningen görs om utan
-betyg.
+**En övning görs om tills det nya kortet blir rätt.** Ett kort som misslyckas läggs sist
+i introfasens kö. Fel på lånekorten spelar ingen roll, utom när de döljer det nya kortet
+(R5); då görs övningen om.
 
-**Ordningen inom dagen följer kraven.** Ett kort införs efter de kort det kräver, så att
-lånekorten redan är införda.
+**Ordningen inom dagen följer kraven.** Ett kort presenteras efter de kort det kräver, så
+att lånekorten redan är införda eller presenterade.
 
-**Dag ett.** Den första nivån är de kort en enkel mening kräver (4.2), och de införs som
-ett paket (3.10). Lånekorten är då de kort som införts tidigare samma dag. Passet når
-sin första mening när användaren kan ett pronomen och ett verb.
+**Dag ett.** Den första nivån är de kort en enkel mening kräver (4.2), och de väljs som
+ett paket (3.10). Lånekorten är då de kort som presenterats tidigare samma dag. Passet
+når sin första mening när användaren kan ett pronomen och ett verb.
 
 ### 5.5 Hur många nya kort
+
+**Tiden styr bara hur många nya kort som väljs, aldrig hur långt passet blir** (5.3).
+Passet är prestationsbaserat, och hur bra användaren är en viss dag går inte att veta i
+förväg. Målet är en **jämn takt i det långa loppet**: ett enskilt pass får bli både
+mycket kortare och mycket längre än den inställda tiden, för att takten ska hålla.
 
 Beräkningen görs en gång, när passet startas och användaren har valt om nya nivåer
 ska öppnas.
@@ -706,20 +785,36 @@ ska öppnas.
 - tid per introövning, med omtag
 - tid per mening, som funktion av antalet mål och antalet övriga kort
 
-**Härlett**
-- ur FSRS, med användarens egna parametrar: hur många repetitioner ett nytt kort ger
-  upphov till, och hur mycket arbete de redan införda korten ger, dag för dag framåt
-- ur budgeten (6.3) och värdet (6.6): hur många meningar en dags förfallna kort kräver,
-  och alltså hur lång tid dagen tar
+**Formeln**
 
-> **Dagens antal nya kort är det största antal som gör att den förväntade
-> arbetstiden ryms inom den inställda tiden varje dag framåt.** Ett paket (3.10)
-> tas med helt eller inte alls.
+    T      den inställda tiden per dag
+    E(t)   förväntad arbetstid dag t från de kort som redan är införda
+    k(a)   förväntad arbetstid för ett nytt kort a dagar efter att det presenterats
+    K(a)   k(0) + k(1) + … + k(a)
 
-Hur långt framåt behöver inte väljas: ett korts bidrag minskar när intervallen
-växer, och beräkningen slutar när bidraget är mindre än ett enda kortmöte. Tar de
-förfallna korten redan mer än den inställda tiden, till exempel efter några dagars
-uppehåll, blir antalet noll.
+`k` räknas en gång ur FSRS-parametrarna och tidsmodellen, som ett väntevärde. `E` räknas
+på samma sätt ur de införda kortens tillstånd. Budgeten (6.3) och värdet (6.6) avgör hur
+många meningar korten kräver. Införs n nya kort varje dag från och med i dag blir
+arbetet dag t
+
+    E(t) + n · K(t − i dag)
+
+> **Dagens antal nya kort är det största jämna tempo som ryms varje dag till kursens
+> slut:**
+
+    n = minsta värdet av (T − E(t)) / K(t − i dag), över dagarna t fram till kursens slut
+
+- **Ingen vald horisont.** Kursen slutar när alla kort är införda. När det sker beror på
+  tempot, så räkningen görs om tills tempot och slutdagen stämmer överens; det tar några
+  varv.
+- **Inga ryck.** Formeln söker ett tempo som håller, inte ett antal som fyller de närmaste
+  dagarna.
+- **Den följer läget.** Formeln räknas om varje dag. Har arbetsbördan vuxit, till exempel
+  efter några missade dagar, blir n noll.
+- **Den är billig:** en summa per dag framåt, ingen simulering. Arbetsbördan är summan av
+  varje korts arbetsprofil, förskjuten till den dag kortet presenterades.
+- **Tempot är ett genomsnitt.** Ett paket (3.10) tas med helt, så en dag kan ge färre kort
+  än n. Det som inte används sparas till nästa dag.
 
 **Prognosen räknar för högt, och det rättas med en mätning.** FSRS räknar med att varje
 förfallet kort kräver en egen repetition. Så blir det inte: kort som behövs i andra
@@ -728,48 +823,60 @@ faller bort mäts ur historiken. Tills mätningen finns räknas ingen del bort �
 färre nya kort, aldrig fler.
 
 Nivåns kort är inte tvingade att införas. De konkurrerar som alla andra kort, men
-vinner ofta, eftersom de gör många andra kort prövbara (5.6).
+vinner ofta, eftersom de ger mycket täckning (5.6).
 
 **Innan användarens egen historik finns** används FSRS standardparametrar och tiderna
 ur den gamla loggen (6.3), tills historiken räcker för att ersätta dem.
 
 ### 5.6 Vilka nya kort: införandeordningen
 
-> **Inför först det kort som gör flest andra kort prövbara.** Frekvensen skiljer kort
-> som gör lika många prövbara.
+> **Inför först det som ger mest ny täckning per kort.**
+
+**Täckning** är hur stor del av språkets verkliga användning användaren kan producera.
+Varje gång språket använder ett ord i en viss form, eller tillämpar en regel, är en
+användning. Den är täckt när alla kort den kräver är införda. Ett korts **nya täckning**
+är de användningar där just det kortet är det sista som saknas.
 
 Kandidaterna är de kort som är upplåsta, inte införda och prövbara nu (3.10), ensamma
-eller i ett paket. Korten väljs ett i taget, och varje val gör fler kort prövbara nu.
+eller i ett paket. Ett paket jämförs med sin nya täckning delad med sitt antal kort.
+Korten väljs ett i taget, och varje val ändrar vad nästa kort ger. Ger två kandidater
+lika mycket avgör registrets ordning (8.3), så att ordningen blir densamma varje gång.
 
-| Kort | Vad det gör prövbart |
+| Kort | Vad det ger |
 |---|---|
-| `nous` | alla celler för 1:a person plural |
-| regeln «artikeln följer genus» | genuskortet för varje infört substantiv |
-| ett nytt substantiv | bara sitt eget genuskort |
+| ett vanligt regelbundet verb | alla verbets användningar, för ett kort |
+| ett sällsynt oregelbundet verb | färre användningar, för ordet och dess undantagskort. Det kommer därför senare — `vara` är ändå så vanligt att det kommer tidigt |
+| regeln «artikeln följer genus» | varje infört substantiv med artikel, på en gång |
+| `inversion_wh` | alla wh-frågor som går att bygga med de ord som redan är införda |
+| ett kort som kräver något som inte är infört | ingenting ensamt, och väljs därför i ett paket |
 
-**Räkningen görs i beroendegrafen, inte genom att bygga meningar.** Kraven står redan i
-registret (4.2), så räkningen är snabb även med tusentals kort. Bara de kort som
-faktiskt väljs för dagen provbyggs, en mening var (3.10).
+**Ett ords egna kort är en kostnad, inte en vinst.** Ett ord som kräver många kort ger
+inte fler användningar än ett regelbundet ord som är lika vanligt, men kostar fler kort.
 
-**Ordningen balanserar sig själv.** Tidigt gör verb och grundregler mycket prövbart
-och kommer först. Hjälpverbet kommer när perfekt blir möjligt, eftersom perfektnivåns
-kort inte går att pröva utan det. När grunderna sitter gör ett nytt ord bara sig självt
-prövbart, och då tar frekvensen över.
+**Ordningen balanserar sig själv.** Tidigt ger grundreglerna och de vanligaste orden
+mest, eftersom nästan inga användningar är täckta utan dem. Hjälpverbet kommer när
+perfekt blir möjligt, eftersom inga perfektformer är täckta utan det. När grunderna
+sitter ger ett nytt ord bara sina egna användningar, och då avgör hur vanligt det är.
 
-**Frekvensen.** Grammatiken bestämmer vad som går att lära; betydelsen bestämmer vad som
-är värt att lära först. Frekvenslistan är gemensam för alla språk och rangordnar
-**koncept, inte lemman**. Därför uppstår inga problem med ord som har flera betydelser:
-`per_känna` och `per_lukta` får var sin plats, trots att båda heter `sentir` på franska.
+**Räkningen görs utan att bygga meningar.** Den nya täckningen läses ur tabellen från
+form till kort (3.4) och registret (8.3), så räkningen är snabb även med tusentals kort.
+Bara de kort som faktiskt väljs för dagen provbyggs, en mening var (3.10).
+
+**Frekvenserna.** Grammatiken bestämmer vad som går att lära; hur språket används
+bestämmer vad som är värt att lära först. Två sorters frekvens behövs:
+
+| Frekvens | Räknas per | Därför |
+|---|---|---|
+| hur ofta ett ord används | koncept, gemensamt för alla språk, och delat på lexem i varje språk | `per_känna` och `per_lukta` får var sin plats trots att båda heter `sentir`, och två synonymer får var sin andel (7.4) |
+| hur ofta innehållets drag används | drag: dåtid, första person plural, fråga, negation … | en egenskap hos betydelsen, liksom konceptens frekvens; mäts en gång i en korpus, till exempel trädbankerna i Universal Dependencies |
+
 Version ett har samma ordning för alla användare.
 
-Kort utan koncept — mönsterkorten — har ingen frekvens. Gör två sådana lika många kort
-prövbara spelar ordningen ingen roll för principen, och de tas i registrets ordning
-(8.3), så att ordningen blir densamma varje gång.
-
-**Frekvenslistan finns inte ännu.** `ordbok/nivålistor/grundord.csv` har en CEFR-nivå
-per koncept (A1, A2, B1), men den är en bedömning och inte en mätning, och den ordnar
-inte orden inom nivån. Den får användas tills en mätt frekvens finns, och är då ett
-tillfälligt val. Japanskan ska kontrolleras för hand.
+**Frekvenserna finns inte ännu.** `ordbok/nivålistor/grundord.csv` har en CEFR-nivå per
+koncept (A1, A2, B1), men den är en bedömning och inte en mätning, och den ordnar inte
+orden inom nivån. Den får användas för orden tills en mätt frekvens finns, och dragen får
+lika vikt tills de är mätta. Båda är tillfälliga val. Japanskan ska kontrolleras för
+hand.
 
 ### 5.7 Två rattar
 
@@ -792,13 +899,19 @@ De förfallna korten bestäms av FSRS och påverkas av ingen av rattarna.
 
 En mening får ställas endast om:
 
-1. varje kort den kräver är **infört** (R1)
+1. varje kort den kräver är **tillåtet**: infört eller presenterat i dag (R1, 5.2)
 2. varje regel den använder är **upplåst**
-3. varje målkort ingår i **varje korrekt svar** som går att bygga av användarens införda kort (R2, 6.5)
+3. varje målkort ingår i **varje korrekt svar** som går att bygga av det tillåtna (R2, 6.5)
 4. **båda språken kan uttrycka den.** Motorn har inga fasta källspråk — alla språk
    är likvärdiga — men alla språk har inte alla celler. Svenskans `vantar` har
    ingen singular, och då ställs meningen inte. Det är rätt beteende, inget fel.
 5. inga två **svaga** kort styr samma ställe i meningen (6.2)
+6. **innehållet uppfyller konceptens krav**, `valens` och `semantik` (3.5). Ett krav som
+   inte går att uppfylla gör meningen omöjlig och släpps aldrig tyst (punkt 12,
+   `urval.py:219`)
+7. **ett fel på ett mål går att knyta till just det kortet**: inget annat enskilt kort
+   förklarar samma avvikelser (7.3). Det kontrolleras med samma rendering som rättningen
+   använder, och gör R5 till ett villkor när meningen byggs i stället för en förhoppning
 
 Två regler kan kräva former som inte går ihop. Då är meningen inte svår utan
 omöjlig att bygga, och sökningen fortsätter.
@@ -811,9 +924,23 @@ I praktiken: **bygg meningen av så många svaga kort som budgeten tillåter, se
 varje svagt kort är det enda svaga på sin plats, och ta inte med fler kort än meningen
 behöver.** Vilken av de möjliga meningarna som väljs avgörs av värdet i 6.6.
 
-**Ett kort är svagt när R < 0,9**, retentionsmålet — alltså när det är förfallet. För
-ett övervakat kort är R andelen rätt i fönstret (7.6). En menings svaga kort är dess
+**Ett kort är svagt när det hör till dagens mål och inte har klarats i dag** — mängden
+`F` i 6.6: förfallna kort, dagens nya och kort som fallit i dag. Ett övervakat kort är
+förfallet när andelen rätt i fönstret är under 0,9 (7.6). En menings svaga kort är dess
 **mål**; de **övriga** korten är de som meningen behöver för att vara en mening.
+
+**Varje kort har en sannolikhet p att bli rätt**, som budgeten (6.3) och värdet (6.6)
+räknar med:
+
+| Kort | p |
+|---|---|
+| inte mött i dag | FSRS:s R; för ett övervakat kort andelen rätt i fönstret |
+| senast rätt i dag | FSRS:s R |
+| presenterat i dag men inte mött i en mening, eller senast fel i dag | mäts ur loggen: andelen rätt i nästa mening efter en presentation, respektive efter ett fel samma dag |
+
+Direkt efter ett möte ger FSRS R ≈ 1 oavsett om svaret var rätt, och ett nytt kort har
+inget FSRS-tillstånd alls. Därför mäts de två sista fallen. Tills mätningarna finns är
+p = 0,9, retentionsmålet, som ett tillfälligt värde.
 
 Två villkor, samma tal sett från två håll:
 
@@ -842,7 +969,7 @@ egna regler:
 |---|---|
 | dagens mål blir täckta | de svaga korten är målen, och bara mål ger värde (6.6) |
 | antalet mål per mening | budgeten avgör (6.3) |
-| variation i ordval | vid lika värde väljs övriga kort med lägst R, och ett kort som just använts har R ≈ 1 |
+| variation i ordval | vid lika värde väljs övriga kort med lägst p, och ett kort som just klarats har p nära 1 |
 | variation i meningens form | formen bärs av regelkort, som också har R |
 | inga upprepningar | att upprepa är alltid det dyraste valet |
 | varierande längd | många förfallna kort ger täta meningar; mot dagens slut återstår få, och meningarna blir korta |
@@ -862,7 +989,7 @@ syns i diffen var det sitter, med två gör det inte. Därför:
 svårighetsrattens förval, och ratten får flytta det upp till den gräns som mäts när
 rättningen finns (5.7).
 
-Med R = 0,90 för mål och R = 0,99 för övriga kort:
+Med p = 0,90 för mål och p = 0,99 för övriga kort:
 
     mål   övriga   P(0 fel)   P(1 fel)   P(≥2 fel)
      1       5       0,856      0,138      0,006
@@ -870,8 +997,23 @@ Med R = 0,90 för mål och R = 0,99 för övriga kort:
      5       5       0,562      0,340      0,098   taket
      6       5       0,505      0,362      0,132   över
 
-**Varje kort går alltid att nå:** en mening med ett mål och tio övriga kort har
-P(≥2) = 0,013.
+**När ingen mening ryms.** Budgeten förutsätter att meningens övriga kort är starka. Tre
+gånger är de inte det: tidigt i kursen, när de få korten presenterades samma dag och
+förfaller samma dag; efter ett uppehåll, när nästan allt är svagt; och för regelkort som
+varje mening behöver. Då tas två reservsteg, i ordning:
+
+1. **Ensamövning.** Ett kort som ingen mening inom budgeten når prövas ensamt, i samma
+   form som introövningen (5.4) men utan att kortet visas först. Svaret bokförs som en
+   vanlig repetition. Övningen är provet, ingen förberedelse, och krockar därför inte med
+   att förfallna kort aldrig övas i introfasen (5.1). Ett klarat kort kan sedan stå i
+   andra meningar. Korten tas ett i taget, först det som gör flest blockerade mål
+   byggbara. Ensamövningen hör till meningsfasen.
+2. **Den minst riskabla meningen.** En regel syns bara i en mening och kan inte prövas
+   ensam. Ryms ett regelkort ändå inte när alla kort som kan övas ensamma är klarade,
+   väljs den giltiga mening som har lägst P(≥2 fel). Budgeten släpps bara här, och bara
+   för att det annars inte blir någon övning alls.
+
+Budgeten kan därför aldrig göra ett kort onåbart.
 
 **Längden begränsas av tiden, inte av budgeten.** Längre meningar är billigare per kort
 (mätt ur loggen):
@@ -925,7 +1067,7 @@ Två sorters varianter söks, för vilket språkpar som helst:
 axel. En handskriven lista kunde glömma en axel, och då skulle korrekta svar underkännas
 utan att något märker det.
 
-Bara varianter som går att bygga av användarens införda kort räknas. Därefter:
+Bara varianter som går att bygga av det tillåtna (5.2) räknas. Därefter:
 
     ingår varje målkort i varje korrekt målmening?   nej -> förkasta
 
@@ -942,6 +1084,8 @@ som lästes varieras bara där två värden ger samma form (tyskans `sie` är b�
   till.
 - **Helt andra konstruktioner** för samma sak, som passiv i stället för aktiv. De är
   andra innehåll och fångas också av omrättningen (7.4).
+- **Synonymer** — ett annat lexem för samma koncept. De löses med ett nytt försök (7.4),
+  och R2 har ett undantag för dem.
 
 **Aspekt och modus löses genom att källmeningen visar valet.** Är både imparfait och
 passé composé införda får en dåtidsmening bara ha imperfektkortet som mål om den
@@ -956,24 +1100,25 @@ bredvid. Det finns inte ännu (steg 4b).
 
 ### 6.6 Algoritmen
 
-    F   förfallna kort som inte klarats i dag
-    I   införda kort — det meningen får använda
+    F   dagens mål som inte klarats i dag: förfallna, dagens nya och kort som fallit i dag
+    I   det tillåtna: införda och dagens presenterade kort (5.2)
     τ   budgeten
 
 Ett steg: bygg kandidatmeningar av `I` med mål ur `F` (6.1, 6.2), välj den med högst
-värde, rätta svaret, och lägg tillbaka de kort som föll i `F`.
+värde, rätta svaret, och lägg tillbaka de kort som föll i `F`. Ryms inget mål i någon
+mening tas reservstegen i 6.3.
 
 **Kandidaterna jämförs med hur många mål som klaras per sekund:**
 
-    värde = summan av R över meningens mål / förväntad tid för meningen
+    värde = summan av p över meningens mål / förväntad tid för meningen
 
 - **Dagens arbete är redan bestämt.** Varje förfallet kort ska klaras (5.3), och nästan
   all uppskjutning som dagen ger kommer från dem: extra möten med ett starkt kort flyttar
   knappt stabiliteten (7.1). Det enda meningsvalet påverkar är hur lång tid dagen tar.
-- **R och inte antal**, eftersom ett mål som faller hamnar i `F` igen.
+- **p och inte antal**, eftersom ett mål som faller hamnar i `F` igen.
 - **Tiden** kommer ur tidsmodellen (5.5). **Svårigheten** behöver inget eget mått: den
   är budgeten.
-- **Vid lika värde** väljs de övriga korten med lägst R (6.2).
+- **Vid lika värde** väljs de övriga korten med lägst p (6.2).
 
 Två följder:
 
@@ -992,7 +1137,7 @@ Om algoritmen i övrigt:
 - **Att välja girigt är korrekt, inte bara billigt.** Girigt urval kan i allmänhet
   lämna kort som ingen mening når. Här kan det inte hända: bara prövbara kort är
   införda, varje kort har ett bevis (3.10), inga kort tillkommer under meningsfasen,
-  och budgeten rymmer alltid en mening med ett enda mål.
+  och budgeten kan inte göra ett kort onåbart (6.3).
 - **Kostnaden ligger i att ta fram kandidater**, inte i att välja bland dem. Mätt i det
   gamla systemet: 2 000 försök gav 1 692 kandidatmeningar med 727 olika kortmängder.
   Antalet försök väljs inte utan mäts i provsviten: det minsta antal där det bästa
@@ -1004,10 +1149,10 @@ Om algoritmen i övrigt:
 
 ### 7.1 Varje möte bokförs
 
-Varje gång ett kort prövas i en mening bokförs det — även om kortet inte var
-förfallet och även om det redan mötts samma dag. Två sorters möten bokförs inte,
-eftersom kortet inte prövades entydigt: lånekort i en introövning (5.4), och kort vars
-betyg beror på en tolkning rättaren inte kan välja (7.3).
+Varje gång ett kort prövas i en mening eller en ensamövning (6.3) bokförs det — även om
+kortet inte var förfallet och även om det redan mötts samma dag. Introfasen bokför
+ingenting (5.4). I meningsfasen bokförs inte kort vars betyg beror på en tolkning
+rättaren inte kan välja (7.3).
 
 Mätt i FSRS:
 
@@ -1082,7 +1227,9 @@ fel — och där är det adjektivets ändelse som föll.
 skiljer sig mellan tolkningarna bokförs inte, och användaren får inget besked om det —
 kortet står kvar som förfallet. Samma sak gäller när två varianter har lika få
 avvikelser och ger kortet olika betyg. Det är en verklig gräns för vad en diff kan
-avslöja, och varje sådant fall är en brist i generatorn (R5).
+avslöja, och varje sådant fall är en brist i generatorn (R5). Villkor 7 i 6.1 gör att det
+bara kan ske vid två samtidiga fel, genom ett fel i programmet, eller när budgeten har
+släppts (6.3).
 
 Gränsen nås sällan. I den gamla loggen, mätt med tre regelkort, skilde sig 36 av
 44 felaktiga meningar (82 %) från facit på exakt ett ställe, och ingen på tre
@@ -1095,15 +1242,22 @@ klarar.
 
 ### 7.4 Korrekta svar som inte fanns bland varianterna
 
-Två fall återstår när användaren skriver något korrekt som sökningen i 6.5 inte
-räknade upp:
+**En synonym.** Skriver användaren ett annat lexem för samma koncept än målet — `också`
+där målet är `även` — underkänns svaret inte. Systemet svarar: rätt, men byt ut *också*
+mot ett annat ord.
 
-- **Ett korrekt ord som inte är infört.** Renderaren känner igen det som en form av ett
-  annat lexem för samma koncept. Systemet godtar meningen, bokför inte målkortet och
-  säger inte vilket ord som var tänkt — att säga det vore att avslöja svaret. Kortet
-  står kvar som förfallet.
-- **En korrekt variant som renderaren missade.** Diffen underkänner den, och användaren
-  markerar om (7.2). Omrättningen loggas, så att varianten kan läggas till.
+- **Det nya försöket är ett riktigt prov.** Användaren har inte sett facit, bara fått veta
+  att ett annat ord söks. Efter ledtråden innehåller varje korrekt svar målet (R2).
+- **Målkortet graderas på det nya försöket**, alla andra kort på det första svaret.
+- **Synonymens eget ordkort bokförs som rätt** om det är infört, eftersom användaren
+  faktiskt hämtade det ordet ur minnet (7.1).
+- Det gäller oavsett om synonymen är införd eller inte.
+
+En kommentar i uppgiften i förväg vore sämre: den visar ett ord på målspråket varje gång
+ordet är mål, även när användaren aldrig hade tänkt på synonymen.
+
+**En korrekt variant som renderaren missade.** Diffen underkänner den, och användaren
+markerar om (7.2). Omrättningen loggas, så att varianten kan läggas till.
 
 ### 7.5 Mönster som blivit automatiska
 
@@ -1118,7 +1272,8 @@ räknade upp:
 
 Franskans `le` finns i fyra meningar av fem, och för sådana kort säger
 förfallodagen ingenting. De får i stället ett **fönster**: de tio senaste mötena.
-Kortet är svagt, och alltså mål, när andelen rätt i fönstret är under 0,9 (6.2).
+Kortet är förfallet, och hör alltså till dagens mål, när andelen rätt i fönstret är
+under 0,9 (6.2).
 
 Fönstret är 1/(1 − 0,9) = tio möten, och tröskeln är retentionsmålets tolerans.
 Mekanismen finns byggd och testad i dag och tas över som modell.
@@ -1234,13 +1389,13 @@ meningen beslutet fattades.
     1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); registret med krav och byggvillkor, spåret; allt annat bygger på detta
     2   nivåerna och grafen                kräver 1; nivåerna är grafens starka komponenter (4.1)
     3   kortmodellen                       kräver 0; tabellen från form till kort (3.4)
-    3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, bevis, karantän, felrapporter, inställningar, kursens språkpar
-    4   bygga mot ett kort                 kräver 1 och 3; byggvillkoren (6.4) och entydighetsfiltret (6.5); kontrollerar invarianten i 4.3
+    3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
+    4   bygga mot ett kort                 kräver 1, 3 och generatorns design (punkt 10); byggvillkoren (6.4), entydighetsfiltret (6.5), villkoren 6–7 i 6.1; kontrollerar invarianten i 4.3
     4b  aspektkrav på koncept              parallellt (6.5)
-    5   dagspasset och införandet          kräver 2 och 4; prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), införandeordningen (5.6)
-    6   urvalet                            kräver 5; värdet per mening (6.6)
-    7   rättningen                         kräver 4; parningen, förklaringen per korttyp och omrättningen (7.2, 7.3)
-    8   lektioner och frekvenslista        parallellt
+    5   dagspasset och införandet          kräver 2 och 4; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6)
+    6   urvalet                            kräver 5; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
+    7   rättningen                         kräver 4; parningen, förklaringen per korttyp, synonymer och omrättningen (7.2–7.4)
+    8   lektioner och frekvenser           parallellt — ord per koncept och lexem, innehållets drag (5.6)
     8b  provsviten                         parallellt — finns inte i dag; simulerade kurser (3.10)
     8c  valideringen                       parallellt — kaikki, AI-granskning, användarflaggor (3.4)
 
@@ -1250,16 +1405,32 @@ om attributionen fungerar med ett par hundra regelkort i stället för dagens tr
 Håller den inte syns det innan något har raderats.
 
 **Rent arbete, utan kvarstående beslut:** böjningsreglerna för övriga sex språk,
-renderarnas redovisning, en lektionstext per regelkort och källspråk, den semantiska
-frekvenslistan (japanskan för hand), aspektkraven på adverbialkoncepten, och
+renderarnas redovisning, en lektionstext per regelkort och källspråk, frekvenserna för
+ord och drag (japanskan för hand), aspektkraven på adverbialkoncepten, och
 datafelen i punkt 12.
 
 ---
 
 ## 10 · Öppna frågor
 
-Frågorna väntar på Julius, och ingen av dem blockerar bygget. Frågan om när
-påfyllningen ska sluta är besvarad av värdet i 6.6.
+### Meningsgeneratorn — nästa designarbete
+
+Hur kandidatmeningar byggs kring givna mål (6.6) är inte beskrivet, och steg 4 kan inte
+byggas utan det. Riktningen:
+
+- **Bygg utifrån målen**, i stället för att generera och filtrera. Det gamla systemet
+  drog 2 000 slumpförsök och upptäckte efteråt vad de innehöll — samma grundfel som i
+  punkt 1.
+- **Sök exakt.** Budgeten tillåter bara ett fåtal mål per mening, så sökningen kan
+  beskäras mot det bästa värde som hittats hittills i stället för att sampla.
+- **Bakom ett fast gränssnitt.** In: det tillåtna, dagens mål och deras p. Ut: den
+  giltiga mening (6.1) som har högst värde (6.6). Giltigheten och värdet ligger utanför
+  sökningen, så sökningen kan bytas mot en bättre utan att något annat ändras, och
+  provsviten kan jämföra två sökningar på samma mått.
+
+### Frågor som väntar på Julius
+
+Ingen av dem blockerar bygget.
 
 - **Svenska böjningsregler** — fem frågor i `ordbok/regelkontroll/sv.md`. Den första,
   om utrala substantiv på konsonant har en standardklass, kan principen själv besvara:
@@ -1279,15 +1450,16 @@ påfyllningen ska sluta är besvarad av värdet i 6.6.
 
 | Mått | I dag | Krav |
 |---|---|---|
-| kort i en mening som inte är införda | 4 | 0 |
+| kort i en mening som varken är införda eller presenterade i dag | 4 | 0 |
+| paket som blivit delvis införda | ej mätt | 0 |
 | införda kort som inte är prövbara | ej mätt | 0 |
 | kort i dagsplanen utan bevis vid passets start | ej mätt | 0 |
 | kort i karantän | ej mätt | 0 — varje fall är en felrapport |
-| lånekort som bokförs i introfasen | ej mätt | 0 |
-| nya kort som införs utanför introfasen | 25 av 32 | 0 |
+| möten i introfasen som bokförs | ej mätt | 0 |
+| nya kort som presenteras utanför introfasen | 25 av 32 | 0 |
 | andel kortmöten som bokförs | 13 % | 100 % |
 | regler som renderaren använder utan att de är upplåsta | ej mätt | 0 |
-| meningar med P(≥2 fel) > τ | ej styrt | 0 |
+| meningar med P(≥2 fel) > τ | ej styrt | 0, utom reservsteg 2 i 6.3 |
 | mål som inte är ensamt svaga på sin plats | ej mätt | 0 |
 | målkort som inte ingår i varje korrekt svar | ej mätt | 0 |
 | former i databasen som varken reglerna ger eller ett undantagskort täcker | ej mätt | 0 |
@@ -1378,8 +1550,18 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | ett oprövbart kort i dagsplanen som tyst hoppas över eller räknas som klarat | döljer ett fel i programmet; karantän med felrapport i stället (3.10) |
 | en förteckning över vilka kort som konkurrerar | filtret hittar det själv när bevisen prövas om (3.10) |
 | nivålistan som en bedömning av «minsta steg» | nivåerna är grafens starka komponenter (4.1) |
-| «tills fönstret är felfritt» för övervakade kort | en andra definition av svagt; R är andelen rätt, och svagt är R < 0,9 |
+| «tills fönstret är felfritt» för övervakade kort | en andra definition av förfallet; ett övervakat kort är förfallet när andelen rätt är under 0,9 |
 | beroenden angivna i anropet under renderingen | kommer för sent: generatorn och grafen behöver dem innan meningen byggs (8.3) |
+| «flest andra kort prövbara» som införandeordning | räknade ett ords egna kort som vinst: sällsynta oregelbundna ord gick före vanliga regelbundna, och regler som inget kräver kom aldrig; ersatt av täckning per kort (5.6) |
+| svagt definierat som R < 0,9 | FSRS ger R ≈ 1 direkt efter varje möte, så dagens nya kort blev aldrig mål och ett kort som just fallit räknades som säkert (6.2) |
+| introövningens svar som första FSRS-betyg | svaret ges direkt efter att kortet visats; introfasen är till för att lära ut, inte för att mäta (5.4) |
+| förfallna kort i introfasen | att öva kortet precis före meningen gör det lätt att klara något som var svårt (5.1) |
+| ett kort räknat som infört när introövningen är klarad | ett avbrutet pass lämnade kort, och halva paket, i systemet utan att de prövats (5.1) |
+| största antal nya kort som ryms varje dag framåt | fyller de närmaste dagarna och ger ett ryckigt införande; ersatt av jämnt tempo (5.5) |
+| «budgeten rymmer alltid en mening med ett mål» | falskt när meningens övriga kort är svaga, tidigt i kursen och efter uppehåll; ersatt av reservstegen (6.3) |
+| krav med flera alternativ som kanter till varje alternativ | alla alternativ kräver varandra, och nivåerna smälter ihop (4.2) |
+| ordkortet fallet när svaret inte är en form av lexemet | felaktiga former som `köpade` skulle belasta ordet i stället för undantaget (3.3) |
+| en kommentar i uppgiften om vilken synonym som inte söks | visar ett ord på målspråket varje gång, även när användaren aldrig hade tänkt på synonymen (7.4) |
 
 ---
 
