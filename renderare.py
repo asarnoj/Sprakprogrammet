@@ -71,6 +71,13 @@ def _bygg_sats(sats: Sats, språk: str) -> list[str]:
             märkta.append(('fråga_subjekt', _rendera_komplement(fras, språk), fras))
         else:
             märkta.append(('subjekt', _rendera_komplement(fras, språk), fras))
+    elif vf.verb:
+        # Opersonligt verb utan subjektfras → dummy-subjekt ("det" / "il")
+        verb_lexem_id = hämta_lexem_id(vf.verb.koncept_id, språk)
+        pers = int(kolla_lexems_egenskap(verb_lexem_id, 'personlighet') or 0)
+        if pers & int(Personlighet.OPERSONLIG):
+            dummy = 'det' if språk == 'sv' else 'il'
+            märkta.append(('subjekt', dummy, None))
 
     if vf.verb:
         verb_text = rendera_verb(vf, språk)
@@ -450,6 +457,13 @@ def rendera_nominalfras(nf: Nominalfras, språk: str) -> str:
     )
 
     har_attribut = nf.attribut is not None
+    är_räknebar = kolla_lexems_egenskap(lexem_id, 'räknebar')
+    oräknebar = är_räknebar is not None and int(är_räknebar) == 0
+
+    # Oräkneliga substantiv renderas alltid i singular
+    if oräknebar:
+        substantiv_form = hämta_form(lexem_id, numerus=Numerus.SINGULAR,
+                                     species=species_arg, kasus=nf.kasus)
 
     # Artikel — interrogativ determinant ersätter vanlig artikel
     artikel = None
@@ -459,7 +473,8 @@ def rendera_nominalfras(nf: Nominalfras, språk: str) -> str:
         artikel = hämta_form(det_lexem_id, numerus=nf.numerus, genus=noun_genus)
     elif isinstance(nf.huvuddel, Substantiv):
         if nf.species == Species.OBESTAMD:
-            artikel = _artikel_obestamd(lexem_id, nf.numerus, språk)
+            # Oräkneliga substantiv tar ingen obestämd artikel ("mat" inte "en mat")
+            artikel = None if oräknebar else _artikel_obestamd(lexem_id, nf.numerus, språk)
         elif nf.species == Species.BESTAMD:
             artikel = _artikel_bestamd(lexem_id, nf.numerus, språk,
                                        har_attribut=har_attribut, kasus=nf.kasus)
@@ -473,13 +488,30 @@ def rendera_nominalfras(nf: Nominalfras, språk: str) -> str:
             nf.attribut, noun_genus, nf.numerus, nf.species, språk
         )
 
+    # Fransk elision: le/la → l' framför vokal/stumt h
+    if språk == 'fr' and artikel in ('le', 'la'):
+        nästa = adj_form if (adj_form and adj_prenominal) else substantiv_form
+        if nästa and nästa[0].lower() in 'aeéèêëiïoôuùûyæœàâ':
+            artikel = "l'"
+
     # Sätt ihop: [artikel] [adj (pre)] [substantiv] [adj (post)]
     delar = []
     if artikel:
-        delar.append(artikel)
+        # Elided artikel (l') klistras ihop med nästa ord
+        if isinstance(artikel, str) and artikel.endswith("'"):
+            nästa = adj_form if (adj_form and adj_prenominal) else substantiv_form
+            delar.append(f"{artikel}{nästa}")
+            # Markera att nästa redan inkluderades
+            if adj_form and adj_prenominal:
+                adj_form = None
+            else:
+                substantiv_form = None
+        else:
+            delar.append(artikel)
     if adj_form and adj_prenominal:
         delar.append(adj_form)
-    delar.append(substantiv_form)
+    if substantiv_form:
+        delar.append(substantiv_form)
     if adj_form and not adj_prenominal:
         delar.append(adj_form)
 

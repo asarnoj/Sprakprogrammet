@@ -63,3 +63,15 @@ class Grad(IntEnum):
     POSITIV    = 1
     KOMPARATIV = 2
     SUPERLATIV = 3
+
+
+class Semantik(IntFlag):
+    """Semantiska egenskaper hos ett koncept. Används för selektionsrestriktioner."""
+    ANIMAT    = 1
+    KONKRET   = 2
+    ABSTRAKT  = 4
+    ÄTBAR     = 8
+    PLATS     = 16
+    MÄNSKLIG  = 32
+    RÖRELSE   = 64     # verb som innebär förflyttning (springa, gå)
+    RIKTNING  = 128    # preposition som kräver rörelseverb (till, från)
