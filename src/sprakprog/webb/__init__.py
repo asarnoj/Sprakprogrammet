@@ -81,6 +81,10 @@ EN_KURS_PER_MÅLSPRÅK = ("Det finns redan en kurs mot {mål} ({fanns}). Alla ku
          "den befintliga först om du vill byta källspråk.")
 
 
+class _IngenDagbok(Exception):
+    """Dagboken är avstängd för den här tjänsten. Se `dagbokskatalog`."""
+
+
 def _tal(p: dict) -> dict:
     """De tal ur PASSETS läge som säger hur dagen såg ut, för dagboken.
 
@@ -104,6 +108,21 @@ class Övningstjänst:
         self.lås = threading.Lock()
         self._generatorer: dict[tuple, Generator] = {}
         self._öppna: dict[int, tuple] = {}
+        #: VAR DAGBOKEN SKRIVS — `None` betyder SKRIV INTE.
+        #:
+        #: AVSTÄNGT SOM FÖRVAL, och den riktningen är hela poängen. Först
+        #: skrev varje `Övningstjänst` till projektets `loggar/`, och då
+        #: skrev PROVEN dit: sviten kör hundratals meningar genom `bokför`,
+        #: och en körning gjorde Julius fem verkliga meningar till 227. Jag
+        #: rättade det i `tjänsteprov`s fixtur och nästa svit förorenade
+        #: dagboken igen — från fyra andra nät som också bygger en tjänst.
+        #:
+        #: Att lappa varje anropsställe är fel form på lösningen. Med
+        #: skrivning som OPT-IN kostar ett glömt anrop en dagboksrad, vilket
+        #: syns; med skrivning som förval kostar det användarens data, vilket
+        #: inte syns förrän någon läser filen. Bara `webb.starta` slår på
+        #: den, alltså det enda stället där en människa faktiskt övar.
+        self.dagbokskatalog = None
         #: uppgift-id → (kortlägen, korrekt, omedföljande). Fylls av `svara`
         #: och läses av `bokför` för dagboken; se `kort/dagbok.py`.
         self._lägen: dict[int, tuple] = {}
@@ -714,6 +733,8 @@ class Övningstjänst:
             # en del av bokföringen; går skrivningen fel ska övningen ändå gå
             # vidare, och felet synas i det som ändå loggas.
             try:
+                if self.dagbokskatalog is None:
+                    raise _IngenDagbok
                 dagbok.skriv(dagbok.rad(
                     nu=dagbok.nu_utc(), kurs=kurs, pass_rad=pass_före,
                     förslag=f, svar=svar, korrekt=korrekt, utfall=utfall,
@@ -726,7 +747,10 @@ class Övningstjänst:
                         "före": _tal(dagsläge_före),
                         "efter": _tal(
                             passlager.läget(self.kort_db, pass_före["id"])
-                            if pass_före is not None else {})}))
+                            if pass_före is not None else {})}),
+                    katalog=self.dagbokskatalog)
+            except _IngenDagbok:
+                pass
             except Exception as e:                            # noqa: BLE001
                 logging.getLogger(__name__).warning(
                     "dagboken kunde inte skrivas: %s", e)
@@ -1503,6 +1527,9 @@ def starta(port: int = 8765, *, kandidater: int = 800,
     språk_db = anslut(delad_mellan_trådar=True)
     språk_db.row_factory = sqlite3.Row
     Hanterare.tjänst = Övningstjänst(kort_db, språk_db, kandidater=kandidater)
+    # DAGBOKEN SLÅS PÅ HÄR OCH INGEN ANNANSTANS — det enda stället där en
+    # människa faktiskt övar. Se `Övningstjänst.dagbokskatalog`.
+    Hanterare.tjänst.dagbokskatalog = dagbok.KATALOG
     # Bara loopback. Inlärardatabasen är personlig och servern har ingen
     # autentisering; att lyssna brett vore att dela den med nätverket.
     server = ThreadingHTTPServer(("127.0.0.1", port), Hanterare)

@@ -31,7 +31,7 @@ import sqlite3
 from dataclasses import asdict, dataclass, replace
 
 from ..kort import Schemaläggare, spec_json
-from ..kort.schemalaggning import FEL, dygnets_början
+from ..kort.schemalaggning import dygnets_början
 from ..rendering import RENDERARE, Mening, RenderingsFel, Uppslag, Validator
 from .poang import Poäng, Poängsättare
 from .rattning import Anmärkning, Rättare, Rättning
@@ -545,7 +545,24 @@ class Generator:
         return bäst
 
     def _redan_klara(self, nu) -> set[int]:
-        """Kort som redan bedömts RÄTT idag, för hela språket.
+        """Kort som ett RÄTT svar inte längre kan bokföra. Samma mängd som E2.
+
+        SAMMA VILLKOR SOM `Schemaläggare._redan_idag`, och det måste det
+        vara. Min första version frågade efter kort som bedömts RÄTT idag
+        (`betyg <> FEL`), och den mängden är smalare än E2:s på två sätt:
+
+            ett FALLERAT kort   `betyg = FEL` föll bort ur filtret, men ett
+                                rätt svar bokför det ändå inte
+            ett UNDANHÅLLET     raden har `betyg IS NULL` och `skäl` satt,
+                                och `NULL <> 1` är NULL i SQL — alltså föll
+                                den bort tyst
+
+        Följden var att tomgångsspärren inte grep. Mätt på Julius tre dagar:
+        4 av 23 meningar bokförde noll kort, och ALLA fyra hade minst ett
+        kort vars enda spår idag var ett fel eller ett undanhållande.
+
+        `On existe.` var det renaste fallet — sex kort, alla `redan_bedömd`,
+        noll bokförda. Det var undanhållandena som gömde dem för filtret.
 
         Hämtas EN gång per sökning och inte per kandidat: sökningen prövar
         upp till tusen kandidater, och ett uppslag var hade gjort regeln
@@ -554,8 +571,8 @@ class Generator:
         return {r["kort_id"] for r in self.kort_db.execute(
             """SELECT DISTINCT r.kort_id FROM Repetition r
                JOIN Kort k ON k.id = r.kort_id
-               WHERE k.språk = ? AND r.tidpunkt >= ? AND r.betyg <> ?""",
-            (self.språk, dygnets_början(nu), int(FEL)))}
+               WHERE k.språk = ? AND r.tidpunkt >= ?""",
+            (self.språk, dygnets_början(nu)))}
 
     def _duglig(self, okända: int, text: str) -> bool:
         """Får kandidaten vinna, eller hör den hemma i reservtiern?

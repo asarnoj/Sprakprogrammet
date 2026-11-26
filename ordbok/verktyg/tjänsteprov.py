@@ -564,7 +564,19 @@ def prov_ingen_tom_mening(tj, kurs) -> list[str]:
         u = tj.uppgift(kurs["id"])
         if u is None or u.get("tomt"):
             break
-        sv = tj.svara(u["id"], tj._öppna[u["id"]][1].text)
+        # NÅGRA SVAR MÅSTE VARA FEL, och det är inte kosmetika.
+        #
+        # Provet svarade rätt hela vägen, och då uppstår aldrig ett kort med
+        # `redan_fälld` eller `undanhållen` — alltså precis de två lägen som
+        # gjorde tomgångsspärren otät. Provet var grönt i tre dagar medan
+        # Julius fick fyra tomma meningar av tjugotre.
+        #
+        # Var tredje svar är fel, med fast frö så utfallet går att upprepa.
+        # Ett fel drar dessutom in `igen`-rader och skyddade kort, vilket är
+        # den kombination där E2 och D3 möts.
+        rätt = (ställda % 3) != 2
+        sv = tj.svara(u["id"], tj._öppna[u["id"]][1].text if rätt
+                      else "detta är fel")
         tj.bokför(u["id"])
         ställda += 1
         if sv is not None and sv["bokförs"] == 0:
@@ -602,7 +614,8 @@ def prov_dagboken_fångar_övergången(tj, kurs) -> list[str]:
     from sprakprog.kort import dagbok as D
 
     katalog = _P(_tf.mkdtemp()) / "loggar"
-    äkta, D.KATALOG = D.KATALOG, katalog
+    tj = _egen_tjänst(kurs)
+    tj.dagbokskatalog = katalog
     try:
         tj.nollställ(kurs["id"], "RESET")     # se `prov_dagen_tar_slut`
         for _ in range(40):
@@ -641,7 +654,7 @@ def prov_dagboken_fångar_övergången(tj, kurs) -> list[str]:
                        f"bokföringen")
         return fel
     finally:
-        D.KATALOG = äkta
+        pass
 
 
 PROV = [
@@ -717,17 +730,23 @@ def _sabotera(namn: str):
         return lambda: setattr(D, "före", äkta)
 
     if namn == "ingen tom mening ställs":
-        # Före rättelsen: sökningen visste inte vilka kort som redan var
-        # bedömda idag, så en kandidat vars alla kort var avklarade kunde
-        # vinna. `redan_klara=None` är exakt det gamla läget.
-        äkta = Generator._sök
+        # DEN SMALA MÄNGDEN, alltså buggen som faktiskt nådde Julius — inte
+        # den ursprungliga avsaknaden av filter. `betyg <> FEL` såg rimligt
+        # ut och var fel på två sätt: ett fallerat kort föll bort, och ett
+        # undanhållet har `betyg IS NULL`, vilket SQL:s trevärda logik
+        # tystar bort. Provet såg det inte, för det svarade alltid rätt.
+        from sprakprog.kort.schemalaggning import dygnets_början
+        äkta = Generator._redan_klara
 
-        def utan(själv, kandidater, mål, förfallna, sedda, nu,
-                 redan_klara=None):
-            return äkta(själv, kandidater, mål, förfallna, sedda, nu, None)
+        def smal(själv, nu):
+            return {r["kort_id"] for r in själv.kort_db.execute(
+                """SELECT DISTINCT r.kort_id FROM Repetition r
+                   JOIN Kort k ON k.id = r.kort_id
+                   WHERE k.språk = ? AND r.tidpunkt >= ? AND r.betyg <> 1""",
+                (själv.språk, dygnets_början(nu)))}
 
-        Generator._sök = utan
-        return lambda: setattr(Generator, "_sök", äkta)
+        Generator._redan_klara = smal
+        return lambda: setattr(Generator, "_redan_klara", äkta)
 
     if namn == "sista nivån går att nå":
         # Före rättelsen: taket hårdkodat till 21 i båda grindarna.

@@ -59,6 +59,15 @@ def _varningar(post: dict) -> list[str]:
         if k.get("före_sitt_ord"):
             ut.append(f"före sitt ord: {k['typ']}:{k['facit']!r} prövades "
                       f"medan ordet är oinfört (A4)")
+    # NYINTRODUCERADE UTAN PLAN — en NOTIS och inte ett fel, eftersom Julius
+    # avgjort att medföljande kort är gratis när de går rätt. Men de ska
+    # SYNAS: han läste tre dagars dagbok och undrade varför kort dök upp som
+    # inte introducerats, och svaret stod i datan utan att stå i sammandraget.
+    utan_plan = [k for k in post["kort"] if k["härkomst"] == "medföljande-ny"
+                 and k["bokförd"]]
+    if utan_plan:
+        ut.append("infördes av meningen, inte av planen: "
+                  + ", ".join(f"{k['typ']}:{k['facit']!r}" for k in utan_plan))
     if not any(k["bokförd"] for k in post["kort"]):
         ut.append("tomgång: meningen bokförde noll kort")
     if post["urval"].get("nödfall"):

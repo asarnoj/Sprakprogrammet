@@ -2632,6 +2632,55 @@ betyg, utan ordavdrag 91. Det andra är det ursprungliga felet modulen byggdes
 för — `nous coüter` för `Vous coûtez` gav ändelsen `ez` ett Good i ett svar
 utan de bokstäverna.
 
+#### TOMGÅNGSSPÄRREN VAR OTÄT — SQL:S TREVÄRDA LOGIK (2026-09-02)
+
+Julius körde tre dagar och läste dagboken: **4 av 23 meningar bokförde noll
+kort**, trots att C4:s tomgångsspärr byggts två dagar tidigare.
+
+Spärren frågar "skulle ett rätt svar bokföra något?" och jämför meningens
+kort mot dem som redan bedömts idag. Min mängd var smalare än E2:s på två
+sätt, och båda var osynliga:
+
+    ett FALLERAT kort    `betyg <> FEL` tog bort det ur filtret, men ett
+                         rätt svar bokför det ändå inte
+    ett UNDANHÅLLET      raden har `betyg IS NULL` och `skäl` satt, och
+                         `NULL <> 1` är NULL i SQL — inte sant, alltså föll
+                         raden bort tyst
+
+Den andra är den lömska. Ett kort som undanhållits tidigare på dagen (D3)
+räknas av E2 som bedömt, men mitt filter såg det aldrig. `On existe.` var
+det renaste fallet: sex kort, alla med läget `redan_bedömd`, noll bokförda.
+
+Filtret använder nu samma villkor som `_redan_idag` — varje repetition idag,
+oavsett betyg. Simulerat med 30 % fel svar: 15 meningar, noll tomma.
+
+**OCH PROVET VAR FÖR RENT.** `prov_ingen_tom_mening` svarade RÄTT hela vägen,
+och då uppstår aldrig ett kort med `redan_fälld` eller `undanhållen` — alltså
+precis de två lägen som gjorde filtret otätt. Provet var grönt i tre dagar
+medan Julius fick fyra tomma meningar. Det svarar nu fel på var tredje
+mening, och med den smala mängden återinförd faller det på fyra meningar —
+samma antal han såg.
+
+Lärdomen hör till G7: ett prov som bara spelar upp det lyckade fallet mäter
+inte den kod som hanterar det olyckliga.
+
+#### PROVEN SKREV I DAGBOKEN (2026-09-02)
+
+Funnet direkt efter att dagboken tagits i bruk, och värt att skriva ner
+eftersom formen på lösningen var fel två gånger.
+
+Varje `Övningstjänst` skrev till projektets `loggar/`. Sviten bygger tjänster
+i fem nät och kör hundratals meningar genom `bokför` — så en enda körning
+gjorde Julius fem verkliga meningar till **227**. Ett vittne som proven
+skriver i är inget vittne.
+
+Första rättelsen pekade `tjänsteprov`s fixtur till en tempkatalog. Nästa
+svit förorenade dagboken igen, från de fyra andra näten. Att lappa varje
+anropsställe är fel form: **skrivningen är nu OPT-IN**, `dagbokskatalog =
+None` betyder skriv inte, och bara `webb.starta` slår på den. Glömmer man
+den kostar det en dagboksrad, vilket syns; med skrivning som förval kostade
+det användarens data, vilket inte syns förrän någon läser filen.
+
 #### RÄKNAREN OCH LISTAN MENADE OLIKA SAKER MED "NEW"
 
 Julius: *"Bild 3 borde ha hoppat ner från 7 till 1 eftersom 6 kort provades
