@@ -2577,6 +2577,38 @@ planerats är nytt i listans mening men rör inte räknaren.
 dag: taket var 25 kort, dagen införde **34**. Nio över den takt FSRS säger
 är hållbar — och räknaren visade aldrig det.
 
+**Mätt igen 2026-08-29, på appens egen dygnsgräns.** Första mätningen
+jämförde mot UTC-midnatt medan koden räknar dygnet från 22:00 UTC; talen höll
+ändå. Franskans dag:
+
+    taket                     25
+    faktiskt infört           34
+    räknat av taket           29
+    osynligt för taket         5   (schemalagt = 0)
+
+Uppdelat på hur korten kom in:
+
+    roll `ny`                 13      ← det ENDA räknaren visar
+    roll `glosa`              12      ← nya ORD, lika nyintroducerade
+    roll `igen`                1
+    ingen passrad alls         9      ← infördes av meningarna
+
+Det ger TVÅ skilda läckor, och de kräver olika svar:
+
+1. **`INFÖRBAR = (schemalagt = 1 OR typ = 'ord')`.** Ett kort som tagits ur
+   kön för att det är allestädes närvarande räknas varken som osett eller som
+   infört — men det blir bedömt så fort en mening råkar innehålla det. Fem
+   kort idag: `system` 2, `form` 1, `ordföljd` 1, `stam` 1.
+
+2. **Taket styr PLANERINGEN, inte införandet.** `nya = min(osedda, tak −
+   infört_idag)` avgör hur många passrader med rollen `ny` som läggs. En
+   mening vald för ett kort rör 7–10 (E4), och de övriga införs utan att ha
+   planerats. Nio kort idag kom in den vägen.
+
+Julius princip — *"man ska aldrig få kort som ännu inte är introducerade, alla
+nyintroducerade kort ska testas"* — är alltså uppfylld åt ena hållet och inte
+åt det andra: korten testas, men de räknas inte.
+
 ### C7 ! — Producerar renderarna korrekt språk?
 
 Ett känt fel kvar:
