@@ -3740,11 +3740,47 @@ konstruktionerna sitter på MENINGEN och böjningen på ORDET.
 - **F5, stegen är slut vid 21.** Böjningsdimensionerna skulle ge stegen fler
   meningsfulla trappsteg utan att hitta på nya konstruktioner.
 
-**Vad som behöver mätas innan det byggs.** Hur många dimensioner blir det per
-språk, och hur många kort bär var och en? Blir det åttio trappsteg med tre
-kort på vart är klumpningen inte en efterhandsjustering utan hela designen.
-Talen finns i `Former`-tabellens axlar (person, numerus, tempus, kasus,
-genus) och går att räkna innan en rad kod skrivs.
+#### RÄKNINGEN ÄR GJORD (2026-08-27)
+
+**Axlarna som finns, per språk** — distinkta värden i `Former`:
+
+    språk  numerus species kasus genus tempus grad person diates  celler
+    sv          2       2      5     3     10     3      0      2      49
+    en          2       2      5     0      8     3      3      1      34
+    de          2       3     12     3     14     3      3      2     197
+    fr          2       2      9     3     21     3      3      1     101
+    ja          0       0      0     0     11     1      0      2      18
+
+**Person/numerus/tempus-cellerna vid FULLT ordförråd**, alltså vad en sådan
+nivå skulle bära när kursen mognat:
+
+    fr   60 celler, 5 619 former   36 med ≥50 former, median 106, störst 174
+    de   42 celler, 3 374 former   30 med ≥50 former, median  72, störst 174
+    sv    0 celler                 svenskan personböjer inte verb alls
+
+Störst = 174 = ett per verb i ordboken, alltså en full kolumn i paradigmet.
+
+**Tre slutsatser, och den tredje är den obekväma.**
+
+**Cellerna är substantiella när kursen mognat.** Median 106 former för
+franskan — det är inga småsteg, det är riktiga läromoment.
+
+**Men de är små i början, och det är där problemet uppstod.** På nivå 1:s
+franska kortlek finns 11 celler och 36 kort: `pres_3sg` bär 12, `pres_2sg`
+bär 5, `pres_1pl` bär 2. Tyskan har 28 celler och 72 kort, och INGEN cell når
+tio. Klumpningen är alltså inte en efterjustering utan det som avgör om
+konstruktionen fungerar de första veckorna — precis Julius egen misstanke.
+
+**Och stegen skulle sluta vara språkoberoende.** Dagens 21 nivåer sitter på
+KONCEPTLAGRET och är därför samma för alla sju språken; det är en av
+paradigmets bärande egenskaper. En böjningsstege har 60 steg i franskan, 42 i
+tyskan och NOLL i svenskan. Antingen blir stegen språkspecifik — vilket bryter
+den delade axeln och kräver att `NIVÅ` blir en tabell per språk i stället för
+en dict — eller så måste dimensionerna abstraheras till något som finns i
+alla sju, och då är det inte längre "en nivå per böjningsparameter".
+
+**Det är den frågan som ska besvaras innan något byggs**, och den är en
+designfråga och inte en mätning.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 
