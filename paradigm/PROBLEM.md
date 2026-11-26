@@ -2071,6 +2071,60 @@ meningslös. C7 är morfologi och syntax: meningen är felaktig tyska. Samma
 flaggning fångar båda, men fixen ligger på olika ställen —
 `restriktioner.py` respektive renderarna.
 
+#### DEIXISKOLLISIONEN — LÖST 2026-08-29
+
+Julius såg konstiga meningar på en färsk fransk kurs. Sållet i
+`granska-meningar --misstänkta` flaggade 6 av 42 som `subjekt = objekt`:
+
+    Je m'ai.                    Tu t'as.
+    Vous vous coûtez.           On nous coûte.
+    Il l'a.                     Elle la coûte.
+
+**Bara fyra av de sex är fel, och skälet är deixis.** Första och andra
+person är förankrade i talsituationen — talaren är talaren oavsett var i
+satsen ledet står — så två sådana led kan inte syfta på olika personer.
+
+Renderaren bekräftar det från andra hållet. Franskans objektsklitikum och
+reflexivklitikum är SAMMA STRÄNG i första och andra person; `REFLEXIVKLITIKA`
+i `romansk.py` säger det rent ut: *"Första och andra lånar det vanliga
+objektsklitikat — `je me lave` är samma `me` som i `il me voit`"*. `Tu te
+remercies` går alltså inte att skilja från "du tackar dig själv" fast specen
+bad om ett vanligt objekt. Meningen är inte underlig utan **outtryckbar**,
+och därmed ett kategorifel — precis modulens uppdrag.
+
+Tredje person har egna former. `Il l'a` får `le` och inte `se`, läses som
+icke-koreferent, och betyder "han har den". Det ska inte stoppas, och gör det
+inte. `Un enfant coûte un enfant` handlar om två olika barn: korrekt men
+underligt, och underligt ligger utanför uppdraget (`Flickan köpte en dörr`
+passerar och ska göra det).
+
+**URVALET ÄR DET SOM GÖR DET STORT, inte frekvensen.** I råa kandidater är
+kollisionen försvinnande — 4 av 15 800 på nivå 6, som mest 0,08 % oavsett
+nivå. Ett mått på kandidaterna hade avfärdat problemet. Men generatorn väljer
+efter vilka kort som förfaller, och på en färsk kurs är den mängden några få
+pronomen; då blir kollisionen det bästa draget om och om igen. Mätt genom
+hela valvägen på en nollställd fransk kurs, nivå 3:
+
+    regeln av    21 av 42 valda meningar bröt mot deixis
+    regeln på     0 av 42
+
+Halva dagen, ur en promillefrekvens.
+
+**Och det kostar ingenting.** Farhågan var att generatorn förlitade sig på
+kollisionerna för att fylla en tunn nivå — hälften av meningarna var ju
+sådana. Mätt på samma nollställda kurs, 20 meningar på nivå 3: 3,6 s utan
+regeln, 2,7 s med, båda byggde alla 20 och ingen gav upp. Att avvisa en spec
+är billigare än att rendera den.
+
+Regeln ligger i `Validator._deixisbrott` och gäller alla sju språken, vilket
+den måste: validatorn körs en gång på specen. Sållet i `spår.py` behåller sin
+grova version med flit — loggen bär gamla meningar som bröt mot regeln, och
+en träff på person 1 eller 2 i en FÄRSK mening betyder att restriktionen
+slutat gälla.
+
+Invarianten ligger i `samplarprov` och mäter genom urvalet, inte på
+kandidaterna.
+
 #### VERKTYGET BYGGT 2026-08-24 — `ordbok granska-meningar`
 
 Gemensamt för C3, C7 och G4, eftersom de tre är samma arbete sett från olika

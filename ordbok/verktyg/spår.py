@@ -94,6 +94,16 @@ def _misstänkt(spec: dict) -> str | None:
     if s and o and s.get("koncept") == o.get("koncept"):
         # "Je m'ai" — jag har mig. Samma pronomen som subjekt och objekt är
         # koreferens, och den kräver ett reflexivt verb för att bli språk.
+        #
+        # DEN FLYTTADE HALVAN STÅR KVAR HÄR MED FLIT. Första och andra
+        # person stoppas numera i `Validator._deixisbrott`, så en NY mening
+        # kan inte bryta mot den — men loggen bär gamla meningar som gjorde
+        # det, och de ska fortsätta synas. En träff på person 1 eller 2 i en
+        # färsk mening betyder att restriktionen slutat gälla.
+        #
+        # Tredje person och substantiv är inte flyttade och ska inte vara
+        # det: `Il l'a` är korrekt franska. De står kvar som kandidater för
+        # mänsklig granskning, vilket är vad sållet är till för.
         return f"subjekt = objekt ({s['koncept']})"
     if s and io and s.get("koncept") == io.get("koncept"):
         return f"subjekt = indirekt objekt ({s['koncept']})"

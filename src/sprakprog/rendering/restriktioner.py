@@ -85,6 +85,11 @@ class Brott:
         if self.slot == "bisats":
             return (f"verb={self.koncept}: tar ingen bisats — inget av "
                     f"verbets mönsterkrav har frastyp Bisatsfras")
+        if self.slot == "deixis":
+            return (f"{self.koncept} står i både subjekt och objekt: "
+                    f"{self.krav}:a person syftar på talsituationen, så de "
+                    f"två leden kan inte vara olika — och koreferens kräver "
+                    f"ett reflexivt verb som specen inte bad om")
         if self.slot == "tempus":
             tillåtna = "/".join(n for b, n in TIDSNAMN.items() if self.krav & b)
             return (f"adverbial={self.koncept}: kräver {tillåtna}, "
@@ -105,6 +110,7 @@ class Validator:
         self._semantik: dict[str, int | None] = {}
         self._attributkrav: dict[str, list[int]] = {}
         self._tempuskrav: dict[str, int | None] = {}
+        self._person: dict[str, int | None] = {}
         self._bisatsverb: dict[str, bool] = {}
 
     def krav_för(self, verb: str) -> dict[str, list[int]]:
@@ -135,6 +141,88 @@ class Validator:
                 "SELECT semantik FROM Koncept WHERE nyckel = ?", (koncept,)).fetchone()
             self._semantik[koncept] = rad["semantik"] if rad else None
         return self._semantik[koncept]
+
+    def person(self, koncept: str) -> int | None:
+        """Grammatisk person, eller None för allt som inte har någon."""
+        if koncept not in self._person:
+            rad = self.conn.execute(
+                "SELECT person FROM Koncept WHERE nyckel = ?",
+                (koncept,)).fetchone()
+            self._person[koncept] = rad["person"] if rad else None
+        return self._person[koncept]
+
+    def _deixisbrott(self, m: Mening) -> list[Brott]:
+        """Samma 1:a eller 2:a person i två argumentled är inte språk.
+
+        DET HÄR ÄR ETT KATEGORIFEL OCH INTE EN OSANNOLIKHET, vilket är
+        skälet att det hör hemma i den här modulen alls. `Flickan köpte en
+        dörr` passerar och ska göra det. `Je m'ai` passerar inte, för det är
+        inte franska.
+
+        Skälet är deixis. Första och andra person är förankrade i
+        talsituationen: talaren är talaren, oavsett var i satsen ledet står.
+        Två sådana led kan alltså inte syfta på olika personer, och den
+        påtvingade koreferensen kräver ett reflexivt verb — en annan spec än
+        den som ställdes.
+
+        OCH RENDERAREN BEKRÄFTAR DET. Franskans objektsklitikum och
+        reflexivklitikum är SAMMA STRÄNG i första och andra person — se
+        `REFLEXIVKLITIKA` i `romansk.py`: *"Första och andra lånar det
+        vanliga objektsklitikat — `je me lave` är samma `me` som i `il me
+        voit`"*. `Tu te remercies` går alltså inte att skilja från "du
+        tackar dig själv", fast specen bad om ett vanligt objekt. Meningen
+        är inte underlig utan OUTTRYCKBAR.
+
+        Det avsedda sättet att få en reflexiv är ett annat: verbets lemma är
+        lexikalt reflexivt (`se réveiller`), och `reflexivklitikum` sätter
+        tillbaka pronomenet. Kollisionen här är ingen designad reflexiv utan
+        en strängsammanträffande.
+
+        TREDJE PERSON OCH SUBSTANTIV ÄR FRIA och släpps igenom, av exakt
+        samma skäl sett från andra hållet: tredje person HAR egna former, så
+        `Il l'a` får `le` och inte `se` och läses som icke-koreferent — "han
+        har den", fullgod franska och det specen menade. `Un enfant coûte un
+        enfant` handlar om två olika barn: korrekt men underligt, och
+        underligt ligger utanför modulens uppdrag.
+
+        Regeln är språkoberoende, vilket den måste vara: validatorn körs en
+        gång på specen för alla sju språken. Deixis fungerar likadant i dem
+        alla — `jag har mig`, `I have me`, `ich habe mich` kräver alla ett
+        reflexivt verb.
+
+        MÄTT, OCH URVALET ÄR DET SOM GÖR DET STORT. I råa kandidater är
+        kollisionen försvinnande: 4 av 15 800 på nivå 6, som mest 0,08 %.
+        Men generatorn väljer bland kandidaterna efter vilka kort som
+        förfaller, och på en färsk kurs är den mängden några få pronomen —
+        då blir kollisionen det bästa draget om och om igen. Mätt genom hela
+        valvägen på en nollställd fransk kurs, nivå 3:
+
+            regeln av    21 av 42 valda meningar bröt mot deixis
+            regeln på     0 av 42
+
+        Halva dagen. Exemplen var `Tu te remercies` och `Nous nous
+        remerciions`. Julius logg visade samma sak från andra hållet: 6 av
+        42 flaggade som `subjekt = objekt`, varav fyra av den här sorten —
+        `Je m'ai`, `Tu t'as`, `Vous vous coûtez`, `On nous coûte`. De två
+        övriga var `Il l'a` och `Elle la coûte`, alltså tredje person, och
+        de ska inte stoppas.
+
+        Dagen svälter inte, och regeln kostar ingenting: 20 meningar på
+        nivå 3 tog 3,6 s utan regeln och 2,7 s med, båda byggde alla 20 och
+        ingen gav upp. Att avvisa en spec är billigare än att rendera den.
+        """
+        ut = []
+        led = [(namn, nf) for namn, nf in
+               (("subjekt", m.subjekt), ("objekt", m.objekt), ("io", m.io))
+               if nf is not None]
+        for i, (namn_a, a) in enumerate(led):
+            for namn_b, b in led[i + 1:]:
+                if a.koncept != b.koncept:
+                    continue
+                p = self.person(a.koncept)
+                if p in (1, 2):
+                    ut.append(Brott("deixis", a.koncept, p, None))
+        return ut
 
     def attributkrav(self, koncept: str) -> list[int]:
         """Adjektivets alternativa krav på huvudordet. Tom lista = inget krav."""
@@ -204,6 +292,8 @@ class Validator:
                          ("io", m.io)):
             if nf is not None:
                 brott += self._attributbrott(slot, nf)
+
+        brott += self._deixisbrott(m)
 
         # Adverbial mot meningens tidsreferens. Medlemskap, inte OCH.
         # Bara ADVERB har tempuskrav — "igår" kräver förfluten tid. En

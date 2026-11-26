@@ -169,8 +169,65 @@ def prov_föreslå_kraschar_inte(kort, språk_db) -> list[str]:
     return fel
 
 
+def prov_ingen_deixiskollision(kort, språk_db) -> list[str]:
+    """En färsk dag får inte fyllas av `Tu te remercies`.
+
+    Samma 1:a eller 2:a person i två argumentled är outtryckbart: klitikat
+    är samma sträng som reflexivens, så meningen går inte att skilja från
+    "du tackar dig själv" fast specen bad om ett vanligt objekt. `Je m'ai`
+    är inte ens franska. Regeln sitter i `Validator._deixisbrott`.
+
+    PROVET MÄTER GENOM URVALET OCH INTE PÅ KANDIDATERNA, och det är hela
+    poängen. I råa kandidater är kollisionen försvinnande — 4 av 15 800 —
+    och ett prov som bara räknade dem hade sett problemet som obetydligt.
+    Men generatorn VÄLJER efter vilka kort som förfaller, och på en färsk
+    kurs är den mängden några få pronomen. Då blir kollisionen det bästa
+    draget om och om igen: mätt 21 av 42 valda meningar på en nollställd
+    fransk kurs, nivå 3. Halva dagen ur en promillefrekvens.
+
+    NOLLSTÄLLD KOPIA, för att läget bara uppstår när nästan allt är oövat.
+    Provet får inte röra den delade anslutningen — de andra proven läser
+    samma kortlek.
+
+    FRANSKAN RÄCKER. Regeln prövas på SPECEN och är därmed identisk för alla
+    sju språken; det som skiljer är urvalet, och det är där felet mättes.
+    """
+    import tempfile as _tf
+    from sprakprog.rendering.restriktioner import Validator
+    egen = _kopia(Path(_tf.mkdtemp()) / "deixis.db")
+    egen.execute("UPDATE Kort SET sedd = NULL, förfaller = NULL, "
+                 "stabilitet = NULL, svårighet = NULL, tillstånd = 1, "
+                 "steg = NULL, antal = 0, fall = 0")
+    for t in ("Repetition", "Passkort", "Pass"):
+        egen.execute(f"DELETE FROM {t}")
+    egen.commit()
+    fel = []
+    try:
+        g = Generator(språk_db, egen, "fr", nivå=3, cefr="A1", frö=17)
+        g._läs_kort()
+        träffar = []
+        for _ in range(20):
+            f = g.föreslå()
+            if f is None:
+                break
+            # Regeln läses ur en EGEN validator, inte ur generatorns. Hade
+            # sabotaget slagit ut den delade instansen vore provet stumt:
+            # det skulle fråga just den funktion som tömts.
+            if Validator._deixisbrott(g.validator, f.mening):
+                träffar.append(f.text)
+            g.svara(f, f.text)
+        if träffar:
+            fel.append(f"{len(träffar)} av 20 valda meningar bryter mot "
+                       f"deixis, t.ex. {träffar[0]!r}")
+    finally:
+        egen.close()
+    return fel
+
+
 PROV = [("varje spec är hel", prov_hela_specar),
-        ("föreslå kastar aldrig", prov_föreslå_kraschar_inte)]
+        ("föreslå kastar aldrig", prov_föreslå_kraschar_inte),
+        ("ingen deixiskollision i dagens meningar",
+         prov_ingen_deixiskollision)]
 
 
 # ── falsifiering ────────────────────────────────────────────────────
@@ -225,8 +282,21 @@ def _sabotage_hål_i_specen():
     return lambda: setattr(Samplare, "kandidat", orig)
 
 
+def _sabotage_utan_deixisregel():
+    """Före restriktionen: samma 1:a/2:a person i två led släpptes igenom."""
+    from sprakprog.rendering.restriktioner import Validator
+    orig = Validator.validera
+
+    def utan(själv, m):
+        return [b for b in orig(själv, m) if b.slot != "deixis"]
+
+    Validator.validera = utan
+    return lambda: setattr(Validator, "validera", orig)
+
+
 SABOTAGE = [(_sabotage_hål_i_specen, 0),
-            (_sabotage_hål_i_specen, 1)]
+            (_sabotage_hål_i_specen, 1),
+            (_sabotage_utan_deixisregel, 2)]
 
 
 def _kopia(mål: Path) -> sqlite3.Connection:
