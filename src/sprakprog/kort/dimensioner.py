@@ -56,15 +56,22 @@ from pathlib import Path
 #: läsbar lista över fjorton värden, i stället för att gömmas i en sorterings-
 #: funktion eller spridas över nittio cellnamn.
 #:
-#: Ordningen: ordboksformen först, eftersom det är så ord slås upp och lärs
-#: in. Sedan presens, dåtid, och den form som bygger de sammansatta tiderna.
-#: Framtid och imperfekt därefter, och de modala och japanskspecifika
-#: formerna sist — de förutsätter att grundtempus sitter.
+#: Ordningen: PRESENS FÖRST, sedan ordboksformen, dåtid, och den form som
+#: bygger de sammansatta tiderna. Framtid och imperfekt därefter, och de
+#: modala och japanskspecifika formerna sist — de förutsätter att grundtempus
+#: sitter.
+#:
+#: PRESENS OCH INTE INFINITIV, och det var fel först. Infinitiven rankades
+#: högst därför att det är så ord slås upp — men man kan inte SÄGA något med
+#: en infinitiv ensam. Mätt med ändelsegrinden på: den första finita formen
+#: kom på nivå 3 i franskan, 6 i tyskan och NIO i svenskan, så kursen hade
+#: inte kunnat bygga en enda mening på åtta nivåer. Ordboksformen är hur ett
+#: ord listas; presens är hur det används, och användningen kommer först.
 #:
 #: Namnen kommer ur `paradigm/_legend.yaml` och är desamma i alla sju språken.
 #: Ett värde som saknas här hamnar sist, så en ny tempus i ordboken bryter
 #: ingenting — den syns bara i slutet tills någon placerar den.
-TEMPUSORDNING = ("Inf", "Pres", "Pret", "Sup", "PresPer", "Imperf", "Fut",
+TEMPUSORDNING = ("Pres", "Inf", "Pret", "Sup", "PresPer", "Imperf", "Fut",
                  "Imp", "Kond", "Te", "Neg", "Pot", "Vol")
 
 

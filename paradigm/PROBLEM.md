@@ -4078,6 +4078,49 @@ Med grinden skapas alltså inget kort för `(K0, pres_3sg)`. Men meningen
 attribuera eller pröva där. Att ta bort det tomma läromomentet tog med sig
 attributionen.
 
+#### GRINDEN GÅR INTE ATT SLÅ PÅ ÄN — NIVÅ 1 KAN INTE TALA (2026-08-28)
+
+Med hopslagningen på plats behövde grinden inte skrivas om: kortet skapas så
+snart NÅGON upplåst cell har ändelsen, och `Cellkort` pekar alla cellerna dit.
+Mätt vid varje nivå i tre språk: **noll trasiga cellkopplingar**.
+
+Men mätningen av vad som SAKNAS avslöjade hindret. Verbceller utan kort:
+
+    fr   nivå 1: 85 av 90     nivå 16: 55     nivå 54: 0
+    de   nivå 1: 62 av 62     nivå 16:  6     nivå 28: 0
+    sv   nivå 1: 20 av 20     nivå 16:  4     nivå 25: 0
+
+Vid toppen är allt täckt, vilket är rätt. Men på LÅG nivå saknas nästan allt,
+och då kan generatorn inte bygga en mening vars ändelser har kort — den
+byggde en, ändelsen saknade kort, och attributionen fick inget att peka på.
+
+**Tempusordningen var fel, och det var mätbart.** `Inf` rankades först
+eftersom det är så ord slås upp. Men man kan inte SÄGA något med en
+infinitiv ensam: den första finita formen kom på nivå 3 i franskan, 6 i
+tyskan och NIO i svenskan. Åtta nivåer utan en enda mening.
+
+Ordningen är nu presens först. Utfall:
+
+    fr, es, it   pres_1sg på nivå 1
+    de, ja       nivå 3
+    sv           nivå 4
+    en           nivå 5
+
+**Romanskan är löst, de andra inte.** Deras böjningsstegar är korta (svenskan
+fem steg, engelskan fyra) mot tjugo konstruktioner, så den proportionella
+flätningen lägger konstruktioner först — och nivå 1–4 har ingen verbform alls.
+
+**Vad som saknas är en regel om att varje sats behöver ett finit verb.** Den
+är av samma slag som `BEROENDE`, fast åt andra hållet: inte "den här
+konstruktionen kräver den här böjningen" utan "ALLA konstruktioner kräver att
+något går att böja". Engelskan gör den svår — dess vanligaste satsform
+använder grundformen (`inf_imp`, "I read"), inte den enda märkta
+presensformen (`pres_3sg`, "she reads") — så regeln kan inte bara peka på
+tempus `Pres`.
+
+Grinden står därför kvar AVSTÄNGD som standard. Den är byggd och mätt; det
+som fattas är att stegens första nivåer ska gå att tala på.
+
 #### VALT OCH BYGGT: KORTET HÖR TILL ÄNDELSEN (2026-08-28)
 
 Julius valde att nyckla kortet på `(klass, ändelse)` i stället för
