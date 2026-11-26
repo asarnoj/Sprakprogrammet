@@ -6,8 +6,9 @@ inte ändringar i den kod som finns.
 
 > **Läge 2026-09-14.** Designen är avgjord utom frågorna i punkt 10. Steg 0, 1 och 1b är
 > gjorda för det första språkparet, svenska och engelska (8.3, 6.7). Kvar i dem är
-> granskningen av komparationen och de godtagbara utfallen. Nu byggs kortmodellen
-> (steg 3), som sammansättningen (steg 2) behöver.
+> granskningen av komparationen och de godtagbara utfallen. Kortmodellen (steg 3) ger
+> korten, och sammansättningen (steg 2) bygger meningar av kartan. Nästa steg är
+> nivåerna (steg 4), som läser kraven ur de minsta meningarna.
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -1227,6 +1228,38 @@ mellan dem, och sökningen binder sedan orden till verkliga lexem. Svenskan och 
 sammanhang den får som argument (kasus, roll, bisats). Läser två delar samma fält i
 specen — predikativet läser subjektets numerus — binds de samman av sökningen.
 
+#### Sammansättningen
+
+Byggd för svenska och engelska (`sammansattning/`, steg 2). Kartan sparar varje väg med
+sina villkor — vad orakelt svarade på varje läsning — sina händelser och sina anrop, med
+vilket specobjekt eller koncept varje argument var. En mening byggs i tre steg:
+
+1. **Vägarna fogas ihop uppifrån.** En väg genom `rendera`, och för varje anrop en väg
+   genom den anropade delen med samma argument. Delens namn döps om till meningens
+   (`nf.bestämdhet` blir `m.subjekt.bestämdhet`). Vägarna passar ihop bara om samma
+   läsning fick samma svar, och om anroparen fick den utdata delen gav.
+2. **Orden binds** till lexem med de egenskaper vägarna läste. Konceptens krav prövas så
+   fort orden på båda sidor är bundna: verbets valens, subjektets och objektets
+   semantik, adjektivets krav på huvudordet och adverbets tempuskrav.
+3. **Meningen renderas på riktigt** på båda språken i paret, och korten räknas ur spåret
+   med kortmodellen. Kartan är en övermängd, så det är renderingen som avgör.
+
+**Valensen prövas som ramar.** `Koncept.valens` har en bit per ram (docs/BITMASK.md §8):
+utan objekt, med objekt, med objekt och indirekt objekt, reflexiv, med predikativ. En
+mening fyller exakt en av verbets ramar, begränsad till platserna i verbets mönster, och
+en komplementplats i mönstret är obligatorisk. Förut prövades bara att fyllda platser
+fick fyllas, och «Blood is.» släpptes igenom. Bitarna är alternativ: `köpa` har valens 6
+och tar både «köpa en bok» och «köpa henne en bok».
+
+Meningarna kommer i ordning efter antal ord. Ett mål som hör till ett ord — ett formkort,
+en egenskap — binds direkt till ord som bär det. Mätt 2026-09-14 med paret svenska och
+engelska: «Mammor simmade.» för `Verb/ar/pret` på 0,2 s, «Is blood big?» för
+`inversion_i_fråga` på 4,9 s, «Den stora mamman finns.» för `dubbel_bestämdhet` på 12 s.
+
+Till sökningen (steg 5) återstår värdet, budgeten, entydighetsfiltret och en ordning
+efter kort i stället för efter ord. Fält som målspråkets renderare inte läser får sitt
+förvalda värde, så andra språket i paret prövas bara med dem.
+
 #### Sökningen
 
 Sökningen väljer en väg i varje del så att delarna passar ihop, och ord ur det tillåtna
@@ -1645,7 +1678,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     0   böjningsreglerna per språk         svenskan och engelskan gjorda, granskning av komparationen kvar; slutna ordklasser och fem språk kvar
     1   renderarna redovisar sina beslut   svenskan och engelskan byggda och mätta (8.3), utom godtagbara utfall; fem språk kvar, inventerade i TYSTA_BESLUT.md
     1b  kartan                             kräver 1; rendering/karta.py; svenskan och engelskan klara (6.7)
-    2   sammansättningen                   kräver 1b och 3; delarna kombineras till meningar med ord ur det tillåtna (6.7) — sökningens kärna, utan värde och budget
+    2   sammansättningen                   kräver 1b och 3; delarna kombineras till meningar med ord ur det tillåtna (6.7) — sökningens kärna, utan värde och budget; sammansattning/: byggd för svenska och engelska, efter antal ord
     3   kortmodellen                       kräver 0; kortmodell/: korten för svenskan och engelskan gjorda, och besluten kopplade till kort; delen av formen per kort kvar (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
     3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2)

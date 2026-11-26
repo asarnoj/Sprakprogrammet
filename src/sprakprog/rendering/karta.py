@@ -31,18 +31,26 @@ räcker det att veta om listan är tom. Annars skulle en del som innehåller sig
 själv — satsen i bisatsen i satsen — få allt längre listor för varje varv, och
 genomgången skulle aldrig ta slut.
 
+VÄGARNA SPARAS. Varje väg som renderar klart sparas med sina villkor — vad
+orakelt svarade på varje läsning — sina händelser och sina anrop, med vilka
+specobjekt och koncept varje argument var. Sammansättningen (steg 2) fogar
+ihop vägarna till hela meningar genom att döpa om delens namn till meningens.
+Ett symboliskt koncept står i händelserna som ("sym", väg), så att det går att
+skilja från en konceptnyckel.
+
 Ordens egenskaper tar sina möjliga värden ur databasen per ordklass: ett
 substantivs genus kan vara det som något svenskt substantiv har. Samband mellan
 egenskaper hos samma ord följer inte med, så kartan är en övermängd; sökningen
 binder sedan orden till verkliga lexem (KÄRNAN 6.7).
 
-Kör:  python -m sprakprog.rendering.karta sv
+Kör:  python -m sprakprog.rendering.karta sv [FIL]    (FIL: spara vägarna)
 """
 
 from __future__ import annotations
 
 import inspect
 import math
+import pickle
 import sqlite3
 import sys
 import time
@@ -50,6 +58,7 @@ from collections import Counter, defaultdict, deque
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 
 from . import RENDERARE
 from . import spec as S
@@ -484,8 +493,8 @@ class SymUppslag:
         return self._välj(("lex", koncept.text, *vad),
                           self._lexikon.värden(klass, vad))
 
-    def _etikett(self, koncept) -> str:
-        return koncept.text if isinstance(koncept, Symbol) else koncept
+    def _etikett(self, koncept):
+        return ("sym", koncept.text) if isinstance(koncept, Symbol) else koncept
 
     def _händelse(self, *h):
         self._körning.händelser.append((h[0], tuple(self._led), *h[1:]))
@@ -549,11 +558,12 @@ class SymUppslag:
         if isinstance(lexem, SymLexem):
             if not self._lexvärde(lexem.koncept, ("har", cell)):
                 raise RenderingsFel(f"{lexem.koncept.text}: cellen {cell!r} saknas")
-            koncept = lexem.koncept.text
+            koncept = ("sym", lexem.koncept.text)
         else:
             self._verklig.form(lexem, cell)
             koncept = lexem["nyckel"]
-        ord = self._körning.nytt_ord(f"<{koncept}:{cell}>")
+        text = koncept[1] if isinstance(koncept, tuple) else koncept
+        ord = self._körning.nytt_ord(f"<{text}:{cell}>")
         if isinstance(lexem, SymLexem):
             ord.koncept, ord.variant = lexem.koncept, lexem.variant
         else:
@@ -567,7 +577,7 @@ class SymUppslag:
     def egenskap(self, lexem, namn):
         if isinstance(lexem, SymLexem):
             värde = self._lexvärde(lexem.koncept, ("egenskap", namn))
-            koncept = lexem.koncept.text
+            koncept = ("sym", lexem.koncept.text)
         else:
             värde = self._verklig._egenskapsvärde(lexem, namn)
             koncept = lexem["nyckel"]
@@ -665,6 +675,9 @@ class Körning:
         self.karta, self.orakel = karta, orakel
         self.händelser: list[tuple] = []
         self.anrop: list[tuple] = []
+        #: (nr, del, ((parameter, etikett, referens), …)) — referensen är
+        #: specobjektets eller konceptets väg hos anroparen, None för ett värde
+        self.anropsställen: list[tuple] = []
         self._ordnr = 0
         self._specval: dict = {}
 
@@ -709,11 +722,14 @@ class Körning:
         bundna = self.karta.signaturer[del_].bind(None, *args, **kwargs)
         bundna.apply_defaults()
         läsningar = self.läsningar()
-        argument = tuple((namn, self.beskriv(v, läsningar))
-                         for namn, v in list(bundna.arguments.items())[1:])
+        värden = list(bundna.arguments.items())[1:]
+        argument = tuple((namn, self.beskriv(v, läsningar)) for namn, v in värden)
         nr = self._ordnr
         self._ordnr += 1
         self.anrop.append((del_, argument))
+        self.anropsställen.append((nr, del_, tuple(
+            (namn, _etikett(d), _referens(v))
+            for (namn, d), (_, v) in zip(argument, värden))))
         self.händelser.append(("del", del_, tuple(_etikett(d) for _, d in argument), nr))
         utdata = self.karta.utdata_för(del_, argument)
         if not utdata:
@@ -726,6 +742,15 @@ class Körning:
         if sort == "ord":
             return self.nytt_ord(f"<del{nr}>")
         return Block(self, nr, del_, (u[1] for u in utdata if isinstance(u, tuple)))
+
+
+def _referens(värde) -> str | None:
+    """Specobjektets eller konceptets väg hos anroparen; None för ett värde."""
+    if isinstance(värde, _Lat):
+        return object.__getattribute__(värde, "_k").väg
+    if isinstance(värde, Symbol):
+        return värde.text
+    return None
 
 
 def _etikett(deskriptor: tuple) -> str:
@@ -756,11 +781,31 @@ def _utdatasort(resultat, djup=math.inf) -> set:
 # ── kartritaren ──────────────────────────────────────────────────────────
 
 
+@dataclass(frozen=True, slots=True)
+class Väg:
+    """En väg genom en del som renderade klart.
+
+    argument   ((parameter, etikett), …) — delens egna argument
+    villkor    ((nyckel, svar), …) — orakelts svar på varje läsning; nycklarna
+               är delens egna namn: "nf.bestämdhet", ("lex", "nf.koncept", …),
+               och ("utdata", nr) och ("längd", nr, …) för anropens utdata
+    händelser  det vägen redovisade, i ordning
+    anrop      ((nr, del, ((parameter, etikett, referens), …)), …)
+    utdata     vad delen lämnade tillbaka (`_utdatasort`)
+    """
+    argument: tuple
+    villkor: tuple
+    händelser: tuple
+    anrop: tuple
+    utdata: frozenset
+
+
 @dataclass
 class Delkarta:
     namn: str
     vägar: Counter = field(default_factory=Counter)     # status → antal
     utfall: set = field(default_factory=set)
+    klara: list = field(default_factory=list)           # Väg, en per klar väg
     förbigångar: Counter = field(default_factory=Counter)
     kraschar: Counter = field(default_factory=Counter)
     genomgångar: int = 0
@@ -909,6 +954,12 @@ class Kartritare:
                             self.läs_till(o.del_, djup)
                 nya_utdata.append((etiketter, sorter))
                 karta.utfall.add((tuple(körning.händelser), frozenset(sorter)))
+                karta.klara.append(Väg(
+                    tuple(sorted(etiketter.items())),
+                    tuple((v[0], v[3]) for v in orakel.val
+                          if not (isinstance(v[0], tuple) and v[0][0] == "argument")),
+                    tuple(körning.händelser), tuple(körning.anropsställen),
+                    frozenset(sorter)))
             except RenderingsFel:
                 karta.vägar["vägrar"] += 1
             except Förbigång as e:
@@ -969,6 +1020,28 @@ class Kartritare:
             self.djup_ökat.clear()
         return self.kartor
 
+    def spara(self, fil) -> None:
+        """Spara vägarna, så att sammansättningen slipper rita kartan igen."""
+        data = {"språk": self.språk,
+                "parametrar": {n: list(s.parameters)[1:] for n, s in self.signaturer.items()},
+                "vägar": {n: k.klara for n, k in self.kartor.items()}}
+        Path(fil).write_bytes(pickle.dumps(data))
+
+
+class _Avläsare(pickle.Unpickler):
+    """Kartan sparas oftast av `python -m`, och då heter modulen `__main__`."""
+
+    def find_class(self, modul, namn):
+        if modul == "__main__" and namn == "Väg":
+            return Väg
+        return super().find_class(modul, namn)
+
+
+def ladda(fil) -> dict:
+    """En sparad karta: {"språk", "parametrar": del → namn, "vägar": del → [Väg]}."""
+    with open(fil, "rb") as f:
+        return _Avläsare(f).load()
+
 
 def main() -> None:
     språk = sys.argv[1] if len(sys.argv) > 1 else "sv"
@@ -977,6 +1050,9 @@ def main() -> None:
     start = time.perf_counter()
     print(f"Kartan för {språk}:")
     kartor = ritare.rita()
+    if len(sys.argv) > 2:
+        ritare.spara(sys.argv[2])
+        print(f"sparade vägarna i {sys.argv[2]}")
     print(f"\n{'del':18} {'vägar':>9} {'klara':>8} {'vägrar':>7} {'förbi':>6} "
           f"{'krasch':>6} {'väntar':>6} {'utfall':>7} {'genomg.':>7} {'läses':>6}")
     for namn, k in sorted(kartor.items()):

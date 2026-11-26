@@ -82,6 +82,9 @@ class Brott:
     faktisk: int | None
 
     def __str__(self) -> str:
+        if self.slot == "valens":
+            return (f"verb={self.koncept}: fyller ingen av verbets ramar "
+                    f"(valens {self.krav}, docs/BITMASK.md §8)")
         if self.slot == "bisats":
             return (f"verb={self.koncept}: tar ingen bisats — inget av "
                     f"verbets mönsterkrav har frastyp Bisatsfras")
@@ -349,3 +352,58 @@ class Validator:
 
     def duger(self, m: Mening) -> bool:
         return not self.validera(m)
+
+    #: Valensens bitar (docs/BITMASK.md §8) → argumentplatserna ramen fyller.
+    #: Intransitiv och reflexiv fyller inga — reflexivpronomenet sätter
+    #: renderaren själv.
+    RAMAR = {1: frozenset(), 2: frozenset({"objekt"}),
+             4: frozenset({"objekt", "io"}), 8: frozenset(),
+             16: frozenset({"predikativ"})}
+
+    def valens(self, verb: str) -> int | None:
+        if ("valens", verb) not in self._krav:
+            rad = self.conn.execute(
+                "SELECT valens FROM Koncept WHERE nyckel = ?", (verb,)).fetchone()
+            self._krav[("valens", verb)] = rad["valens"] if rad else None
+        return self._krav[("valens", verb)]
+
+    def mönsterslottar(self, verb: str) -> frozenset:
+        if ("slottar", verb) not in self._krav:
+            self._krav[("slottar", verb)] = frozenset(r["slot"] for r in self.conn.execute(
+                """SELECT mk.slot FROM Mönster m
+                   JOIN Koncept k ON k.id = m.koncept_id
+                   JOIN MönsterKrav mk ON mk.mönster_id = m.id
+                   WHERE k.nyckel = ? AND m.språk IS NULL""", (verb,)))
+        return self._krav[("slottar", verb)]
+
+    def valensbrott(self, m: Mening) -> list[Brott]:
+        """Fyller specen en av verbets ramar, varken mer eller mindre?
+
+        `validera` prövar bara att de platser som är fyllda får fyllas med det
+        de fylls med. Här prövas att platserna själva stämmer: «Blood is.»
+        saknar kopulans predikativ, och «He will.» modalverbets komplement.
+
+        Ramarna kommer ur valensens bitar, begränsade till de platser verbets
+        mönster har. En komplementplats i mönstret är obligatorisk, och en
+        argumentbisats fyller objektets plats. Används av den nya kärnan
+        (KÄRNAN 6.1 punkt 6); `validera` är oförändrad för den gamla.
+        """
+        brott: list[Brott] = []
+        valens = self.valens(m.verb)
+        if valens is not None:
+            slottar = self.mönsterslottar(m.verb)
+            ramar = set()
+            for bit, ram in self.RAMAR.items():
+                if valens & bit:
+                    ramar.add((ram & slottar) | ({"komplement"} & slottar))
+            fyllda = {slot for slot in ("objekt", "io", "predikativ", "komplement")
+                      if getattr(m, slot) is not None}
+            if m.bisats is not None:
+                fyllda.add("objekt")
+            if frozenset(fyllda) not in ramar or (m.bisats is not None
+                                                  and m.objekt is not None):
+                brott.append(Brott("valens", m.verb, valens, None))
+        for b in ([m.bisats] if m.bisats else []) + [
+                a for a in m.adverbial if isinstance(a, Bisats)]:
+            brott += self.valensbrott(b.sats)
+        return brott
