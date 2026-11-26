@@ -1366,6 +1366,82 @@ kurs som testats för hand och knappen därför var låst. En trasig SQL-sats ka
 ligga tyst hur länge som helst bakom en grind som råkar vara stängd — och det
 är skälet till att `extraövningen går att köra` nu är en egen invariant.
 
+#### RÄTTELSEN MÄTTE FEL DYGN (2026-08-26)
+
+Julius invände mot slutsatsen ovan, och invändningen håller: *"Ifall man gör
+extrapass så kommer man göra kort en dag tidigt vilket gör att de skjuts upp
+lite kortare. Alltså förlorar man en dags lucka på de. Men samtidigt sparar
+man massa arbete imorgon."*
+
+RÄTTELSE ovan mätte `nya i morgon`. **Rummet uppstår inte i morgon utan
+omedelbart**, och därför såg mätningen bara priset och aldrig varan.
+
+Mätt på fransk kortlek, 740 sedda kort, FSRS-prognos över 30 dygn, samma frö
+i alla grenar. Belastning per dygn:
+
+    dygn            0    1    2    3    4    5    6    7    8 …
+    ingen extra   136   51   87   28   17   20   18   26   81
+    60 extra       76   54   90   29   19   23   20   42   88
+    Δ             −60   +3   +3   +1   +2   +3   +2  +16   +7
+
+**Dag noll faller med exakt de sextio kort man gjorde.** Sedan ligger varje
+följande dygn någon repetition högre, eftersom en tidig repetition ger mindre
+stabilitetsökning och kortet återkommer snarare. Julius beskrivning är alltså
+bokstavligt riktig, mekanism för mekanism.
+
+Nettot över horisonten: kortlekens egna arbete faller 1101 → 1091, men man
+gjorde 60 repetitioner för att köpa den minskningen. **Extraövning sparar inte
+arbete — den jämnar ut det till en premie på omkring fyra procent.**
+
+#### OCH DEN KÖPER NYA KORT, MEN TILL EN BRUTAL KURS (2026-08-26)
+
+Julius andra fråga: *"Om man kopplar in en ärlig algoritm som kan uppskatta
+framtida arbete och som lägger till nya kort för att hålla en balans på x
+minuters arbete per dag känns det som att den hade föreslagit lite extra nya
+kort vid extraövningar."* Den algoritmen ÄR `nya_idag`, och den gör det —
+knappt. Mätt direkt efter extrapasset, mål 150 rep/dygn:
+
+| extra gjorda | belastning idag | tak idag | i längden | nya släpps in |
+|---|---|---|---|---|
+| 0 | 136 | 14 | 11 | **11** |
+| 20 | 116 | 34 | 11 | **11** |
+| 60 | 76 | 74 | 11 | **11** |
+| 150 | 40 | — | 12 | **12** |
+
+**IDAG-villkoret lossnar dramatiskt — taket går 14 → 74 — och ändå rör sig
+inte inflödet.** Skälet är att `nya_idag` tar `min(i_längden, idag)`, och det
+som binder är LÅNGTIDSVILLKORET. Extraövningen sänker fönstrets medel 56,1 →
+48,2, alltså fjorton procent, men ett nytt kort kostar 8,40 repetitioner över
+året, så `i_längden` går 11 → 12.
+
+**Växelkursen är alltså omkring 150 extra repetitioner per nytt kort**, och
+den är mätt och inte antagen.
+
+**Att det är så är rätt, inte ett fel.** Ett extrapass är en engångshändelse.
+Släppte det in nya kort i takt med hur mycket man gjorde skulle man låna mot
+en långtidsbudget man inte har ändrat: korten kommer tillbaka i evighet, men
+extraövningen sker en gång. Det tal som FÅR flytta inflödet är
+`minuter_per_dag`, därför att det är ett stående åtagande. Skillnaden mellan
+en engångsinsats och ett åtagande är precis vad de två villkoren i `nya_idag`
+skiljer på, och att bara det ena biter är styrningen som fungerar.
+
+**Vill man ha fler nya kort är spaken inställningen, inte extrapasset.**
+
+#### URVALSPOLICYN ÄR REDAN DEN RÄTTA (2026-08-26)
+
+Fyra policyer mätta på samma kortlek, 60 kort var, Δ mot ingen extra:
+
+| policy | Δ dag 0 | Δ arbete 30 d |
+|---|---|---|
+| `förfaller ASC` (nuvarande) | −60 | +50 |
+| förfaller DESC | ±0 | +48 |
+| störst framflyttning | −57 | +29 |
+| bara inom två dygn | −60 | +50 |
+
+Att ta det som förfaller först är alltså den enda policy som faktiskt tömmer
+den närmaste dagen. `förfaller DESC` rör ingenting — de korten ligger 15–55
+dygn bort och lämnar fönstret oavsett. Policyn behöver inte ändras.
+
 #### VÄRDET GÅR ATT VISA, OCH DET ÄR NU UTSKRIVET (2026-08-26)
 
 Julius: *"Det borde finnas ett sätt att indikera ungefär hur effektfullt det
