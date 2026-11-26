@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from .spec import Mening, Nominalfras, RenderingsFel, Tidsreferens
+from .spec import Aspekt, Mening, Nominalfras, RenderingsFel, Tidsreferens
 from .uppslag import Uppslag
 
 TOPIK, OBJEKT, DATIV = "は", "を", "に"
@@ -103,7 +103,13 @@ class JapanskRenderare:
                     f"ja: masu-formen {masu!r} slutar inte på ます")
             stam = masu[:-2] + "ません"
             return stam + "でした" if m.tid is Tidsreferens.FÖRFLUTEN else stam
-        if m.tid is Tidsreferens.FÖRFLUTEN:
+        # Japanskan har ingen egen perfektform — た-formen täcker både
+        # avslutad dåtid och nuvarande relevans. Perfekt renderas därför
+        # som förfluten, vilket är korrekt men gör att distinktionen inte
+        # går att öva på japanska.
+        förfluten = (m.tid is Tidsreferens.FÖRFLUTEN
+                     or m.aspekt is Aspekt.PERFEKT)
+        if förfluten:
             if not masu.endswith("ます"):
                 raise RenderingsFel(
                     f"ja: masu-formen {masu!r} slutar inte på ます — artigt "

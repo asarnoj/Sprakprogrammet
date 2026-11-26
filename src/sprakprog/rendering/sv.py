@@ -18,7 +18,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -215,6 +215,12 @@ class SvenskRenderare:
         """
         lexem = self.u.lexem(m.verb)
         suffix = "_passiv" if self._deponens(lexem) else ""
+        if m.aspekt is Aspekt.PERFEKT:
+            # "har läst" / "hade läst" — hjälpverbet bär tempus, supinumet
+            # är oföränderligt. Svenskan använder alltid ha, aldrig vara.
+            hjälpcell = "pret" if m.tid is Tidsreferens.FÖRFLUTEN else "pres"
+            return [self.u.form_för("verb_ha", hjälpcell),
+                    self.u.form(lexem, "sup" + suffix)]
         if m.tid is Tidsreferens.FRAMTID:
             return [self.u.form_för("modal_ska", "pres"),
                     self.u.form(lexem, "inf" + suffix)]

@@ -814,6 +814,10 @@ verb_ha,Verb,A1,fr,avoir
 verb_ha,Verb,A1,de,haben
 # es: "tener" = innehav (ha en bok); "haber" = temporalt hjälpverb (ha gjort) — reserveras för perfekt
 verb_ha,Verb,A1,es,tener
+# Spanskan skiljer på ÄGA och HJÄLPVERB: "tengo un libro" men "he leído".
+# Övriga sex språk använder samma verb för båda (ha, have, haben, avoir,
+# avere), så det är samma koncept med två lexem — inte två koncept.
+verb_ha,Verb,A1,es,haber
 verb_ha,Verb,A1,it,avere
 verb_ha,Verb,A1,ja,持っている
 verb_bli,Verb,A1,sv,bli
