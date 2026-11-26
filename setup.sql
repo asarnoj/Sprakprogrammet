@@ -119,6 +119,28 @@ CREATE TABLE Koncept (
        = nobody är huvudord, kvant_ingen_det = no är bestämning, båda
        "ingen" på svenska). Se paradigm/sv/räkneord.yaml, som kallar sitt
        eget paradigm heterogent av precis detta skäl. */
+    /* numeruskrav : ENDAST Kvantifikator med roll 'bestämning'. Vilka
+       NUMERI bestämningen tillåter hos huvudordet. Bitarna är
+       numerus-bitarna ur _legend.yaml: Sg=1, Pl=2, båda=3.
+
+       Samma mekanism och samma matchningsregel som `tempuskrav`:
+       medlemskap, inte OCH. Renderaren kan inte avgöra det själv —
+       konceptnyckeln är ogenomskinlig för den — och utan kolumnen bygger
+       kartan lika gärna "varje böcker" och "alla bok".
+
+         varje      1   varje bok
+         båda       2   båda böckerna
+         alla       2   alla böcker
+         några      2   några böcker
+         ingen_det  3   ingen bok, inga böcker
+
+       DET SOM UTELÄMNAS: alla och några tar singular framför ett
+       ORÄKNEBART huvudord — "all mat", "some water". Det kravet beror på
+       huvudordet och inte bara på bestämningen, och en flat bitmask kan
+       inte säga det. Att begränsa till plural förlorar de fraserna men
+       bygger aldrig en felaktig, och mängden sägs ändå med en naken fras
+       (Bestämdhet.PARTITIV). */
+    numeruskrav  INTEGER,
     roll         TEXT    CHECK (roll IN (
                      'grundtal', 'ordningstal', 'bestämning', 'huvudord',
                      'satsnegation', 'satsadverbial'

@@ -40,7 +40,8 @@ PRONOMENFORM = Val("pronomenform", ("subjektsform", "objektsform"))
 #: "her book", "the book", "water", "a book", "books".
 BESTÄMNING = Val("bestämning", (
     "frågedeterminant", "genitiv", "possessiv", "demonstrativ",
-    "bestämd_artikel", "naken", "obestämd_artikel", "obestämd_plural"))
+    "kvantifikator", "bestämd_artikel", "naken", "obestämd_artikel",
+    "obestämd_plural"))
 
 #: E1. "a book", "an apple".
 ARTIKELFORM = Val("artikelform", ("a", "an"))
@@ -98,6 +99,15 @@ class EngelskRenderare:
         huvud = self.u.lexem(
             nf.koncept, nf.referent.value if nf.referent else None)
 
+        if self.u.ordklass(huvud) == "Kvantifikator/huvudord":
+            # "nobody reads the book", "the girl reads nothing". Kvantifikatorn
+            # ÄR frasen och tar varken bestämning eller attribut.
+            if nf.attribut or nf.possessiv is not None:
+                raise RenderingsFel(
+                    f"en/{self.u.lemma(huvud)}: ett indefinit pronomen kan inte "
+                    f"ta artikel, attribut eller possessiv")
+            return [self.u.form(huvud, "inv")]
+
         if self.u.ordklass(huvud) == "Pronomen":
             if nf.attribut or nf.possessiv is not None:
                 raise RenderingsFel(
@@ -112,7 +122,8 @@ class EngelskRenderare:
             return [self.u.form(huvud, "nom" if form == "subjektsform" else "obl")]
 
         self.u.kontrollera_naken(nf)
-        kontrollera_stöd(nf, "en", ("demonstrativ", "räkneord"))
+        self.u.kontrollera_kvantifikator(nf)
+        kontrollera_stöd(nf, "en", ("demonstrativ", "kvantifikator", "räkneord"))
 
         if nf.frågedeterminant is not None:
             naturlig = "frågedeterminant"
@@ -122,6 +133,8 @@ class EngelskRenderare:
             naturlig = "possessiv"
         elif nf.demonstrativ is not None:
             naturlig = "demonstrativ"
+        elif nf.kvantifikator is not None:
+            naturlig = "kvantifikator"
         elif nf.bestämdhet is Bestämdhet.BESTÄMD:
             naturlig = "bestämd_artikel"
         elif nf.bestämdhet in NAKEN:
@@ -179,6 +192,11 @@ class EngelskRenderare:
                 raise RenderingsFel("en: frasen har ingen demonstrativ")
             före = [self.u.form_för(
                 nf.demonstrativ, "pl" if nf.numerus is Numerus.PL else "sg")]
+        elif bestämning == "kvantifikator":
+            # "each book", "all books", "no book".
+            if nf.kvantifikator is None:
+                raise RenderingsFel("en: frasen har ingen kvantifikator")
+            före = [self.u.form_för(nf.kvantifikator, "inv")]
         elif bestämning == "bestämd_artikel" and artikel:
             före = [self.u.form_för("artikel_bestamd", "inv")]
         elif bestämning == "obestämd_artikel" and artikel:

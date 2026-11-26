@@ -45,7 +45,8 @@ MÄNSKLIG = 32
 
 #: Kolumner på Koncept som renderaren får läsa. Listan är sluten, så att en
 #: läsning av något annat syns som ett fel i stället för att gå förbi.
-KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik")
+KONCEPTKOLUMNER = ("person", "numerus", "räknebar", "semantik",
+                   "numeruskrav")
 
 
 def klassnamn(ordklass: str, roll: str | None) -> str:
@@ -340,6 +341,26 @@ class Uppslag:
                 f"{self.språk}/{nf.koncept}: naken singular kräver ett "
                 f"oräknebart ord — 'vatten' går, 'bok' gör det inte. "
                 f"Räknebara ord tar artikel i singular eller står i plural")
+
+    def kontrollera_kvantifikator(self, nf) -> None:
+        """Bestämningen och huvudordet måste vara överens om numerus.
+
+        "varje bok" men "alla böcker", och aldrig tvärtom. Vilket numerus
+        en kvantifikator tillåter står i `Koncept.numeruskrav` som en
+        bitmask, av samma skäl som räkneordets krav är hårt: renderaren får
+        inte veta VILKEN kvantifikator det är (`karta.Symbol`).
+        """
+        if nf.kvantifikator is None:
+            return
+        krav = self.koncept(nf.kvantifikator, "numeruskrav")
+        if krav is None:
+            return
+        bit = 1 if nf.numerus is Numerus.SG else 2
+        if not krav & bit:
+            raise RenderingsFel(
+                f"{self.språk}/{nf.kvantifikator}: bestämningen tillåter inte "
+                f"{nf.numerus.value} — 'varje bok' och 'alla böcker', aldrig "
+                f"'varje böcker'")
 
     def kontrollera_räkneord(self, nf) -> None:
         """En räknad fras står i plural.

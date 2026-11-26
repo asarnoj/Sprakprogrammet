@@ -580,6 +580,9 @@ class SymUppslag:
     def kontrollera_räkneord(self, nf):
         return Uppslag.kontrollera_räkneord(self, nf)
 
+    def kontrollera_kvantifikator(self, nf):
+        return Uppslag.kontrollera_kvantifikator(self, nf)
+
     def frågepronomen(self, koncept):
         return Uppslag.frågepronomen(self, koncept)
 

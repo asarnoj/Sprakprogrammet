@@ -46,8 +46,8 @@ PRONOMENFORM = Val("pronomenform", ("subjektsform", "objektsform"))
 #: "en bok", "boken", "böcker".
 BESTÄMNING = Val("bestämning", (
     "frågedeterminant", "genitiv", "possessiv", "demonstrativ",
-    "dubbel_bestämdhet", "naken", "obestämd_artikel", "bestämd_suffix",
-    "obestämd_plural"))
+    "kvantifikator", "dubbel_bestämdhet", "naken", "obestämd_artikel",
+    "bestämd_suffix", "obestämd_plural"))
 
 #: G8, G9, S2. Adjektivets form, attributivt och predikativt: "röda", "röda",
 #: "röd", "rött".
@@ -105,6 +105,10 @@ HUVUDORDETS_BESTÄMDHET = {
     "possessiv": Bestämdhet.OBESTÄMD, "dubbel_bestämdhet": Bestämdhet.BESTÄMD,
     # "den här boken": den analytiska demonstrativen tar suffixet med sig.
     "demonstrativ": Bestämdhet.BESTÄMD,
+    # Kvantifikatorn låser INTE huvudordets form: "alla böcker" och "alla
+    # böckerna" är båda svenska och betyder olika saker. Specens bestämdhet
+    # får bestämma, och värdet här gäller bara som förval.
+    "kvantifikator": Bestämdhet.OBESTÄMD,
     "naken": Bestämdhet.OBESTÄMD, "obestämd_artikel": Bestämdhet.OBESTÄMD,
     "bestämd_suffix": Bestämdhet.BESTÄMD, "obestämd_plural": Bestämdhet.OBESTÄMD,
 }
@@ -168,6 +172,15 @@ class SvenskRenderare:
         # enda morfologiska kasusdistinktionen språket har kvar, och därför
         # behöver renderaren veta om frasen är subjekt. Det syntes inte
         # förrän tyskan tvingade fram rollbegreppet.
+        if self.u.ordklass(huvud) == "Kvantifikator/huvudord":
+            # "ingen läser boken", "flickan läser inget". Kvantifikatorn ÄR
+            # frasen och tar varken bestämning eller attribut.
+            if nf.attribut or nf.possessiv is not None:
+                raise RenderingsFel(
+                    f"sv/{self.u.lemma(huvud)}: ett indefinit pronomen kan inte "
+                    f"ta artikel, attribut eller possessiv")
+            return [self.u.form(huvud, "inv")]
+
         if self.u.ordklass(huvud) == "Pronomen":
             if nf.attribut or nf.possessiv is not None:
                 raise RenderingsFel(
@@ -185,7 +198,8 @@ class SvenskRenderare:
                                 else "ack_dat")]
 
         self.u.kontrollera_naken(nf)
-        kontrollera_stöd(nf, "sv", ("demonstrativ", "räkneord"))
+        self.u.kontrollera_kvantifikator(nf)
+        kontrollera_stöd(nf, "sv", ("demonstrativ", "kvantifikator", "räkneord"))
 
         # Genus avgör artikel, possessiv och adjektiv bara i singular — "de
         # stora böckerna", "de stora husen". Egenskapen läses ändå alltid;
@@ -204,6 +218,8 @@ class SvenskRenderare:
             naturlig = "possessiv"
         elif nf.demonstrativ is not None:
             naturlig = "demonstrativ"
+        elif nf.kvantifikator is not None:
+            naturlig = "kvantifikator"
         elif nf.bestämdhet is Bestämdhet.BESTÄMD and (nf.attribut
                                                       or nf.räkneord is not None):
             # Räkneordet utlöser den dubbla bestämdheten precis som ett
@@ -253,6 +269,16 @@ class SvenskRenderare:
             före = [self.u.form_för(nf.demonstrativ, _artikelcell(
                 nf.numerus, genus).replace("utr", "utr_sg").replace("neu", "neu_sg"),
                 "analytisk")]
+        elif bestämning == "kvantifikator":
+            # "varje bok", "alla böcker", "ingen bok", "inga böcker".
+            # Bara den negativa determineraren böjs; övriga är invarianta,
+            # och vilket som gäller står i datan och inte i koden.
+            if nf.kvantifikator is None:
+                raise RenderingsFel("sv: frasen har ingen kvantifikator")
+            lexem_ = self.u.lexem(nf.kvantifikator)
+            cell = _artikelcell(nf.numerus, genus)
+            före = [self.u.form(lexem_, cell if self.u.har_form(lexem_, cell)
+                                else "inv")]
         elif bestämning == "dubbel_bestämdhet":
             # Svenskans dubbla bestämdhet: "den röda boken" kräver BÅDE den
             # fristående artikeln och suffixet på substantivet. Utan attribut
@@ -279,7 +305,9 @@ class SvenskRenderare:
                 attribut.extend(self.attribut(a, bestämning, nf.numerus, genus))
 
         tabell = SUBSTANTIVCELL_GEN if genitiv else SUBSTANTIVCELL
-        cell = tabell[(HUVUDORDETS_BESTÄMDHET[bestämning], nf.numerus)]
+        huvudets = (nf.bestämdhet if bestämning == "kvantifikator"
+                    else HUVUDORDETS_BESTÄMDHET[bestämning])
+        cell = tabell[(huvudets, nf.numerus)]
         try:
             huvudord = self.u.form(huvud, cell)
         except RenderingsFel:
