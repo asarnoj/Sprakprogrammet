@@ -75,9 +75,26 @@ FALL = [
      ["regel:val/kongruens/3sg", "ord:artikel_bestamd", "ord:pers_flicka"]),
     # «reads» är en FORM av läsa, så lexemet kan användaren (3.3). Skulden
     # ligger på cellvalet — prerekvisitstegen i 7.3.
+    #
+    # VILKET cellval ändrades 2026-11-26. Satsen krävde förut att
+    # `tempusform/presens` föll, eftersom kortet stod på det ändrade ordet. Men
+    # presens VAR rätt — användaren skrev presens. Det som brast är att
+    # huvudverbet böjdes trots do-omskrivning, och det är do-omskrivningens
+    # innehåll. Det syns på att dess andra utfall `utan_do` skriver just
+    # «reads»: «how many books reads the girl». Punkt 3 i 7.3 avgör vilket av
+    # två cellbeslut som bär felet; se `rattning._förklarar`.
     ("en", HUR_MÅNGA, "How many books does the girl reads?",
-     ["regel:val/tempusform/presens"],
-     ["ord:kom_läsa", "ord:skol_bok", "ord:artikel_bestamd", "ord:pers_flicka"]),
+     ["regel:val/do_omskrivning/med_do"],
+     ["regel:val/tempusform/presens",
+      "ord:kom_läsa", "ord:skol_bok", "ord:artikel_bestamd", "ord:pers_flicka"]),
+    # RENT ORDFEL. «write» är ingen form av `read`, så varken tempusvalet eller
+    # do-omskrivningen prövades — inget av deras utfall skriver «write» — och
+    # de hålls. Mätt 2026-11-26: förut föll tre kort och bara ett hade gjort
+    # fel. Skulden landar ändå, på ordkortet.
+    ("en", HUR_MÅNGA, "How many books does the girl write?",
+     ["ord:kom_läsa"],
+     ["regel:val/tempusform/presens", "regel:val/do_omskrivning/med_do",
+      "regel:val/kongruens/3sg", "ord:skol_bok", "ord:pers_flicka"]),
     ("en", HUR_MÅNGA, "How many books does the boy read?",
      ["ord:pers_flicka"],
      ["ord:skol_bok", "ord:kom_läsa", "regel:val/kongruens/3sg"]),
@@ -141,6 +158,39 @@ def _spannet_räknar_rätt() -> list[str]:
     return brister
 
 
+def _vägrar_vid_uppslagsfel() -> list[str]:
+    """Ett trasigt uppslag ska VÄGRAS, inte bli «annat ord».
+
+    Förut låg uppslaget i `_läget` i ett `try` som fångade allt och svarade
+    ANNAT_ORD. Då blev ett databasfel utsagan «användaren kan inte ordet», och
+    ordkortet fick ett underkänt för ett programfel. Går den här kontrollen
+    stumt har någon satt tillbaka det breda `except`.
+    """
+    import sqlite3 as _s
+
+    renderare = RENDERARE["en"](sqlite3.connect(ROT / "sprak.db"))
+    ut = spåra(renderare, HUR_MÅNGA)
+    tabell = Formtabell(renderare.u)
+    # Värm tabellen, så att `meningens_kort` klarar sig på cachen och det bara
+    # är `_läget` som når det trasiga uppslaget.
+    rätta(tabell, ut, ut.text)
+
+    def trasig(lexem):
+        raise _s.OperationalError("databasen svarar inte (provets påhitt)")
+
+    riktig, renderare.u._celler = renderare.u._celler, trasig
+    try:
+        rätta(tabell, ut, "How many books does the girl write?")
+    except Rättningsfel:
+        return []
+    except Exception as e:                       # noqa: BLE001
+        return [f"uppslagsfelet kom ut som {type(e).__name__}, inte Rättningsfel"]
+    else:
+        return ["ett trasigt uppslag gav ett betyg i stället för att vägras"]
+    finally:
+        renderare.u._celler = riktig
+
+
 def _falsifiera() -> list[str]:
     """Varje gammalt läge ska fälla sitt prov.
 
@@ -156,8 +206,16 @@ def _falsifiera() -> list[str]:
             for kort in formens:
                 betyg.pop(kort, None)
 
+    def utan_punkt3(betyg, avvikelser, beslut_för, korten):
+        """Läget som gällde till 2026-11-26: cellbesluten faller med sin
+        position, och ingen frågar om något annat utfall förklarar avvikelsen.
+        Då skriver ett rent ordfel falska «again» på grammatiken."""
+        return
+
     fall = [("stegen ograderade formkortet utan att någon annan bar felet",
-             "_stegen", utan_villkor)]
+             "_stegen", utan_villkor),
+            ("cellbesluten föll med sin position, utan punkt 3",
+             "_punkt3", utan_punkt3)]
     brister = []
     print("\nfalsifiering — varje gammalt läge ska fälla sitt prov:")
     for namn, attr, ersättning in fall:
@@ -196,9 +254,19 @@ def main() -> int:
             print(f"      {b}")
         brister += fel
 
+    print("\n── vägrar hellre än gissar ──")
+    for b in (fel := _vägrar_vid_uppslagsfel()):
+        print(f"  ✗ {b}")
+    brister += fel
+    if not fel:
+        print("  ✓ ett trasigt uppslag vägras i stället för att bli «annat ord»")
+
     brister += _falsifiera()
-    print(f"\n{len(FALL) + 1} kontroller, {len(brister)} brister."
-          if brister else f"\n{len(FALL) + 1} kontroller, allt håller.")
+    # spannen + varje fall + vägransprovet; falsifieringen räknas inte, den
+    # vaktar proven i stället för programmet.
+    antal = len(FALL) + 2
+    print(f"\n{antal} kontroller, {len(brister)} brister."
+          if brister else f"\n{antal} kontroller, allt håller.")
     return 1 if brister else 0
 
 

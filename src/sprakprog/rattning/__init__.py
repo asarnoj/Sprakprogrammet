@@ -17,9 +17,10 @@ ordkortet gäller lexemet och inte den ställda formen, ordföljdsregeln gradera
 på platsen och inte på stavningen, och ett formkort ograderas när ett annat kort
 bär felet — men bara då, för rättningen får aldrig tiga.
 
-VAD SOM INTE ÄR BYGGT ÄN. Steg 1:s tredje punkt — att skilja «en form som inte
-finns» från «den form ett annat utfall hade gett» — och steg 2, minsta
-förklaring, kräver båda att meningen renderas om (6.5). Version ett jämför med
+VAD SOM INTE ÄR BYGGT ÄN. Steg 2, minsta förklaring, kräver att meningen
+renderas om (6.5). Steg 1:s tredje punkt stod här som ogörlig av samma skäl
+ända till 2026-11-26, och det var fel: omrenderingarna fanns redan i spåret,
+i `Beslut.alternativ`. Se `_förklarar`. Version ett jämför med
 en variant: den mening som ställdes. Flera godtagna varianter (6.5) och omrättningen (7.2) kommer med
 entydighetsfiltret respektive gränssnittet. Sammansmälta ord — franskans «du»,
 där två uppslag blir ETT skrivet ord — går åt andra hållet än `_spann` och
@@ -29,10 +30,12 @@ görs när ett språk som smälter samman ord kommer in.
 from __future__ import annotations
 
 import difflib
+import sqlite3
 from collections import Counter
 from dataclasses import dataclass
 
-from ..kortmodell import Formtabell, Kort, meningens_kort
+from ..kortmodell import Formtabell, Kort, beslutskort, meningens_kort
+from ..rendering.spec import RenderingsFel
 from ..rendering.spår import Utskrift
 
 #: Betygen som räknas fram ur diffen (7.2). `Hard` och `Easy` kommer bara från
@@ -47,28 +50,49 @@ FORMKORT = frozenset({"ändelse", "oregelbunden"})
 #: Vad användaren skrev på ett uppslags plats, sett från KORTEN där (7.3).
 KÄNT = "känt"              #: exakt den ställda formen
 ANNAN_FORM = "annan form"  #: en annan form av rätt lexem — «stand» för «stands»
-OKÄNT = "okänt"            #: ingen form av lexemet, eller inget ord alls
+ANNAT_ORD = "annat ord"    #: ingen form av lexemet, eller inget ord alls
+#: Namnet hette `ANNAT_ORD` till 2026-11-26 och lästes då som «ett ord utanför
+#: kursen». Det är inte vad läget betyder: meningen innehåller bara ord som
+#: introducerats, och läget beskriver vad ANVÄNDAREN skrev.
 
 
 def _läget(tabell: Formtabell, o, sträcka: range, lika: set[int],
            motpart: dict) -> str:
     """Vilket av de tre lägena svaret är i på ett uppslags plats.
 
-    Skillnaden mellan ANNAN_FORM och OKÄNT är hela prerekvisitstegen: skrev
+    Skillnaden mellan ANNAN_FORM och ANNAT_ORD är hela prerekvisitstegen: skrev
     användaren en annan form av rätt lexem KAN hen ordet, och det är cellvalet
     som brast. Skrev hen något annat vet vi ingenting om formen.
+
+    UPPSLAGET FÅR INTE SVARA «ANNAT ORD» PÅ ETT PROGRAMFEL (lagat 2026-11-26).
+    Förut låg de två raderna i ett `try` som fångade allt och svarade
+    ANNAT_ORD. Ett trasigt lexem eller en databas som inte svarar blev då
+    utsagan «användaren kan inte ordet», och ordkortet fick ett underkänt för
+    något användaren inte gjort — exakt den falska raden i inlärarloggen som
+    `Rättningsfel` finns för att förhindra.
+
+    Att det aldrig syntes beror på att felet är ONÅBART i normal drift:
+    `meningens_kort` slår upp varje uppslags lexem och varje cells kort INNAN
+    rättningen kommer hit, utan att fånga något, och `Formtabell` cachar
+    resultatet. Når vi den här raden har alltså samma uppslag redan lyckats en
+    gång. Smäller det ändå har datan ändrats under oss, och då är det rätt att
+    vägra.
     """
     if all(i in lika for i in sträcka):
         return KÄNT
     skrivet = [motpart.get(i) for i in sträcka]
     if any(x is None for x in skrivet):
-        return OKÄNT
+        return ANNAT_ORD
     try:
         lexem = tabell.u.lexem(o.koncept, o.variant)
         former = {f.lower() for f in tabell.u._celler(lexem).values() if f}
-    except Exception:
-        return OKÄNT
-    return ANNAN_FORM if " ".join(skrivet).lower() in former else OKÄNT
+    except (RenderingsFel, sqlite3.Error) as e:
+        raise Rättningsfel(
+            f"formerna för {o.koncept!r} gick inte att slå upp: {e}. "
+            f"Rättningen vägrar hellre än skriver «annat ord» på ett "
+            f"programfel — det hade gett ordkortet ett underkänt användaren "
+            f"inte förtjänat") from e
+    return ANNAN_FORM if " ".join(skrivet).lower() in former else ANNAT_ORD
 
 
 def _är_ordföljd(kort: Kort) -> bool:
@@ -250,6 +274,66 @@ def _stegen(betyg: dict, formkort: dict, korten: list) -> None:
                 betyg.pop(kort, None)
 
 
+def _förklarar(b, avvikande: set[str]) -> bool:
+    """Ger något ANNAT utfall av beslutet ett ord användaren faktiskt skrev?
+
+    Det här är steg 1:s tredje punkt i 7.3 — «förklarar ett beslut som väljer
+    cell avvikelsen, har beslutet fallit». Punkten stod länge som ogörlig med
+    skälet att den kräver att meningen renderas om. Den kräver det, men
+    omrenderingarna FINNS REDAN: spåret räknar ut ett besluts positioner genom
+    att tvinga beslutet till vart och ett av sina andra utfall och rendera om,
+    och behåller orden i `Beslut.alternativ`. `spår.py` säger det självt —
+    «omrenderingarna är också de alternativ rättningen jämför svaret med när
+    den avgör om ett kort förklarar en avvikelse (7.3)». Rättningen läste dem
+    bara aldrig (mätt 2026-11-26: `alternativ` förekom inte i filen).
+
+    Mätt på «How many books does the girl read?»:
+
+        svaret «... the girl write?»   inget utfall av tempusform eller
+                                      do_omskrivning ger «write» → inget av
+                                      dem förklarar avvikelsen
+        svaret «... the girl reads?»   `utan_do` ger «how many books READS the
+                                      girl» → do_omskrivning förklarar den,
+                                      tempusform gör det inte
+        svaret «... does a girl read?» `obestämd_artikel` ger «does A girl
+                                      read» → bestämningen förklarar den
+
+    Det sista fallet är varför ingen handskriven lista över «beslut som väljer
+    ord» behövs: att artikelbeslutet brast syns på att ett annat utfall skriver
+    just det ord användaren skrev. En lista kunde glömma en familj, och då
+    skulle korrekta svar underkännas utan att något märker det.
+    """
+    if not avvikande:
+        return False
+    for ord_ in (b.alternativ or {}).values():
+        if {str(o).lower() for o in ord_} & avvikande:
+            return True
+    return False
+
+
+def _punkt3(betyg: dict, avvikelser: dict, beslut_för: dict, korten: list) -> None:
+    """Håll de cellbeslut som inte förklarar sin avvikelse (7.3 steg 1 punkt 3).
+
+    HÅLLET, inte godkänt: kortet tas ur betygen och får ingen rad i loggen.
+    Betyget skrivs inte om till `good` — beslutet prövades inte, och att säga
+    att det gick rätt vore lika påhittat som att säga att det gick fel. Planen
+    i `paradigm/BEDÖMNING.md` §4 kallar det det tredje betygstillståndet.
+
+    MEN BARA NÄR NÅGON ANNAN TAR SKULDEN, av samma skäl som `_stegen`:
+    rättningen får aldrig tiga. Bär inget annat kort felet på platsen är
+    beslutet det enda kort som kan göra det, och då gör det det.
+    """
+    for kort, avvikande in avvikelser.items():
+        b = beslut_för.get(kort)
+        if b is None or _förklarar(b, avvikande):
+            continue
+        platser = {p for k, p in korten if k == kort for p in p}
+        andra = [k for k, p in korten
+                 if k != kort and betyg.get(k) == FEL and p & platser]
+        if andra:
+            betyg.pop(kort, None)
+
+
 def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     """Betyget per kort, räknat ur diffen mellan facit och svaret (7.3).
 
@@ -260,7 +344,7 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     men fyra av dem hade gjort allt rätt. Ordföljden var riktig, kongruensen
     riktig, tempus riktigt, ändelsen riktig; bara lexemet var fel.
 
-    Två av stegets tre punkter går att bygga utan omrenderingarna:
+    Stegets tre punkter:
 
     1. **Föll `ord` är formkorten ograderade.** Ändelsen och den oregelbundna
        formen gäller strängen i ordets böjning, och den böjningen prövades
@@ -272,12 +356,17 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
        det. Ett ord är på fel plats när dess sträng finns i svaret men inte där
        den skulle, eller när den inte finns alls.
 
-    Den tredje punkten — «förklarar ett beslut som väljer cell avvikelsen, har
-    beslutet fallit» — kräver att meningen renderas om med ett annat utfall, och
-    det är entydighetsfiltret (6.5). Tills det finns graderas cellbesluten som
-    förut: de faller med sin position. Konsekvensen står i 7.3 själv: «Har
-    användaren i själva verket valt rätt men glömt ändelsen får valet skulden;
-    det kommer tillbaka snart och klaras.»
+    3. **Ett cellbeslut som inte förklarar avvikelsen HÅLLS.** «Förklarar ett
+       beslut som väljer cell avvikelsen, har beslutet fallit» — och gör det
+       inte det, prövades beslutet inte. Se `_förklarar` och `_punkt3`.
+       Punkten stod som ogörlig till 2026-11-26 med skälet att den kräver
+       omrenderingar; de fanns redan i spåret. Förut föll cellbesluten med sin
+       position, och konsekvensen stod i 7.3 själv: «Har användaren i själva
+       verket valt rätt men glömt ändelsen får valet skulden; det kommer
+       tillbaka snart och klaras.» Mätt vad den konsekvensen kostade: på
+       «How many books does the girl write?» föll tre kort och ett hade gjort
+       fel, och på «... the girl reads?» två kort och ett. Efter punkt 3 faller
+       ett kort i båda fallen.
     """
     facit = ut.text.split()
     spann = _spann(ut, facit)
@@ -304,8 +393,12 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     läget = {k: _läget(tabell, o, spann[k], lika, j.motpart)
              for k, o in enumerate(ut.ord)}
 
+    beslut_för = {beslutskort(tabell.språk, b): b for b in ut.beslut if b.syns}
+
     betyg: dict[Kort, str] = {}
     formkort: dict[int, list[Kort]] = {}
+    #: kort → de ord användaren skrev där kortet föll, för punkt 3
+    avvikelser: dict[Kort, set[str]] = {}
     for kort, platser in korten:
         uppslagen = {k for sort, k in platser if sort == "ord"}
         lägen = {läget[k] for k in uppslagen}
@@ -323,7 +416,7 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
             # ställda formen föll ordet för en glömd ändelse — och då blev
             # ändelsekortet ograderat av stegen ovan, alltså föll ingen för
             # felet.
-            prövad = OKÄNT not in lägen
+            prövad = ANNAT_ORD not in lägen
         elif _är_ordföljd(kort):
             prövad = not (ord_ & fel_plats)
         else:
@@ -336,6 +429,15 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
         # Ett kort kan stå på flera platser i samma mening; faller en faller kortet.
         if betyg.get(kort) != FEL:
             betyg[kort] = RÄTT if rätt else FEL
+        # Punkt 3 behöver de ord användaren skrev där kortet föll — och bara
+        # när felet satt på ett ORD. Ett kort som föll för en LUCKA har ingen
+        # avvikande sträng att leta efter bland utfallen, och ska falla:
+        # användaren utelämnade ordet beslutet satte in.
+        if not prövad and kort.typ == "regel" and not _är_ordföljd(kort):
+            skrivna = {j.motpart[i].lower() for i in ord_ - lika
+                       if j.motpart.get(i)}
+            if skrivna:
+                avvikelser.setdefault(kort, set()).update(skrivna)
 
     # 7.3 STEG 1, prerekvisitstegen, som ett efterpass: «Föll `ord` är
     # formkorten ograderade», och skrev användaren en annan form av rätt lexem
@@ -350,10 +452,12 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     # perfekt svar. Då är formkortet det enda kort som kan bära felet, och det
     # gör det. Rättningen får aldrig tiga.
     #
-    # Att ogradera BESLUTEN vore dessutom att läsa stegen bredare än den är:
-    # `val/bestämning/bestämd_artikel` väljer inte ordets cell utan vilket ord
-    # som skrivs, och skrev användaren «a» för «the» syns det att beslutet
-    # brast. Punkt 3 i stegen — att skilja en form som inte finns från ett annat
-    # utfall — kräver omrenderingarna i 6.5.
+    # Att ogradera BESLUTEN med `_stegen` vore dessutom att läsa stegen bredare
+    # än den är: `val/bestämning/bestämd_artikel` väljer inte ordets cell utan
+    # vilket ord som skrivs, och skrev användaren «a» för «the» syns det att
+    # beslutet brast. Besluten har sin egen regel i `_punkt3`, och den skiljer
+    # de två fallen utan att någon lista över kortfamiljer skrivs för hand:
+    # artikelbeslutet faller för att ett annat av DESS utfall skriver just «a».
     _stegen(betyg, formkort, korten)
+    _punkt3(betyg, avvikelser, beslut_för, korten)
     return Rättning(len(lika) == len(facit) and not tillagda, betyg, tuple(diff))
