@@ -818,6 +818,7 @@ hantera, gås det igenom metodiskt — det lappas inte.
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
 | `src/sprakprog/rendering/spec.py` | meningsspecifikationen — enda källan till vad som går att uttrycka |
 | `ordbok/verktyg/nåbarhet.py` | mäter hur mycket av formbeståndet specen når; modulhuvudet varnar för mätartefakterna |
+| `ordbok/verktyg/stammar.py` | härleder stamuppsättning och ändelsetabeller ur Former → `stammar.tsv`, `ändelser.tsv` |
 | `ordbok/migrationer/modusrektion.sql` | vilka ord som styr konjunktiv, och filhuvudet om de fem som medvetet inte taggats |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
 
