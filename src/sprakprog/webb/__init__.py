@@ -44,6 +44,23 @@ from .ordbok import Ordbok
 SIDA = Path(__file__).parent / "sida.html"
 
 
+def _dygnets_början() -> str:
+    """När det nuvarande dygnet började, som UTC-tidsstämpel.
+
+    LOKAL midnatt, inte UTC. UTC-midnatt är 02:00 i Sverige, så ett pass
+    klockan 00:30 skulle räknas till gårdagen — vilket är fel för den som
+    övar. Gränsen härleds ur systemets tidszon och innehåller därför inget
+    valt tal.
+
+    (Anki lägger gränsen några timmar efter midnatt, för att ett sent pass
+    ska höra till kvällen man började. Det är en inställning och inte en
+    härledning, och den läggs till om användningen visar att den behövs.)
+    """
+    lokal = datetime.now().astimezone()
+    midnatt = lokal.replace(hour=0, minute=0, second=0, microsecond=0)
+    return midnatt.astimezone(UTC).isoformat()
+
+
 class Övningstjänst:
     """Generatorerna och deras tillstånd, en per kurs."""
 
@@ -250,7 +267,12 @@ class Övningstjänst:
             summa = {k: sum(r[k] for r in rader)
                      for k in ("nya", "förfallna", "igen")}
             u = upplåsningsläge(self.kort_db, språk, kurs["meningar_per_dag"])
+            idag = self.kort_db.execute(
+                "SELECT COUNT(*) FROM Mening WHERE språk = ? AND tidpunkt >= ?",
+                (språk, _dygnets_början())).fetchone()[0]
             return {"kurs": dict(kurs), "rader": rader, "summa": summa,
+                    "idag": idag, "mål": kurs["meningar_per_dag"],
+                    "nästa_ord": self._nästa_ord(språk),
                     "nivå": kurs["nivå"], "nivåer": 21,
                     "krävs": u["krävs"], "kapacitet": u["kapacitet"],
                     "plats": u["klar"], "kort": u["totalt"]}
@@ -285,6 +307,41 @@ class Övningstjänst:
             return self.lektioner.lektion(k["målspråk"], k["källspråk"],
                                           nivå, k["cefr"])
 
+    def _nästa_ord(self, språk: str, antal: int = 8) -> list[dict]:
+        """Orden som står näst på tur, med de former kursen når just nu.
+
+        Julius: "det borde vara en bild med de nästkommande upplåsta orden som
+        man snabbt kan få en överblick över, samt deras böjningar." Ordningen
+        är schemaläggarens INTRODUKTIONSORDNING — ordet först, sedan dess
+        former — så listan är inte en gissning utan exakt vad som kommer.
+        """
+        sedda = {r[0] for r in self.kort_db.execute(
+            "SELECT DISTINCT koncept FROM Kort WHERE språk=? AND sedd IS NOT NULL",
+            (språk,))}
+        ut: list[dict] = []
+        for r in self.kort_db.execute(
+                """SELECT koncept, ordklass FROM Kort
+                   WHERE språk = ? AND typ = 'ord' AND sedd IS NULL
+                     AND schemalagt = 1 AND koncept IS NOT NULL
+                   ORDER BY räckvidd DESC, id""", (språk,)):
+            if r["koncept"] in sedda:
+                continue
+            lemma = self.språk_db.execute(
+                """SELECT l.lemma FROM Lexem l JOIN Koncept k ON k.id=l.koncept_id
+                   WHERE l.språk = ? AND k.nyckel = ?""",
+                (språk, r["koncept"])).fetchone()
+            if lemma is None:
+                continue
+            former = [x[0] for x in self.kort_db.execute(
+                """SELECT DISTINCT c.cell FROM Cellkort c
+                   WHERE c.språk = ? AND c.koncept = ? ORDER BY c.cell""",
+                (språk, r["koncept"]))]
+            ut.append({"koncept": r["koncept"], "lemma": lemma["lemma"],
+                       "ordklass": r["ordklass"] or "", "former": len(former)})
+            if len(ut) >= antal:
+                break
+        return ut
+
     def nytt_pass(self, kurs_id: int) -> None:
         with self.lås:
             kurs = self.kort_db.execute(
@@ -296,7 +353,7 @@ class Övningstjänst:
         with self.lås:
             kurs = self.kort_db.execute(
                 "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
-            idag = datetime.now(UTC).date().isoformat()
+            idag = _dygnets_början()
             rad = self.kort_db.execute(
                 """SELECT COUNT(*) AS meningar,
                           COALESCE(SUM(fel), 0) AS fel,

@@ -237,7 +237,10 @@
       <tbody id="räknare"></tbody>
     </table>
 
-    <div class="knappar">
+    <p class="rubrik" style="margin-top:1.6rem">Coming up next</p>
+    <ul class="ordlista" id="nästa-ord"></ul>
+
+    <div class="knappar" style="margin-top:1.4rem">
       <button class="stor" id="starta">Start today's practice</button>
       <button class="andra" id="extra">Extra practice</button>
       <small id="hemhjälp"></small>
@@ -299,7 +302,7 @@
 
   <section id="vy-öva" hidden>
     <div class="status">
-      <span>done <b id="s-gjort">0</b></span>
+      <span>today <b id="s-gjort">0</b></span>
       <span>due <b id="s-förf">0</b></span>
       <span>retry <b id="s-igen">0</b></span>
       <span id="s-extra"></span>
@@ -334,7 +337,9 @@
 // en svensk som lär sig tyska kan vilja ha engelskt gränssnitt. När fler
 // språk läggs till blir det här en kolumn per språk, inget annat ändras.
 const T = {
-  klart_alla:   n => `${n} sentences. Everything due today is done.`,
+  klart_alla:   n => `${n} sentences today — that is your target.`,
+  kvar_i_kön:   n => `${n} card${n === 1 ? "" : "s"} still shaky; they are ` +
+                     `scheduled for tomorrow.`,
   klart_extra:  n => `${n} sentences of extra practice.`,
   inget_att_gora: "Nothing due — come back tomorrow, or do extra practice.",
   redo:         (f, n) => `${f} due, ${n} new`,
@@ -391,13 +396,27 @@ async function hem() {
   for (const r of h.rader) rad(r.namn, r);
   rad(T.totalt, h.summa, true);
 
+  const kommande = $("nästa-ord");
+  kommande.innerHTML = "";
+  for (const o of h.nästa_ord ?? []) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="lem"></span><span class="kl"></span>`;
+    li.querySelector(".lem").textContent = o.lemma;
+    li.querySelector(".kl").textContent =
+      `${o.ordklass}${o.former > 1 ? ` · ${o.former} forms` : ""}`;
+    li.style.cursor = "pointer";
+    li.addEventListener("click", () => { ordbok().then(() => ordet(o.koncept)); });
+    kommande.append(li);
+  }
+
   const attGöra = h.summa.förfallna + h.summa.igen;
   const s = $("starta");
   s.textContent = attGöra || h.summa.nya ? "Start today's practice" : "Nothing due";
   s.disabled = !(attGöra || h.summa.nya);
   s.classList.toggle("tom", s.disabled);
-  $("hemhjälp").textContent = attGöra || h.summa.nya
-    ? T.redo(h.summa.förfallna + h.summa.igen, h.summa.nya) : T.inget_att_gora;
+  $("hemhjälp").textContent = h.idag >= h.mål && !attGöra
+    ? `Done for today — ${h.idag} sentences.`
+    : `${h.idag}/${h.mål} today · ${attGöra} due · ${h.summa.nya} new words waiting`;
   visa("hem");
 }
 
@@ -597,14 +616,26 @@ async function nästa() {
   $("utfall").hidden = true;
   $("anm").innerHTML = "";
   const h = await hämta(`/api/hem/${kurs.id}`);
-  $("s-gjort").textContent = gjort;
+  $("s-gjort").textContent = `${h.idag}/${h.mål}`;
   $("s-förf").textContent = h.summa.förfallna;
   $("s-igen").textContent = h.summa.igen;
-  // Passet är slut när det förfallna OCH passkön är tomma. Nya kort
-  // hindrar inte slutet — de möts inuti meningar, inte som en egen kö.
-  if (!extraläge && !h.summa.förfallna && !h.summa.igen && gjort > 0) {
+  // PASSET SLUTAR VID DAGENS MÅL. Det första villkoret var "köerna tomma",
+  // och det är oåtkomligt MED FLIT: budgeten siktar på ~1,5 felaktiga kort
+  // per mening, så bara 7 % av meningarna blir helt rätta (mätt vid budget
+  // 1,5). Passkön planade ut kring 25 och nådde aldrig noll på 120 meningar.
+  //
+  // De två mekanismerna är var för sig riktiga men har olika enhet: budgeten
+  // räknar KORT, passvillkoret räknade MENINGAR. Målet — `meningar_per_dag`,
+  // användarens eget val och samma tal kapacitetsmodellen använder — är det
+  // enda som ger ett pass med förutsägbar längd.
+  //
+  // Kort som är kvar i passkön är inte förlorade: FSRS har redan
+  // schemalagt dem till i morgon.
+  const kvar = h.summa.förfallna + h.summa.igen;
+  if (!extraläge && h.idag >= h.mål && !h.summa.förfallna && gjort > 0) {
     $("fråga").hidden = true; $("klart").hidden = false;
-    $("klarttext").textContent = T.klart_alla(gjort);
+    $("klarttext").textContent = T.klart_alla(h.idag)
+      + (h.summa.igen ? " " + T.kvar_i_kön(h.summa.igen) : "");
     return;
   }
   const u = await hämta(`/api/uppgift/${kurs.id}`);

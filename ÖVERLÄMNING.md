@@ -667,6 +667,56 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ---
 
+## Passets längd, och rättningens träffsäkerhet
+
+*Mätt 2026-08-16, efter två frågor från Julius.*
+
+### Passet tog aldrig slut, och det var strukturellt
+
+Villkoret var "förfallna OCH passkön tomma". Det är oåtkomligt MED FLIT:
+budgeten siktar på ~1,5 felaktiga kort per mening, alltså är bara **7 %** av
+meningarna helt rätta vid budget 1,5. Simulerat med fel per kort ur R planade
+passkön ut kring 25 och nådde aldrig noll på 120 meningar.
+
+```
+budget   Σ(1−R)   P(minst ett fel)   P(hela meningen rätt)
+   0.5     1.78          86 %                14 %
+   1.5     2.43          93 %                 7 %
+   2.5     3.00          96 %                 4 %
+```
+
+De två mekanismerna är var för sig riktiga men har **olika enhet**: budgeten
+räknar KORT, passvillkoret räknade MENINGAR. Passet slutar nu vid dagens mål —
+`meningar_per_dag`, användarens eget val och samma tal kapacitetsmodellen
+använder. Kort kvar i passkön är inte förlorade; FSRS har redan schemalagt dem
+till i morgon, och det står i slutrutan.
+
+Dygnsgränsen är LOKAL midnatt, inte UTC. UTC-midnatt är 02:00 i Sverige, så
+ett pass klockan 00:30 hade räknats till gårdagen.
+
+### Rättningen: betyget är säkert, förklaringen är det inte
+
+Mätt med KÄND skada — ett ord i taget bytt mot en annan form, mot ett annat
+ord, eller borttaget:
+
+| skada | rätt kort skylls |
+|---|---|
+| fel form av rätt ord | 98 % (0 % fel kort, 2 % ingen skuld) |
+| fel ord helt | 100 % |
+| utelämnat ord | 100 % |
+
+Men **77 % av tyskans celler delar sin form med en annan cell**, och i hälften
+av felfallen är formen användaren skrev förenlig med FLERA celler. Det är där
+oavgörbarheten sitter — och det är rätt ställe: ett fel BETYG förstör modellen,
+en luddig förklaring förvirrar bara.
+
+Skulden avgörs nämligen av stamuppdelningen mot den VÄNTADE cellen, inte av
+vilken cell användaren siktade på. Förklaringen räknar nu upp alla celler
+formen kan vara i stället för att välja den första och låta som om den vet:
+"pret_2pl or konj2_2pl i stället för pret_1sg".
+
+---
+
 ## Kurserna och upplåsningen i gränssnittet
 
 *Byggt 2026-08-15.* Programmet startar i den kurs som användes sist

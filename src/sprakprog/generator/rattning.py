@@ -16,6 +16,18 @@ finns avgör också vilket av dem som fallerade: skiljer sig bara ÄNDELSEN är
 det systemkortet som brast, skiljer sig STAMMEN är det ordets eget kort.
 "größte" mot "größten" är ändelsen; "großen" mot "größten" är stammen.
 
+SYNKRETISMEN SITTER I FÖRKLARINGEN, INTE I BETYGET. 77 % av tyskans celler
+delar sin form med en annan cell, och när användaren skriver fel form matchar
+den i hälften av fallen FLERA celler — det går då inte att veta vilken hen
+menade. Men BETYGET behöver inte veta det: skulden avgörs av stamuppdelningen
+mot den VÄNTADE cellen, inte av vilken cell användaren siktade på. Mätt med
+känd skada: rätt kort i 98 % av fallen med fel form, 100 % med fel ord och
+100 % med utelämnat ord, och noll fall där fel kort skylldes.
+
+Förklaringen räknar därför upp ALLA celler formen kan vara, i stället för att
+välja den första och låta som om den vet. Det är också mer användbart: att en
+form täcker tre celler är en sak att lära sig.
+
 NÄR DATAN INTE RÄCKER finns tre mekanismer, i tur och ordning — meningen
 vittnar, historiken avgör, självrättning erbjuds. Den första och tredje
 kräver mer kontext respektive ett gränssnitt; den här modulen implementerar
@@ -100,6 +112,18 @@ class Rättare:
 
     # ── attribution ──────────────────────────────────────────────────
 
+    @staticmethod
+    def _cellista(träffar: list[str]) -> str:
+        """Cellerna en skriven form kan vara — alla, inte den första.
+
+        Att välja en av flera vore att påstå något systemet inte vet.
+        """
+        if len(träffar) == 1:
+            return träffar[0]
+        if len(träffar) == 2:
+            return f"{träffar[0]} or {träffar[1]}"
+        return ", ".join(träffar[:-1]) + f" or {träffar[-1]}"
+
     def _skyll(self, skrev: str, väntat: str, koncept: str, variant: str | None,
                cell: str) -> tuple[int | None, str, bool]:
         """(kort_id, förklaring, osäker) för ETT felskrivet ord.
@@ -126,20 +150,21 @@ class Rättare:
         # kort, och då är den frågan meningslös.
         if stamkort is not None and stamkort["typ"] == "form":
             return (stamkort["id"],
-                    f"formen för {träffar[0]}, inte {cell} — ordet har ingen "
-                    f"härledbar stam här", False)
+                    f"formen för {self._cellista(träffar)}, inte {cell} — "
+                    f"ordet har ingen härledbar stam här", False)
         if stamkort is not None and systemkort is not None:
             stam = _normalisera(stamkort["facit"])
             if stam and skrev.startswith(stam):
                 return (systemkort["id"],
                         f"rätt stam {stamkort['facit']!r}, fel ändelse — "
-                        f"{träffar[0]} i stället för {cell}", False)
+                        f"{self._cellista(träffar)} i stället för {cell}", False)
             return (stamkort["id"],
-                    f"fel stam — skrev formen för {träffar[0]}", False)
+                    f"fel stam — skrev formen för {self._cellista(träffar)}", False)
 
         enda = stamkort or systemkort
         if enda is not None:
-            return enda["id"], f"formen för {träffar[0]}, inte {cell}", False
+            return (enda["id"],
+                    f"formen för {self._cellista(träffar)}, inte {cell}", False)
 
         # Datan räcker inte: skyll på det svagaste kortet i ledet.
         # Felattribution självläker — skyller systemet fel klarar det kortet
