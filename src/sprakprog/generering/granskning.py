@@ -177,6 +177,72 @@ def _former_per_cell(rader: list[sqlite3.Row], slot: Slot) -> dict[str, str]:
     return ut
 
 
+# ── Strukturgranskning — samma rapport, ingen modell ──────────────────
+#
+# Vissa fel går att se utan att kunna språket, bara genom att jämföra två
+# fält som måste stämma överens. De behöver varken LLM, kvot eller ett
+# fönster utanför Claude Code, och de kan därför köras vid varje ändring.
+
+# Modalverben lagrar sitt lemma i PRESENS — kan, bör, vill, får, brukar,
+# måste, ska. Infinitiven finns bara i inf-cellen, och lemmajämförelsen
+# nedan säger därför ingenting om dem. De känns igen på konceptnyckeln,
+# som redan är load-bearing i renderaren (`form_för("modal_ska", "pres")`).
+MODALPREFIX = "modal_"
+
+
+def granska_inf_mot_lemma(conn: sqlite3.Connection) -> list[Avvikelse]:
+    """Svenska verbs inf-cell måste vara lemmat.
+
+    Bakgrund: nio verb hade sin IMPERATIV i inf-cellen (tänk, försök, gråt,
+    tyck, äg, rör, lyft, lär sig, gift sig). Futurum renderas ur inf-cellen
+    och gav "han ska försök att erbjuda". Felet var osynligt i formen på
+    raden — inf och imp hade kollapsat till EN rad med tempus=17 (SCHEMA.md
+    §5), vilket är rätt för alla -ar-verb, där imperativen ÄR infinitiven.
+    Först jämförelsen mot lemmat skiljer den riktiga kollapsen från den
+    felaktiga.
+
+    Kontrollen gäller sv/Verb. Att lemmat är infinitiven stämmer även i
+    en/de/fr/es/it, men där avviker 21 reflexiva verb (fr "se marier" mot
+    inf-cellens "marier", de "sich erinnern" mot "erinnern") därför att
+    reflexivmarkören inte lagras i cellen som i svenskan. Det är ett eget
+    fel med en egen fråga — var markören hör hemma — och tas inte in här
+    förrän den frågan är avgjord.
+    """
+    slot = ladda_slot("sv", "Verb")
+    rader = conn.execute(
+        f"""SELECT l.id AS lexem_id, l.lemma, k.nyckel AS koncept, f.form,
+                   {', '.join('f.' + a for a in ALLA_AXLAR)}
+            FROM Former f
+            JOIN Lexem l   ON l.id = f.lexem_id
+            JOIN Koncept k ON k.id = l.koncept_id
+            WHERE l.språk = 'sv' AND k.ordklass = 'Verb'
+            ORDER BY l.lemma, l.id"""
+    ).fetchall()
+
+    per_lexem: dict[int, list[sqlite3.Row]] = {}
+    for r in rader:
+        per_lexem.setdefault(r["lexem_id"], []).append(r)
+
+    avvikelser: list[Avvikelse] = []
+    for rader_för_lexem in per_lexem.values():
+        första = rader_för_lexem[0]
+        if första["koncept"].startswith(MODALPREFIX):
+            continue
+        # Tom inf-cell är inte det här felet. Deponensverben (hoppas,
+        # minnas, andas …) har inga aktiva celler alls — bara passiva.
+        inf = _former_per_cell(rader_för_lexem, slot).get("inf")
+        if not inf or inf == första["lemma"]:
+            continue
+        avvikelser.append(Avvikelse(
+            språk="sv", ordklass="Verb", koncept=första["koncept"],
+            lemma=första["lemma"], cell="inf", nuvarande=inf,
+            förslag=första["lemma"], allvar="fel",
+            motivering="inf-cellen ska vara lemmat; svenska verb lemmatiseras "
+                       "på infinitiven",
+        ))
+    return avvikelser
+
+
 def _bygg_granskningsprompt(
     poster: list[tuple[str, dict[str, str]]],
     slot: Slot,

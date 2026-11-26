@@ -1,0 +1,316 @@
+konstruktion	språk	utfall
+intransitiv	sv	Hon lever.
+transitiv	sv	Hon hittar hunden.
+transitiv-obestämd	sv	Hon köper en katt.
+plural-objekt	sv	Hon håller hästarna.
+pronomen-subjekt-1pl	sv	Vi arbetar.
+bitransitiv	sv	Hon ger dem hunden.
+preteritum	sv	Hon lekte.
+futurum	sv	Hon ska göra hunden.
+perfekt	sv	Hon har stängt hunden.
+pluskvamperfekt	sv	Hon hade hittat en katt.
+futurum-perfekt	sv	Hon har köpt en katt.
+negation	sv	Hon hjälper inte hunden.
+negation-preteritum	sv	Hon lekte inte.
+ja-nej-fråga	sv	Använder hon hunden?
+fråga-negerad	sv	Hittar hon inte en katt?
+passiv	sv	Hunden görs.
+passiv-perfekt	sv	Hunden har stängts.
+passiv-futurum	sv	En katt ska köpas.
+attribut	sv	Hon hittar den snälla hunden.
+attribut-obestämd	sv	Hon köper en vacker katt.
+attribut-plural	sv	Hon håller de roliga hästarna.
+possessiv	sv	Hon hittar min hund.
+possessiv-plural	sv	Hon håller deras hästar.
+genitivägare	sv	Hon hittar kattens hund.
+artikellös-plural	sv	Hon hittar fiskar.
+predikativ-adjektiv	sv	Hon är glad.
+predikativ-plural	sv	Vi är frisk.
+komparativ	sv	Hon är roligare.
+superlativ	sv	Hon är vackrast.
+jämförelse	sv	Hon är snällare än hunden.
+attributiv-komparativ	sv	Hon hittar den roligare hunden.
+prepositionsfras	sv	Hon arbetar bakom hunden.
+två-adverbial	sv	Hon leker framför hunden bredvid en katt.
+infinitivkomplement	sv	Hon börjar att arbeta.
+infinitiv-negerad	sv	Hon slutar inte att leka.
+infinitiv-futurum	sv	Hon ska börja att göra.
+imperativ	sv	Stäng hunden!
+imperativ-plural	sv	Hjälp hunden!
+bisats	sv	Hon förstår att vi arbetar.
+bisats-preteritum	sv	Hon minns att vi köpte en katt.
+bisats-negerad	sv	Hon tycker att vi inte leker.
+adverbialbisats	sv	Hon arbetar när vi leker.
+wh-subjekt	sv	Vem hittar hunden?
+wh-objekt	sv	Vad hittar hon?
+wh-negerad	sv	Vad köper hon inte?
+intransitiv	en	She lives.
+transitiv	en	She finds the dog.
+transitiv-obestämd	en	She buys a cat.
+plural-objekt	en	She holds the horses.
+pronomen-subjekt-1pl	en	We work.
+bitransitiv	en	She gives them the dog.
+preteritum	en	She played.
+futurum	en	She will do the dog.
+perfekt	en	She has closed the dog.
+pluskvamperfekt	en	She had found a cat.
+futurum-perfekt	en	She has bought a cat.
+negation	en	She does not help the dog.
+negation-preteritum	en	She did not play.
+ja-nej-fråga	en	Does she use the dog?
+fråga-negerad	en	Does she not find a cat?
+passiv	en	The dog is done.
+passiv-perfekt	en	The dog has been closed.
+passiv-futurum	en	A cat will be bought.
+attribut	en	She finds the kind dog.
+attribut-obestämd	en	She buys a beautiful cat.
+attribut-plural	en	She holds the funny horses.
+possessiv	en	She finds my dog.
+possessiv-plural	en	She holds their horses.
+genitivägare	en	She finds the cat's dog.
+artikellös-plural	en	She finds fish.
+predikativ-adjektiv	en	She is happy.
+predikativ-plural	en	We are healthy.
+komparativ	en	She is funnier.
+superlativ	en	She is most beautiful.
+jämförelse	en	She is kinder than the dog.
+attributiv-komparativ	en	She finds the funnier dog.
+prepositionsfras	en	She works behind the dog.
+två-adverbial	en	She plays in front of the dog next to a cat.
+infinitivkomplement	en	She starts to work.
+infinitiv-negerad	en	She does not stop playing.
+infinitiv-futurum	en	She will start to do.
+imperativ	en	Close the dog!
+imperativ-plural	en	Help the dog!
+bisats	en	She understands that we work.
+bisats-preteritum	en	She remembers that we bought a cat.
+bisats-negerad	en	She thinks that we do not play.
+adverbialbisats	en	She works when we play.
+wh-subjekt	en	Who finds the dog?
+wh-objekt	en	What does she find?
+wh-negerad	en	What does she not buy?
+intransitiv	de	Sie lebt.
+transitiv	de	Sie findet den Hund.
+transitiv-obestämd	de	Sie kauft eine Katze.
+plural-objekt	de	Sie hält die Pferde.
+pronomen-subjekt-1pl	de	Wir arbeiten.
+bitransitiv	de	Sie gibt ihnen den Hund.
+preteritum	de	Sie spielte.
+futurum	de	Sie wird den Hund machen.
+perfekt	de	Sie hat den Hund geschlossen.
+pluskvamperfekt	de	Sie hatte eine Katze gefunden.
+futurum-perfekt	de	Sie hat eine Katze gekauft.
+negation	de	Sie hilft dem Hunde nicht.
+negation-preteritum	de	Sie spielte nicht.
+ja-nej-fråga	de	Benutzt sie den Hund?
+fråga-negerad	de	Findet sie keine Katze?
+passiv	de	Der Hund wird gemacht.
+passiv-perfekt	de	Der Hund ist geschlossen worden.
+passiv-futurum	de	Eine Katze wird gekauft werden.
+attribut	de	Sie findet den netten Hund.
+attribut-obestämd	de	Sie kauft eine schöne Katze.
+attribut-plural	de	Sie hält die lustigen Pferde.
+possessiv	de	Sie findet meinen Hund.
+possessiv-plural	de	Sie hält ihre Pferde.
+genitivägare	de	Sie findet den Hund der Katze.
+artikellös-plural	de	Sie findet Fische.
+predikativ-adjektiv	de	Sie ist glücklich.
+predikativ-plural	de	Wir sind gesund.
+komparativ	de	Sie ist lustiger.
+superlativ	de	Sie ist am schönsten.
+jämförelse	de	Sie ist netter als der Hund.
+attributiv-komparativ	de	Sie findet den lustigeren Hund.
+prepositionsfras	de	Sie arbeitet hinter dem Hunde.
+två-adverbial	de	Sie spielt vor dem Hunde neben einer Katze.
+infinitivkomplement	de	Sie fängt zu arbeiten an.
+infinitiv-negerad	de	Sie hört nicht zu spielen auf.
+infinitiv-futurum	de	Sie wird anfangen zu machen.
+imperativ	de	Schließ den Hund!
+imperativ-plural	de	Helft dem Hunde!
+bisats	de	Sie versteht, dass wir arbeiten.
+bisats-preteritum	de	Sie erinnert, dass wir eine Katze kauften.
+bisats-negerad	de	Sie findet, dass wir nicht spielen.
+adverbialbisats	de	Sie arbeitet, wenn wir spielen.
+wh-subjekt	de	Wer findet den Hund?
+wh-objekt	de	Was findet sie?
+wh-negerad	de	Was kauft sie?
+intransitiv	fr	Elle vit.
+transitiv	fr	Elle trouve le chien.
+transitiv-obestämd	fr	Elle achète un chat.
+plural-objekt	fr	Elle tient les chevaux.
+pronomen-subjekt-1pl	fr	Nous travaillons.
+bitransitiv	fr	Elle leur donne le chien.
+preteritum	fr	Elle a joué.
+futurum	fr	Elle fera le chien.
+perfekt	fr	Elle a fermé le chien.
+pluskvamperfekt	fr	Elle avait trouvé un chat.
+futurum-perfekt	fr	Elle a acheté un chat.
+negation	fr	Elle n'aide pas le chien.
+negation-preteritum	fr	Elle n'a pas joué.
+ja-nej-fråga	fr	Est-ce qu'elle utilise le chien?
+fråga-negerad	fr	Est-ce qu'elle ne trouve pas un chat?
+passiv	fr	Le chien est fait.
+passiv-perfekt	fr	Le chien a été fermé.
+passiv-futurum	fr	Un chat sera acheté.
+attribut	fr	Elle trouve le gentil chien.
+attribut-obestämd	fr	Elle achète un beau chat.
+attribut-plural	fr	Elle tient les chevaux amusants.
+possessiv	fr	Elle trouve mon chien.
+possessiv-plural	fr	Elle tient leurs chevaux.
+genitivägare	fr	Elle trouve le chien du chat.
+artikellös-plural	fr	Elle trouve des poissons.
+predikativ-adjektiv	fr	Elle est heureuse.
+predikativ-plural	fr	Nous sommes sains.
+komparativ	fr	Elle est plus amusante.
+superlativ	fr	Elle est la plus belle.
+jämförelse	fr	Elle est plus gentille que le chien.
+attributiv-komparativ	fr	Elle trouve le chien plus amusant.
+prepositionsfras	fr	Elle travaille derrière le chien.
+två-adverbial	fr	Elle joue devant le chien à côté de un chat.
+infinitivkomplement	fr	Elle commence à travailler.
+infinitiv-negerad	fr	Elle n'arrête pas de jouer.
+infinitiv-futurum	fr	Elle commencera à faire.
+imperativ	fr	Ferme le chien!
+imperativ-plural	fr	Aidez le chien!
+bisats	fr	Elle comprend que nous travaillons.
+bisats-preteritum	fr	Elle souvient que nous avons acheté un chat.
+bisats-negerad	fr	Elle trouve que nous ne jouons pas.
+adverbialbisats	fr	Elle travaille quand nous jouons.
+wh-subjekt	fr	Qui trouve le chien?
+wh-objekt	fr	Qu'est-ce qu'elle trouve?
+wh-negerad	fr	Qu'est-ce qu'elle n'achète pas?
+intransitiv	es	Ella vive.
+transitiv	es	Ella encuentra el perro.
+transitiv-obestämd	es	Ella compra un gato.
+plural-objekt	es	Ella sujeta los caballos.
+pronomen-subjekt-1pl	es	Nosotros trabajamos.
+bitransitiv	es	Ella les da el perro.
+preteritum	es	Ella jugó.
+futurum	es	Ella hará el perro.
+perfekt	es	Ella ha cerrado el perro.
+pluskvamperfekt	es	Ella había encontrado un gato.
+futurum-perfekt	es	Ella ha comprado un gato.
+negation	es	Ella no ayuda el perro.
+negation-preteritum	es	Ella no jugó.
+ja-nej-fråga	es	¿Ella usa el perro?
+fråga-negerad	es	¿Ella no encuentra un gato?
+passiv	es	El perro es hecho.
+passiv-perfekt	es	El perro ha sido cerrado.
+passiv-futurum	es	Un gato será comprado.
+attribut	es	Ella encuentra el perro amable.
+attribut-obestämd	es	Ella compra un gato hermoso.
+attribut-plural	es	Ella sujeta los caballos divertidos.
+possessiv	es	Ella encuentra mi perro.
+possessiv-plural	es	Ella sujeta sus caballos.
+genitivägare	es	Ella encuentra el perro del gato.
+artikellös-plural	es	Ella encuentra unos peces.
+predikativ-adjektiv	es	Ella está feliz.
+predikativ-plural	es	Nosotros estamos sanos.
+komparativ	es	Ella es más divertida.
+superlativ	es	Ella es la más hermosa.
+jämförelse	es	Ella es más amable que el perro.
+attributiv-komparativ	es	Ella encuentra el perro más divertido.
+prepositionsfras	es	Ella trabaja detrás de el perro.
+två-adverbial	es	Ella juega delante de el perro al lado de un gato.
+infinitivkomplement	es	Ella empieza a trabajar.
+infinitiv-negerad	es	Ella no deja de jugar.
+infinitiv-futurum	es	Ella empezará a hacer.
+imperativ	es	¡Cierra el perro!
+imperativ-plural	es	¡Ayudad el perro!
+bisats	es	Ella entiende que nosotros trabajamos.
+bisats-preteritum	es	Ella recuerda que nosotros compramos un gato.
+bisats-negerad	es	Ella opina que nosotros no jugamos.
+adverbialbisats	es	Ella trabaja cuando nosotros jugamos.
+wh-subjekt	es	¿Quién encuentra el perro?
+wh-objekt	es	¿Qué encuentra ella?
+wh-negerad	es	¿Qué no compra ella?
+intransitiv	it	Lei vive.
+transitiv	it	Lei trova il cane.
+transitiv-obestämd	it	Lei compra un gatto.
+plural-objekt	it	Lei tiene i cavalli.
+pronomen-subjekt-1pl	it	Noi lavoriamo.
+bitransitiv	it	Lei gli dà il cane.
+preteritum	it	Lei ha giocato.
+futurum	it	Lei farà il cane.
+perfekt	it	Lei ha chiuso il cane.
+pluskvamperfekt	it	Lei aveva trovato un gatto.
+futurum-perfekt	it	Lei ha comprato un gatto.
+negation	it	Lei non aiuta il cane.
+negation-preteritum	it	Lei non ha giocato.
+ja-nej-fråga	it	Lei usa il cane?
+fråga-negerad	it	Lei non trova un gatto?
+passiv	it	Il cane è fatto.
+passiv-perfekt	it	Il cane è stato chiuso.
+passiv-futurum	it	Un gatto sarà comprato.
+attribut	it	Lei trova il cane gentile.
+attribut-obestämd	it	Lei compra un bello gatto.
+attribut-plural	it	Lei tiene i cavalli divertenti.
+possessiv	it	Lei trova il mio cane.
+possessiv-plural	it	Lei tiene i loro cavalli.
+genitivägare	it	Lei trova il cane del gatto.
+artikellös-plural	it	FEL it/un: cellen 'm_pl' är tom — formen saknas i databasen
+predikativ-adjektiv	it	Lei è felice.
+predikativ-plural	it	Noi siamo sani.
+komparativ	it	Lei è più divertente.
+superlativ	it	Lei è la più bella.
+jämförelse	it	Lei è più gentile del cane.
+attributiv-komparativ	it	Lei trova il cane più divertente.
+prepositionsfras	it	Lei lavora dietro il cane.
+två-adverbial	it	Lei gioca davanti a il cane accanto a un gatto.
+infinitivkomplement	it	Lei inizia a lavorare.
+infinitiv-negerad	it	Lei non smette di giocare.
+infinitiv-futurum	it	Lei inizierà a fare.
+imperativ	it	Chiudi il cane!
+imperativ-plural	it	Aiutate il cane!
+bisats	it	Lei capisce che noi lavoriamo.
+bisats-preteritum	it	Lei ricorda che noi abbiamo comprato un gatto.
+bisats-negerad	it	Lei trova che noi non giochiamo.
+adverbialbisats	it	Lei lavora quando noi giochiamo.
+wh-subjekt	it	Chi trova il cane?
+wh-objekt	it	Cosa trova lei?
+wh-negerad	it	Cosa non compra lei?
+intransitiv	ja	彼女は生きます。
+transitiv	ja	彼女は犬を見つけます。
+transitiv-obestämd	ja	彼女は猫を買います。
+plural-objekt	ja	彼女は馬を持ちます。
+pronomen-subjekt-1pl	ja	私たちは働きます。
+bitransitiv	ja	彼女は彼らに犬をあげます。
+preteritum	ja	彼女は遊びました。
+futurum	ja	彼女は犬をします。
+perfekt	ja	彼女は犬を閉めました。
+pluskvamperfekt	ja	彼女は猫を見つけました。
+futurum-perfekt	ja	彼女は猫を買いました。
+negation	ja	彼女は犬を手伝いません。
+negation-preteritum	ja	彼女は遊びませんでした。
+ja-nej-fråga	ja	彼女は犬を使いますか。
+fråga-negerad	ja	彼女は猫を見つけませんか。
+passiv	ja	犬はされます。
+passiv-perfekt	ja	犬は閉められました。
+passiv-futurum	ja	猫は買われます。
+attribut	ja	彼女は優しい犬を見つけます。
+attribut-obestämd	ja	彼女は美しい猫を買います。
+attribut-plural	ja	彼女は面白い馬を持ちます。
+possessiv	ja	彼女は私の犬を見つけます。
+possessiv-plural	ja	彼女は彼らの馬を持ちます。
+genitivägare	ja	彼女は猫の犬を見つけます。
+artikellös-plural	ja	彼女は魚を見つけます。
+predikativ-adjektiv	ja	彼女は嬉しいです。
+predikativ-plural	ja	私たちは健康です。
+komparativ	ja	彼女はもっと面白いです。
+superlativ	ja	彼女は美しいです。
+jämförelse	ja	彼女は犬より優しいです。
+attributiv-komparativ	ja	彼女はもっと面白い犬を見つけます。
+prepositionsfras	ja	彼女は犬の後ろに働きます。
+två-adverbial	ja	彼女は犬の前に猫の隣に遊びます。
+infinitivkomplement	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+infinitiv-negerad	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+infinitiv-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
+imperativ	ja	犬を閉めてください。
+imperativ-plural	ja	犬を手伝ってください。
+bisats	ja	彼女は私たちが働くということをわかります。
+bisats-preteritum	ja	彼女は私たちが猫を買ったということを思い出します。
+bisats-negerad	ja	彼女は私たちが遊ばないということを思います。
+adverbialbisats	ja	彼女は私たちが遊ぶときに、働きます。
+wh-subjekt	ja	誰が犬を見つけますか。
+wh-objekt	ja	彼女は何を見つけますか。
+wh-negerad	ja	彼女は何を買いませんか。
