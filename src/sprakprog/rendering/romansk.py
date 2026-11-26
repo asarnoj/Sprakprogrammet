@@ -223,7 +223,18 @@ class RomanskRenderare:
 
     # ── verb ─────────────────────────────────────────────────────────
 
+    #: Artigt tilltal kongruerar INTE som det betyder. Konceptet
+    #: `pronomen_2sg_formal` är andra person singular — det tilltalar en
+    #: enda person — men morfologiskt följer det något annat, och vad skiljer
+    #: sig mellan språken. Skillnaden är lexikal, syns bara när pronomenet
+    #: står som subjekt i en påståendesats, och hittades av generatorn:
+    #: "Sie fliegst", "Usted vuelas", "Lei voli", "Vous voles".
+    ARTIG_KONGRUENS = (3, "sg")
+
     def _subjektsform(self, nf: Nominalfras) -> tuple[int, str, int]:
+        if nf.koncept == "pronomen_2sg_formal":
+            person, numerus = self.ARTIG_KONGRUENS
+            return person, numerus, MASKULIN
         rad = self.conn.execute(
             "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
             (nf.koncept,)).fetchone()
@@ -268,6 +279,12 @@ class RomanskRenderare:
         ingen kongruens: "la fille a donné les livres".
         """
         person, numerus, subjektsgenus = self._subjektsform(m.subjekt)
+        # En efterfrågad SUBJEKTSSLOT kongruerar med frågeordet, inte med
+        # svaret. "Wer ändert uns?" — wer är alltid tredje person singular,
+        # hur många svaret än råkar vara. Utan det här blev det "Wer ändern
+        # uns?", och felet hittades av generatorn.
+        if m.fråga_om == "subjekt" and m.subjekt.frågedeterminant is None:
+            person, numerus = 3, "sg"
         variant = self.kopulavariant(m)
 
         # Perfekt är alltid sammansatt. Perfektiv dåtid är det bara i

@@ -205,12 +205,22 @@ class TyskRenderare:
 
     # ── verb ─────────────────────────────────────────────────────────
 
+    #: Artigt tilltal kongruerar INTE som det betyder. Konceptet
+    #: `pronomen_2sg_formal` är andra person singular — det tilltalar en
+    #: enda person — men morfologiskt följer det något annat, och vad skiljer
+    #: sig mellan språken. Skillnaden är lexikal, syns bara när pronomenet
+    #: står som subjekt i en påståendesats, och hittades av generatorn:
+    #: "Sie fliegst", "Usted vuelas", "Lei voli", "Vous voles".
+    ARTIG_KONGRUENS = (3, "pl")
+
     def _subjektsform(self, nf: Nominalfras) -> tuple[int, str]:
         """Person och numerus för kongruensen.
 
         Pronomenkoncept bär person och numerus på Koncept-nivå; vanliga
         substantiv är alltid tredje person.
         """
+        if nf.koncept == "pronomen_2sg_formal":
+            return self.ARTIG_KONGRUENS
         rad = self.conn.execute(
             "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
             (nf.koncept,)).fetchone()
@@ -228,6 +238,12 @@ class TyskRenderare:
         som hamnar i slutet.
         """
         person, numerus = self._subjektsform(m.subjekt)
+        # En efterfrågad SUBJEKTSSLOT kongruerar med frågeordet, inte med
+        # svaret. "Wer ändert uns?" — wer är alltid tredje person singular,
+        # hur många svaret än råkar vara. Utan det här blev det "Wer ändern
+        # uns?", och felet hittades av generatorn.
+        if m.fråga_om == "subjekt" and m.subjekt.frågedeterminant is None:
+            person, numerus = 3, "sg"
         if m.modus is Satsmodus.IMPERATIV:
             # Fyra tilltal, fyra celler. Sie-imperativen ligger under P3sg
             # trots att den formellt är konjunktiv I P3pl — cellen är döpt

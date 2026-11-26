@@ -35,6 +35,8 @@ class FranskRenderare(RomanskRenderare):
     # Franskans imperfektkonjunktiv ("qu'il vînt") är litterär på samma
     # sätt som passé simple, och paradigmet saknar cellerna helt.
     HAR_IMPERFEKTKONJUNKTIV = False
+    # Franskans vouvoiement ÄR andra person plural.
+    ARTIG_KONGRUENS = (2, "pl")
     KOMPARERAD_EFTERSTÄLLD = False
     DUBBEL_SUPERLATIVARTIKEL = True
     NEKANDE_FÖRLED = "ne"

@@ -109,6 +109,10 @@ class EngelskRenderare:
                    or (rad and rad["numerus"] == 2) else "sg")
         return person, numerus
 
+    #: Frågeord som subjekt kongruerar som tredje person singular: "who
+    #: follows you", inte "who follow you". Hittat av generatorn.
+    FRÅGEKONGRUENS = (3, "sg")
+
     def presens(self, koncept: str, nf: Nominalfras) -> str:
         """Presens med personkongruens där verbet har den.
 
@@ -137,6 +141,10 @@ class EngelskRenderare:
             if celler.get(cell):
                 return self.u.form(lexem, cell)
         raise RenderingsFel(f"en/{lexem['lemma']}: ingen preteritumform")
+
+    def _frågesubjekt(self, m: Mening) -> bool:
+        """Är subjektet ersatt av ett frågeord? Då gäller 3sg."""
+        return m.fråga_om == "subjekt" and m.subjekt.frågedeterminant is None
 
     def _tredje_person_sg(self, nf: Nominalfras) -> bool:
         rad = self.conn.execute(
@@ -172,6 +180,11 @@ class EngelskRenderare:
             return [*self.verbdelar(kopula), self.u.form_för(m.verb, "sup")]
         if m.negerad:
             return self._negerat_verb(m)
+        if self._frågesubjekt(m):
+            # "who follows you" — frågeordet är 3sg oavsett svaret.
+            return [self.u.form_för(m.verb, "pres_3sg")
+                    if m.tid is not Tidsreferens.FÖRFLUTEN
+                    else self.preteritum(m.verb, m.subjekt)]
         if m.aspekt is Aspekt.PERFEKT:
             # "has read" / "had read". Hjälpverbet kongruerar, participet
             # inte — och engelskan använder alltid have, aldrig be.
