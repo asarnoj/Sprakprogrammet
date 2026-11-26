@@ -29,17 +29,25 @@ class SpanskRenderare(RomanskRenderare):
         kön = "m" if genus == MASKULIN else "f"
         return f"obest_{kön}_{'pl' if numerus is Numerus.PL else 'sg'}"
 
-    def klitika(self, m: Mening) -> list[str]:
-        """Dativklitikan dubbleras när det finns ett indirekt objekt.
+    DUBBLERAR = True
+
+    def _dubblering(self, io: Nominalfras):
+        """Dativklitikan som dubblerar en utskriven io-fras.
 
         Formen väljs på io:ets person och numerus, inte på subjektets.
-        Tredje person ger le/les, som är det enda fallet som uppstår när
-        io är en substantivfras.
+        En substantivfras är alltid tredje person, alltså le eller les.
         """
-        if m.io is None:
-            return []
-        person, numerus, _ = self._subjektsform(m.io)
+        _, numerus, _ = self._subjektsform(io)
         koncept = "pronomen_3pl" if numerus == "pl" else "pronomen_3sg_mask"
-        if person != 3:
-            koncept = f"pronomen_{person}{numerus}"
-        return [self.u.form_för(koncept, "coi", "mask" if person == 3 else None)]
+        return self.u.form_för(koncept, "coi", "mask"), 3
+
+    def ordna_klitika(self, cod, coi) -> list[str]:
+        """Spanskan har indirekt före direkt, och le blir se framför lo/la.
+
+        "se lo dio", aldrig "le lo dio" — en ren ljudregel som inte går att
+        lagra som en form, eftersom den beror på vad som står EFTER.
+        """
+        if cod and coi:
+            form = "se" if coi[0] in ("le", "les") else coi[0]
+            return [form, cod[0]]
+        return [x[0] for x in (cod, coi) if x]
