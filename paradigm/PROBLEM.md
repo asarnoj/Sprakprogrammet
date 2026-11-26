@@ -3904,11 +3904,55 @@ flyttade japanskans `ukemi` från andra plats till sista.
 lärda tidigare i paradigmet. Det är projektionen som arbetar, och det syns
 utan att någon skrivit en regel om franskan.
 
+#### FLÄTNINGEN BYGGD (2026-08-27) — `dimensioner.stege`
+
+**BESLUTAT AV JULIUS: en gemensam numrering där konstruktioner och böjning
+varvas.**
+
+Flätningen är PROPORTIONELL och inte ett-och-ett. Konstruktionerna är tjugo
+och lika i alla språk; böjningsstegen är fyra i engelskan och fyrtiofem i
+spanskan, så varannan-varannan hade tömt den korta långt före den långa.
+Båda listorna sträcks över samma intervall och slås ihop på position —
+franskan får ungefär två böjningssteg per konstruktion, engelskan ungefär en
+femtedel. Proportionen räknas ur längderna och är alltså ingen inställning.
+
+**Beroenden bryter proportionen, och måste göra det.** Fyra konstruktioner
+går inte att bygga förrän en viss böjning är införd:
+
+    tempus     kräver Pret, Imperf eller Fut
+    perfekt    kräver Sup eller PresPer
+    imperativ  kräver Imp
+    passiv     kräver diates Passiv
+
+Utan det lägger flätningen `tempus` på steg 9 medan preteritumändelserna
+kommer på steg 30, och användaren möter dåtid trettio steg innan något kort
+lär ut hur den böjs — precis felet hela böjningsstegen finns för att laga,
+återinfört ett steg senare. Mätt: villkoret flyttar 24 av franskans steg.
+
+**Stegarnas längd, färdigt flätade:**
+
+    sv 25    en 24    de 28    fr 54    es 65    it 63    ja 29
+
+**`dimensionsprov` vaktar sju invarianter**, var och en med sitt eget
+sabotage. Två lärdomar ur att skriva dem:
+
+*Ett gemensamt sabotage räcker inte.* "Släpp igenom varje cell" fällde bara
+två av fyra; de andra vaktar mot omkastning respektive för LITE undervisning,
+och ett sabotage som lär ut för mycket kan inte bryta dem. Ett prov som inte
+faller för sitt eget sabotage är stumt; ett som inte faller för någon annans
+är bara ett annat prov.
+
+*Ett prov får inte läsa sin förutsättning ur det som prövas.*
+`prov_beroenden` läste `BEROENDE` — alltså exakt tabellen sabotaget tömmer —
+och gick därför igenom med sabotaget på. Provet har nu sin egen kopia av
+kraven, och den kopian är den grammatiska sanningen: säger modulens tabell
+något annat är det provet som säger ifrån.
+
 **KVAR INNAN INKOPPLING.** Mekanismen räknar; den styr fortfarande
-ingenting. Att koppla in den betyder att `befolka` skapar ändelsekort per
-steg i stället för alla på nivå 1, och att `NIVÅ` blir två axlar i stället
-för en: konstruktionerna som idag, plus böjningsstegen. Hur de två flätas —
-en gemensam numrering eller två oberoende räknare — är nästa beslut.
+ingenting. Inkopplingen är att `befolka` skapar ändelsekort per steg i
+stället för alla på nivå 1, och att `upplåsningsläge`/`byggbarhet` grindar
+böjningsstegen — en böjningsnivå är redo när ordförrådet räcker för att möta
+cellen, vilket är en annan fråga än om en KONSTRUKTION går att bygga.
 
 **Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
 

@@ -98,10 +98,106 @@ def prov_stegen_viks() -> list[str]:
     return []
 
 
+SPRÅK = ("sv", "en", "de", "fr", "es", "it", "ja")
+
+
+def prov_stegen_är_hel() -> list[str]:
+    """Den flätade stegen innehåller ALLT, en gång var.
+
+    Tappar flätningen en konstruktion går den aldrig att låsa upp; tappar den
+    en böjningscell är ändelsen otillgänglig igen — samma fel som hela
+    projektionen finns för att laga, återinfört ett steg senare.
+    """
+    from sprakprog.generator.urval import NIVÅ
+    fel = []
+    for språk in SPRÅK:
+        s = d.stege(språk)
+        k = [n for t, n in s if t == "konstruktion"]
+        b = [n for t, n in s if t == "böjning"]
+        väntad_b = [c for c, _ in d.projicera().get(språk, [])]
+        if sorted(k) != sorted(NIVÅ.values()):
+            fel.append(f"{språk}: konstruktionerna stämmer inte ({len(k)} av "
+                       f"{len(NIVÅ)})")
+        if sorted(b) != sorted(väntad_b):
+            fel.append(f"{språk}: böjningsstegen stämmer inte ({len(b)} av "
+                       f"{len(väntad_b)})")
+        if len(set(k)) != len(k) or len(set(b)) != len(b):
+            fel.append(f"{språk}: något steg förekommer två gånger")
+    return fel
+
+
+def prov_beroenden() -> list[str]:
+    """En konstruktion får aldrig komma före den böjning den kräver.
+
+    Utan det lägger den proportionella flätningen "tempus" på steg 9 medan
+    preteritumändelserna kommer på steg 30 — och användaren möter dåtid
+    trettio steg innan något kort lär ut hur den böjs.
+
+    PROVET HAR SIN EGEN KOPIA AV KRAVEN, och det är inte dubbelarbete. Först
+    läste det `d.BEROENDE`, alltså exakt det sabotaget tömmer — och då hade
+    provet inget att kontrollera och gick igenom. Ett prov som läser sin egen
+    förutsättning ur det som prövas kan aldrig falla.
+
+    Kraven här är den grammatiska sanningen: dåtid kräver dåtidsformer,
+    perfekt kräver participet, imperativ kräver imperativformer, passiv
+    kräver passiva former. Skulle modulens tabell säga något annat är det
+    HÄR som säger ifrån.
+    """
+    KRAV = {"tempus": ("Pret", "Imperf", "Fut"),
+            "perfekt": ("Sup", "PresPer"),
+            "imperativ": ("Imp",),
+            "passiv": None}          # None = diates Passiv, inte en tempus
+    from sprakprog.kaikki_mappning.paradigm import ladda_legend, ladda_slot
+    legend = ladda_legend()
+    tempusnamn = {v: k for k, v in legend.get("tempus", {}).items()}
+    fel = []
+    for språk in SPRÅK:
+        s = d.stege(språk)
+        plats = {namn: i for i, (_, namn) in enumerate(s)}
+        try:
+            axlar = {c.id: c.axlar
+                     for c in ladda_slot(språk, "Verb", legend).celler}
+        except FileNotFoundError:
+            continue
+        for konstruktion, tempus in KRAV.items():
+            if konstruktion not in plats:
+                continue
+            celler = [n for t, n in s if t == "böjning" and (
+                (axlar.get(n, {}).get("diates") == 2) if tempus is None
+                else tempusnamn.get(axlar.get(n, {}).get("tempus")) in tempus)]
+            if celler and plats[celler[-1]] > plats[konstruktion]:
+                fel.append(f"{språk}: {konstruktion} på steg "
+                           f"{plats[konstruktion] + 1} men {celler[-1]} först "
+                           f"på {plats[celler[-1]] + 1}")
+    return fel
+
+
+def prov_varvas() -> list[str]:
+    """De två sorterna ska VARVAS, inte ligga i två block.
+
+    Ligger all böjning först och alla konstruktioner sedan är det två stegar
+    efter varandra och inte en flätad, och då har flätningen slutat göra
+    något utan att säga ifrån.
+    """
+    fel = []
+    for språk in SPRÅK:
+        typer = [t for t, _ in d.stege(språk)]
+        if len(set(typer)) < 2:
+            continue                       # bara en sort finns att varva
+        byten = sum(a != b for a, b in zip(typer, typer[1:]))
+        if byten < 4:
+            fel.append(f"{språk}: bara {byten} byten mellan sorterna — "
+                       f"stegen är block, inte flätad")
+    return fel
+
+
 PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("ingen ändelse lärs ut två gånger", prov_ingen_upprepning),
         ("varje ändelse lärs ut någon gång", prov_allt_lärs_ut),
-        ("stegen viks olika per språk", prov_stegen_viks)]
+        ("stegen viks olika per språk", prov_stegen_viks),
+        ("den flätade stegen är hel", prov_stegen_är_hel),
+        ("konstruktion aldrig före sin böjning", prov_beroenden),
+        ("de två sorterna varvas", prov_varvas)]
 
 
 
@@ -147,12 +243,42 @@ def _sabotage_utan_filter():
     d.projicera = allt
     return lambda: setattr(d, "projicera", äkta)
 
+def _sabotage_utan_beroenden():
+    """Beroendetabellen tömd — ren proportionell flätning."""
+    äkta = d.BEROENDE, d.PASSIVKONSTRUKTION
+    d.BEROENDE, d.PASSIVKONSTRUKTION = {}, "\0"
+    def ångra():
+        d.BEROENDE, d.PASSIVKONSTRUKTION = äkta
+    return ångra
+
+
+def _sabotage_två_block():
+    """All böjning först, alla konstruktioner sedan — två stegar, inte en."""
+    äkta = d.stege
+    def block(språk, ordklass="Verb"):
+        s = äkta(språk, ordklass)
+        return ([x for x in s if x[0] == "böjning"]
+                + [x for x in s if x[0] == "konstruktion"])
+    d.stege = block
+    return lambda: setattr(d, "stege", äkta)
+
+
+def _sabotage_tappa_steg():
+    """Sista steget tappas — något går aldrig att låsa upp."""
+    äkta = d.stege
+    d.stege = lambda språk, ordklass="Verb": äkta(språk, ordklass)[:-1]
+    return lambda: setattr(d, "stege", äkta)
+
+
 #: (sabotage, vilket prov det ska fälla).
 SABOTAGE = [
     (_sabotage_omkastad, 0),
     (_sabotage_utan_filter, 1),
     (_sabotage_halva, 2),
     (_sabotage_utan_filter, 3),
+    (_sabotage_tappa_steg, 4),
+    (_sabotage_utan_beroenden, 5),
+    (_sabotage_två_block, 6),
 ]
 
 

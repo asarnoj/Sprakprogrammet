@@ -170,3 +170,84 @@ def projicera(celler: tuple[str, ...] | None = None,
                 steg.append((cell, nya))
         per_språk[språk] = steg
     return per_språk
+
+
+#: Konstruktioner som INTE går att bygga förrän en viss böjning är införd.
+#:
+#: Utan det här kunde flätningen lägga "tempus" på steg 9 medan
+#: preteritumändelserna kom på steg 30 — och då möter användaren dåtid i en
+#: mening trettio steg innan något kort lär ut hur dåtid böjs. Det är precis
+#: det felet hela böjningsstegen finns för att laga, återinfört av
+#: flätningen.
+#:
+#: De ÖVRIGA sexton konstruktionerna klarar sig med presens aktivum och har
+#: därför ingen rad här. Beroendet är en grammatisk sanning och inte ett val:
+#: `ANVÄNDER["tempus"]` säger `m.tid is not NUTID`, alltså krävs former för
+#: en annan tid.
+BEROENDE: dict[str, tuple[str, ...]] = {
+    "tempus":    ("Pret", "Imperf", "Fut"),
+    "perfekt":   ("Sup", "PresPer"),
+    "imperativ": ("Imp",),
+}
+
+#: `passiv` beror inte på en TEMPUS utan på diatesen, och behandlas därför
+#: för sig — se `stege`.
+PASSIVKONSTRUKTION = "passiv"
+
+
+def stege(språk: str, ordklass: str = "Verb") -> list[tuple[str, str]]:
+    """Den sammanflätade stegen: [(typ, namn)] där typ är 'konstruktion' eller 'böjning'.
+
+    TVÅ STEGAR MED HELT OLIKA LÄNGD. Konstruktionerna är tjugo och samma i
+    alla språk; böjningsstegen är fyra i engelskan och fyrtiofem i spanskan.
+    Att varva dem ett-och-ett hade tömt den korta långt före den långa, så
+    flätningen är PROPORTIONELL: båda listorna sträcks över samma intervall
+    och slås ihop på position. Franskan får då ungefär två böjningssteg per
+    konstruktion, engelskan ungefär en femtedel.
+
+    Proportionen räknas ur listornas längd och är alltså inte ett val.
+
+    BEROENDEN BRYTER PROPORTIONEN, och ska göra det. En konstruktion som
+    kräver en böjning flyttas ner till strax efter den — se `BEROENDE`.
+    """
+    from ..generator.urval import NIVÅ
+    from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
+
+    böjning = [cell for cell, _ in projicera(ordklass=ordklass).get(språk, [])]
+    konstruktioner = [NIVÅ[n] for n in sorted(NIVÅ)]
+    if not böjning:
+        return [("konstruktion", k) for k in konstruktioner]
+
+    legend = ladda_legend()
+    tempusnamn = {v: k for k, v in legend.get("tempus", {}).items()}
+    try:
+        axlar = {c.id: c.axlar for c in ladda_slot(språk, ordklass, legend).celler}
+    except FileNotFoundError:
+        axlar = {}
+
+    def sist_med(villkor) -> int:
+        """Index för den SISTA böjningscell som uppfyller villkoret, annars −1."""
+        träffar = [i for i, cell in enumerate(böjning) if villkor(axlar.get(cell, {}))]
+        return träffar[-1] if träffar else -1
+
+    krav: dict[str, int] = {}
+    for namn, tempus in BEROENDE.items():
+        krav[namn] = sist_med(
+            lambda a, t=tempus: tempusnamn.get(a.get("tempus")) in t)
+    krav[PASSIVKONSTRUKTION] = sist_med(lambda a: a.get("diates") == 2)
+
+    # Proportionell position i [0, 1) för varje rad i båda listorna.
+    rader: list[tuple[float, int, str, str]] = []
+    for i, cell in enumerate(böjning):
+        rader.append(((i + 1) / len(böjning), 0, "böjning", cell))
+    for i, namn in enumerate(konstruktioner):
+        pos = (i + 1) / len(konstruktioner)
+        # Ligger konstruktionen före sitt krav skjuts den ner precis efter.
+        gräns = krav.get(namn, -1)
+        if gräns >= 0:
+            pos = max(pos, (gräns + 1) / len(böjning))
+        # 1 = konstruktionen kommer EFTER böjningen på samma position, så
+        # den böjning ett krav pekar på hinner före.
+        rader.append((pos, 1, "konstruktion", namn))
+    rader.sort(key=lambda r: (r[0], r[1]))
+    return [(typ, namn) for _, _, typ, namn in rader]
