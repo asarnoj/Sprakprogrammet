@@ -629,6 +629,25 @@ subjektets ord, och ett beslut som syns i en del kan försvinna när en annan de
 Två ord med samma formkortsmönster, samma celler, samma sammanfallande former och samma
 egenskaper ger samma kort i samma mening, så ett av dem prövas.
 
+**Ett nej går fort med förklaringar** (avgjort 2026-09-14). Utan dem renderas varje
+ordval i varje sammansättning, och de flesta faller av samma skäl: ett förbjudet val
+syns, vilka ord som än står där. För engelskans «the» utan valet `bestämd_artikel` blev
+det omkring 210 renderingar i var och en av 50 484 sammansättningar, timmar för en enda
+fråga (mätt 2026-09-14). En mening som faller på ett förbjudet val lämnar därför ett
+bevis. Beviset består av tre delar:
+- den innersta del kring beslutet som lämnar tillbaka lika mycket när beslutet tvingas
+  till ett annat utfall
+- ett ord i delen som då ändras
+- allt delen läste: svaren om orden på dess platser och värdena i specfälten.
+
+Varje sammansättning med samma del hoppas över när varje ord som kan stå på delens
+platser uppfyller beviset. Det gäller också i senare frågor där samma kort är förbjudet.
+Beviset vilar på kartans egna förutsättningar (6.7): renderaren läser ord bara genom
+uppslaget, och en del påverkar resten av meningen bara genom vad den lämnar tillbaka.
+Därför är det exakt: det som hoppas över hade fallit. I kontrolläget hoppas inget över.
+Allt som ett bevis täcker renderas då ändå, och sökningen stannar om en sådan mening går
+att bygga (P3). Med förklaringarna tog engelskans första nivåkort 69 s.
+
 **Krav med flera alternativ.** Många krav kan uppfyllas av flera kort. Franskans `je`
 kräver ett verb i 1 sg, som kan ha vilken klass ändelse som helst, och varje sådan
 ändelse kräver `je`. Blev kravet en kant till varje alternativ skulle alla kräva
@@ -1775,7 +1794,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     3   kortmodellen                       kräver 0; kortmodell/: korten för svenskan och engelskan gjorda, och besluten kopplade till kort; delen av formen per kort kvar (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
     3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2)
-    4   nivåerna och grafen                kräver 2 och 5a; kraven är kortens minsta mängder per språkpar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3; nivaer/: en minsta mängd per kort, än så länge utan språkpar och filter
+    4   nivåerna och grafen                kräver 2 och 5a; kraven är kortens minsta mängder per språkpar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3; nivaer/: en minsta mängd per kort, än så länge utan språkpar och filter; nej-frågorna går fort med förklaringar (sammansattning/forklaring.py)
     5a  entydighetsfiltret och märkningen  kräver 2; varianterna och källmeningens märkning (6.5); behövs av 4 och 5
     5   sökningen                          kräver 5a och 3c; värdet, budgeten, villkoren 6–8 i 6.1; svarstiden mäts med en tidig prototyp innan steg 6–9 byggs
     5b  aspektkrav på koncept              parallellt (6.5)

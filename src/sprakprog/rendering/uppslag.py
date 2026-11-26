@@ -80,10 +80,17 @@ def frasdel(metod):
     return metod
 
 
+#: Kod som ligger mellan renderaren och uppslaget utan att vara någon av dem:
+#: omslagen när sammansättningen genomlyser en rendering
+#: (`sammansattning/forklaring.py`). Stället ska vara renderarens, annars får
+#: orden andra nycklar än i en vanlig rendering.
+GENOMSKINLIGA: set = set()
+
+
 def _anropsställe() -> tuple[str, int]:
     """Funktionen och raden i renderaren som gjorde uppslaget."""
     ram = sys._getframe(1)
-    while ram.f_code.co_filename == __file__:
+    while ram.f_code.co_filename == __file__ or ram.f_code in GENOMSKINLIGA:
         ram = ram.f_back
     return ram.f_code.co_name, ram.f_lineno
 

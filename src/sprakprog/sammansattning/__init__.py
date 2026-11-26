@@ -27,13 +27,19 @@ nivåerna (steg 4) behöver. Uttömmande går, eftersom ingen del behöver uppre
 mer än en gång längs en gren: satsen i bisatsen i bisatsen kan kortas till
 satsen i bisatsen utan att något kort tillkommer. Värdet, budgeten och
 entydighetsfiltret hör till sökningen (steg 5) och finns inte här.
+
+En mening som faller på ett förbjudet val lämnar ett bevis efter sig
+(`forklaring.py`): den del av sammansättningen där valet syns, och vad orden och
+fälten där måste vara. Varje senare sammansättning och ordval som beviset täcker
+hoppas över, också i senare frågor där samma kort är förbjudet.
 """
 
 from __future__ import annotations
 
+import itertools
 import math
 import sqlite3
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from typing import Callable, Iterator
 
@@ -42,6 +48,7 @@ from ..rendering import RENDERARE, RenderingsFel, spåra
 from ..rendering import spec as S
 from ..rendering.karta import FÄLTKLASSER
 from ..rendering.restriktioner import TIDSBIT, Validator
+from .forklaring import Bevisfel, Nod, absolut, bevisa, uppfyller
 
 #: Händelser som kan bli kort. "del" är ett anrop och "ordföljd" den gamla
 #: kärnans logg.
@@ -111,6 +118,17 @@ def _slå_ihop(villkor: dict, nya: list) -> dict | None:
     return villkor if ut is None else ut
 
 
+#: Namn som `Sammansättare._verben_möjliga` läser: verbet, satsens ramfält,
+#: diatesen och subjektets koncept.
+_VERBNAMN = ("verb", "bisats", "objekt", "io", "predikativ", "komplement", "diates",
+             "subjekt.koncept")
+
+
+def _rör_verb(text) -> bool:
+    return isinstance(text, str) and any(text == n or text.endswith("." + n)
+                                         for n in _VERBNAMN)
+
+
 def _sort(utdata) -> set:
     return {"lista" if isinstance(u, tuple) else u for u in utdata}
 
@@ -150,6 +168,37 @@ class Sammansättare:
         self._konstkort: dict[int, list] = {}
         self._klasser: dict[int, list] = {}
         self._klass_möjlig: dict = {}
+        self._verbläsning: dict[int, bool] = {}
+        # Vägens villkor och händelser med meningens namn, per väg och plats, och
+        # vägarnas prov mot de tillåtna korten, per fråga.
+        self._döpcache: dict = {}
+        self._vägar_för: Tillåten = None
+        self._vägar_tillåtna: dict[int, bool] = {}
+        # Vad delar gav, per fråga: (minnesnyckel, projektion) → utfallen. Ett
+        # sammanhang sparas när det kommer för andra gången, ett tomt direkt.
+        self._minne_för: Tillåten = None
+        self._minne_bevis = 0
+        self._minne: dict = {}
+        self._sedda: set = set()
+        # Förklaringarna (`forklaring.py`): delens nyckel → bevis.
+        self._bevis: dict[int, list] = defaultdict(list)
+        self._bevismängd: set = set()
+        self._obevisbara: set = set()
+        self._atomcache: dict = {}
+        self._nodnycklar: dict = {}
+        self._filtrerat_för: Tillåten = None
+        self._filtrerat: dict = {}
+        self._klasser_per_lista: dict = {}
+        self._ram_möjlig: dict = {}
+        self._ramcache: dict = {}
+        self._ramar: dict = {}
+        self._semantik_möjlig: dict = {}
+        self._provcache: dict = {}
+        self._gallringar: dict = {}
+        self._bärarcache: dict = {}
+        #: Prövas varje förutsägelse mot renderingen, i stället för att hoppas över?
+        self.kontroll = False
+        self.statistik: Counter = Counter()
         for del_, vägar in karta["vägar"].items():
             for väg in vägar:
                 self._index[del_][väg.argument].append(väg)
@@ -170,9 +219,11 @@ class Sammansättare:
                 self._noder[i] = [self._anropsnod[i][nr] for nr, _, _ in väg.anrop]
                 self._klasser[i] = [svar for k, svar in väg.villkor
                                     if isinstance(k, tuple) and k[0] == "ordklass"]
+                self._verbläsning[i] = self._läser_verb(väg)
         self._vägar = [v for grupper in self._index.values()
                        for vägar in grupper.values() for v in vägar]
         self._räkna_minsta_ord()
+        self._räkna_delarnas_räckvidd()
         # Kortare vägar först, så att en uttömmande genomgång hittar korta
         # meningar tidigt.
         for grupper in self._index.values():
@@ -302,36 +353,90 @@ class Sammansättare:
         nod = (del_, etiketter)
         if kedja.count(nod) >= 2 or (måste and nod not in nåbar[0]):
             return
+        # En del ger detsamma igen när allt den kan läsa är lika: samma argument,
+        # samma kedja och samma villkor under argumenten (`_projektion`). De
+        # villkor den lägger till har namn under argumenten och kan inte krocka
+        # med anroparens. Minnet töms när ett nytt bevis lärs (`_minnesnyckel`).
+        minne = self._minnesnyckel(nod, bindning, budget, tillåten, kedja, måste)
+        samlade = None
+        if minne is not None:
+            minne = (minne, self._projektion(bindning, villkor, nod))
+            if minne in self._minne:
+                self.statistik["delar ur minnet"] += 1
+                for tillägg, h, n, utdata, har, barnet in self._minne[minne]:
+                    v = villkor
+                    if tillägg:
+                        v = dict(villkor)
+                        v.update(tillägg)
+                    yield v, h, n, utdata, har, barnet
+                return
+            if minne in self._sedda:
+                samlade = []
+            self._sedda.add(minne)
+        gav = False
         kedja = kedja + (nod,)
         for väg in self._index[del_].get(etiketter, ()):
             i = id(väg)
             if self._min_väg[i] > budget:
                 continue
+            # En väg som anropar en del som redan står två gånger längs grenen
+            # blir aldrig klar, så dess övriga anrop behöver inte gås igenom.
+            if any(kedja.count(n) >= 2 for n in self._noder[i]):
+                continue
             egen = nåbar is not None and nåbar[1][i]
             if måste and not egen and not any(n in nåbar[0] for n in self._noder[i]):
                 continue
-            if tillåten is not None and not (self._konstanta_tillåtna(i, tillåten)
-                                             and self._säkra_ordningar_tillåtna(i, tillåten)
-                                             and self._klasserna_möjliga(i, tillåten)):
+            if tillåten is not None and not self._vägen_tillåten(i, tillåten):
                 continue
-            nya = _slå_ihop(villkor, [(_döp_nyckel(k, bindning), v)
-                                      for k, v in self._globala[i]])
+            globala, händelser = self._döpt(i, bindning)
+            nya = _slå_ihop(villkor, globala)
             if nya is None:
                 continue
-            händelser = [_döp_händelse(h, bindning) for h in self._händelser[i]]
-            for v, h, n, har in self._anropen(väg, 0, bindning, nya, händelser,
-                                              self._egna_ord[i], budget, tillåten, kedja,
-                                              {}, nåbar, måste, egen):
-                yield v, h, n, väg.utdata, har
+            if self._verbläsning[i] and not self._verben_möjliga(nya, händelser, tillåten):
+                continue
+            for v, h, n, har, barn, väntande in self._anropen(
+                    väg, 0, bindning, nya, händelser, self._egna_ord[i], budget, tillåten,
+                    kedja, {}, nåbar, måste, egen, (), frozenset()):
+                nod = self._nod(väg, bindning, barn)
+                nod.ord = n
+                # En ändrad längd som delarna under lämnade och den här delen
+                # godtog når roten: meningen faller.
+                bevisad = del_ == "rendera" and bool(väntande)
+                # Annars förs den vidare om delen lämnar en lista.
+                upp = (väntande if all(isinstance(u, tuple) for u in väg.utdata)
+                       else frozenset())
+                if tillåten is not None and nod.nyckel in self._bevis:
+                    bevis = self._aktiva(nod, v, tillåten, fullständig=False)
+                    lika = [b for b in bevis if not b.ändring]
+                    bevisad = bevisad or bool(lika) and self._täckt(
+                        nod, v, h, tillåten, False, lika)
+                    for ändring in {b.ändring for b in bevis if b.ändring}:
+                        if self._täckt(nod, v, h, tillåten, False,
+                                       [b for b in bevis if b.ändring == ändring]):
+                            upp = upp | {ändring}
+                if bevisad:
+                    self.statistik["delar bevisade"] += 1
+                    if not self.kontroll:
+                        continue
+                    nod.täckt = True
+                nod.väntande = upp
+                gav = True
+                if samlade is not None:
+                    samlade.append(({k: x for k, x in v.items() if k not in villkor},
+                                    h, n, väg.utdata, har, nod))
+                yield v, h, n, väg.utdata, har, nod
+        if minne is not None and (samlade is not None or not gav):
+            self._minne[minne] = samlade or []
 
     def _anropen(self, väg, i: int, bindning: dict, villkor: dict, händelser: list,
                  ord: int, budget: float, tillåten: Tillåten, kedja: tuple,
-                 antal: dict, nåbar: tuple | None, måste: bool, har: bool) -> Iterator[tuple]:
+                 antal: dict, nåbar: tuple | None, måste: bool, har: bool,
+                 noderna: tuple, väntande: frozenset) -> Iterator[tuple]:
         if i == len(väg.anrop):
             if (måste and not har) or (tillåten is not None
                                        and not self._ordningar_tillåtna(väg, antal, tillåten)):
                 return
-            yield villkor, händelser, ord, har
+            yield villkor, händelser, ord, har, noderna, väntande
             return
         nr, barn, argument = väg.anrop[i]
         noder = self._noder[id(väg)]
@@ -342,14 +447,275 @@ class Sammansättare:
         lokala = self._lokala[id(väg)]
         # Kan inget senare anrop ge målet måste det här ge det.
         barnet_måste = måste and not har and not any(n in nåbar[0] for n in noder[i + 1:])
-        for v, h, n, utdata, barnet_har in self._delen(
+        for v, h, n, utdata, barnet_har, nod in self._delen(
                 barn, etiketter, barnbindning, villkor, budget - ord - resten, tillåten,
                 kedja, nåbar, barnet_måste):
             if not self._utdata_passar(lokala, nr, utdata, n):
                 continue
+            if ((nod.verb or self._rör_subjekt(nod))
+                    and not self._verben_möjliga(v, händelser + h, tillåten)):
+                continue
+            godtagna = frozenset(ä for ä in nod.väntande
+                                 if self._längden_passar(lokala, nr, n + ä))
             yield from self._anropen(väg, i + 1, bindning, v, händelser + h, ord + n,
                                      budget, tillåten, kedja, {**antal, nr: n}, nåbar,
-                                     måste, har or barnet_har)
+                                     måste, har or barnet_har, noderna + (nod,),
+                                     väntande | godtagna)
+
+    # ── förklaringarna (forklaring.py) ──
+
+    def _nod(self, väg, bindning: dict, barn: tuple) -> Nod:
+        nyckel = self._nodnycklar.setdefault((id(väg), tuple(b.nyckel for b in barn)),
+                                             len(self._nodnycklar))
+        nod = Nod(väg, bindning, barn, nyckel)
+        nod.verb = self._verbläsning[id(väg)] or any(b.verb for b in barn)
+        return nod
+
+    def _läser_verb(self, väg) -> bool:
+        """Kan vägen ändra svaret från `_verben_möjliga`?
+
+        Svaret beror på satsens fält i `RAMFÄLT`, på vad som läses om verbet och
+        på verbets former. En väg som inte rör något av det lämnar svaret som
+        det var, så frågan behöver inte ställas om efter den. Namnen prövas som
+        vägen själv har dem, också ett argument som heter `verb`, så att hellre
+        för många vägar räknas än för få.
+        """
+        for k, _ in väg.villkor:
+            if _rör_verb(k) or (isinstance(k, tuple) and len(k) > 1 and _rör_verb(k[1])):
+                return True
+        return any(h[0] == "form" and isinstance(h[2], tuple) and _rör_verb(h[2][1])
+                   for h in väg.händelser)
+
+    def _räkna_delarnas_räckvidd(self) -> None:
+        """Vilka delar anropar andra, och vilka kan fråga `_verben_möjliga` — som
+        en fixpunkt, eftersom delarna anropar varandra i cykler."""
+        self._delar_med_anrop = {(d, e) for d, grupper in self._index.items()
+                                 for e, vägar in grupper.items() if any(v.anrop for v in vägar)}
+        self._verbdelar: set = set()
+        ändrat = True
+        while ändrat:
+            ändrat = False
+            for d, grupper in self._index.items():
+                for e, vägar in grupper.items():
+                    if (d, e) not in self._verbdelar and any(
+                            self._verbläsning[id(v)]
+                            or any((b, self._anropsetiketter(a)) in self._verbdelar
+                                   for _, b, a in v.anrop)
+                            for v in vägar):
+                        self._verbdelar.add((d, e))
+                        ändrat = True
+
+    def _projektion(self, bindning: dict, villkor: dict, nod: tuple) -> frozenset:
+        """Det i villkoren som delen och delarna under den kan läsa.
+
+        Delen läser meningen bara genom sina argument, så dess villkor, dess
+        platsers ord och dess fält har namn under argumentens namn i meningen.
+        Kan delen fråga `_verben_möjliga` läser den också satsernas ramfält och
+        verb, var de än står.
+        """
+        prefix = tuple(bindning.values())
+        verb = nod in self._verbdelar
+        ut = []
+        for k, v in villkor.items():
+            text = k if isinstance(k, str) else (k[1] if len(k) > 1 else None)
+            if not isinstance(text, str):
+                continue
+            if (verb and _rör_verb(text)) or any(text == p or text.startswith(p + ".")
+                                                 for p in prefix):
+                ut.append((k, v))
+        return frozenset(ut)
+
+    def _minnesnyckel(self, nod: tuple, bindning: dict, budget: float,
+                      tillåten: Tillåten, kedja: tuple, måste: bool) -> tuple | None:
+        """Nyckeln för minnet av vad delar gav, eller None för en del utan anrop,
+        som är billigare att gå igenom än att minnas."""
+        if nod not in self._delar_med_anrop:
+            return None
+        # Minnet gäller för en fråga och så länge inga nya bevis lärts: ett bevis
+        # som kommit till sedan dess ska få skära bort det som minnet annars gav.
+        if tillåten is not self._minne_för or len(self._bevismängd) != self._minne_bevis:
+            self._minne_för, self._minne, self._sedda = tillåten, {}, set()
+            self._minne_bevis = len(self._bevismängd)
+        return (nod, tuple(bindning.items()), budget, måste, kedja)
+
+    def _döpt(self, i: int, bindning: dict) -> tuple[list, list]:
+        """Vägens villkor och händelser med meningens namn. Listorna delas och
+        får inte ändras."""
+        nyckel = (i, tuple(bindning.items()))
+        if nyckel not in self._döpcache:
+            self._döpcache[nyckel] = (
+                [(_döp_nyckel(k, bindning), v) for k, v in self._globala[i]],
+                [_döp_händelse(h, bindning) for h in self._händelser[i]])
+        return self._döpcache[nyckel]
+
+    def _vägen_tillåten(self, i: int, tillåten: Callable) -> bool:
+        """Vägens egna prov mot de tillåtna korten, som bara beror på vägen."""
+        if tillåten is not self._vägar_för:
+            self._vägar_för, self._vägar_tillåtna = tillåten, {}
+        if i not in self._vägar_tillåtna:
+            self._vägar_tillåtna[i] = (self._konstanta_tillåtna(i, tillåten)
+                                       and self._säkra_ordningar_tillåtna(i, tillåten)
+                                       and self._klasserna_möjliga(i, tillåten)
+                                       and self._platserna_möjliga(i, tillåten))
+        return self._vägar_tillåtna[i]
+
+    def _platserna_möjliga(self, i: int, tillåten: Callable) -> bool:
+        """Finns ett tillåtet ord för varje plats där vägen själv slår upp en form?
+
+        Orden räknas med vägens egna läsningar och celler. Senare delar kan bara
+        lägga till läsningar och celler, och alltså göra orden färre, så en tom
+        plats här blir aldrig fylld. Utan den här frågan byggs en bisats färdig i
+        varje sammansättning vars genitivägare kräver en ändelse som inte är
+        tillåten: 5,4 miljoner sammansättningar i en fråga om engelskans «why»
+        (mätt 2026-09-15).
+        """
+        villkor = dict(self._globala[i])
+        former = [("form", h[2], h[3]) for h in self._händelser[i] if h[0] == "form"]
+        for _, koncept, _ in former:
+            if (isinstance(koncept, tuple) and villkor.get(("ordklass", koncept[1])) is not None
+                    and not self._kandidater(koncept[1], None, villkor, former, tillåten)):
+                return False
+        return True
+
+    def _aktiva(self, nod: Nod, villkor: dict, tillåten: Callable,
+                fullständig: bool) -> list:
+        """Delens bevis för förbjudna kort, där fälten stämmer med meningen.
+
+        Ett fält som ännu inte är satt kan sättas av en senare del, så innan
+        sammansättningen är `fullständig` avgör det inget.
+        """
+        ut = []
+        for b in self._bevis.get(nod.nyckel, ()):
+            if tillåten(b.kort):
+                continue
+            for rel, etikett in b.fält:
+                namn = absolut(nod.bindning, rel)
+                if namn is None or (villkor[namn] != etikett if namn in villkor
+                                    else not (fullständig and etikett is None)):
+                    break
+            else:
+                if all(absolut(nod.bindning, rel) is not None for rel, _, _ in b.platser):
+                    ut.append(b)
+        return ut
+
+    def _täckt(self, nod: Nod, villkor: dict, händelser: list, tillåten: Callable,
+               fullständig: bool, bevis: list | None = None) -> bool:
+        """Faller varje mening med delen, vilka ord som än står på dess platser?
+
+        Orden som kan stå på en plats delas upp efter vilka av bevisens villkor
+        de uppfyller, och varje kombination av grupper måste uppfylla ett bevis.
+        Utan `bevis` används delens alla aktiva bevis.
+        """
+        if bevis is None:
+            bevis = self._aktiva(nod, villkor, tillåten, fullständig)
+        if not bevis:
+            return False
+        atomer: dict = defaultdict(dict)
+        sorter: dict = {}
+        for b in bevis:
+            for rel, sort, villkoren in b.platser:
+                text = absolut(nod.bindning, rel)
+                sorter[text] = sort
+                for atom in villkoren:
+                    atomer[text].setdefault(atom, len(atomer[text]))
+        grupper = {}
+        for text, index in atomer.items():
+            lista = self._kandidater(text, sorter[text], villkor, händelser, tillåten)
+            if not lista:
+                return True            # inget ord kan stå där: ingen mening alls
+            nyckel = (id(lista), tuple(index))
+            if nyckel not in self._klasser_per_lista:
+                self._klasser_per_lista[nyckel] = (lista, {
+                    tuple(uppfyller(self, atom, lexem["nyckel"]) for atom in index)
+                    for lexem in lista})
+            grupper[text] = self._klasser_per_lista[nyckel][1]
+        texter = list(grupper)
+        for val in itertools.product(*(grupper[t] for t in texter)):
+            svar = dict(zip(texter, val))
+            if not any(all(svar[text][atomer[text][atom]]
+                           for rel, _, villkoren in b.platser
+                           for text in (absolut(nod.bindning, rel),)
+                           for atom in villkoren)
+                       for b in bevis):
+                return False
+        return True
+
+    def _giltiga(self, rot: Nod, villkor: dict, tillåten: Callable) -> list[tuple]:
+        """Varje del i en färdig sammansättning med bevis som gäller där: (del, bevis).
+
+        Ett bevis som ändrar delens längd gäller bara om varje del ovanför
+        godtar den nya längden.
+        """
+        ut: list[tuple] = []
+
+        def gå(nod: Nod, kedja: tuple) -> None:
+            if nod.nyckel in self._bevis:
+                bevis = [b for b in self._aktiva(nod, villkor, tillåten, fullständig=True)
+                         if not b.ändring or self._godtas(nod, kedja, b.ändring)]
+                if bevis:
+                    ut.append((nod, bevis))
+            for (nr, _, _), barn in zip(nod.väg.anrop, nod.barn):
+                gå(barn, kedja + ((nod, nr),))
+
+        gå(rot, ())
+        return ut
+
+    def _godtas(self, nod: Nod, kedja: tuple, ändring: int) -> bool:
+        """Godtar varje del ovanför att delens lista blir `ändring` ord längre?
+
+        `kedja` är (del, anropets nummer) från roten ner till delens anropare.
+        En del som godtar längden följer samma väg, och dess egen lista ändras
+        lika mycket — men bara en lista har en längd att föra vidare.
+        """
+        barn = nod
+        for steg, (förälder, nr) in enumerate(reversed(kedja)):
+            if steg and not all(isinstance(u, tuple) for u in barn.väg.utdata):
+                return False
+            if not self._längden_passar(self._lokala[id(förälder.väg)], nr,
+                                        barn.ord + ändring):
+                return False
+            barn = förälder
+        return True
+
+    def _någon_täckt(self, giltiga: list, villkor: dict, händelser: list,
+                     tillåten: Callable) -> bool:
+        return any(self._täckt(nod, villkor, händelser, tillåten, True, bevis)
+                   for nod, bevis in giltiga)
+
+    def _avfärdad(self, giltiga: list, villkor: dict, bundna: dict,
+                  tillåten: Callable) -> bool:
+        """Uppfyller ordvalet ett bevis? Då faller meningen utan att renderas."""
+        for nod, bevis in giltiga:
+            for b in bevis:
+                if all((nyckel := bundna.get(absolut(nod.bindning, rel))) is not None
+                       and all(uppfyller(self, atom, nyckel) for atom in villkoren)
+                       for rel, _, villkoren in b.platser):
+                    return True
+        return False
+
+    def _lär(self, rot: Nod, villkor: dict, bundna: dict, platser: dict, ut,
+             kort: frozenset, tillåten: Callable) -> bool:
+        """Ett bevis ur en mening som föll på ett förbjudet val. True om det är nytt.
+
+        Ett bevis räcker för att meningen ska falla, så sökningen slutar vid det
+        första. En sammansättning där ett kort inte gick att bevisa prövas inte
+        igen för samma kort.
+        """
+        for k in sorted(kort, key=str):
+            if (tillåten(k) or k.typ != "regel" or k.nyckel[0] != "val"
+                    or (rot.nyckel, k) in self._obevisbara):
+                continue
+            bevis = bevisa(self, rot, villkor, bundna, platser, ut, k)
+            if bevis is None:
+                self._obevisbara.add((rot.nyckel, k))
+                continue
+            if bevis in self._bevismängd:
+                return False
+            self._bevismängd.add(bevis)
+            self._bevis[bevis.nod].append(bevis)
+            self.statistik["bevis"] += 1
+            return True
+        return False
 
     def _konstanta_tillåtna(self, i: int, tillåten: Callable) -> bool:
         if i not in self._konstkort:
@@ -432,6 +798,13 @@ class Sammansättare:
             return n == 0
         if sort == "ord":
             return n == 1
+        return Sammansättare._längden_passar(lokala, nr, n)
+
+    @staticmethod
+    def _längden_passar(lokala: dict, nr: int, n: int) -> bool:
+        """Godtar anroparen en lista med `n` ord från anropet `nr`?"""
+        if lokala.get(("utdata", nr)) != "lista":
+            return False
         for nyckel, svar in lokala.items():
             if nyckel[0] != "längd" or nyckel[1] != nr:
                 continue
@@ -552,25 +925,46 @@ class Sammansättare:
         return tuple(sorted({h[2] for h in händelser
                              if h[0] == "form" and h[1] == ("sym", text)}))
 
+    @staticmethod
+    def _lexkrav(villkor: dict) -> dict:
+        """Läsningarna av varje plats ord, samlade i ett svep över villkoren."""
+        ut: dict = defaultdict(list)
+        for k, svar in villkor.items():
+            if isinstance(k, tuple) and k[0] == "lex":
+                ut[k[1]].append((k[2:], svar))
+        return ut
+
     def _kandidater(self, text: str, sort: tuple, villkor: dict, händelser: list,
-                    tillåten: Tillåten) -> list:
-        """Lexemen som kan stå för det symboliska konceptet `text`."""
+                    tillåten: Tillåten, lexkrav: dict | None = None) -> list:
+        """Lexemen som kan stå för det symboliska konceptet `text`. `lexkrav` är
+        `_lexkrav(villkor)`, när den som frågar om flera platser redan har den."""
         klass = villkor.get(("ordklass", text))
         klasser = (klass,) if klass is not None else FÄLTKLASSER[sort]
-        krav = tuple(sorted(((k[2:], svar) for k, svar in villkor.items()
-                             if isinstance(k, tuple) and k[0] == "lex" and k[1] == text),
-                            key=repr))
-        celler = self._celler(text, händelser)
+        if lexkrav is None:
+            krav = frozenset((k[2:], svar) for k, svar in villkor.items()
+                             if isinstance(k, tuple) and k[0] == "lex" and k[1] == text)
+        else:
+            krav = frozenset(lexkrav.get(text, ()))
         nyckel = (klasser, krav)
         if nyckel not in self._kandidatcache:
             self._kandidatcache[nyckel] = [
                 lexem for ordklass in klasser for lexem in self._lexemen(ordklass)
                 if all(self._uppfyller(lexem, vad, svar) for vad, svar in krav)]
         kandidater = self._kandidatcache[nyckel]
-        if tillåten is not None:
-            kandidater = [lexem for lexem in kandidater
-                          if all(tillåten(k) for c in celler for k in self.tabell.kort(lexem, c))]
-        return kandidater
+        if tillåten is None:
+            return kandidater
+        # Samma lista genom hela frågan, så att förklaringarna kan minnas hur
+        # listans ord delas upp.
+        if tillåten is not self._filtrerat_för:
+            self._filtrerat_för, self._filtrerat = tillåten, {}
+            self._klasser_per_lista, self._ram_möjlig = {}, {}
+            self._gallringar, self._bärarcache, self._semantik_möjlig = {}, {}, {}
+        celler = self._celler(text, händelser)
+        if (nyckel, celler) not in self._filtrerat:
+            self._filtrerat[(nyckel, celler)] = [
+                lexem for lexem in kandidater
+                if all(tillåten(k) for c in celler for k in self.tabell.kort(lexem, c))]
+        return self._filtrerat[(nyckel, celler)]
 
     def _signatur(self, lexem, celler: tuple) -> tuple:
         """Det som kan få två ord att ge olika kort i samma mening.
@@ -627,10 +1021,15 @@ class Sammansättare:
                    if h[0] == "form" and h[1] == koncept)
 
     def _meningar_ur(self, villkor: dict, händelser: list, tillåten: Tillåten,
-                     mål: Kort | None = None, grupperat: bool = False) -> Iterator[S.Mening]:
-        """Meningarna ur en sammansättning, ett ordval i taget.
+                     mål: Kort | None = None, grupperat: bool = False,
+                     hoppa: Callable | None = None,
+                     förbud: list | None = None) -> Iterator[tuple]:
+        """Meningarna ur en sammansättning, ett ordval i taget: (mening, orden, platserna).
 
-        `grupperat` prövar ett ord per signatur i stället för varje ord.
+        `grupperat` prövar ett ord per signatur i stället för varje ord. Ett
+        ordval som `hoppa` säger faller byggs inte. `förbud` är bevisen som
+        gäller i sammansättningen, som [(plats, villkor), …]: ett ordval där
+        varje plats uppfyller sina villkor faller.
         """
         platser: dict[str, tuple] = {}
 
@@ -639,7 +1038,8 @@ class Sammansättare:
             return text
 
         self._mening(villkor, "m", spana)
-        kandidater = {text: self._kandidater(text, sort, villkor, händelser, tillåten)
+        lexkrav = self._lexkrav(villkor)
+        kandidater = {text: self._kandidater(text, sort, villkor, händelser, tillåten, lexkrav)
                       for text, sort in platser.items()}
         if any(not k for k in kandidater.values()):
             return
@@ -654,29 +1054,119 @@ class Sammansättare:
                                  and not isinstance(h[1], tuple)):
             urval = []
             for text in platser:
-                bärare = [lexem for lexem in kandidater[text]
-                          if self._bär(mål, ("sym", text), lexem, händelser)]
+                bärare = self._bärare(mål, text, kandidater[text], händelser)
                 if bärare:
                     urval.append({**kandidater, text: bärare})
 
         kontroller = self._kontroller(villkor, platser)
         if kontroller is None:
             return
+        urval = [val for val in (self._gallrade(kandidatval, kontroller)
+                                 for kandidatval in urval) if val is not None]
+        prov = [(behöver, art, lambda bundna, behöver=behöver, art=art, f=f: self._provsvar(
+                    art, f, behöver, tuple(bundna[p] for p in behöver)))
+                for behöver, art, f in kontroller]
+        # Bevisen prövas på orden innan de binds, inte på varje färdigt ordval:
+        # ett bevis på en plats stryker platsens ord som uppfyller det, och ett
+        # bevis på flera överger en bindning så fort dess platser uppfyller det.
+        # Annars byggs varje kombination av de andra orden och hoppas över en i
+        # taget: 17 miljoner ordval i en fråga om engelskans «why» (mätt 2026-09-15).
+        for platserna in förbud or ():
+            if not all(text in platser for text, _ in platserna):
+                continue
+            if len(platserna) == 1:
+                ((text, atomer),) = platserna
+                gallrade = []
+                for val in urval:
+                    kvar = [lexem for lexem in val[text]
+                            if not all(uppfyller(self, a, lexem["nyckel"]) for a in atomer)]
+                    if kvar:
+                        gallrade.append({**val, text: kvar})
+                urval = gallrade
+            else:
+                prov.append((tuple(text for text, _ in platserna), ("bevis",),
+                             lambda bundna, platserna=platserna: not all(
+                                 all(uppfyller(self, a, bundna[text]) for a in atomer)
+                                 for text, atomer in platserna)))
         for kandidatval in urval:
             grupperna = {text: (self._grupper(lista, self._celler(text, händelser))
                                 if grupperat else [[lexem] for lexem in lista])
                          for text, lista in kandidatval.items()}
-            for bundna in self._bindningar(grupperna, kontroller):
+            for bundna in self._bindningar(grupperna, prov):
+                if hoppa is not None and hoppa(bundna):
+                    self.statistik["ordval bevisade"] += 1
+                    continue
                 try:
                     mening = self._mening(villkor, "m", lambda text, _: bundna[text])
                 except (TypeError, ValueError):
                     continue
                 if self.validator.duger(mening) and not self.validator.valensbrott(mening):
-                    yield mening
+                    yield mening, bundna, platser
+
+    def _provsvar(self, art: tuple, prov: Callable, behöver: tuple, nycklar: tuple) -> bool:
+        """Ett kravs svar för orden `nycklar`. Svaret beror bara på vad kravet är
+        (`art`) och på orden, inte på var i meningen de står, så det sparas."""
+        k = (art, nycklar)
+        if k not in self._provcache:
+            self._provcache[k] = bool(prov(dict(zip(behöver, nycklar))))
+        return self._provcache[k]
+
+    def _bärare(self, mål: Kort, text: str, kandidater: list, händelser: list) -> list:
+        """Orden på platsen som kan bära målet. Svaret beror på platsens egna
+        händelser, och samma lista ges för samma fråga så att gallringen sparas."""
+        egna = tuple(h for h in händelser if h[1] == ("sym", text))
+        k = (mål, text, id(kandidater), egna)
+        if k not in self._bärarcache:
+            self._bärarcache[k] = (kandidater, [
+                lexem for lexem in kandidater if self._bär(mål, ("sym", text), lexem, händelser)])
+        return self._bärarcache[k][1]
+
+    def _gallrade(self, kandidatval: dict, kontroller: list) -> dict | None:
+        """Platsernas ord gallrade med kraven innan orden binds, eller None när en
+        plats blir tom och ingen bindning finns.
+
+        Ett krav på en plats stryker de ord som inte klarar det. Ett krav på två
+        platser stryker de ord som inget kvarvarande ord på den andra platsen
+        klarar det med, tills inget mer stryks (bågkonsistens). Ett struket ord
+        kan inte ingå i någon bindning, så gallringen ändrar inte vilka meningar
+        som finns. Utan den prövas varje ord på platser som binds tidigare mot
+        alla ord på en plats där kravet aldrig uppfylls: engelskans "X knows why Y
+        …" utan något verb som tar en frågebisats. Svaret beror bara på listorna
+        och kraven och sparas.
+        """
+        nyckel = (tuple((behöver, art) for behöver, art, _ in kontroller),
+                  tuple((text, id(lista)) for text, lista in sorted(kandidatval.items())))
+        if nyckel not in self._gallringar:
+            val = dict(kandidatval)
+            for behöver, art, prov in kontroller:
+                if len(behöver) == 1 and behöver[0] in val:
+                    text = behöver[0]
+                    val[text] = [lexem for lexem in val[text]
+                                 if self._provsvar(art, prov, behöver, (lexem["nyckel"],))]
+            par = [k for k in kontroller if len(k[0]) == 2 and all(p in val for p in k[0])]
+            tom = not all(val.values())
+            ändrat = True
+            while ändrat and not tom:
+                ändrat = False
+                for behöver, art, prov in par:
+                    for i in (0, 1):
+                        x, y = behöver[i], behöver[1 - i]
+                        kvar = [lx for lx in val[x] if any(
+                            self._provsvar(art, prov, behöver,
+                                           (lx["nyckel"], ly["nyckel"]) if i == 0
+                                           else (ly["nyckel"], lx["nyckel"]))
+                            for ly in val[y])]
+                        if len(kvar) < len(val[x]):
+                            val[x], ändrat = kvar, True
+                            tom = tom or not kvar
+            self._gallringar[nyckel] = (kandidatval, None if tom else val)
+        return self._gallringar[nyckel][1]
 
     def _kontroller(self, villkor: dict, platser: dict) -> list[tuple] | None:
-        """Konceptens krav (6.1 punkt 6) som par av platser, prövade så fort
-        orden på båda är bundna. None när mallen aldrig kan bli giltig.
+        """Konceptens krav (6.1 punkt 6) som (platser, art, prov), prövade så fort
+        orden på platserna är bundna. None när mallen aldrig kan bli giltig. `art`
+        säger vad provet räknar ut, oberoende av platserna, så att svaren kan
+        sparas.
 
         Det är samma krav som `Validator` prövar på den färdiga meningen, som
         fortfarande avgör. Här skär de bara bort ordval tidigt: annars prövas
@@ -693,24 +1183,11 @@ class Sammansättare:
             def fält(namn, rot=rot):
                 return villkor.get(f"{rot}.{namn}")
 
-            bisats = fält("bisats") == "bisats"
-            if bisats and fält("objekt") == "NF":
+            ramen = self._ramen(fält)
+            if ramen is None:
                 return None
-            fyllda = frozenset(s for s in ("objekt", "io", "predikativ", "komplement")
-                               if fält(s) not in (None, "None")) | (
-                frozenset({"objekt"}) if bisats else frozenset())
-
-            def ram(b, text=text, fyllda=fyllda, bisats=bisats):
-                verb = b[text]
-                valens = v.valens(verb)
-                if valens is not None:
-                    slottar = v.mönsterslottar(verb)
-                    if fyllda not in {(r & slottar) | ({"komplement"} & slottar)
-                                      for bit, r in v.RAMAR.items() if valens & bit}:
-                        return False
-                return not bisats or v.tillåter_bisats(verb)
-
-            ut.append(((text,), ram))
+            ut.append(((text,), ("ram", ramen), lambda b, text=text, ramen=ramen:
+                       self._ramen_passar(b[text], *ramen)))
             passiv = fält("diates") not in (None, S.Diates.AKTIV.value)
             led = [s for s in ("subjekt", "objekt", "io")
                    if s == "subjekt" or fält(s) == "NF"]
@@ -720,30 +1197,147 @@ class Sammansättare:
                     continue
 
                 def semantik(b, text=text, nf=nf, slot=slot, passiv=passiv):
-                    krav = v.krav_för(b[text])
-                    if passiv and "objekt" in krav:
-                        krav = {**krav, "subjekt": krav["objekt"]}
-                    return slot not in krav or v._uppfyller(v.semantik(b[nf]), krav[slot])
+                    return self._semantiken_passar(b[text], b[nf], slot, passiv)
 
-                ut.append(((text, nf), semantik))
+                ut.append(((text, nf), ("semantik", slot, passiv), semantik))
             for i, a in enumerate(led):
                 for c in led[i + 1:]:
                     pa, pc = f"{rot}.{a}.koncept", f"{rot}.{c}.koncept"
                     if pa in platser and pc in platser:
-                        ut.append(((pa, pc), lambda b, pa=pa, pc=pc: (
+                        ut.append(((pa, pc), ("olika",), lambda b, pa=pa, pc=pc: (
                             b[pa] != b[pc] or v.person(b[pa]) not in (1, 2))))
             adverb = f"{rot}.adverbial.0"
             if adverb in platser:
                 bit = TIDSBIT[S.Tidsreferens(fält("tid") or S.Tidsreferens.NUTID.value)]
-                ut.append(((adverb,), lambda b, adverb=adverb, bit=bit: (
+                ut.append(((adverb,), ("tempus", bit), lambda b, adverb=adverb, bit=bit: (
                     (krav := v.tempuskrav(b[adverb])) is None or bool(krav & bit))))
         for text in platser:
             if text.endswith(".attribut.0.koncept"):
                 huvud = text[:-len(".attribut.0.koncept")] + ".koncept"
-                ut.append(((text, huvud), lambda b, text=text, huvud=huvud: (
+                ut.append(((text, huvud), ("attribut",), lambda b, text=text, huvud=huvud: (
                     not (alt := v.attributkrav(b[text]))
                     or v._uppfyller(v.semantik(b[huvud]), alt))))
         return ut
+
+    #: Satsens fält som avgör vilken valensram verbet måste ha.
+    RAMFÄLT = ("bisats", "objekt", "io", "predikativ", "komplement")
+
+    @staticmethod
+    def _ramen(fält: Callable) -> tuple[frozenset, bool] | None:
+        """Slottarna satsen fyller och om den har en argumentbisats, eller None
+        när mallen aldrig kan bli giltig."""
+        bisats = fält("bisats") == "bisats"
+        if bisats and fält("objekt") == "NF":
+            return None
+        fyllda = frozenset(s for s in ("objekt", "io", "predikativ", "komplement")
+                           if fält(s) not in (None, "None")) | (
+            frozenset({"objekt"}) if bisats else frozenset())
+        return fyllda, bisats
+
+    def _ramen_passar(self, verb: str, fyllda: frozenset, bisats: bool) -> bool:
+        nyckel = (verb, fyllda, bisats)
+        if nyckel not in self._ramcache:
+            v = self.validator
+            valens = v.valens(verb)
+            svar = not bisats or v.tillåter_bisats(verb)
+            if valens is not None:
+                slottar = v.mönsterslottar(verb)
+                svar = svar and fyllda in {(r & slottar) | ({"komplement"} & slottar)
+                                           for bit, r in v.RAMAR.items() if valens & bit}
+            self._ramcache[nyckel] = svar
+        return self._ramcache[nyckel]
+
+    def _semantiken_passar(self, verb: str, koncept: str, slot: str, passiv: bool) -> bool:
+        """Uppfyller konceptet verbets krav på sloten? I passiv ställer verbet
+        objektets krav på subjektet."""
+        v = self.validator
+        krav = v.krav_för(verb)
+        if passiv and "objekt" in krav:
+            krav = {**krav, "subjekt": krav["objekt"]}
+        return slot not in krav or v._uppfyller(v.semantik(koncept), krav[slot])
+
+    @staticmethod
+    def _rör_subjekt(nod: Nod) -> bool:
+        """Står delen på en sats subjekt, så att den kan göra verbets krav på
+        subjektet omöjliga?"""
+        return any(ref.endswith(".subjekt") for ref in nod.bindning.values())
+
+    #: Ett fyllt värde för varje ramfält, så som `_ramen` läser dem.
+    FYLLT = {"bisats": "bisats", "objekt": "NF", "io": "NF", "predikativ": "NF",
+             "komplement": "verb"}
+
+    def _möjliga_ramar(self, kända: tuple) -> frozenset:
+        """Ramarna satsen kan få, när fälten i `kända` är lästa och resten kan bli
+        tomma eller fyllda. Ett fält som ingen del läser är tomt i den färdiga
+        meningen, men en senare del kan läsa det, så båda prövas."""
+        if kända not in self._ramar:
+            fälten = dict(kända)
+            okända = [f for f in self.RAMFÄLT if f not in fälten]
+            ramar = set()
+            for fyllda in itertools.product((False, True), repeat=len(okända)):
+                val = {**fälten, **{f: self.FYLLT[f] if fylld else None
+                                    for f, fylld in zip(okända, fyllda)}}
+                ramen = self._ramen(val.get)
+                if ramen is not None:
+                    ramar.add(ramen)
+            self._ramar[kända] = frozenset(ramar)
+        return self._ramar[kända]
+
+    def _verben_möjliga(self, villkor: dict, händelser: list, tillåten: Tillåten) -> bool:
+        """Finns i varje sats ett verb med en valensram satsen kan få, och ett
+        subjekt som uppfyller verbets krav?
+
+        Ramen beror bara på verbet och satsens fält (`RAMFÄLT`), och kravet på
+        subjektet på verbet, subjektet och diatesen. Ett läst fält ändras inte,
+        ett oläst kan bli vad som helst, och senare delar kan bara göra
+        kandidaterna färre. En sats där inget verb passar, eller inget par av
+        verb och subjekt, blir därför aldrig giltig. Utan den här frågan går
+        sammansättningen igenom varje nominalfras och bisats i en sats som redan
+        är omöjlig: 350 000 sammansättningar för svenskans «den», och 438 000 på
+        två minuter för engelskans «why», där inget verb som tar en frågebisats
+        godtar ett naket subjekt (mätt 2026-09-14 och -15).
+        """
+        # Satsernas verb och platsernas läsningar i ett svep över villkoren.
+        lexkrav: dict = defaultdict(list)
+        rötter = []
+        for nyckel, svar in villkor.items():
+            if isinstance(nyckel, tuple):
+                if nyckel[0] == "lex":
+                    lexkrav[nyckel[1]].append((nyckel[2:], svar))
+            elif svar == "symbol" and nyckel.endswith(".verb"):
+                rötter.append(nyckel)
+        for nyckel in rötter:
+            rot = nyckel[:-len(".verb")]
+            ramar = self._möjliga_ramar(tuple((f, villkor[f"{rot}.{f}"]) for f in self.RAMFÄLT
+                                              if f"{rot}.{f}" in villkor))
+            if not ramar:
+                return False
+            lista = self._kandidater(nyckel, ("Mening", "verb"), villkor, händelser, tillåten,
+                                     lexkrav)
+            k = (id(lista), ramar)
+            if k not in self._ram_möjlig:
+                self._ram_möjlig[k] = (lista, [
+                    lexem["nyckel"] for lexem in lista
+                    if any(self._ramen_passar(lexem["nyckel"], *ramen) for ramen in ramar)])
+            verben = self._ram_möjlig[k][1]
+            if not verben:
+                return False
+            diates = villkor.get(f"{rot}.diates")
+            passiva = ((False, True) if diates is None
+                       else (diates != S.Diates.AKTIV.value,))
+            subjekten = self._kandidater(f"{rot}.subjekt.koncept", ("Nominalfras", "koncept"),
+                                         villkor, händelser, tillåten, lexkrav)
+            k2 = (k, id(subjekten), passiva)
+            if k2 not in self._semantik_möjlig:
+                self._semantik_möjlig[k2] = (subjekten, any(
+                    self._provsvar(("semantik", "subjekt", passiv),
+                                   lambda b, passiv=passiv: self._semantiken_passar(
+                                       b["verb"], b["nf"], "subjekt", passiv),
+                                   ("verb", "nf"), (verb, lexem["nyckel"]))
+                    for passiv in passiva for verb in verben for lexem in subjekten))
+            if not self._semantik_möjlig[k2][1]:
+                return False
+        return True
 
     @staticmethod
     def _bindningar(grupperna: dict, kontroller: list) -> Iterator[dict]:
@@ -758,7 +1352,7 @@ class Sammansättare:
             len(grupperna[t])))
         plats = {t: i for i, t in enumerate(ordning)}
         per_steg: dict[int, list] = defaultdict(list)
-        for behöver, prov in kontroller:
+        for behöver, _, prov in kontroller:
             if all(p in plats for p in behöver):
                 per_steg[max(plats[p] for p in behöver)].append(prov)
         bundna: dict = {}
@@ -785,20 +1379,20 @@ class Sammansättare:
 
     # ── 3. meningen renderas ──
 
-    def _pröva(self, mening: S.Mening, mål: Kort | None,
-               tillåten: Tillåten, ord: int) -> Träff | None:
+    def _pröva(self, mening: S.Mening, mål: Kort | None, tillåten: Tillåten) -> tuple:
+        """(träffen eller None, utskriften, korten). Utskriften och korten är None
+        när meningen inte går att rendera i båda språken."""
         try:
             ut = spåra(self.renderare, mening)
             if self.par is not None:
                 self.par.rendera(mening)
         except RenderingsFel:
-            return None
+            return None, None, None
         kort = frozenset(k for k, _ in meningens_kort(self.tabell, ut))
-        if mål is not None and mål not in kort:
-            return None
-        if tillåten is not None and not all(tillåten(k) for k in kort):
-            return None
-        return Träff(mening, ut.text, len(ut.ord), kort)
+        if (mål is not None and mål not in kort) or (
+                tillåten is not None and not all(tillåten(k) for k in kort)):
+            return None, ut, kort
+        return Träff(mening, ut.text, len(ut.ord), kort), ut, kort
 
     @staticmethod
     def _kan_innehålla(händelser: list, mål: Kort) -> bool:
@@ -826,16 +1420,16 @@ class Sammansättare:
         visade: set = set()
         nåbar = self._nåbarhet(mål)
         for n in range(1, högst_ord + 1):
-            for villkor, händelser, ord, _, _ in self._delen(
+            for villkor, händelser, ord, _, _, _ in self._delen(
                     "rendera", ROT, {"m": "m"}, {}, n, tillåten, (), nåbar, nåbar is not None):
                 if ord != n or (mål is not None and not self._kan_innehålla(händelser, mål)):
                     continue
                 träffar = 0
-                for mening in self._meningar_ur(villkor, händelser, tillåten, mål):
+                for mening, _, _ in self._meningar_ur(villkor, händelser, tillåten, mål):
                     if mening in sedda:
                         continue
                     sedda.add(mening)
-                    träff = self._pröva(mening, mål, tillåten, ord)
+                    träff = self._pröva(mening, mål, tillåten)[0]
                     if träff is None or (träff.text, träff.kort) in visade:
                         continue
                     visade.add((träff.text, träff.kort))
@@ -850,18 +1444,62 @@ class Sammansättare:
         Uttömmande: varje sammansättning där ingen del upprepas mer än en gång
         längs en gren, och ett ord per signatur på varje plats. None betyder
         alltså att ingen sådan mening finns.
+
+        En mening som faller på ett förbjudet val lämnar ett bevis, och det som
+        beviset täcker hoppas över (`forklaring.py`). Med `kontroll` hoppas inget
+        över: varje mening som ett bevis täcker renderas, och en träff bland dem
+        är `Bevisfel`.
         """
         sedda: set = set()
         nåbar = self._nåbarhet(mål)
-        for villkor, händelser, ord, _, _ in self._delen(
+        for villkor, händelser, ord, _, _, rot in self._delen(
                 "rendera", ROT, {"m": "m"}, {}, math.inf, tillåten, (), nåbar, True):
             if not self._kan_innehålla(händelser, mål):
                 continue
-            for mening in self._meningar_ur(villkor, händelser, tillåten, mål, grupperat=True):
+            noder = rot.alla()
+            # Kontrolläget prövar påståendet bakom `_verben_möjliga` på det som når
+            # hit: en sats där inget verb passar ramen ger ingen mening. Att en sats
+            # som redan var omöjlig förblir det följer av att lästa fält inte ändras
+            # och att kandidaterna bara blir färre; att pröva det kräver att allt
+            # under den byggs, och det är just det som tar för lång tid.
+            död = self.kontroll and not self._verben_möjliga(villkor, händelser, tillåten)
+            giltiga = self._giltiga(rot, villkor, tillåten) if tillåten is not None else []
+            täckt = tillåten is not None and (
+                any(n.täckt for n in noder)
+                or self._någon_täckt(giltiga, villkor, händelser, tillåten))
+            if täckt and not self.kontroll:
+                self.statistik["sammansättningar bevisade"] += 1
+                continue
+            hoppa = (None if self.kontroll or tillåten is None else
+                     lambda bundna: self._avfärdad(giltiga, villkor, bundna, tillåten))
+            förbud = None if hoppa is None else [
+                [(absolut(nod.bindning, rel), atomer) for rel, _, atomer in b.platser]
+                for nod, bevis in giltiga for b in bevis]
+            for mening, bundna, platser in self._meningar_ur(
+                    villkor, händelser, tillåten, mål, grupperat=True, hoppa=hoppa,
+                    förbud=förbud):
                 if mening in sedda:
                     continue
                 sedda.add(mening)
-                träff = self._pröva(mening, mål, tillåten, ord)
+                förutsagd = död or täckt or (self.kontroll and tillåten is not None
+                                             and self._avfärdad(giltiga, villkor, bundna, tillåten))
+                träff, ut, kort = self._pröva(mening, mål, tillåten)
+                if död:
+                    raise Bevisfel(f"«{mening}» byggdes ur en sammansättning där inget "
+                                   f"verb skulle passa ramen")
+                if förutsagd:
+                    if träff is not None:
+                        raise Bevisfel(f"«{träff.text}» prövar {mål} av tillåtna kort, "
+                                       f"men ett bevis sade att meningen faller")
+                    self.statistik["förutsägelser bekräftade"] += 1
+                    continue
                 if träff is not None:
                     return träff
+                if (tillåten is not None and ut is not None
+                        and self._lär(rot, villkor, bundna, platser, ut, kort, tillåten)):
+                    giltiga = self._giltiga(rot, villkor, tillåten)
+                    täckt = self._någon_täckt(giltiga, villkor, händelser, tillåten)
+                    if täckt and not self.kontroll:
+                        self.statistik["sammansättningar bevisade"] += 1
+                        break
         return None
