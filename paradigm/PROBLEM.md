@@ -2609,6 +2609,46 @@ Julius princip — *"man ska aldrig få kort som ännu inte är introducerade, a
 nyintroducerade kort ska testas"* — är alltså uppfylld åt ena hållet och inte
 åt det andra: korten testas, men de räknas inte.
 
+**✓ AVGJORT 2026-08-29, av Julius.** Läcka 1 var en bugg och är rättad:
+`infört_idag` räknar numera varje kort som setts idag, oavsett `schemalagt`.
+Vad som får PLANERAS och vad som FÖRBRUKATS är olika frågor och ska ha olika
+filter.
+
+Läcka 2 var ingen bugg utan en oklar regel, och Julius avgjorde den:
+
+> *"Säg att vi tränar på 13 kort men vid en mening införs extra kort för att
+> kunna konstruera meningen på rätt nivå (detta är helt rätt beteende eftersom
+> vi inte vill att alla kort i en mening ska vara utmanande). De nyinförda
+> korten som egentligen inte tillhör passet ska inte läggas till i due eller
+> new. De är osynliga hittills. Ifall vi klarar de så förs den datan in… Ifall
+> de blir passade så händer ingenting. Och ifall de failar så borde due date
+> flyttas till idag."*
+
+Regeln är alltså ASYMMETRISK: ett medföljande kort är gratis när det går rätt
+och blir dagens arbete när det går fel. Beteendet fanns redan i
+`pass_.registrera` sedan hans beslut 2026-08-27, men ingenting vaktade det —
+och skärmen sa emot det.
+
+**Vad som ändrades.** Utfallslistan visade ett medföljande kort odämpat med
+märket `new`, eftersom dess `läge` blir `bedömd` så snart det bokförs. Nio av
+franskans 34 införda kort kom in den vägen, och de förklarar hela avvikelsen
+mellan listan och räknaren som avsnittet ovan beskriver. Kortet märks nu som
+inlånat, med `planerad: false` i svaret och en egen förklaring.
+
+**Vad som INTE ändrades, och varför.** Förfallodagen flyttas inte till idag.
+FSRS har ingen tidsupplösning under ett dygn — `_next_interval` klämmer till
+`max(intervall, 1)` — så ett fallerat kort schemaläggs alltid till i morgon.
+Effekten Julius vill ha levereras i stället av `igen`-raden (B7): kortet
+kommer tillbaka i en ANNAN mening samma pass, vilket är bättre än Ankis
+"samma kort om tio minuter". Det är inget avsteg från FSRS; Ankis egen
+motsvarighet är `relearning_steps`, ett lager UTANFÖR minnesmodellen.
+
+**Nätet.** `passprov` har nu `medföljande kort: gratis rätt, ditt vid fel`,
+med ett sabotage per halva. Det andra sabotaget — "köa allting" — var först
+STUMT, och det var beskedet: `elif rätt: continue` såg ut att bära regeln men
+var död kod, eftersom insättningen redan grindades av `not rätt`. Beslutet
+fattas nu på ett ställe, `_ska_tas_igen`, och båda sabotagen fäller provet.
+
 ### C7 ! — Producerar renderarna korrekt språk?
 
 Ett känt fel kvar:

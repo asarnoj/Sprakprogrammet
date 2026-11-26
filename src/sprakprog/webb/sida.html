@@ -510,6 +510,10 @@ const T = {
                   + "card, so it was left ungraded rather than guessed at.",
     skyddad:      "Its word card failed, so this form was never really "
                   + "tested — grading it would punish you for the wrong thing.",
+    medföljande:  "Not part of today's set. The sentence needed it to be "
+                  + "buildable, so it came along. Getting it right costs you "
+                  + "nothing and does not move the counters; getting it wrong "
+                  + "puts it in your queue for today.",
   },
   bokfört: (n, av) => `${n} of ${av} cards counted — the rest were already `
           + `done today or could not be graded, and rode along for free.`,
@@ -990,9 +994,16 @@ function visaKortutfall(kort, svar) {
       // Det inlånade tonas ner i stället för att döljas: det ÄR prövat i
       // meningen, det räknas bara inte igen. Att ta bort det vore att visa
       // en annan mening än den man svarade på.
-      if (k.läge && k.läge !== "bedömd") {
+      // MEDFÖLJANDE RÄKNAS SOM INLÅNAT. Ett kort som inte står i dagens
+      // pass bokförs visserligen — men det rör aldrig `due` eller `new`, och
+      // visades ändå odämpat med märket `new` bredvid en räknare som stod
+      // still. Mätt på franskans dag kom 9 av 34 införda kort in den vägen.
+      // Julius: *"De är osynliga hittills."*
+      const inlånat = (k.läge && k.läge !== "bedömd") ? k.läge
+                    : k.planerad === false ? "medföljande" : null;
+      if (inlånat) {
         box.classList.add("lanad");
-        box.title = T.läge[k.läge] ?? k.läge;
+        box.title = T.läge[inlånat] ?? inlånat;
       }
       box.append(dom, fac, när);
       rad.append(box);

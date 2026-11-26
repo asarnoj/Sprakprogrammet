@@ -415,16 +415,85 @@ def prov_nollställning_rensar_taket(tj, kort) -> list[str]:
     return fel
 
 
+def prov_medföljande_kort(tj, kort) -> list[str]:
+    """Ett kort utanför dagens plan är gratis när det går rätt och ditt när
+    det går fel.
+
+    En mening måste kunna byggas på nivån, och drar då in kort ingen
+    planerat (E4). Julius 2026-08-29: *"De nyinförda korten som egentligen
+    inte tillhör passet ska inte läggas till i due eller new. De är osynliga
+    hittills. Ifall vi klarar de så förs den datan in… Ifall de failar så
+    borde due date flyttas till idag."*
+
+    Regeln är alltså ASYMMETRISK, och båda halvorna prövas här:
+
+        rätt   ingen rad läggs till, inga tal rör sig
+        fel    en `igen`-rad läggs till, `igen` växer med ett
+
+    Att bara pröva den ena halvan vore stumt åt fel håll: ett bygge som
+    aldrig köar något klarar rätt-fallet, och ett som köar allting klarar
+    fel-fallet.
+    """
+    fel = []
+    for kurs in kort.execute("SELECT * FROM Kurs ORDER BY id"):
+        tj.hem(kurs["id"])
+        rad = passlager.nuvarande(kort, kurs["id"])
+        if rad is None:
+            continue
+        i_passet = {r["kort_id"] for r in kort.execute(
+            "SELECT kort_id FROM Passkort WHERE pass_id = ?", (rad["id"],))}
+        utanför = [r["id"] for r in kort.execute(
+            "SELECT id FROM Kort WHERE språk = ? LIMIT 400", (kurs["målspråk"],))
+            if r["id"] not in i_passet][:2]
+        if len(utanför) < 2:
+            continue
+
+        före = passlager.läget(kort, rad["id"])
+        passlager.registrera(kort, rad["id"], {utanför[0]: True})
+        efter = passlager.läget(kort, rad["id"])
+        for nyckel in ("nya", "förfallna", "igen", "att_göra"):
+            if efter[nyckel] != före[nyckel]:
+                fel.append(f"[{kurs['id']} {kurs['målspråk']}] ett RÄTT "
+                           f"medföljande kort ändrade {nyckel}: "
+                           f"{före[nyckel]} → {efter[nyckel]}")
+
+        passlager.registrera(kort, rad["id"], {utanför[1]: False})
+        sist = passlager.läget(kort, rad["id"])
+        if sist["igen"] != efter["igen"] + 1:
+            fel.append(f"[{kurs['id']} {kurs['målspråk']}] ett FELAKTIGT "
+                       f"medföljande kort gav igen {efter['igen']} → "
+                       f"{sist['igen']}, väntat {efter['igen'] + 1}")
+    return fel
+
+
 PROV = [("nollställning bygger om passet", prov_nollställning_bygger_om),
         ("nollställning rensar dagens tak", prov_nollställning_rensar_taket),
         ("ett tomt pass fylls", prov_tomt_pass_fylls),
         ("grannkursen överlever en nollställning", prov_grannkursen_överlever),
         ("upplåsning utökar dagen", prov_upplåsning_utökar),
         ("minuterna syns, men krymper inte dagen", prov_minuterna_syns),
-        ("att läsa dagen ändrar den inte", prov_passet_är_stabilt)]
+        ("att läsa dagen ändrar den inte", prov_passet_är_stabilt),
+        ("medföljande kort: gratis rätt, ditt vid fel",
+         prov_medföljande_kort)]
 
 
 # ── falsifiering ────────────────────────────────────────────────────
+
+def _sabotage_köa_aldrig():
+    """Före Julius beslut 2026-08-27: ett kort utanför planen köades aldrig,
+    inte ens när det fallerade."""
+    orig = passlager._ska_tas_igen
+    passlager._ska_tas_igen = lambda rätt: False
+    return lambda: setattr(passlager, "_ska_tas_igen", orig)
+
+
+def _sabotage_köa_allt():
+    """Motsatsen: köa varje medföljande kort, även de som gick rätt. Då blir
+    dagen aldrig klar — varje mening drar in kort den inte valdes för."""
+    orig = passlager._ska_tas_igen
+    passlager._ska_tas_igen = lambda rätt: True
+    return lambda: setattr(passlager, "_ska_tas_igen", orig)
+
 
 def _sabotage_ovillkorlig_idempotens():
     """Före rättelsen: `starta` gav tillbaka passet utan att pröva det."""
@@ -483,7 +552,12 @@ SABOTAGE = [(_sabotage_ovillkorlig_idempotens, 0),
             (_sabotage_ovillkorlig_idempotens, 3),
             (_sabotage_utan_utökning, 4),
             (_sabotage_utan_utökning, 5),
-            (_sabotage_bygg_om_alltid, 6)]
+            (_sabotage_bygg_om_alltid, 6),
+            # BÅDA HALVORNA AV DEN ASYMMETRISKA REGELN. Ett
+            # sabotage som aldrig köar fälls av fel-fallet, ett
+            # som alltid köar av rätt-fallet.
+            (_sabotage_köa_aldrig, 7),
+            (_sabotage_köa_allt, 7)]
 
 
 def main() -> int:

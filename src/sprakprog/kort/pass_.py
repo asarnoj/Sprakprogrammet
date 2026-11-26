@@ -537,6 +537,21 @@ def _hör_till_passet(kort_db: sqlite3.Connection, pass_id: int,
         (pass_id, kort_id)).fetchone())
 
 
+def _ska_tas_igen(rätt: bool) -> bool:
+    """Ska kortet läggas i kön för att tas igen idag? Bara när det fallerar.
+
+    B7, och för de MEDFÖLJANDE korten är den här grinden hela regeln: ett
+    kort utanför dagens plan kostar ingenting när det går rätt och blir
+    dagens arbete när det går fel. Julius 2026-08-29: *"Ifall de blir
+    passade så händer ingenting… ifall de failar så borde due date flyttas
+    till idag."*
+
+    Egen funktion för att den ska gå att sabotera åt BÅDA hållen — ett bygge
+    som aldrig köar och ett som köar allting ska fällas av var sin halva.
+    """
+    return not rätt
+
+
 def registrera(kort_db: sqlite3.Connection, pass_id: int,
                utfall: dict[int, bool], nu: datetime | None = None) -> int:
     """Skriv in vad som hände med de kort meningen rörde.
@@ -564,24 +579,34 @@ def registrera(kort_db: sqlite3.Connection, pass_id: int,
                 kort_db.execute(
                     "UPDATE Passkort SET status = ?, tidpunkt = ? WHERE id = ?",
                     ("rätt" if rätt else "fel", nu, rad["id"]))
-            elif rätt:
-                # Kortet hade ingen väntande rad och klarades — inget att
-                # göra. ETT FEL KÖAS DÄREMOT ALLTID, även på ett kort som
-                # inte stod i dagens plan.
+            # ETT KORT UTAN VÄNTANDE RAD faller igenom till `_ska_tas_igen`
+            # nedan, och det är HELA regeln för de medföljande korten:
+            #
+            #   rätt   ingenting händer — inget betyg i passet, inga tal
+            #   fel    en `igen`-rad, alltså dagens arbete på riktigt
+            #
+            # Det stod en `elif rätt: continue` här som såg ut att bära
+            # regeln men var död kod: insättningen är redan grindad av
+            # `_ska_tas_igen`, så grenen kunde inte ändra något. Ett
+            # sabotage i `passprov` som satte den till "köa allt" blev
+            # STUMT, och det var beskedet — en knapp som inte styr något
+            # döljer var beslutet faktiskt fattas.
+            #
+            # ETT FEL KÖAS ALLTID, även på ett kort som inte stod i dagens
+            # plan.
+            #
+            # Det var inte så förut, och skälet var att en dag annars
+            # aldrig kan ta slut: varje mening drar in kort den inte
+            # valdes för (E4). BESLUTAT AV JULIUS 2026-08-27 att det är
+            # rätt pris: *"Hela grejen med FSRS är att det inte finns x
+            # antal övningar utan att alla korten ska passeras. Användaren
+            # måste KLARA övningarna för att bli klar med dagen. Det
+            # kräver framgång, inte bara effort."*
                 #
-                # Det var inte så förut, och skälet var att en dag annars
-                # aldrig kan ta slut: varje mening drar in kort den inte
-                # valdes för (E4). BESLUTAT AV JULIUS 2026-08-27 att det är
-                # rätt pris: *"Hela grejen med FSRS är att det inte finns x
-                # antal övningar utan att alla korten ska passeras. Användaren
-                # måste KLARA övningarna för att bli klar med dagen. Det
-                # kräver framgång, inte bara effort."*
-                #
-                # Tillväxten är dessutom bunden av FEL och inte av antalet
-                # meningar: en mening som går rätt lägger till noll, hur många
-                # oplanerade kort den än rörde. Dagen växer bara när något
-                # faktiskt inte satt.
-                continue
+            # Tillväxten är dessutom bunden av FEL och inte av antalet
+            # meningar: en mening som går rätt lägger till noll, hur många
+            # oplanerade kort den än rörde. Dagen växer bara när något
+            # faktiskt inte satt.
             # ÅTERFÖRSÖKET LÄGGS BARA I DET EGNA PASSET. Att ta igen ett fel
             # är en handling i det pass man sitter i; grannkursen ska veta
             # att kortet mötts, inte ärva ett återförsök man aldrig får.
@@ -607,7 +632,7 @@ def registrera(kort_db: sqlite3.Connection, pass_id: int,
             # registreras"). Det som saknades var att dagen fick veta om det.
             # B7 säger att ett fel inte får lämnas ofixat, och den regeln
             # skiljer inte på om kortet råkade vara avklarat.
-            if not rätt and pid == pass_id:
+            if _ska_tas_igen(rätt) and pid == pass_id:
                 kort_db.execute(
                     """INSERT INTO Passkort (pass_id, kort_id, roll, ordning)
                        VALUES (?, ?, 'igen',

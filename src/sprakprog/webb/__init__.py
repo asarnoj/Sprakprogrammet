@@ -499,6 +499,32 @@ class Övningstjänst:
             # det är samma vokabulär som `Spår` skriver, så skärmen och
             # spåret säger alltid samma sak.
             rörda_ider = {k["id"] for k in f.kort}
+            # MEDFÖLJANDE KORT — de som inte står i dagens pass alls.
+            #
+            # En mening måste kunna byggas på nivån, och då dras kort in som
+            # ingen planerat (E4). Julius: *"Detta är helt rätt beteende
+            # eftersom vi inte vill att alla kort i en mening ska vara
+            # utmanande. Det som ska hända här är att de nyinförda korten som
+            # egentligen inte tillhör passet inte ska läggas till i due eller
+            # new. De är osynliga hittills."*
+            #
+            # Och de RÄKNAS inte — det har de aldrig gjort, `nya` och
+            # `förfallna` räknar passrader. Men listan visade dem ändå som
+            # fullt prövade med märket `new`, eftersom `läge` blir `bedömd`
+            # så snart de bokförs. Mätt på franskans dag: 9 av 34 införda kort
+            # kom in den vägen, och de förklarar precis den avvikelse Julius
+            # rapporterade mellan listan och räknaren.
+            #
+            # Osynligt betyder inte gratis: faller ett medföljande kort köas
+            # det som `igen` (se `pass_.registrera`) och blir dagens arbete
+            # på riktigt. Regeln är asymmetrisk med flit — rätt svar kostar
+            # ingenting, fel svar gör kortet till ditt.
+            nuvarande = passlager.nuvarande(self.kort_db, kurs_id)
+            planerade = set()
+            if nuvarande is not None:
+                planerade = {r["kort_id"] for r in self.kort_db.execute(
+                    "SELECT kort_id FROM Passkort WHERE pass_id = ?",
+                    (nuvarande["id"],))}
             def läget(kid: int) -> str:
                 if kid not in r.utfall:
                     return "undanhållen"
@@ -534,6 +560,8 @@ class Övningstjänst:
                           # annat är inlånat: redan gjort idag, undanhållet
                           # eller skyddat. Se `läget` ovan.
                           "läge": lägen.get(k["id"], "undanhållen"),
+                          # Står kortet i dagens pass? Se `planerade` ovan.
+                          "planerad": k["id"] in planerade,
                           # Förfallodagen FÖRE prövningen — den nya räknas ut
                           # först vid bokföringen. `null` = kortet är nytt och
                           # har ingen ännu.
