@@ -12,12 +12,14 @@ import argparse
 import json
 import sqlite3
 import time
+from datetime import date
 from pathlib import Path
 
 from ..fsrslager import Lager
 from ..avtryck import avtryck, skiljer
 from ..kortmodell import Kort, meningens_kort
 from ..kurs import Kursdata
+from ..kurs.simulering import OkändaStämplar, flytta_framåt
 from ..rattning import FEL
 from ..rendering.karta import ladda
 from .tid import Meningstid, Tidsmodell, arbetsprofil
@@ -99,6 +101,20 @@ def _nivåfil(fil: str, källspråk: str, språk: str) -> tuple[
 #: (8,37 repetitioner), och profilen måste täcka den svansen för att 5.5:s
 #: minimering ska hitta den verkliga toppen. Ett år plus lite marginal.
 PROFILDAGAR = 400
+
+
+def _kursdag(data: Kursdata) -> int:
+    """Vilken dag i KURSEN det är: dygn sedan kursen skapades, ettindexerat.
+
+    Det är det tal en simulerad flytt ändrar. `data.dag()` är väggklockans
+    dygn (5.1) och står still — en flytt gör kursen äldre, inte klockan
+    senare — så en utskrift av `dag()` efter en flytt ser oförändrad ut och
+    säger ingenting om att något hänt.
+    """
+    rad = data.conn.execute("SELECT skapad FROM kurs WHERE id = ?",
+                            (data.id,)).fetchone()
+    start = date.fromisoformat(rad["skapad"][:10])
+    return (date.fromisoformat(data.dag()) - start).days + 1
 
 
 def _kort_i_kursen(s: Sammansättare, nivåer: list[frozenset]) -> int:
@@ -451,6 +467,15 @@ def main() -> None:
                    default=str(ROT / "ordbok" / "nivålistor" / "meningstid.csv"),
                    help="meningens mätta kostnad (6.3); utan den finns ingen "
                         "gräns för hur mycket nytt en dag tar")
+    # TIDEN FLYTTAS BARA NÄR MAN BEGÄRT DET. En dag i kursen är ett dygn på
+    # klockan (5.1) och grinden öppnar nivåer en gång per dygn (4.4), så att
+    # prova flera dagar kräver att klockan går. Men ett val som flyttar tiden
+    # och sitter framme i en riktig kurs är ett sätt att fuska utan att mena
+    # det — därför finns valet bara när passet startats för att provas, och
+    # varje flytt tar en kopia först (`kurs.simulering`).
+    p.add_argument("--simulera", action="store_true",
+                   help="PROVLÄGE: visa valet d, som låter ett dygn gå i "
+                        "kursen. Skriver i kursfilen; en kopia tas först")
     a = p.parse_args()
 
     karta = ladda(a.karta)
@@ -468,18 +493,40 @@ def main() -> None:
               f"    python -m sprakprog.rendering.karta {språk} {a.karta}")
 
     sprak = sqlite3.connect(ROT / "sprak.db")
-    data = Kursdata(sqlite3.connect(a.kurs), a.källspråk, språk)
     krav, nivåer, bevis = _nivåfil(a.nivåer, a.källspråk, språk)
-    lager = Lager(data)
     sam = Sammansättare(sprak, karta, par=a.källspråk)
-    passet = Passet(data, sam,
-                    lager, krav, nivåer,
-                    tidsmodell=_tidsmodell(data, lager.retention, a.meningstid),
-                    kort_i_kursen=_kort_i_kursen(sam, nivåer), bevis=bevis)
+    # Kursens storlek följer av nivåerna (5.3) och ändras inte av tiden.
+    i_kursen = _kort_i_kursen(sam, nivåer)
 
-    print(f"{a.källspråk} → {språk}.  [enter] öva · n nästa nivå · q sluta")
+    def _bygg():
+        """Läs kursen från disk och bygg passet ur den.
+
+        ANROPAS OM EFTER EN SIMULERAD DYGNSFLYTT. `Passet.uppdatera()` läser om
+        tillstånden och dagens betyg, men `_öppen` och `_paket` cachar sådant
+        som beror på vilken DAG det är: vilka nivåer som är öppna, och vilka
+        kort ett paket saknar. Efter en flytt gäller inget av det, och att
+        rensa två privata cacher utifrån vore att gissa vilka de är. Ett nytt
+        pass ur samma databas är rätt genom konstruktion, och kostar inget:
+        tillståndet räknas ändå fram ur mötena.
+        """
+        d = Kursdata(sqlite3.connect(a.kurs), a.källspråk, språk)
+        lager = Lager(d)
+        return d, Passet(d, sam, lager, krav, nivåer,
+                         tidsmodell=_tidsmodell(d, lager.retention,
+                                                a.meningstid),
+                         kort_i_kursen=i_kursen, bevis=bevis)
+
+    data, passet = _bygg()
+
+    print(f"{a.källspråk} → {språk}.  [enter] öva · n nästa nivå · q sluta"
+          + ("  ·  d SIMULERA ett dygn" if a.simulera else ""))
     print("  när en mening ställs: skriv översättningen, "
           "s hoppar över, q slutar")
+    if a.simulera:
+        print("  ⚠ SIMULERINGSLÄGE. d låter ett dygn gå i kursen — det är "
+              "ingen riktig dag.\n"
+              "    Varje tidsstämpel i kursfilen flyttas, och en kopia tas "
+              "före varje flytt.")
     # Dagens plan läggs en gång och gäller hela dagen (5.1). Den håller också
     # ihop faserna: introfasen tar sina övningar ur den, och meningsfasen sina
     # meningar, så att de två aldrig slåss om samma källmening (6.1 punkt 8).
@@ -504,6 +551,33 @@ def main() -> None:
         val = _fråga("> ")
         if val == "q":
             return
+        if val == "d" and a.simulera:
+            print("\n  ╶─ SIMULERING ──────────────────────────────────────")
+            print("  Det här är INGEN riktig dag. Kursens klocka flyttas ett")
+            print("  dygn: varje tidsstämpel i kursfilen flyttas bakåt lika")
+            print("  mycket, så att varje intervall bevaras och kursen ser ut")
+            print("  precis som om dygnet hade gått (5.1, 4.4).")
+            try:
+                rader, kopia = flytta_framåt(a.kurs, 1, rapport=print)
+            except (FileNotFoundError, OkändaStämplar, ValueError) as fel:
+                print(f"  INGEN FLYTT GJORDES: {fel}")
+                continue
+            print(f"  {rader} tidsstämplar flyttade.")
+            print(f"  kopia före flytten: {kopia.relative_to(ROT)}")
+            # Passet byggs om, och dagens tre lokala minnen nollställs: planen
+            # och dess dygn (5.1), och korten vars meningar tog slut i dag
+            # (6.1 punkt 8) — alla tre gäller en dag som nu ligger i går.
+            data, passet = _bygg()
+            plan = None
+            planens_dag = None
+            utan_material = set()
+            print(f"  ╶─ kursen är nu på dag {_kursdag(data)} "
+                  f"(klockan står still) ─ ta nya nivåer med n ──\n")
+            continue
+        if val == "d" and not a.simulera:
+            print("  d finns bara i provläge. Starta om med --simulera om du "
+                  "vill låta dygn gå.")
+            continue
         if val == "n":
             # EN PLAN PER DAG (4.4, 5.1). «Nivåer öppnas bara när passet startas:
             # starta eller starta med nya nivåer. Planen räknas ut efter valet
@@ -593,6 +667,9 @@ def main() -> None:
                   + ", ".join(map(str, kvar)) + " — de tas om i morgon (5.1).")
         else:
             print("\n  högarna är tomma — dagens arbete är gjort (5.3).")
+        if a.simulera:
+            print("  SIMULERING: tryck d för att låta ett dygn gå och se "
+                  "nästa dag.")
 
 
 if __name__ == "__main__":
