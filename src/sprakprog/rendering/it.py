@@ -37,9 +37,17 @@ class ItalienskRenderare(RomanskRenderare):
     SUBJEKTSCELL = "soggetto"
     TONISK = "tonico"
     SAMMANSATT_DÅTID = True
+    # Italienskan smälter ihop preposition och bestämd artikel obligatoriskt.
+    # Sex prepositioner × sju artikelformer; de vanligaste tas här.
     SAMMANDRAG = {("a", "il"): "al", ("a", "lo"): "allo", ("a", "la"): "alla",
                   ("a", "i"): "ai", ("a", "gli"): "agli", ("a", "le"): "alle",
-                  ("di", "il"): "del", ("di", "la"): "della"}
+                  ("di", "il"): "del", ("di", "lo"): "dello", ("di", "la"): "della",
+                  ("di", "i"): "dei", ("di", "gli"): "degli", ("di", "le"): "delle",
+                  ("in", "il"): "nel", ("in", "lo"): "nello", ("in", "la"): "nella",
+                  ("in", "i"): "nei", ("in", "gli"): "negli", ("in", "le"): "nelle",
+                  ("da", "il"): "dal", ("da", "la"): "dalla",
+                  ("su", "il"): "sul", ("su", "la"): "sulla",
+                  ("con", "il"): "col"}
 
     def possessivcell(self, genus: int, numerus: Numerus) -> str:
         kön = "m" if genus == MASKULIN else "f"

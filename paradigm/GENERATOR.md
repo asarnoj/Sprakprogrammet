@@ -253,6 +253,7 @@ utökningarna flyttar bara taket.
 12  flickan läser inte              + negation         ✅ 2026-08-13
 13  hon vill läsa / börjar att läsa + infinitivkompl.   ✅ 2026-08-13
 14  har läst / hade läst            + perfekt          ✅ 2026-08-13
+15  hon läser i skolan              + prepositionsfras ✅ 2026-08-13
 ──────────────────────────────────  allt ovan fungerar
     japanskan saknar både infinitivkomplement och perfektform
 12  har gett                        + perfekt
@@ -319,7 +320,7 @@ Mätt på svenska: vilka celler är onådda, och vad låser upp dem?
 | Komparation | 294 | jämförelsekonstruktion |
 | ~~Perfekt~~ | ~~165~~ | ✅ `Aspekt.PERFEKT` |
 | Imperativ | 161 | satsmodus |
-| Oböjda ordklasser | 105 | prepositionsfraser, konjunktioner |
+| ~~Oböjda ordklasser~~ | ~~105~~ | ✅ prepositionsfraser byggda |
 
 **Negation och frågor låser upp noll former** — negationsadverben har redan
 sin `inv`-form. Men de mångdubblar antalet *meningar* som går att bygga av

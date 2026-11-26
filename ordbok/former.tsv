@@ -406,10 +406,10 @@ abs_sanning	sv	sanning	sanningars	2	1	8
 abs_sanning	sv	sanning	sanningen	1	2	7					
 abs_sanning	sv	sanning	sanningens	1	2	8					
 abs_sanning	sv	sanning	sannings	1	1	8					
-abs_situation	de	Situation	den Situationen	2		4					
-abs_situation	de	Situation	der Situation	1		12					
-abs_situation	de	Situation	die Situation	1		3					
-abs_situation	de	Situation	die Situationen	2		11					
+abs_situation	de	Situation	Situation	1		3					
+abs_situation	de	Situation	Situation	1		12					
+abs_situation	de	Situation	Situationen	2		4					
+abs_situation	de	Situation	Situationen	2		11					
 abs_situation	en	situation	situation	1		7					
 abs_situation	en	situation	situation's	1		8					
 abs_situation	en	situation	situations	2		7					
@@ -13379,11 +13379,11 @@ djur_får	sv	får	får	1	1	15
 djur_får	sv	får	får	2	1	15					
 djur_får	sv	får	fåren	1	2	7					
 djur_får	sv	får	fåren	2	2	7					
-djur_gris	de	Schwein	das Schwein	1		3					
-djur_gris	de	Schwein	dem Schwein	1		4					
-djur_gris	de	Schwein	den Schweinen	2		4					
-djur_gris	de	Schwein	des Schweins	1		8					
-djur_gris	de	Schwein	die Schweine	2		11					
+djur_gris	de	Schwein	Schwein	1		3					
+djur_gris	de	Schwein	Schwein	1		4					
+djur_gris	de	Schwein	Schweine	2		11					
+djur_gris	de	Schwein	Schweinen	2		4					
+djur_gris	de	Schwein	Schweins	1		8					
 djur_gris	en	pig	pig	1		7					
 djur_gris	en	pig	pig's	1		8					
 djur_gris	en	pig	pigs	2		7					
@@ -15331,10 +15331,10 @@ fam_storebror	sv	storebror	storebröder	2	1	7
 fam_storebror	sv	storebror	storebröderna	2	2	7					
 fam_storebror	sv	storebror	storebrödernas	2	2	8					
 fam_storebror	sv	storebror	storebröders	2	1	8					
-fam_syster	de	Schwester	den Schwestern	2		4					
-fam_syster	de	Schwester	der Schwester	1		12					
-fam_syster	de	Schwester	die Schwester	1		3					
-fam_syster	de	Schwester	die Schwestern	2		11					
+fam_syster	de	Schwester	Schwester	1		3					
+fam_syster	de	Schwester	Schwester	1		12					
+fam_syster	de	Schwester	Schwestern	2		4					
+fam_syster	de	Schwester	Schwestern	2		11					
 fam_syster	en	sister	sister	1		7					
 fam_syster	en	sister	sister's	1		8					
 fam_syster	en	sister	sisters	2		7					
@@ -27596,12 +27596,12 @@ kläd_skjorta	sv	skjorta	skjortor	2	1	7
 kläd_skjorta	sv	skjorta	skjortorna	2	2	7					
 kläd_skjorta	sv	skjorta	skjortornas	2	2	8					
 kläd_skjorta	sv	skjorta	skjortors	2	1	8					
-kläd_sko	de	Schuh	dem Schuh	1		4					
-kläd_sko	de	Schuh	den Schuh	1		2					
-kläd_sko	de	Schuh	den Schuhen	2		4					
-kläd_sko	de	Schuh	der Schuh	1		1					
-kläd_sko	de	Schuh	des Schuhes	1		8					
-kläd_sko	de	Schuh	die Schuhe	2		11					
+kläd_sko	de	Schuh	Schuh	1		1					
+kläd_sko	de	Schuh	Schuh	1		2					
+kläd_sko	de	Schuh	Schuh	1		4					
+kläd_sko	de	Schuh	Schuhe	2		11					
+kläd_sko	de	Schuh	Schuhen	2		4					
+kläd_sko	de	Schuh	Schuhes	1		8					
 kläd_sko	en	shoe	shoe	1		7					
 kläd_sko	en	shoe	shoe's	1		8					
 kläd_sko	en	shoe	shoes	2		7					
@@ -27636,10 +27636,10 @@ kläd_solglasögon	sv	solglasögon	solglasögon	2	1	7
 kläd_solglasögon	sv	solglasögon	solglasögonen	2	2	7					
 kläd_solglasögon	sv	solglasögon	solglasögonens	2	2	8					
 kläd_solglasögon	sv	solglasögon	solglasögons	2	1	8					
-kläd_strumpa	de	Socke	den Socken	2		4					
-kläd_strumpa	de	Socke	der Socke	1		12					
-kläd_strumpa	de	Socke	die Socke	1		3					
-kläd_strumpa	de	Socke	die Socken	2		11					
+kläd_strumpa	de	Socke	Socke	1		3					
+kläd_strumpa	de	Socke	Socke	1		12					
+kläd_strumpa	de	Socke	Socken	2		4					
+kläd_strumpa	de	Socke	Socken	2		11					
 kläd_strumpa	en	sock	sock	1		7					
 kläd_strumpa	en	sock	sock's	1		8					
 kläd_strumpa	en	sock	socks	2		7					
@@ -32883,10 +32883,10 @@ krop_arm	sv	arm	armars	2	1	8
 krop_arm	sv	arm	armen	1	2	7					
 krop_arm	sv	arm	armens	1	2	8					
 krop_arm	sv	arm	arms	1	1	8					
-krop_axel	de	Schulter	den Schultern	2		4					
-krop_axel	de	Schulter	der Schulter	1		12					
-krop_axel	de	Schulter	die Schulter	1		3					
-krop_axel	de	Schulter	die Schultern	2		11					
+krop_axel	de	Schulter	Schulter	1		3					
+krop_axel	de	Schulter	Schulter	1		12					
+krop_axel	de	Schulter	Schultern	2		4					
+krop_axel	de	Schulter	Schultern	2		11					
 krop_axel	en	shoulder	shoulder	1		7					
 krop_axel	en	shoulder	shoulder's	1		8					
 krop_axel	en	shoulder	shoulders	2		7					
@@ -38325,12 +38325,12 @@ nat_sand	sv	sand	sandens	1	2	8
 nat_sand	sv	sand	sandens	2	2	8					
 nat_sand	sv	sand	sands	1	1	8					
 nat_sand	sv	sand	sands	2	1	8					
-nat_sjö	de	See	dem See	1		4					
-nat_sjö	de	See	den See	1		2					
-nat_sjö	de	See	den Seen	2		4					
-nat_sjö	de	See	der See	1		1					
-nat_sjö	de	See	des Sees	1		8					
-nat_sjö	de	See	die Seen	2		11					
+nat_sjö	de	See	See	1		1					
+nat_sjö	de	See	See	1		2					
+nat_sjö	de	See	See	1		4					
+nat_sjö	de	See	Seen	2		4					
+nat_sjö	de	See	Seen	2		11					
+nat_sjö	de	See	Sees	1		8					
 nat_sjö	en	lake	lake	1		7					
 nat_sjö	en	lake	lake's	1		8					
 nat_sjö	en	lake	lakes	2		7					
@@ -40266,10 +40266,10 @@ plats_sjukhus	sv	sjukhus	sjukhusen	2	2	7
 plats_sjukhus	sv	sjukhus	sjukhusens	2	2	8					
 plats_sjukhus	sv	sjukhus	sjukhuset	1	2	7					
 plats_sjukhus	sv	sjukhus	sjukhusets	1	2	8					
-plats_skola	de	Schule	den Schulen	2		4					
-plats_skola	de	Schule	der Schule	1		12					
-plats_skola	de	Schule	die Schule	1		3					
-plats_skola	de	Schule	die Schulen	2		11					
+plats_skola	de	Schule	Schule	1		3					
+plats_skola	de	Schule	Schule	1		12					
+plats_skola	de	Schule	Schulen	2		4					
+plats_skola	de	Schule	Schulen	2		11					
 plats_skola	en	school	school	1		7					
 plats_skola	en	school	school's	1		8					
 plats_skola	en	school	schools	2		7					
@@ -45609,12 +45609,12 @@ skol_dator	sv	dator	datorers	2	1	8
 skol_dator	sv	dator	datorn	1	2	7					
 skol_dator	sv	dator	datorns	1	2	8					
 skol_dator	sv	dator	dators	1	1	8					
-skol_elev	de	Schüler	dem Schüler	1		4					
-skol_elev	de	Schüler	den Schüler	1		2					
-skol_elev	de	Schüler	den Schülern	2		4					
-skol_elev	de	Schüler	der Schüler	1		1					
-skol_elev	de	Schüler	des Schülers	1		8					
-skol_elev	de	Schüler	die Schüler	2		11					
+skol_elev	de	Schüler	Schüler	1		1					
+skol_elev	de	Schüler	Schüler	1		2					
+skol_elev	de	Schüler	Schüler	1		4					
+skol_elev	de	Schüler	Schüler	2		11					
+skol_elev	de	Schüler	Schülern	2		4					
+skol_elev	de	Schüler	Schülers	1		8					
 skol_elev	en	pupil	pupil	1		7					
 skol_elev	en	pupil	pupil's	1		8					
 skol_elev	en	pupil	pupils	2		7					
@@ -48104,10 +48104,10 @@ tid_natt	sv	natt	nätter	2	1	7
 tid_natt	sv	natt	nätterna	2	2	7					
 tid_natt	sv	natt	nätternas	2	2	8					
 tid_natt	sv	natt	nätters	2	1	8					
-tid_sekund	de	Sekunde	den Sekunden	2		4					
-tid_sekund	de	Sekunde	der Sekunde	1		12					
-tid_sekund	de	Sekunde	die Sekunde	1		3					
-tid_sekund	de	Sekunde	die Sekunden	2		11					
+tid_sekund	de	Sekunde	Sekunde	1		3					
+tid_sekund	de	Sekunde	Sekunde	1		12					
+tid_sekund	de	Sekunde	Sekunden	2		4					
+tid_sekund	de	Sekunde	Sekunden	2		11					
 tid_sekund	en	second	second	1		7					
 tid_sekund	en	second	second's	1		8					
 tid_sekund	en	second	seconds	2		7					

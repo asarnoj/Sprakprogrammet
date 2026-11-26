@@ -18,7 +18,8 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Mening, Nominalfras, Numerus, Prepositionsfras,
+    RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -186,6 +187,13 @@ class SvenskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
+    def adverbial(self, a: str | Prepositionsfras) -> list[str]:
+        """Adverb eller prepositionsfras — samma slot, två frastyper."""
+        if isinstance(a, str):
+            return [self.u.form_för(a, "pos")]
+        return [self.u.form_för(a.preposition, "inv"),
+                *self.nominalfras(a.komplement)]
+
     def komplement(self, m: Mening) -> list[str]:
         """Infinitivkomplement: "vill läsa", "börjar att läsa"."""
         markör = self.u.infinitivmarkör(m.verb)
@@ -261,7 +269,7 @@ class SvenskRenderare:
         if m.predikativ is not None:
             ord.extend(self.predikativ(m))
         for adverbial in m.adverbial:
-            ord.append(self.u.form_för(adverbial, "pos"))
+            ord.extend(self.adverbial(adverbial))
 
         mening = " ".join(ord)
         return mening[0].upper() + mening[1:] + "."

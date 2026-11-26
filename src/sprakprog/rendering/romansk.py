@@ -366,7 +366,13 @@ class RomanskRenderare:
             else:
                 ord += self.nominalfras(m.io, "objekt")
         for adverbial in m.adverbial:
-            ord.append(self.u.form_för(adverbial, "inv"))
+            if isinstance(adverbial, str):
+                ord.append(self.u.form_för(adverbial, "inv"))
+            else:
+                # Sammandragningen de+le→du sköts av sandhi, precis som
+                # för genitivet — samma mekanism, annan preposition.
+                ord.append(self.u.form_för(adverbial.preposition, "inv"))
+                ord += self.nominalfras(adverbial.komplement)
 
         mening = " ".join(self.sandhi(ord))
         return mening[0].upper() + mening[1:] + "."

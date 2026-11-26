@@ -110,6 +110,18 @@ class Nominalfras:
 
 
 @dataclass(frozen=True, slots=True)
+class Prepositionsfras:
+    """Preposition plus nominalfras: "i skolan", "med sin bror".
+
+    Tyskan styr kasus på komplementet per preposition — "mit dem Buch" men
+    "für das Buch" — och det ligger i MönsterKrav på prepositionens eget
+    koncept. Övriga sex språk saknar kasus och behöver ingen rektion.
+    """
+    preposition: str
+    komplement: Nominalfras
+
+
+@dataclass(frozen=True, slots=True)
 class Mening:
     """En hel sats. Slotnamnen matchar MönsterKrav.slot."""
     verb: str
@@ -130,7 +142,7 @@ class Mening:
     Ett predikativt substantiv står utan artikel i sv/de/fr/es/it — "hon är
     läkare", inte "hon är en läkare" — men med artikel i engelskan.
     """
-    adverbial: tuple[str, ...] = field(default=())
+    adverbial: "tuple[str | Prepositionsfras, ...]" = field(default=())
     komplement: str | None = None
     """Infinitivkomplement: "hon vill läsa", "hon börjar att läsa".
 
