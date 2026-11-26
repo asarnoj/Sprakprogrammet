@@ -19,7 +19,8 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Prepositionsfras,
+    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus,
+    Prepositionsfras,
     RenderingsFel, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -188,10 +189,12 @@ class SvenskRenderare:
 
     # ── sats ─────────────────────────────────────────────────────────
 
-    def adverbial(self, a: str | Prepositionsfras) -> list[str]:
-        """Adverb eller prepositionsfras — samma slot, två frastyper."""
+    def adverbial(self, a: str | Prepositionsfras | Bisats) -> list[str]:
+        """Adverb, prepositionsfras eller bisats — samma slot, tre frastyper."""
         if isinstance(a, str):
             return [self.u.form_för(a, "pos")]
+        if isinstance(a, Bisats):
+            return self.bisats(a)
         return [self.u.form_för(a.preposition, "inv"),
                 *self.nominalfras(a.komplement)]
 
@@ -297,13 +300,14 @@ class SvenskRenderare:
         celler = self.u._celler(lexem)
         return not celler.get("inf") and bool(celler.get("inf_passiv"))
 
-    def rendera(self, m: Mening) -> str:
-        """Svensk huvudsats: subjekt, verb, indirekt objekt, objekt, adverbial.
+    def satsled(self, m: Mening, bisats: bool = False) -> list[str]:
+        """Satsens ord, utan skiljetecken och utan inledande subjunktion.
 
-        Ordföljden är hårdkodad här och inte datadriven. Det är medvetet så
-        länge bara svenskan finns — tyskans V2 och japanskans SOV kommer att
-        kräva en riktig ordföljdsmodell, och den byggs när det andra språket
-        visar vilken form den behöver ha, inte innan.
+        `bisats` styr EN sak, och det är hela skillnaden mellan svensk huvud-
+        och bisatsordföljd: satsadverbialet står FÖRE det finita verbet i
+        bisats — "att han inte kom" mot "han kom inte". BIFF-regeln.
+        Allt annat är identiskt, vilket är skälet att bisatsen renderas av
+        samma funktion i stället för att få en egen.
         """
         verb = self.verbfras(m)
         # Imperativen säger inte ut den tilltalade: "läs boken!". Subjektet
@@ -315,12 +319,19 @@ class SvenskRenderare:
             subjekt = self.nominalfras(m.subjekt, subjekt=True)
         # Ja/nej-fråga är ren omkastning: det finita verbet först, subjektet
         # sedan. Samma sats, annan ordning — inget ord läggs till.
-        ord = [verb[0], *subjekt] if m.fråga else [*subjekt, verb[0]]
-        if m.negerad:
-            # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
-            # inte "ska ge inte". Därför delas verbfrasen här.
-            ord.append(self.u.form_för("neg_inte", "inv"))
-        ord.extend(verb[1:])
+        if bisats:
+            # BIFF: negationen kilar in sig mellan subjektet och verbet.
+            ord = [*subjekt]
+            if m.negerad:
+                ord.append(self.u.form_för("neg_inte", "inv"))
+            ord.extend(verb)
+        else:
+            ord = [verb[0], *subjekt] if m.fråga else [*subjekt, verb[0]]
+            if m.negerad:
+                # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
+                # inte "ska ge inte". Därför delas verbfrasen här.
+                ord.append(self.u.form_för("neg_inte", "inv"))
+            ord.extend(verb[1:])
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord.extend(self.nominalfras(nf))
@@ -330,6 +341,22 @@ class SvenskRenderare:
             ord.extend(self.predikativ(m))
         for adverbial in m.adverbial:
             ord.extend(self.adverbial(adverbial))
+        if m.bisats is not None:
+            ord.extend(self.bisats(m.bisats))
+        return ord
 
-        mening = " ".join(ord)
+    def bisats(self, b: Bisats) -> list[str]:
+        """Subjunktion plus satsen i bisatsordföljd."""
+        return [self.u.form_för(b.subjunktion, "inv"),
+                *self.satsled(b.sats, bisats=True)]
+
+    def rendera(self, m: Mening) -> str:
+        """Svensk huvudsats: subjekt, verb, indirekt objekt, objekt, adverbial.
+
+        Ordföljden är hårdkodad här och inte datadriven. Det är medvetet så
+        länge bara svenskan finns — tyskans V2 och japanskans SOV kommer att
+        kräva en riktig ordföljdsmodell, och den byggs när det andra språket
+        visar vilken form den behöver ha, inte innan.
+        """
+        mening = " ".join(self.satsled(m))
         return mening[0].upper() + mening[1:] + slutar(m)

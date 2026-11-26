@@ -16,7 +16,7 @@ import sqlite3
 from dataclasses import replace
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
+    Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
     Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
@@ -221,7 +221,13 @@ class EngelskRenderare:
         # "she is a doctor", aldrig "she is doctor".
         return self.nominalfras(m.predikativ)
 
-    def rendera(self, m: Mening) -> str:
+    def satsled(self, m: Mening) -> list[str]:
+        """Satsens ord. Engelsk bisats har SAMMA ordföljd som huvudsatsen.
+
+        Det gör den till undantaget: svenskan flyttar satsadverbialet och
+        tyskan verbet. Engelskan flyttar ingenting — bara subjunktionen
+        läggs till. Bisatsen behöver därför ingen egen parameter här.
+        """
         # Imperativen säger inte ut den tilltalade: "read the book!".
         subjekt = ([] if m.modus is Satsmodus.IMPERATIV
                    else self.nominalfras(m.subjekt, "subjekt"))
@@ -261,8 +267,18 @@ class EngelskRenderare:
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
                 ord.append(self.u.form_för(adverbial, "pos"))
+            elif isinstance(adverbial, Bisats):
+                ord += self.bisats(adverbial)
             else:
                 ord.append(self.u.form_för(adverbial.preposition, "inv"))
                 ord += self.nominalfras(adverbial.komplement)
-        mening = " ".join(self.sandhi(ord))
+        if m.bisats is not None:
+            ord += self.bisats(m.bisats)
+        return ord
+
+    def bisats(self, b: Bisats) -> list[str]:
+        return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(b.sats)]
+
+    def rendera(self, m: Mening) -> str:
+        mening = " ".join(self.sandhi(self.satsled(m)))
         return mening[0].upper() + mening[1:] + slutar(m)

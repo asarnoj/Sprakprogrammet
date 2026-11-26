@@ -22,7 +22,7 @@ som styr vilka ord som får kombineras.
 ## Var vi står
 
 **Datalagret, renderaren och restriktionerna är klara. Meningsformen är
-utbyggd genom nitton nivåer. Generatorn är inte byggd.**
+utbyggd genom tjugo nivåer. Generatorn är inte byggd.**
 
 ```
 Koncept        736        Mönster        271   (universella
@@ -51,7 +51,7 @@ uttrycksförmågan. Det är den inte längre; se nåbarhetsmätningen nedan.
 
 ## Vad som gjordes sist (2026-08-13 — 08-14)
 
-Nio konstruktioner byggdes, en i taget, var och en i alla sju språk innan
+Tio konstruktioner byggdes, en i taget, var och en i alla sju språk innan
 nästa påbörjades. Ordningen togs inte på känsla utan **härleddes ur
 `MönsterKrav.slot` × `MönsterKrav.frastyp`** — en kolumn som legat ifylld
 sedan mönstertaggningen utan att någon läst den. Metoden flyttade
@@ -70,6 +70,7 @@ fyra dimensioner och inte en. Se GENERATOR.md, avsnittet med samma namn.
 | 17 | passiv | `Diates`, båda svenska passiverna |
 | 18 | komparation | `Grad`, `jämförelse` |
 | 19 | imperativ | `Satsmodus` |
+| 20 | bisatser | `Bisats`, och `Mening` i `Mening` |
 
 Renderarna växte med det: `kein` i tyskan, do-support i engelskan,
 klitikaordning och sandhi i de romanska, ukemi-passiv och より-jämförelse i
@@ -108,11 +109,12 @@ Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
 ```
 sv  3 879 / 4 988   78 %      fr  5 595 /  9 070   62 %
 en  1 790 / 2 293   78 %      it  5 791 / 10 246   57 %
-                              es  6 045 / 10 596   57 %
-ja  1 116 / 2 498   45 %      de  8 508 / 23 494   36 %
+ja  1 459 / 2 498   58 %      es  6 045 / 10 596   57 %
+                              de  8 508 / 23 494   36 %
 ```
 
 Svenskan: 37 % → 45 % (genitiv) → 71 % → **78 %**.
+Japanskan: 31 % → 45 % (imperativ) → **58 %** (bisatser).
 
 **Siffran mäter svepet lika mycket som specen.** Tre artefakter hittades
 och rättades under mätningen. Två låg i svepet: subjektet var alltid tredje
@@ -140,16 +142,16 @@ Vad som faktiskt är onått, efter de rättelserna:
 | Språk | Block | Vad som krävs |
 |---|---|---|
 | de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
-| fr/es/it | konjunktiv (resten) + konditionalis | bisatser respektive villkorssatser |
+| fr/es/it | konjunktiv + konditionalis | modusrektion i datan, respektive villkorssatser |
 | de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
-| ja | jisho/ta | register, utanför scope |
+| ja | ku, kereba, pot, vol | adverbiell adjektivform, villkor, potentialis, volitiv |
 
 **Tyskans 36 % beror på en enda sak.** 16 121 av 23 494 tyska former är
 adjektivformer, och två tredjedelar av det paradigmet är komparativ och
 superlativ i attributiv ställning. `Grad` finns på `Mening` men styr bara
 predikativet. Att flytta graden in i `Nominalfras.attribut` är den enskilt
 största utökningen som återstår — värd omkring 10 500 tyska former, mer än
-alla nio gjorda utökningar tillsammans på det språket.
+alla tio gjorda utökningar tillsammans på det språket.
 
 ---
 
@@ -295,6 +297,97 @@ en del av imperativen.
 
 ---
 
+## Bisatserna — nivå 20
+
+Den första konstruktionen där **`Mening` innehåller en `Mening`**. Allt som
+går att säga i en huvudsats går därmed att säga i en bisats — tempus,
+negation, passiv, perfekt, komparation — utan att något behövde läggas till.
+
+`Bisats(subjunktion, sats)` fyller två roller, och skillnaden ligger i
+subjunktionen och inte i strukturen:
+
+- **argument** — `Mening.bisats`. Satsen ÄR objektet: "hon vet att han kom".
+  Bara de 22 verb vars `MönsterKrav.frastyp & 32` är satt tar en sådan.
+  (`frastyp` är en bitmask, inte en sträng — Bisatsfras är bit 32.)
+- **adverbial** — i `adverbial`-tupeln bredvid `Prepositionsfras`. Satsen är
+  en omständighet: "hon läste när han kom". Vilket verb som helst tar den.
+
+```
+sv  Hon vet att han kom.            Hon läste boken när han kom.
+en  She knows that he came.         She read the book when he came.
+de  Sie weiß, dass er kam.          Sie las das Buch, als er kam.
+fr  Elle sait qu'il est venu.       Elle a lu le livre quand il est venu.
+es  Ella sabe que él vino.          Ella leyó el libro cuando él vino.
+it  Lei sa che lui è venuto.        Lei ha letto il libro quando lui è venuto.
+ja  彼女は彼が来たということを知ります。  彼女は彼が来たときに、本を読みました。
+```
+
+### Tre språk gör något annat än att lägga till en subjunktion
+
+**Tyskan flyttar det finita verbet sist.** "dass er das Buch gelesen **hat**"
+— satsklammern vänds ut och in: i huvudsats står det finita på plats två och
+de infinita sist, i bisats står allihop sist med det finita allra sist.
+Uppdelningen i finit och infinit fanns redan för satsklammerns skull, så
+bisatsen kostade en rad. Perfekt passiv i bisats blir "dass das Buch gelesen
+worden ist", med alla tre verbdelarna i rätt ordning.
+
+**Svenskan flyttar satsadverbialet före verbet.** BIFF-regeln: "att han
+**inte** kom" mot huvudsatsens "han kom **inte**".
+
+**Japanskan byter form, inte bara ordning.** En bisats står alltid i ENKEL
+form, hur artig huvudsatsen än är: 彼が来た**と**言いました, aldrig 来ました.
+Subjektet tar dessutom が i stället för は — は markerar satsens tema, och en
+bisats har inget eget tema. Och subjunktionen står SIST, som postpositionerna.
+
+### Det som var fel i förra överlämningen
+
+De japanska enkla formerna (jisho, ta, nai) stod bokförda som **"register,
+utanför scope"**. Det var fel. Plain mot polite är register i huvudsats men
+**grammatik i bisats** — en bisats KAN inte stå i artig form. De cellerna
+var alltså inte utanför scope utan bara onåbara, och bisatsen låste upp
+343 av dem: japanskan gick 45 % → **58 %**.
+
+Det är också det enda språk som vinner något. De sex andra vinner **noll
+former** — en bisats använder samma celler som en huvudsats, bara i annan
+ordning. En mätning som räknar former hade aldrig visat skillnaden mellan
+"tyskan kastade om orden" och "japanskan bytte paradigm".
+
+### Två fel som bisatsen drog fram
+
+**Validatorn kraschade på varje prepositionsfras-adverbial**, och hade gjort
+det sedan nivå 15. `tempuskrav()` slog upp adverbialet i databasen utan att
+kontrollera att det var en sträng, så en `Prepositionsfras` gav
+`ProgrammingError: type 'Prepositionsfras' is not supported`. Ingen hade
+validerat en mening som hade en. Bara adverb har tempuskrav; fraser och
+bisatser hoppas nu över, och bisatsen valideras rekursivt som den mening
+den är.
+
+**Franskans que elideras inte automatiskt.** "parce que il vient" i stället
+för "parce qu'il vient". Regeln gäller ORDET que, inte ändelsen -que — "la
+bibliothèque a" ska inte elideras — så villkoret är `que` eller `... que`
+med mellanslag. Alla franska sammansatta subjunktioner är flerordiga, vilket
+gör den avgränsningen exakt.
+
+### Den gräns som återstår
+
+**Konjunktivstyrande subjunktioner vägras i fr/es/it.** "bien qu'il
+vienne", "antes de que venga", "benché venga" — vilka subjunktioner som
+styr konjunktiv är en **lexikal egenskap hos varje subjunktion**, och den
+skiljer sig mellan språken: fr *avant que* tar konjunktiv men *après que*
+indikativ, es *aunque* tar båda och betydelsen ändras med valet.
+
+Det är samma sorts fakta som prepositionernas kasusrektion, och hör hemma
+på subjunktionens eget `Mönster` — inte i en lista i renderaren. `MönsterKrav`
+saknar en moduskolumn, så det kräver en schemaändring i `setup.sql`. Listorna
+som finns i fr/es/it just nu används BARA för att vägra, aldrig för att välja
+form, vilket är ett mycket svagare åtagande.
+
+Konjunktivcellerna är fyllda i datan (fr 1 044, es 2 100, it 2 075) och är
+det största onådda blocket i de tre språken. Att rendera dem i indikativ
+vore en tyst felaktig mening.
+
+---
+
 ## Kända täckningsgränser
 
 (Inga fel, men bra att veta.)
@@ -336,19 +429,18 @@ en del av imperativen.
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
    nu mogen — med 78 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
-2. **Två konstruktioner kvar på stegen:** bisatser (`Mening` måste kunna
-   innehålla en `Mening` — 22 verb har Bisatsfras-slots) och wh-frågor (de
-   76 frågeorden har former; specen saknar sätt att markera vilken slot som
-   efterfrågas). Bisatserna är strukturellt tyngst och låser dessutom upp
-   resten av de romanska konjunktiverna — imperativen tog redan halva
-   konjunktivparadigmet i spanskan.
-3. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
+2. **En konstruktion kvar på stegen:** wh-frågor. De 76 frågeorden har
+   former; specen saknar sätt att markera vilken slot som efterfrågas.
+3. **Modusrektion på subjunktionerna** — se bisatsavsnittet. Låser upp de
+   romanska konjunktiverna (fr 1 044, es 2 100, it 2 075 former) och kräver
+   en moduskolumn på `MönsterKrav`, alltså en ändring i `setup.sql`.
+4. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
    allt som återstår (~10 500 tyska former), och billig: graden finns redan
    som `Grad`, den sitter bara på fel ställe.
-4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
+5. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
    indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
    Partikeln ligger i formen och borde ligga i det infinita fältet.
-5. **Appen.** Desktop först, mobil senare.
+6. **Appen.** Desktop först, mobil senare.
 
 Håll FSRS, ljuduppläsning och appen utanför tills generatorn löser fram
 meningar.

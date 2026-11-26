@@ -35,6 +35,13 @@ class SpanskRenderare(RomanskRenderare):
     # uppmaning i något av de sju språken.
     NEKAD_IMPERATIVCELL = {"2sg": "subj_2sg", "2pl": "subj_2pl",
                            "artig": "subj_3sg", "1pl": "subj_1pl"}
+    # "antes de que venga", "para que venga", "hasta que venga".
+    # aunque står med trots att den tar BÅDA moduserna — valet ändrar
+    # betydelsen (aunque llueve = fastän det regnar, aunque llueva = även
+    # om det skulle regna), och det är en distinktion specen inte bär.
+    KONJUNKTIVSUBJUNKTIONER = frozenset({
+        "subj_innan", "subj_för_att", "subj_tills", "subj_trots_att",
+        "subj_ifall"})
     FRÅGETECKEN_FÖRE = "¿"
     SAMMANDRAG = {("a", "el"): "al", ("de", "el"): "del"}
 

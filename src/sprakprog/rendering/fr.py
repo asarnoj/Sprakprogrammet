@@ -22,6 +22,11 @@ class FranskRenderare(RomanskRenderare):
     # till flera. Negationen ändrar ingen form — bara ne ... pas runt om.
     IMPERATIVCELL = {"2sg": "imp_2sg", "2pl": "imp_2pl",
                      "artig": "imp_2pl", "1pl": "imp_1pl"}
+    # "bien qu'il vienne", "avant qu'il vienne", "pour qu'il vienne".
+    # Notera att après que INTE står här: franskan skiljer på före och
+    # efter, och bara den ena styr konjunktiv.
+    KONJUNKTIVSUBJUNKTIONER = frozenset({
+        "subj_trots_att", "subj_innan", "subj_för_att", "subj_tills"})
     NEKANDE_FÖRLED = "ne"
     FRÅGEINLEDNING = "est-ce que"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",
@@ -48,11 +53,12 @@ class FranskRenderare(RomanskRenderare):
         h aspiré-ord (héros) skulle kräva en flagga på Lexem, i stil med
         prenominal — skillnaden syns inte i stavningen.
         """
-        if första == "est-ce que":
-            # Est-ce que + vokal → est-ce qu'. Sandhi hanterar det som ett
-            # ord trots att det är tre; det är lexikaliserat i praktiken.
-            return andra[:1].lower() in self.VOKAL | {"h"}
-        if första == "ne":
+        if första == "ne" or första == "que" or första.endswith(" que"):
+            # que elideras framför vokal precis som ne: "qu'il est venu",
+            # "parce qu'elle lit", "est-ce qu'elle lit". Regeln gäller ORDET
+            # que, inte ändelsen -que: "la bibliothèque a" elideras inte.
+            # Därför krävs mellanslag före i de sammansatta subjunktionerna,
+            # som alla är flerordiga (parce que, bien que, jusqu'à ce que).
             return andra[:1].lower() in self.VOKAL | {"h"}
         return (första in ("le", "la")
                 and andra[:1].lower() in self.VOKAL | {"h"})
