@@ -605,163 +605,118 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-**Läs det här avsnittet innan du fyller i något.** Punkterna är hittade genom
-att systematiskt leta, och lämnade öppna med avsikt. Att fylla i dem utan att
-väga alternativen vore att göra om det fel hela omskrivningen finns för att
-rätta.
-
 **Ordningen är byggordningen** — de översta blockerar närmast. Julius tar fyra
-i taget uppifrån. Löser ett svar en punkt stryks den; lämnar svaret något
-öppet blir resten en ny punkt sist i listan.
+i taget uppifrån. Löser ett svar en punkt stryks den; lämnar svaret något öppet
+blir resten en ny punkt sist i listan.
 
-*Omgång 1 (punkt 1–4 i den gamla numreringen) är avklarad. Fyra punkter
-kollapsade till en, och två nya föddes ur mätningarna. Besluten står i
-avsnittet efter listan.*
+*Omgång 1 och 2 avklarade. Sex punkter har strukits, två nya har fötts.
+Besluten står i avsnitt 12.*
 
 ---
 
-### 1 · Hur många stammar får ett ord ha?
+### 1 · Stamkortet: stryks eller behålls?
 
-*Ersätter gamla punkt 1–4, som visade sig vara samma fråga.*
+*Rekommendation finns. Väntar på Julius.*
 
-**Idag.** Ett ord har en stam. Mätt över franskans 174 verb, efter att
-konjunktivens `que`-partikel räknats bort:
+**Frågan var:** fyller stamkortet ett distinkt syfte?
 
-    61 %   stammen bär ordet (≥60 % av lemmat)
-    21 %   stammen bär hälften
-    18 %   stammen kollapsar     aller avoir être faire dire
-                                 pouvoir vouloir boire lire mourir
+**Mätt svar: för 70 % av verben, nej.** Stryker man ändelsen ur lemmat med en
+enradig regel — `-er`, `-ir`, `-re`, `-oir` — får man en bas som täcker minst
+90 % av formerna för **121 av franskans 174 verb**. För dem är stamkortet
+härledbart ur ordkortet och bär alltså ingen egen information.
 
-Och de kollapsade är inte vilka verb som helst:
+För de 53 andra bär det information, och de är återigen de vanliga:
 
-    de kollapsade    90 % på A1,  33 % i bas_kärna
-    alla verb        36 % på A1,   6 % i bas_kärna
+    être      regeln ger 'êt'    täcker  6 %
+    avoir     regeln ger 'av'    täcker 21 %
+    pouvoir   regeln ger 'pouv'  täcker 25 %
+    aller     regeln ger 'all'   täcker 51 %
+    vouloir   regeln ger 'voul'  täcker 47 %
 
-**Modellen fungerar för de verb man sällan använder och brister för dem man
-använder mest.** Följden syns i täckningen: 33,3 former per verb i snitt men
-19,9 celler i beroendekartan, och bara 44 av 174 verb helt täckta.
+**Och stammen faller på produktionstestet.** «Vad är stammen för *arbeta*?» är
+ingen fråga en människa besvarar. Det är samma invändning som fällde
+`böjningsklass` — ett kort som bär kunskap men inte går att producera.
 
-**Luckan.** Julius invände mot stammen som begrepp: *«ibland gäller inte
-stammen för alla böjningar, och vårt system antyder att stammen ska vara just
-en stam som alltid är en del av varje form»*. Han har rätt. Men han såg också
-att alternativet — ett kort per form — tappar kunskapsmomentet att lära sig en
-regel: *«nous, alltså -ons»*.
+**Men kompressionen kan inte bara försvinna.** Införandekostnaden, räknad:
 
-Franskans verb har i själva verket **flera stammar med regelbundna ändelser**:
-`avoir` ger `av-ons`, `aur-ai`, `eu-s`, `ay-ez`. Det är samma struktur som
-`stamgrupp` redan finns för. Tre modeller, mätta:
+    användare med         formkort per cell    ändelser + ordkort
+      20 verb, 4 tempus            480                    44
+      50 verb, 6 tempus          1 800                    86
+     100 verb, 6 tempus          3 600                   136
 
-| Modell | Kort för franskans verb | Delade ändelser |
+**26 gånger.** Rena formkort betyder att varje cell av varje ord måste införas
+en gång, och vid hundra verb är det 3 600 införanden — år, i Julius takt.
+
+**Rekommendationen** är därför att flytta kompressionen dit den är ett
+kunskapsmoment. Julius formulerade det själv: *«det är ett naturligt
+läromoment att veta att nu är pronomenet nous och därmed böjs verbet efter
+det»*.
+
+| Korttyp | Vad det är | Antal, franskan |
 |---|---|---|
-| en stam per ord | brister för 39 % | 210 |
-| **en stam per tempusgrupp** | **1 714** | **189** |
-| ingen stam, allt är former | 5 768 | — |
-| hybrid: stam där den bär, form där den kollapsar | 2 595 | 210 |
+| `ord` | lemmat | 227 |
+| `ändelse` | delad regel, `-ais` för alla `-er`-verb | ~189 |
+| `bas` | endast där den **inte** går att härleda ur lemmat | 53 verb, flera var |
+| `form` | suppletiva celler: `vais`, `ont`, `est` | ~210 |
+
+`stam` som korttyp försvinner. Det som ersätter den, `bas`, är samma sak men
+skapas bara där den bär information — i dag skapas den för alla 174 verben.
+
+**Kvar att bestämma:** om du godtar det här, eller vill ha en av de tre
+modellerna ur föregående omgång (en stam per tempusgrupp, hybrid, rena
+formkort).
+
+---
+
+### 2 · Hur väljs utfyllnadsorden?
+
+*Ny, ur Julius svar på gamla punkt 2.*
+
+**Idag.** Generatorn väljer meningens ord ur kön av förfallna kort och fyller
+resten med vad samplaren råkar plocka.
+
+**Luckan.** Julius: *«vi behöver utfyllnadsord. Då ska det ibland bli
+substantiv och ibland pronomen och ibland de andra alternativ som kan fylla
+ett subjekt. En aspekt som bestämmer det är variation och att vi lyckas få
+fram en bra svårighetsgrad.»*
+
+Specen säger att reglerna väljer formen, orden fyller den och budgeten sätter
+taket — men den säger ingenting om **hur en plats som inte är ett mål får sitt
+ord**. Budgeten begränsar svårigheten men väljer inte; variation nämns inte
+alls som kriterium.
 
 **Alternativ.**
 
-- **a) En stam per tempusgrupp.** Uniformt: regelbundna verb får en eller två
-  stammar, oregelbundna får flera, suppletiva former (`vais`, `ont`, `est`)
-  får formkort. 1 714 kort, 189 delade ändelser. Kunskapsmomentet blir
-  «vilken stam gäller i den här tempusen» plus «vilken ändelse hör till den
-  här personen» — båda naturliga.
-- **b) Hybrid.** Stam plus ändelse för de 61 % där stammen bär, formkort för
-  resten. 2 595 kort. Enklare regel, men två olika modeller i samma lek och en
-  gräns någon måste dra vid de 21 %.
-- **c) Allt är formkort.** 5 768 kort, inga stammar, inga ändelser. Renast och
-  följer Julius egen observation att en regelbunden form lärs snabbt och
-  därför kostar lite i FSRS. Men införandet kostar: varje cell av varje ord
-  måste mötas en gång.
+- **a)** Utfyllnad väljs slumpvis bland det införda som ryms i budgeten.
+  Enklast, och variationen kommer gratis ur slumpen.
+- **b)** Utfyllnad väljs för att **maximera variation** — det som setts minst
+  nyligen först. Ger jämnare exponering över ordförrådet.
+- **c)** Utfyllnad väljs för att fylla ut budgeten: är meningen för lätt tas
+  ett svagare kort, är den för svår ett starkare. Gör svårighetsgraden till en
+  ratt i stället för ett tak.
 
 ---
 
-### 2 · Exponeringen ger alla pronomen 0,0
-
-**Idag.** `mät_exponering` bygger 2 000 slumpmeningar och räknar vilka kort de
-rör. Men samplaren bygger alltid samma sats: transitivt verb, substantiv som
-subjekt, substantiv med adjektiv som objekt. **Pronomen används aldrig som
-subjekt.** Mätt i franskan: samtliga pronomen har exponering 0,000 utom `se`
-som råkar komma in reflexivt på 0,025.
-
-**Luckan.** Exponeringen avgör om ett kort schemaläggs eller övervakas.
-Pronomenen klassas alltså på en mätning som aldrig gjorts — och de är bland de
-mest frekventa korten i vilket språk som helst. **Det här är den enda punkten
-i listan som är en känd defekt i befintlig kod och inte en obesvarad fråga.**
-
-**Alternativ.** Ingen om *att* den ska lagas. Frågan är hur brett: bara
-pronomen som subjekt, eller ska samplaren byggas om för att täcka alla
-meningsformer? Samma snedvridning drabbar allt som kräver en konstruktion
-samplaren inte bygger — frågor, bisatser, negation.
-
----
-
-### 3 · Är `que` en del av konjunktivformen?
-
-**Idag.** Konjunktivformerna lagras med partikeln: `que je travaille`,
-`que nous travaillions`. Det syns i paradigmtabellen på grammatiksajterna
-under «Vol». Det fick min första stammätning att kollapsa för varje
-regelbundet verb — prefixet mellan `travaille` och `que je travaille` är tomt.
-
-**Luckan.** Om formen är `que je travaille` är kortets facit det, alltså
-inklusive både partikeln och pronomenet. Då är det ingen böjningscell utan en
-fras. Och en mening som använder konjunktiv renderar bara verbet — `que`
-kommer från konstruktionen, inte från böjningen.
-
-**Alternativ.**
-
-- **a)** `que` och pronomenet skalas av i datan; cellen är `travaille` och
-  partikeln hör till konstruktionen som kräver konjunktiv.
-- **b)** Formen står som den är, och konjunktivcellerna är fraser snarare än
-  böjningar — en egen sorts kort.
-- **c)** Formen står som den är i ordboken men skalas vid kortbygget:
-  visningen behåller `que`, kortet bär `travaille`.
-
----
-
-### 4 · Flerordiga lexem har noll kort
-
-**Idag.** `être d'accord` (hålla med) har 35 former och **noll kort**.
-`vouloir dire` (mena) har 34 former och noll kort. Orsaken: kortbyggaren
-härleder stammen som längsta gemensamma prefix, och när det böjda ledet står
-först — `suis d'accord`, `es d'accord`, `sommes d'accord` — blir prefixet
-tomt och byggaren ger upp. Tyst.
-
-**Luckan.** Modellen antar att det varierande ligger som ett **suffix**. För
-flerordiga lexem stämmer det inte, och de får då inga kort alls. Det gäller
-inte bara franskan: varje språk har fraser som böjs i mitten.
-
-**Alternativ.**
-
-- **a)** Flerordiga lexem får formkort per cell — hela frasen är facit.
-- **b)** Det böjda ledet identifieras och får egna kort; det fasta ledet
-  (`d'accord`) hör till ordkortet.
-- **c)** Flerordiga lexem behandlas som ett eget ord med egen böjning, alltså
-  som om `être d'accord` vore ett verb i sig.
-
----
-
-### 5 · Skrivs dagens plan ner eller räknas den om?
+### 3 · Skrivs dagens plan ner eller räknas den om?
 
 **Idag.** Det gamla passlagret skrev ner den, av ett skäl som visade sig hårt:
 en plan som räknas om vid varje anrop **kan krympa under användaren mitt i ett
-pass**. Innan uppdelningen fanns tre lager lappar ovanpå det — ett minne av
-onåbarhet, en sil på oövade ord och en omräkning av taket — och alla tre kunde
+pass**. Tre lager lappar låg ovanpå det innan uppdelningen, och alla tre kunde
 tas bort när passet fick vara tillstånd.
 
-**Luckan.** Specen beskriver planen som ett mål men säger inte var det bor.
-Och det gamla passlagret raderas.
+**Luckan.** Specen beskriver planen som ett mål men säger inte var det bor. Och
+det gamla passlagret raderas.
 
 **Alternativ.**
 
-- **a)** Planen skrivs ner en gång per dygn, som passet gjorde. Stabilt, men
-  en tabell till att hålla i synk med kortleken.
+- **a)** Planen skrivs ner en gång per dygn, som passet gjorde.
 - **b)** Planen räknas om men ur ett fruset läge vid dygnets början.
 - **c)** Planen räknas om fritt. Enklast, och felet som fällde det förra
   försöket kommer tillbaka.
 
 ---
 
-### 6 · Ordningen mellan kort från flera upplåsta nivåer
+### 4 · Ordningen mellan kort från flera upplåsta nivåer
 
 **Idag.** Att låsa upp kostar ingenting; korten köas och införs under minuter
 per dag. Låser användaren upp tio nivåer ligger deras kort i kön tillsammans.
@@ -778,36 +733,33 @@ nivå 7.
 
 ---
 
-### 7 · Betygsskalan är inte omtagen
+### 5 · Betygsskalan är inte omtagen
 
 **Idag.** `FEL, RÄTT = Rating.Again, Rating.Good` — två av FSRS fyra betyg.
 Skälet står i koden: *«en diff mot facit ger bara två signaler: formen stod
-där eller inte. HARD och EASY lämnas oanvända hellre än att härledas ur något
-som inte mäter dem.»*
+där eller inte.»*
 
-**Luckan.** Under «bokför allt» gäller resonemanget fortfarande, men det står
-ingenstans i specen. En läsare ser fyra betyg i FSRS, ser att svarstid finns i
-loggen, och drar slutsatsen att `Hard` borde härledas ur att det tog lång tid.
-E3 avvisade just det: svarstid mäter inte minnet.
+**Luckan.** Resonemanget gäller fortfarande, men det står ingenstans i specen.
+En läsare ser fyra betyg i FSRS, ser att svarstid finns i loggen, och drar
+slutsatsen att `Hard` borde härledas ur att det tog lång tid. E3 avvisade just
+det: svarstid mäter inte minnet.
 
 **Alternativ.**
 
-- **a)** Två betyg, och skälet skrivs in i specen så att det inte behöver
-  återupptäckas.
+- **a)** Två betyg, och skälet skrivs in i specen.
 - **b)** Fyra betyg där `Hard`/`Easy` härleds ur något nytt — men då måste det
   som härleder dem först mätas.
 
 ---
 
-### 8 · Källspråkets rendering silar tyst
+### 6 · Källspråkets rendering silar tyst
 
-**Idag.** Uppgiften renderas av källspråkets renderare. Misslyckas den
-returnerar `_rendera_källa` `None` och kandidaten hoppas över. Mätt på 505
-renderade franska kandidater: **2 gick inte att rendera på svenska, 0,4 %.**
+**Idag.** Uppgiften renderas av källspråkets renderare. Misslyckas den hoppas
+kandidaten över. Mätt på 505 renderade franska kandidater: **2 gick inte att
+rendera på svenska, 0,4 %.**
 
 **Luckan.** Mekanismen finns men står inte i specen. Andelen är liten; det som
-gör den värd att nämna är att den är en **tyst sil**, och under axiomet ska
-planen vara byggbar per konstruktion.
+gör den värd att nämna är att den är en **tyst sil**.
 
 **Alternativ.**
 
@@ -816,15 +768,14 @@ planen vara byggbar per konstruktion.
 
 ---
 
-### 9 · Extraövning saknas helt
+### 7 · Extraövning saknas helt
 
-**Idag.** Det gamla systemet hade «keep practising»: när dagen var klar kunde
-användaren fortsätta med kort som ännu inte förfallit, det som förfaller först
-först.
+**Idag.** Det gamla systemet hade «keep practising»: kort som ännu inte
+förfallit, det som förfaller först först.
 
-**Luckan.** Modellen nämner det inte. Notera att svaret kan ha blivit enklare:
-punkt 6 visar att massning ovanpå ett vilat schema kostar noll — 2 rätt med
-vila plus 49 massade gav `S = 11,29` mot 10,96 utan.
+**Luckan.** Modellen nämner det inte. Svaret kan ha blivit enklare: massning
+ovanpå ett vilat schema kostar noll — 2 rätt med vila plus 49 massade gav
+`S = 11,29` mot 10,96 utan.
 
 **Alternativ.**
 
@@ -834,23 +785,73 @@ vila plus 49 massade gav `S = 11,29` mot 10,96 utan.
 
 ---
 
-### 10 · Korttabellen är franskspecifik
+### 8 · Korttabellen är franskspecifik
 
-**Idag.** Punkt 2:s tabell visar franskan. `egenskap`-kort finns bara i tre
-språk: tyskan (genus 136, hjälpverb 55), engelskan (inga efter att
-klasskorten stryks), franskan (162 · 55). Japanskan har inga alls.
+**Idag.** `egenskap`-kort finns bara i tre språk: tyskan (genus 136, hjälpverb
+55), engelskan (inga efter att klasskorten stryks), franskan (162 · 55).
+Japanskan har inga alls.
 
 **Luckan.** Specen säger aldrig vilka korttyper som finns per språk.
 
 **Alternativ.**
 
 - **a)** Tabellen får en kolumn per språk.
-- **b)** Specen säger att korttyperna är en möjlig mängd som varje språk
-  fyller efter behov.
+- **b)** Specen säger att korttyperna är en möjlig mängd som varje språk fyller
+  efter behov.
 
 ---
 
-## 12 · Beslut ur omgång 1
+## 12 · Beslut ur omgångarna
+
+### Omgång 2 (2026-09-09)
+
+#### Exponeringsmätningen stryks — den mäter fel sak
+
+Julius: *«Detta exponeringsexperiment verkar trasigt och konstigt. Såklart ska
+pronomen dyka upp i meningar, och det som ska trigga ifall ett pronomen ska
+repeteras är ifall kortet behöver repeteras.»*
+
+Han har rätt, och invändningen går djupare än buggen. `mät_exponering`
+**simulerar** hur ofta ett kort möts genom att sampla 2 000 meningar. Men
+sedan omgång 1 bokförs varje möte, alltså **finns siffran i loggen**. Ett
+simulerat tal där ett mätt finns är precis den sortens antagande projektets
+egen regel förbjuder.
+
+Uppdelningen schemalagt mot övervakat drivs därför av **observerade möten per
+dygn**, inte av en samplare. Följderna:
+
+- Samplarens snedvridning försvinner — det finns ingen samplare.
+- Ett nytt kort har ingen historik och är därför **schemalagt** tills det visat
+  sig mötas oftare än en gång om dagen. Rätt förval: det ofarliga hållet.
+- Gamla punkt 2 i lucklistan är struken. Buggen behöver inte lagas, koden
+  behöver inte skrivas.
+
+#### Kortets facit är det renderaren slår upp
+
+Gamla punkt 3 och 4 — `que` i konjunktiven och de flerordiga lexemen — har
+samma svar, och det står redan i koden:
+
+    arb_arbeta    subj_3sg   → 'travaille'        que och pronomenet avskalade
+    arb_arbeta    pres_1sg   → 'travaille'
+    kom_hålla_med pres_1sg   → "suis d'accord"    hela frasen
+    gen_mena      pres_3sg   → 'veut dire'
+
+`Uppslag.form(lexem, cell)` returnerar redan det som ska produceras. `que je`
+i ordboken är visningsmaterial som renderaren inte använder; för ett flerordigt
+lexem är hela frasen det som produceras.
+
+> **Kortets facit är det `Uppslag.form` returnerar.** Vad renderaren lägger
+> runt omkring hör till andra kort eller till konstruktionen.
+
+Att `être d'accord` i dag har noll kort är därmed inget modellproblem utan en
+bugg i kortbyggaren: den härleder en stam som längsta gemensamma prefix och
+ger upp när det böjda ledet står först. Renderaren har aldrig haft det
+problemet.
+
+---
+
+### Omgång 1 (2026-09-09)
+
 
 *Julius svarade på gamla punkt 1–4 den 2026-09-09. Fyra punkter kollapsade
 till en; det som blev kvar står som punkt 1, 3 och 4 ovan.*
