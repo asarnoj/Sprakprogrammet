@@ -247,8 +247,30 @@ class Schemaläggare:
         return [r for r in self.osedda(språk, gräns * 20) if r["typ"] == "ord"][:gräns]
 
     def osedda(self, språk: str, gräns: int = 100,
-               uteslut: tuple[str, ...] = ()) -> list[sqlite3.Row]:
+               uteslut: tuple[str, ...] = (),
+               plus: set[str] | None = None) -> list[sqlite3.Row]:
         """Kort som aldrig prövats. Det är här nya ord kommer in.
+
+        `plus` ÄR DAGENS EGNA ORD, och utan dem räknar passet på ett
+        ordförråd som inte finns än.
+
+        Villkoret nedan säger att ett böjningskort blir kandidat först när
+        dess ord är SETT — regeln "inget böjningskort före sitt ord", som
+        `introduktionsprov` vaktar. Men passet byggs INNAN dagens glosor är
+        gjorda, så på dag ett kvalificerade nästan ingenting: mätt på en ny
+        fransk kurs gav frågan 11 kandidater före glosorna och 27 efter.
+
+        Följden var att de två halvorna av passets växelvarv sa emot
+        varandra. `nåbara_kort(plus=dagens_ord)` räknar dagens ord som kända
+        och svarade att femton böjningskort gick att öva; `osedda` krävde att
+        de redan var sedda och lämnade tre. Dagen planerade alltså tre kort,
+        visade "new: 3", och meningarna införde sju — för när de kom VAR
+        orden sedda. Julius: *"Alla nyintroducerade kort ska testas. Därför
+        ifall det vore 7 nya böjningskort borde det stå new: 7."*
+
+        Med `plus` räknar båda halvorna likadant. ORDNINGSREGELN BRYTS INTE:
+        ordet delas fortfarande ut i glosläget före meningen som prövar dess
+        böjning, samma dag. Det som ändras är bara när passet får VETA det.
 
         RANGEN STYR, KATEGORIN BRYTER UPP KÖER. Två krav som drar åt olika
         håll, och ordningen mellan dem visade sig avgörande.
@@ -314,6 +336,10 @@ class Schemaläggare:
         # Ett bredare fönster än `gräns`, så att omflätningen har något att
         # välja mellan. Fyra gånger räcker för att bryta varje kö som
         # ordlistorna innehåller.
+        # Ett ord i `plus` blockerar inte sina egna böjningskort: det delas
+        # ut i dagens glosläge och är sett när meningen kommer.
+        undantag = ("AND o.koncept NOT IN (" + ",".join("?" * len(plus)) + ")"
+                    if plus else "")
         rader = self.db.execute(
             f"""SELECT * FROM Kort
                 WHERE språk = ? AND sedd IS NULL {filter}
@@ -322,10 +348,11 @@ class Schemaläggare:
                                   WHERE o.språk = Kort.språk
                                     AND o.koncept = Kort.koncept
                                     AND o.typ = 'ord' AND o.sedd IS NULL
-                                    AND o.id <> Kort.id)
+                                    AND o.id <> Kort.id
+                                    {undantag})
                 ORDER BY CASE typ {ordning} ELSE 99 END,
                          rang, räckvidd DESC, id LIMIT ?""",
-            (språk, *uteslut, gräns * 4)).fetchall()
+            (språk, *uteslut, *sorted(plus or ()), gräns * 4)).fetchall()
         return _fläta(rader, gräns)
 
     # ── skriva ───────────────────────────────────────────────────────

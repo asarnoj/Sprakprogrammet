@@ -383,11 +383,18 @@ def _sabotage_schemalagt():
     """
     orig = Schemaläggare.osedda
 
-    def bara_schemalagda(self, språk, gräns=100, uteslut=()):
+    def bara_schemalagda(self, språk, gräns=100, uteslut=(), plus=None):
+        # `plus` TAS EMOT OCH ANVÄNDS, inte bara sväljs. Sabotaget ska
+        # återinföra ETT fel — att `schemalagt` grindar introduktionen — och
+        # inte samtidigt ett annat. Utan undantaget nedan hade det också
+        # tagit bort dagens ord ur kandidaterna, och då mätte falsifieringen
+        # två saker på en gång.
         ordning = " ".join(f"WHEN '{t}' THEN {i}" for i, t
                            in enumerate(self.INTRODUKTIONSORDNING))
         filter = ("AND typ NOT IN (" + ",".join("?" * len(uteslut)) + ")"
                   if uteslut else "")
+        undantag = ("AND o.koncept NOT IN (" + ",".join("?" * len(plus)) + ")"
+                    if plus else "")
         rader = self.db.execute(
             f"""SELECT * FROM Kort
                 WHERE språk = ? AND schemalagt = 1 AND sedd IS NULL {filter}
@@ -395,10 +402,11 @@ def _sabotage_schemalagt():
                                   WHERE o.språk = Kort.språk
                                     AND o.koncept = Kort.koncept
                                     AND o.typ = 'ord' AND o.sedd IS NULL
-                                    AND o.id <> Kort.id)
+                                    AND o.id <> Kort.id
+                                    {undantag})
                 ORDER BY CASE typ {ordning} ELSE 99 END,
                          rang, räckvidd DESC, id LIMIT ?""",
-            (språk, *uteslut, gräns * 4)).fetchall()
+            (språk, *uteslut, *sorted(plus or ()), gräns * 4)).fetchall()
         return schemalaggning._fläta(rader, gräns)
 
     Schemaläggare.osedda = bara_schemalagda

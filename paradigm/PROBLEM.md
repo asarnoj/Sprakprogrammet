@@ -1553,6 +1553,51 @@ kort från 13 till 11. Extraövning köper repetitioner, inte rum. Knappen
 säger därför vad den ger — "X early available · about 56 % of the value of
 waiting" — och lovar ingenting om nya kort.
 
+#### PASSET RÄKNADE PÅ ETT ORDFÖRRÅD SOM INTE FANNS ÄN (2026-08-29)
+
+Julius: *"Om det endast var 3 kort, hur kan ditt resultat blivit 4 av 6 och
+3 av 7? … En grundprincip är att alla nyintroducerade kort ska testas. Därför
+ifall det vore 7 nya böjningskort borde det stå new: 7 och inte new: 3."*
+
+Han hade rätt, och talet ljög av en precis orsak.
+
+`osedda` släpper igenom ett böjningskort först när dess ord är SETT — regeln
+"inget böjningskort före sitt ord", som `introduktionsprov` vaktar. Men
+passet byggs INNAN dagens glosor är gjorda, så nästan ingenting kvalificerar.
+Mätt på en ny fransk kurs:
+
+    före glosorna    11 kandidater  →  varav 3 nåbara  →  passet planerar 3
+    efter glosorna   27 kandidater  →  varav 15 nåbara
+
+**Passets två halvor sa alltså emot varandra.** `nåbara_kort(plus=dagens_ord)`
+räknar dagens ord som kända och svarade FEMTON; `osedda` krävde att de redan
+var sedda och lämnade TRE. Dagen planerade tre, skärmen sa "new: 3", och
+meningarna införde sju — för när de kom var orden sedda.
+
+`osedda` tar numera samma `plus`. Ordningsregeln bryts inte: ordet delas
+fortfarande ut i glosläget före meningen som prövar dess böjning, samma dag.
+Det som ändras är när passet får VETA det.
+
+**Dag ett på franska, före och efter:**
+
+    före    att_göra 12   (9 glosor + 3 nya)    2 meningar    16 kort införda
+    efter   att_göra 25   (12 glosor + 13 nya)  9 meningar    34 kort införda
+
+**OCH DET BYTTE ETT FEL MOT ETT ANNAT, som ska stå skrivet.** Budgeten är 25
+nya kort per dygn. Förut infördes 16 — under. Nu införs 34 — över. Nio kort
+kommer in utan passrad, dragna av meningar som byggdes för andra kort.
+
+Skälet är strukturellt: `nya_tillåtna` grindar KÖN, alltså målkorten, och
+inte vad en mening råkar röra. En mening måste vara grammatisk, och det
+kräver kort. `_kort_per_koncept` räknar den dragningen för ORD men det finns
+ingen motsvarighet för kort som drar kort.
+
+Julius princip är alltså uppfylld till hälften: talet är inte längre grovt
+fel (3 mot 7), men det är fortfarande för lågt (13 mot 22). Att stänga
+resten kräver antingen att taket räknas på FAKTISKT införda kort i stället
+för på köade, eller att dragningen mäts och dras av i förväg. Frågan står
+öppen.
+
 ### B7 ✓ — Ett fel får inte lämnas ofixat
 
 #### ETT FEL KÖAS NU ÄVEN PÅ ETT OPLANERAT KORT (2026-08-27)

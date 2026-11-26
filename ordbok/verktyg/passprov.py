@@ -243,6 +243,28 @@ def prov_upplåsning_utökar(tj, kort) -> list[str]:
                               f"upplåsningen blev möjlig ({r['nya_kort']} kort "
                               f"väntar till imorgon)")
             continue
+        # DAGEN KAN VARA FULL ÄVEN VID SEXTIO MINUTER. `utöka` har rummet
+        # `tak_nya − väntande_nytt`, och står dagen vid sitt tak är rummet
+        # noll — då läggs ingenting till, med flit (B4: taket är
+        # minutbudgeten, och en upplåsning höjer inte hur lång tid man har).
+        #
+        # Det blev verklighet när `osedda` fick räkna dagens ord som kända:
+        # japanskans dag växte till 179 poster och fyllde taket redan innan
+        # upplåsningen. Att kräva tillväxt där vore att kräva att
+        # upplåsningen bryter mot taket.
+        plan = tj._dagsplan(kurs)
+        aktuellt = passlager.nuvarande(kort, kurs["id"])
+        väntande_nytt = 0 if aktuellt is None else kort.execute(
+            """SELECT COUNT(*) AS n FROM Passkort
+               WHERE pass_id = ? AND status = 'väntar'
+                 AND roll IN ('ny', 'glosa')""",
+            (aktuellt["id"],)).fetchone()["n"]
+        if plan.get("tak_nya", plan["nya"]) - väntande_nytt <= 0:
+            ostängbara.append(
+                f"{kurs['målspråk']}: dagen stod vid sitt tak när upplåsningen "
+                f"blev möjlig (tak {plan.get('tak_nya', plan['nya'])}, "
+                f"{väntande_nytt} redan planerade)")
+            continue
         mätta += 1
         efter = tj.hem(kurs["id"])["idag"]["att_göra"]
         if efter <= före:

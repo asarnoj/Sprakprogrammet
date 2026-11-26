@@ -268,7 +268,14 @@ def _rader(kort_db: sqlite3.Connection, kurs: sqlite3.Row, plan: dict,
                                     if r["koncept"]})
                             if nåbara is not None else None)
             i_dagen = {x["id"] for x in valda_ord} | {x["id"] for x in valda_kort}
-            nya_kort = [r for r in s.osedda(språk, kvar * 6, uteslut=("ord",))
+            # DAGENS ORD RÄKNAS SOM KÄNDA, precis som i `nåbara`. Utan det
+            # sa loopens två halvor emot varandra: nåbarheten räknade dagens
+            # ord som kända och svarade femton, medan `osedda` krävde att de
+            # redan var sedda och lämnade tre. Passet planerade tre kort och
+            # meningarna införde sju.
+            dagens = {r["koncept"] for r in valda_ord if r["koncept"]}
+            nya_kort = [r for r in s.osedda(språk, kvar * 6, uteslut=("ord",),
+                                            plus=dagens)
                         if r["id"] not in i_dagen
                         and (möjliga_kort is None or r["id"] in möjliga_kort)]
             valda_kort += nya_kort[:kvar]
