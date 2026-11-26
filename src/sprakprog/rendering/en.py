@@ -142,7 +142,21 @@ class EngelskRenderare:
         return self.nominalfras(m.predikativ)
 
     def rendera(self, m: Mening) -> str:
-        ord = [*self.nominalfras(m.subjekt, "subjekt"), *self.verbdelar(m)]
+        subjekt = self.nominalfras(m.subjekt, "subjekt")
+        verb = self.verbdelar(m)
+        if m.fråga:
+            # Engelskan kräver do-omskrivning i frågor precis som i
+            # negationer, och av samma skäl: bara hjälpverb får inverteras.
+            # "Does the girl read?" men "Is she happy?"
+            if len(verb) == 1 and m.verb != "verb_vara":
+                hjälp = self.u.form_för(
+                    "fys_göra", "pret" if m.tid is Tidsreferens.FÖRFLUTEN
+                    else "pres_3sg" if self._tredje_person_sg(m.subjekt)
+                    else "inf_imp")
+                verb = [hjälp, self.u.form_för(m.verb, "inf_imp")]
+            ord = [verb[0], *subjekt, *verb[1:]]
+        else:
+            ord = [*subjekt, *verb]
         if m.komplement is not None:
             # Engelskan varierar inte bara MARKÖREN utan också FORMEN:
             # "try to read" men "stop reading". Vilket ett verb tar är
@@ -169,4 +183,4 @@ class EngelskRenderare:
                 ord.append(self.u.form_för(adverbial.preposition, "inv"))
                 ord += self.nominalfras(adverbial.komplement)
         mening = " ".join(self.sandhi(ord))
-        return mening[0].upper() + mening[1:] + "."
+        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")

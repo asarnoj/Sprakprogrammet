@@ -24,6 +24,7 @@ class SpanskRenderare(RomanskRenderare):
     TONISK = "tonico"
     SAMMANSATT_DÅTID = False
     HJÄLPVERB_FAST = "ha"
+    FRÅGETECKEN_FÖRE = "¿"
     SAMMANDRAG = {("a", "el"): "al", ("de", "el"): "del"}
 
     def possessivcell(self, genus: int, numerus: Numerus) -> str:

@@ -18,6 +18,7 @@ class FranskRenderare(RomanskRenderare):
     # är den levande perfektiva dåtiden.
     SAMMANSATT_DÅTID = True
     NEKANDE_FÖRLED = "ne"
+    FRÅGEINLEDNING = "est-ce que"
     SAMMANDRAG = {("à", "le"): "au", ("à", "les"): "aux",
                   ("de", "le"): "du", ("de", "les"): "des"}
 
@@ -42,6 +43,10 @@ class FranskRenderare(RomanskRenderare):
         h aspiré-ord (héros) skulle kräva en flagga på Lexem, i stil med
         prenominal — skillnaden syns inte i stavningen.
         """
+        if första == "est-ce que":
+            # Est-ce que + vokal → est-ce qu'. Sandhi hanterar det som ett
+            # ord trots att det är tre; det är lexikaliserat i praktiken.
+            return andra[:1].lower() in self.VOKAL | {"h"}
         if första == "ne":
             return andra[:1].lower() in self.VOKAL | {"h"}
         return (första in ("le", "la")

@@ -287,6 +287,10 @@ class TyskRenderare:
                 infinit.append(self.u.form_för(markör, "inv"))
             infinit.append(self.u.form_för(m.komplement, "inf"))
 
-        ord = [*vorfeld, finit, *mittelfeld, *infinit]
+        # Tyskan har V2 i påstående men V1 i ja/nej-fråga: det finita
+        # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.
+        # Satsklammern består — infinita delar hamnar sist ändå.
+        ord = ([finit, *vorfeld, *mittelfeld, *infinit] if m.fråga
+               else [*vorfeld, finit, *mittelfeld, *infinit])
         mening = " ".join(ord)
-        return mening[0].upper() + mening[1:] + "."
+        return mening[0].upper() + mening[1:] + ("?" if m.fråga else ".")
