@@ -474,7 +474,18 @@ class Övningstjänst:
             # utfall än det som hamnar i historiken.
             skyddade = g.schemaläggare._skyddade(r.utfall)
             dom = {k: (None if k in skyddade else v) for k, v in r.utfall.items()}
+            # HUR MÅNGA KORT SOM FAKTISKT BOKFÖRS. Julius gjorde en övning
+            # helt rätt och såg due, again och new stå stilla: alla sju kort
+            # var redan bedömda tidigare samma dag (E2), så meningen ändrade
+            # ingenting. Regeln är riktig — en upprepad rätt samma dygn ger
+            # FSRS-faktor 1,0 och gör bokstavligen ingenting — men att den
+            # inte SYNS gör arbetet obegripligt. Talet finns här; skärmen
+            # säger det när det är noll.
+            graderade, _fällda = g.schemaläggare._redan_idag(r.utfall)
+            bokförs = sum(1 for k, rätt in r.utfall.items()
+                          if k not in skyddade and not (rätt and k in graderade))
             return {"id": id_, "korrekt": r.korrekt, "facit": f.text,
+                    "bokförs": bokförs, "rörda": len(f.kort),
                     "igen": self._igen_efter(g, r.utfall),
                     # HELA UTFALLET, kort för kort. Nu är svaret givet, så
                     # facit får visas — och det är först här man kan se vad

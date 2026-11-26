@@ -487,6 +487,7 @@ const T = {
   //: Kort som skrevs av för att ingen mening kunde nå dem (B8). De fick
   //: INGET betyg — ett kort utan mätning är ärligt, ett med påhittad
   //: mätning är värre än tomt (D3) — och kommer tillbaka i morgon.
+  inget_bokfört: n => `All ${n} cards here were already graded today, so nothing moved. A second correct answer on the same day has no effect in FSRS.`,
   en_kurs_per_målspråk: f => `A course into this language already exists (${f}). All courses sharing a target language share one deck, so a second one would practise the same cards and reset the other. Remove the existing course first.`,
   oåtkomliga:   n => `${n} card${n === 1 ? "" : "s"} could not be reached by ` +
                      `any sentence today and were left ungraded.`,
@@ -921,7 +922,7 @@ function närText(k) {
   return dagar < 0 ? `${tal} overdue` : `in ${tal}`;
 }
 
-function visaKortutfall(kort) {
+function visaKortutfall(kort, svar) {
   // EN RAD PER KORTTYP, uppifrån och ner i den ordning korten införs: orden
   // först, sedan deras egenskaper, sedan böjningen, sist meningsstrukturen.
   // Som platt lista gick det inte att se vilket lager en mening egentligen
@@ -960,7 +961,18 @@ function visaKortutfall(kort) {
     li.append(rad);
     ul.append(li);
   }
-  ul.hidden = !visaInfo || !kort.length;
+  // INGENTING BOKFÖRDES — säg det. Julius gjorde en övning helt rätt och såg
+  // due, again och new stå stilla. Alla sju kort var redan bedömda tidigare
+  // samma dag (E2), så meningen ändrade ingenting. Regeln är riktig: en
+  // upprepad rätt samma dygn ger FSRS-faktor 1,0 och gör bokstavligen
+  // ingenting. Men arbete som inte syns är arbete man misstror.
+  if (svar && svar.bokförs === 0 && kort.length) {
+    const li = document.createElement("li");
+    li.className = "mager";
+    li.textContent = T.inget_bokfört(kort.length);
+    ul.append(li);
+  }
+  ul.hidden = !visaInfo || !ul.children.length;
 }
 
 function rensaUtfall() {
@@ -1111,7 +1123,7 @@ async function svara() {
   // ur samma `/api/dag`-svar. Att kortet gick till återförsök syns ändå
   // direkt — `visaKortutfall` ritar ett ✗ på just det kortet, vilket är
   // besked om SAKEN i stället för om en totalsumma.
-  visaKortutfall(r.kort || []);
+  visaKortutfall(r.kort || [], r);
   // MENINGSRÄKNAREN ÄR ETT UNDANTAG, och ett ärligt sådant: meningen ÄR
   // gjord i samma stund man svarat, oavsett bokföring. Utan den stod talet
   // still tills nästa mening laddats, vilket såg ut som att svaret inte

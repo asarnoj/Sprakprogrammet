@@ -2887,6 +2887,29 @@ FSRS 6.3.2, oförändrad, med `learning_steps=()` och `relearning_steps=()`.
 En egen minnesmodell vore månader av tyst felaktighet, och det är precis den
 sortens fel som kostat mest i det här projektet.
 
+#### ARBETE SOM INTE SYNS ÄR ARBETE MAN MISSTROR (2026-08-28)
+
+Julius, dag 2: *"en övning som jag gjorde helt korrekt flyttade inga kort.
+Det var exakt lika många i due, again och new."*
+
+Spåret svarade direkt, och det är första gången `Spår` besvarade en fråga
+som annars hade krävt en utredning:
+
+    #142  Il existe.   svar: "Il existe"
+      system    e                  rätt  redan_bedömd
+      ord       il                 rätt  redan_bedömd
+      ord       exister            rätt  redan_bedömd
+      ordföljd  subjekt före verb  rätt  redan_bedömd
+      … 7 kort, ALLA utanför bedömningen
+
+**Regeln är riktig.** Varje kort hade redan bedömts rätt tidigare samma dag,
+och en upprepad rätt samma dygn ger FSRS-faktor 1,0 — den gör bokstavligen
+ingenting (E2, mätt: Good, Good, Good lämnar S på 34,797).
+
+**Men den syntes inte.** Användaren gör en övning, allt är rätt, och tre
+räknare står stilla utan förklaring. `svara` skickar numera `bokförs` och
+`rörda`, och kortlistan skriver ut varför när talet är noll.
+
 ### E2 ✓ — Hur många betyg per kort och dag?
 
 #### JULIUS INVÄNDNING, OCH VAD MÄTNINGEN SÄGER (2026-08-27)
@@ -3722,6 +3745,35 @@ possessiv, io, adverbial, tempus … — och de styr vad en MENING får innehål
 Böjningens egna dimensioner styrs inte alls. Mätt på franskan: `befolka` på
 nivå 1 skapar ändelsekorten `e`, `es`, `ez`, `ons`, `s`, `∅` på en gång, för
 två böjningsklasser. Sex personformer, samma dag.
+
+#### TIO MINUTER SOM BLEV EN (2026-08-28)
+
+Julius: *"Sen stod det about 1 minute remaining innan jag startade passet.
+Kan det stämma?"*
+
+Ja, och räkningen är riktig: 12 rader × 4,94 sekunder per rad ≈ 1 minut.
+**Frågan är i stället varför dagen bara är tolv rader när han bett om tio
+minuter.** Mätt på hans franska, dag 2 med 26 sedda kort:
+
+    måltakt                96 rep/dygn    (10 min ÷ 6,26 s per repetition)
+    tak IDAG               91 nya kort    tidsvillkoret binder inte alls
+    i längden              11 nya kort    ← DET HÄR binder
+    förfallna idag          3
+
+**Långtidsvillkoret är det som gör dagen kort.** Ett kort kostar 8,4
+repetitioner över året, så 96 repetitioner om dagen bär elva nya kort om
+dagen i jämvikt. De elva kostar ungefär elva repetitioner idag, plus tre
+förfallna — alltså en och en halv minut av tio.
+
+**Det är beteendet B4 beskriver, och det är riktigt**: minuterna är ett TAK
+och inte ett mål. Systemet kan inte tillverka arbete som FSRS inte har
+schemalagt, och att införa mer nytt idag vore att låna mot en budget som
+inte finns. De återstående minuterna blir användbara när kortleken mognat.
+
+**Men det är obegripligt utifrån.** Skärmen säger "10 min/dag" i
+inställningen och "about 1 minute remaining" i dagen, utan att någonstans
+säga att skillnaden är avsiktlig och tillfällig. Frågan står öppen: vad ska
+gränssnittet säga när kapaciteten är tio gånger dagens arbete?
 
 **Julius poäng är att det är samma sorts axel.** Att låsa upp `nous`-formen
 öppnar mängder av kort för ord man redan kan, bara med en böjning till — och
