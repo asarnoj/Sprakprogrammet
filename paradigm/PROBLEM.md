@@ -1555,6 +1555,63 @@ waiting" — och lovar ingenting om nya kort.
 
 ### B7 ✓ — Ett fel får inte lämnas ofixat
 
+#### ETT FEL KÖAS NU ÄVEN PÅ ETT OPLANERAT KORT (2026-08-27)
+
+`registrera` hoppade över ett fallerat kort som inte stod i dagens plan. En
+mening rör sju till tio kort men valdes för ett av dem (E4), och skälet var
+att dagen annars aldrig kan ta slut.
+
+**Julius beslutade att priset är rätt:** *"Hela grejen med FSRS är att det
+inte finns x antal övningar utan att alla korten ska passeras. Användaren
+måste KLARA övningarna för att bli klar med dagen. Det kräver framgång, inte
+bara effort."*
+
+**Och farhågan visade sig mindre än den lät.** Tillväxten är bunden av FEL
+och inte av antalet meningar — en mening som går rätt lägger till noll, hur
+många oplanerade kort den än rörde. Mätt på en ny fransk kurs med var fjärde
+mening medvetet fel: dagen tog slut efter **14 meningar**, `att_göra = 0`.
+
+#### VAD SOM FAKTISKT HÄNDER NÄR ETT AVKLARAT KORT FALLERAR (mätt 2026-08-27)
+
+Julius trodde att ett fel på sista meningen inte öppnade dagen igen. Mätt:
+
+    dagen klar (att_göra 9, klar False → allt bedömt)
+      → fel på ett redan avklarat kort
+      → att_göra 9 → 11, igen 0 → 2, dagen öppen
+
+Mekanismen fungerar alltså. **Och FSRS gör sin del utan att kortet kommer
+tillbaka idag:**
+
+| S före | förföll | S efter | ny förfallodag |
+|---|---|---|---|
+| 11,0 | 7 sep | 1,289 | 28 aug |
+| 34,8 | 1 okt | 2,128 | 29 aug |
+| 120,0 | 25 dec | 3,412 | 30 aug |
+
+Ett kort uppskjutet till jul kommer tillbaka om tre dagar. Straffet är fullt
+ut; bara dygnsgränsen hindrar det från att landa idag (B7 ovan).
+
+#### EN MÄTNING SOM VAR MIN EGEN ARTEFAKT (2026-08-27)
+
+Jag rapporterade först att ändelse- och stamkort ALDRIG bedöms — 602
+`undanhållen` mot 0 `bedömd` över 300 meningar — och att dagen därför inte
+kunde ta slut. **Det var fel, och felet var mitt svar.**
+
+`uppgift()` innehåller inget facit; det avslöjas först i `svara()`. Min
+slinga skickade `u.get("facit") or ""`, alltså TOMMA SVAR trehundra gånger,
+och ett svar som inte går att analysera undanhåller varje kort det inte kan
+peka på. Med riktiga svar, hämtade ur tjänstens eget `_öppna`:
+
+    9 meningar → att_göra 0, klar True, 10 ändelsekort införda
+    system: 10 bedömda   stam: 9 bedömda
+
+**Lärdomen hör hemma här och inte bara i mig:** en simulering som svarar fel
+mäter rättningens felväg, inte produktens normalväg, och de två ser likadana
+ut i en sammanställning. `Spår` gjorde skillnaden synlig på en fråga — vilket
+är precis vad tabellen byggdes för.
+
+
+
 Kortet kommer tillbaka i en ANNAN mening samma pass.
 
 **Varför det inte kan ligga i schemat.** Ankis "again → 10 minuter" kommer

@@ -503,11 +503,23 @@ def registrera(kort_db: sqlite3.Connection, pass_id: int,
                 kort_db.execute(
                     "UPDATE Passkort SET status = ?, tidpunkt = ? WHERE id = ?",
                     ("rätt" if rätt else "fel", nu, rad["id"]))
-            elif rätt or not _hör_till_passet(kort_db, pid, kort_id):
-                # Kortet hade ingen väntande rad. Klarades det spelar det
-                # ingen roll — och hör det inte till dagen alls (ett sett
-                # kort som råkade stå i meningen) ska det varken räknas
-                # eller köas.
+            elif rätt:
+                # Kortet hade ingen väntande rad och klarades — inget att
+                # göra. ETT FEL KÖAS DÄREMOT ALLTID, även på ett kort som
+                # inte stod i dagens plan.
+                #
+                # Det var inte så förut, och skälet var att en dag annars
+                # aldrig kan ta slut: varje mening drar in kort den inte
+                # valdes för (E4). BESLUTAT AV JULIUS 2026-08-27 att det är
+                # rätt pris: *"Hela grejen med FSRS är att det inte finns x
+                # antal övningar utan att alla korten ska passeras. Användaren
+                # måste KLARA övningarna för att bli klar med dagen. Det
+                # kräver framgång, inte bara effort."*
+                #
+                # Tillväxten är dessutom bunden av FEL och inte av antalet
+                # meningar: en mening som går rätt lägger till noll, hur många
+                # oplanerade kort den än rörde. Dagen växer bara när något
+                # faktiskt inte satt.
                 continue
             # ÅTERFÖRSÖKET LÄGGS BARA I DET EGNA PASSET. Att ta igen ett fel
             # är en handling i det pass man sitter i; grannkursen ska veta

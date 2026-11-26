@@ -71,11 +71,38 @@ def tjänst(kopia: Path):
 
 
 def _fr_kurser(kort) -> list:
-    """De två kurser som delar målspråk. Utan dem går delningen inte att pröva."""
-    return kort.execute(
+    """De två kurser som delar målspråk. Utan dem går delningen inte att pröva.
+
+    KONFIGURATIONEN ÄR NUMERA FÖRBJUDEN och skapas därför med ren SQL, förbi
+    `ny_kurs`. Det ser ut som fusk och är motsatsen: spärren hindrar NYA
+    dubbletter, men databaser i drift har dem redan — Julius hade sv→fr och
+    en→fr när spärren skrevs. Delningens beteende måste alltså fortsätta att
+    hålla, och ett prov som inte längre kan bygga läget skulle tyst sluta
+    vakta det. Att bygga fixturen förbi spärren är att pröva det som finns,
+    inte att kringgå en regel.
+    """
+    delade = kort.execute(
         """SELECT * FROM Kurs WHERE målspråk IN
            (SELECT målspråk FROM Kurs GROUP BY målspråk HAVING COUNT(*) > 1)
            ORDER BY id""").fetchall()
+    if delade:
+        return delade
+    förlaga = kort.execute(
+        "SELECT * FROM Kurs WHERE källspråk <> 'en' ORDER BY id LIMIT 1").fetchone()
+    if förlaga is None:
+        return []
+    from datetime import UTC, datetime
+    nu = datetime.now(UTC).isoformat()
+    kort.execute(
+        """INSERT OR IGNORE INTO Kurs (källspråk, målspråk, nivå, cefr, budget,
+                                       meningar_per_dag, startad, senast_öppnad)
+           VALUES ('en', ?, ?, ?, ?, ?, ?, ?)""",
+        (förlaga["målspråk"], förlaga["nivå"], förlaga["cefr"], förlaga["budget"],
+         förlaga["meningar_per_dag"], nu, nu))
+    kort.commit()
+    return kort.execute(
+        "SELECT * FROM Kurs WHERE målspråk = ? ORDER BY id",
+        (förlaga["målspråk"],)).fetchall()
 
 
 def prov_nollställning_bygger_om(tj, kort) -> list[str]:
