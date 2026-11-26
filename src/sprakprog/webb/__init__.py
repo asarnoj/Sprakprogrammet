@@ -210,7 +210,14 @@ class Övningstjänst:
         finns plats (schemalaggning.upplåsningsläge)."""
         with self.lås:
             kurs = self._kurs(kurs_id)
-            if kurs is None or kurs["nivå"] >= 21:
+            # TOPPNIVÅN ÄR SPRÅKSPECIFIK sedan böjningsnivåerna flätades in
+            # (F5b). Talet 21 stod kvar på tre ställen här och stämde i INGET
+            # språk: de har 22, 22, 23, 22, 23, 24 och 22 nivåer. Följden var
+            # att sista nivån aldrig gick att låsa upp — grinden stängde ett
+            # steg för tidigt, och den som nådde 21 fick aldrig se knappen.
+            # Hemvyns egen totalsiffra rättades när stegen byggdes; de här
+            # tre glömdes, eftersom de inte VISAR talet utan jämför med det.
+            if kurs is None or kurs["nivå"] >= toppnivå(kurs["målspråk"]):
                 return None
             # SAMMA VILLKOR SOM KNAPPEN VISAS PÅ. Annars kan en gammal
             # sidladdning låsa upp en nivå som inte går att öva.
@@ -1230,7 +1237,7 @@ class Övningstjänst:
         bokförd mening — se `bokför`. Att räkna om det för varje hemanrop vore
         en och en halv sekund per sidladdning.
         """
-        if kurs["nivå"] >= 21:
+        if kurs["nivå"] >= toppnivå(kurs["målspråk"]):
             return None
         nyckel = (kurs["målspråk"], kurs["nivå"] + 1, kurs["cefr"])
         if nyckel not in self._byggbarheter:
@@ -1244,7 +1251,7 @@ class Övningstjänst:
 
         None på sista nivån — det finns ingen nästa att räkna på.
         """
-        if kurs["nivå"] >= 21:
+        if kurs["nivå"] >= toppnivå(kurs["målspråk"]):
             return None
         nyckel = (kurs["målspråk"], kurs["nivå"] + 1, kurs["cefr"])
         if nyckel not in self._nästa_nivå_kostnad:
@@ -1283,8 +1290,11 @@ class Övningstjänst:
             # böjningsdimensionerna: 22 steg i svenskan, 24 i japanskan.
             if k is None or not 1 <= nivå <= toppnivå(k["målspråk"]):
                 return None
-            return self.lektioner.lektion(k["målspråk"], k["källspråk"],
-                                          nivå, k["cefr"])
+            # `av` FÖLJER MED, så lektionsrubriken slipper sin egen kopia
+            # av talet. Den skrev "Level N of 21" hårdkodat.
+            return {**self.lektioner.lektion(k["målspråk"], k["källspråk"],
+                                             nivå, k["cefr"]),
+                    "av": toppnivå(k["målspråk"])}
 
     def nytt_pass(self, kurs_id: int) -> None:
         with self.lås:

@@ -4878,7 +4878,22 @@ osett substantiv täcker tre kort (stam, ändelse, genus) mot det oövade ordets
 ett. Det är en VIKTNINGSFRÅGA, alltså C4, och den är blockerad på data. Att
 trimma den för hand nu vore att uppfinna ett tal.
 
-### F5 ? — Stegen är slut vid 21
+### F5 ? — Stegen tar slut
+
+**RUBRIKENS TAL VAR 21 och stämmer inte längre.** Sedan böjningsdimensionerna
+flätades in (F5b) är stegen språkspecifika: 22 i tyskan, engelskan, franskan
+och svenskan, 23 i spanskan och italienskan, 24 i japanskan. Frågan nedan är
+oförändrad — den gäller om stegen ska sluta där de slutar — men talet är det
+inte.
+
+**Och 21 satt kvar i koden.** Funnet 2026-08-29: tre grindar i `Övningstjänst`
+jämförde med 21 (`lås_upp`, `_byggbarhet`, `_nästa_nivå`) och lektionsrubriken
+skrev "Level N of 21". Eftersom inget språk HAR 21 nivåer gick sista nivån
+aldrig att låsa upp i något av dem: byggbarheten gick inte att räkna ett steg
+för tidigt, så upplåsningsknappen visades aldrig. Hemvyns egen totalsiffra
+rättades när stegen byggdes; de här tre jämför med talet i stället för att
+visa det, och glömdes därför. Invarianten `sista nivån går att nå` i
+`tjänsteprov` vaktar det nu.
 
 **Svaret är att man aldrig blir färdig,** och det är samma svar som Anki ger:
 högen krymper, den tar inte slut. Kunskap är inte något man lär sig en gång

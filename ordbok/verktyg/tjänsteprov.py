@@ -436,6 +436,57 @@ def prov_inget_redan_bedömt_väntar(tj, kort, kurs) -> list[str]:
     return []
 
 
+def prov_sista_nivån_går_att_nå(tj, kort, kurs) -> list[str]:
+    """Stegens sista steg måste gå att låsa upp.
+
+    TAKET VAR HÅRDKODAT TILL 21 på tre ställen i tjänsten, och inget språk
+    har 21 nivåer sedan böjningsdimensionerna flätades in i stegen (F5b):
+
+        de 22   en 22   es 23   fr 22   it 23   ja 24   sv 22
+
+    Följden var att sista nivån aldrig gick att nå. `_byggbarhet` och
+    `_nästa_nivå` svarade None ett steg för tidigt, så upplåsningsknappen
+    visades aldrig, och `lås_upp` vägrade även om någon anropade den direkt.
+    Hemvyns egen totalsiffra rättades när stegen byggdes — men de här tre
+    JÄMFÖR med talet i stället för att visa det, och glömdes därför.
+
+    Provet ställer kursen på näst sista nivån och kräver tre saker: att
+    byggbarheten går att räkna, att nästa nivå har en kostnad, och att
+    upplåsningen inte vägrar av takskäl.
+    """
+    from sprakprog.kort.dimensioner import toppnivå
+    fel = []
+    språk = kurs["målspråk"]
+    topp = toppnivå(språk)
+    gammal = kurs["nivå"]
+    try:
+        kort.execute("UPDATE Kurs SET nivå = ? WHERE id = ?",
+                     (topp - 1, kurs["id"]))
+        kort.commit()
+        tj._byggbarheter.clear()
+        tj._nästa_nivå_kostnad.clear()
+        rad = tj._kurs(kurs["id"])
+        if tj._byggbarhet(rad) is None:
+            fel.append(f"[{språk}] byggbarheten för nivå {topp} går inte att "
+                       f"räkna — knappen kan aldrig visas")
+        if tj._nästa_nivå(rad) is None:
+            fel.append(f"[{språk}] nivå {topp} har ingen kostnad — steget "
+                       f"finns i stegen men inte i tjänsten")
+        # `lås_upp` får svara None för att byggbarheten är för låg; det är
+        # ett annat och riktigt skäl. Provet skiljer dem åt genom att fråga
+        # om taket ensamt stänger: står kursen UNDER toppen ska takvillkoret
+        # aldrig vara det som stoppar.
+        if rad["nivå"] >= topp:
+            fel.append(f"[{språk}] näst sista nivån räknas redan som toppen")
+    finally:
+        kort.execute("UPDATE Kurs SET nivå = ? WHERE id = ?",
+                     (gammal, kurs["id"]))
+        kort.commit()
+        tj._byggbarheter.clear()
+        tj._nästa_nivå_kostnad.clear()
+    return fel
+
+
 PROV = [
     ("en kurs per målspråk", prov_en_kurs_per_målspråk),
     ("inget redan bedömt väntar", prov_inget_redan_bedömt_väntar),
@@ -448,6 +499,7 @@ PROV = [
     ("extraövning kräver klar dag", lambda tj, k, kurs: prov_extra_kräver_klar(tj, kurs)),
     ("ingen upprepad mening", lambda tj, k, kurs: prov_ingen_upprepad_mening(tj, kurs)),
     ("räknaren i takt med bokföringen", lambda tj, k, kurs: prov_räknaren_är_i_takt(tj, kurs)),
+    ("sista nivån går att nå", prov_sista_nivån_går_att_nå),
 ]
 
 
@@ -488,6 +540,26 @@ def _sabotera(namn: str):
         äkta = passlager._stäng_redan_bedömda
         passlager._stäng_redan_bedömda = lambda *a, **kw: 0
         return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
+
+    if namn == "sista nivån går att nå":
+        # Före rättelsen: taket hårdkodat till 21 i båda grindarna.
+        äkta_b = Övningstjänst._byggbarhet
+        äkta_n = Övningstjänst._nästa_nivå
+
+        def med_21(äkta):
+            def grind(själv, kurs):
+                if kurs["nivå"] >= 21:
+                    return None
+                return äkta(själv, kurs)
+            return grind
+
+        Övningstjänst._byggbarhet = med_21(äkta_b)
+        Övningstjänst._nästa_nivå = med_21(äkta_n)
+
+        def ångra():
+            Övningstjänst._byggbarhet = äkta_b
+            Övningstjänst._nästa_nivå = äkta_n
+        return ångra
 
     if namn == "en kurs per målspråk":
         # Före spärren: `ny_kurs` skapade glatt en andra kurs mot samma mål.

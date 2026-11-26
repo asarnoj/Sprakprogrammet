@@ -1306,7 +1306,21 @@ async function lektion(nivå, aktiverbar) {
   // inledning finns ingen väg tillbaka till listan — bara framåt — så steget
   // läses som en del av övningen och inte som en meny man råkat hamna i.
   $("l-tillbaka").hidden = dagensLektion;
-  sätt("l-titel", d.titel); sätt("l-nr", `Level ${d.nivå} of 21`);
+  // TOTALEN KOMMER FRÅN SERVERN, inte från en kopia här. Raden skrev
+  // "of 21" hårdkodat — samma fel som hemvyn hade och som rättades där när
+  // böjningsnivåerna flätades in. Inget språk har 21 nivåer: de har 22 till
+  // 24, så talet var fel i alla sju.
+  // FÖRHANDSVISNING SKA SÄGA ATT DEN ÄR DET. Julius trodde att kursen
+  // hoppat en nivå: han såg "Level 2" mellan orddelen och meningsdelen och
+  // "Level 1" efteråt. Talet var rätt hela tiden — knappen "Unlock" visar
+  // NÄSTA nivås lektion med flit — men den sidan såg exakt ut som dagens
+  // lektion, och skillnaden låg bara i vilken knapp som stod längst ner.
+  // En sida som går att läsa som två olika saker är en sida som ljuger för
+  // hälften av sina läsare.
+  sätt("l-titel", d.titel);
+  sätt("l-nr", aktiverbar
+    ? `Level ${d.nivå} of ${d.av ?? "?"} · not in your course yet`
+    : `Level ${d.nivå} of ${d.av ?? "?"}`);
   sätt("l-vad", d.vad); sätt("l-spana", d.spana);
   const ex = $("l-exempel");
   ex.innerHTML = "";
