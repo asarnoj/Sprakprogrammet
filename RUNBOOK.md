@@ -80,13 +80,23 @@ Kör ett lemma per (språk, ordklass) innan den skarpa körningen. Det är ~42
 anrop och några minuter, och det är billigare än att upptäcka ett fel efter
 65 000 rader.
 
+`--lemma` är det som begränsar körningen. **`--batch-storlek` gör det inte** —
+den styr bara hur många ord som klumpas per anrop. Utan `--lemma` körs hela
+ordboken: 3 964 anrop i stället för 42, och flera timmars väntan.
+
 ```bash
 for s in sv en fr de es it ja; do
   for o in Verb Substantiv Adjektiv Pronomen Possessiv Frågepronomen; do
-    echo "── $s / $o"
-    ordbok generera --språk "$s" --ordklass "$o" --batch-storlek 1 --torkörning --verbose 2>&1 | head -25
+    L=$(sqlite3 sprak.db "select l.lemma from Lexem l join Koncept k on k.id=l.koncept_id where l.språk='$s' and k.ordklass='$o' order by l.lemma limit 1;")
+    [ -z "$L" ] && continue
+    echo "── $s / $o  ($L)"
+    ordbok generera --språk "$s" --ordklass "$o" --lemma "$L" --torkörning --verbose 2>&1
   done
-done
+done | tee smoke.log
+```
+
+```bash
+grep -E "Saknade \(LLM-miss\): [1-9]|LLM returnerade inte|FEL|Parse-fel" smoke.log
 ```
 
 Vad du letar efter i utskriften:
@@ -166,6 +176,39 @@ Fel i enstaka ord? Kör om dem riktat:
 ```bash
 ordbok generera --språk sv --ordklass Verb --lemma springa --modell claude-sonnet-5
 ```
+
+### 6b. Maskinell granskning med en starkare modell
+
+Genereringen körs med `claude-haiku-4-5` för att 65 000 former ska vara
+möjliga att producera. Smoke-testet 2026-08-01 visade ~1 % avvikelser,
+koncentrerade till oregelbunden morfologi.
+
+Att i stället generera allt med en stark modell är dyrt — utdata är 65 000
+formsträngar. Granskning vänder på ekonomin: formerna går IN i prompten och
+bara avvikelserna kommer ut, ungefär 30 gånger mindre utdata.
+
+```bash
+ordbok granska-former --alla-språk --rapport ordbok/granskning.tsv --verbose
+```
+
+Avbruten körning återupptas med `--fortsätt` (hoppar över lexem som redan
+står i rapporten). Billigare modell med `--modell claude-sonnet-5`.
+
+Rapporten är en TSV med kolumnerna `språk, ordklass, koncept, lemma, cell,
+nuvarande, förslag, allvar, motivering`. `allvar` är `fel` eller `osäker`.
+
+```bash
+awk -F'\t' '$8=="fel"' ordbok/granskning.tsv | column -t -s $'\t' | head -40
+```
+
+**Granskningen ändrar aldrig databasen.** Den skriver förslag; att tillämpa
+dem är ett mänskligt beslut (KONVENTIONER.md §9). Rätta genom att köra om de
+berörda lemmana riktat, eller genom att justera slot-fil/instruktion om
+mönstret återkommer.
+
+Kaikki-dumparna är ett komplement, inte en ersättning: `ordbok mappa-kaikki`
+är än så länge bara implementerad för **sv**, och de två formfel smoke-testet
+hittade satt i de och es.
 
 ## 7. Leverera tillbaka
 

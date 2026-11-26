@@ -13,3 +13,6 @@ gammal/datafiler/conceptnet/
 .DS_Store
 sprak.db-shm
 sprak.db-wal
+
+# Testdata
+smoke.log
