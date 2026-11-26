@@ -1405,6 +1405,23 @@ beslut; sökningen lämnar aldrig tyst en mening som inte är bevisat bäst.
 2. **Renderaren är delad i frasfunktioner med uttryckliga indata.**
 3. **Ingen del är för stor att gå igenom.** Blir en del det, delas den. Storleken mäts
    per språk.
+4. **Renderaren får aldrig titta på en konceptnyckel.** `karta.Symbol` kastar
+   Förbigång både vid jämförelse och vid uppslagning, så den kan omöjligt skilja
+   `räkn_2` från `räkn_ord_2`. Konsekvensen är att varje skillnad renderaren behöver
+   göra mellan två ord i samma ordklass **måste stå i datan**. Två kolumner finns för
+   det, och båda tillkom när ett hål skulle lagas:
+
+   * `Koncept.roll` delar en ordklass som bär två syntaktiska roller —
+     `Räkneord/grundtal` mot `Räkneord/ordningstal`, `Kvantifikator/bestämning` mot
+     `Kvantifikator/huvudord`, `Negationsadverb/satsnegation` mot
+     `.../satsadverbial`. Rollen lämnas ut som en del av klassnamnet genom
+     `Uppslag.ordklass`, alltså samma väg som ordklassen alltid gått.
+   * `Koncept.numeruskrav` säger vilka numeri en bestämning tillåter hos huvudordet,
+     som en bitmask — samma mekanism som `Adverb.tempuskrav`. Utan den bygger kartan
+     lika gärna "varje böcker".
+
+   Saknas den skillnaden i datan finns bara två hederliga utvägar: fyll datan, eller
+   håll ordet utanför kartan. Att låta renderaren gissa är ingen.
 
 ---
 
@@ -1947,7 +1964,11 @@ eller av mätningar, utom:
 | tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
 | de romanska renderarna skriver alltid ut subjektspronomenet (`yo leo`) | varianten `leo` finns inte | variantsökningen (6.5) |
 | `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst, och meningar bryter mot verbets krav | stoppa bygget i stället för att släppa kravet |
-| ingen provsvit (inga `test_*.py`) | inget visar att attributionen fortfarande fungerar | steg P3 |
+| ingen provsvit i pytest-mening (inga `test_*.py`) | näten ligger som fristående skript i `ordbok/verktyg/` och körs genom `alla_prov.py`; de täcker attribution, rättningens positioner, de nya konstruktionerna, ordföljd, passet och tjänsterna, men ingenting kör dem automatiskt | steg P3, om en riktig svit behövs — ingången finns |
+| `neg_heller` har det engelska lemmat `not either` | ordet är diskontinuerligt — "she does not read it **either**" — och går inte att slå upp som ett; konceptet hålls utanför kartan och kan inte läras ut | lemmat ska vara `either`, och negationen bäras av `neg_inte` |
+| `kvant_båda` kräver bestämd form i svenskan — "båda **böckerna**" | ingen kolumn bär den egenskapen, så konceptet hålls utanför kartan | en kolumn som säger att bestämningen tvingar fram bestämd form, eller samma sak som ett `numeruskrav` för species |
+| `alla` och `några` tar singular framför ett ORÄKNEBART huvudord — "all mat", "some water" | `numeruskrav` är en flat bitmask och kan inte säga "plural om räknebar"; fraserna går inte att bygga | villkora kravet på `räknebar`, eller lämna det — mängden sägs med en naken fras |
+| engelskan kan inte bygga "all the books" | en bestämd kvantifierad fras kräver ett förbestämningsled som inte finns i specen; renderaren vägrar hellre än tappar bestämdheten | ett förbestämningsled i `Nominalfras`, om något kort behöver det |
 
 ---
 
