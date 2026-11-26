@@ -315,9 +315,16 @@ def prov_extraövningen_går_att_köra(tj, kort, kurs) -> list[str]:
         Schemaläggare(kort).kommande(kurs["målspråk"], 30)
     except Exception as e:
         fel.append(f"extraövningens kö kastade {type(e).__name__}: {e}")
-    extra = tj._extraläge(tj._dagsplan(kurs))
-    if fel or not extra["finns"]:
+    # ÄR KÖN TRASIG ÄR FRÅGAN BESVARAD. Kontrollen låg efter `_extraläge`,
+    # vilket gick bra så länge inget annat rörde `kommande()` — men
+    # extraläget läser numera också hur mycket en extraövning är VÄRD
+    # (`extranytta`), och det måttet går genom samma kö. Provet kraschade
+    # då i stället för att rapportera det fel det just hade fångat.
+    if fel:
         return fel
+    extra = tj._extraläge(tj._dagsplan(kurs))
+    if not extra["finns"]:
+        return []
     try:
         u = tj.uppgift(kurs["id"], extra=True)
     except Exception as e:

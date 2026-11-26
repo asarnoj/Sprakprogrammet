@@ -1366,6 +1366,50 @@ kurs som testats för hand och knappen därför var låst. En trasig SQL-sats ka
 ligga tyst hur länge som helst bakom en grind som råkar vara stängd — och det
 är skälet till att `extraövningen går att köra` nu är en egen invariant.
 
+#### VÄRDET GÅR ATT VISA, OCH DET ÄR NU UTSKRIVET (2026-08-26)
+
+Julius: *"Det borde finnas ett sätt att indikera ungefär hur effektfullt det
+är att repetera. Detta kan man kanske approximera med FSRS-funktioner."*
+
+Det behöver inte approximeras — FSRS räknar det exakt, och tabellen överst i
+posten är redan svaret för ETT kort. `extranytta()` gör samma räkning för
+kön som faktiskt ligger där:
+
+    för varje kort i kommande():
+        vinst_nu  = S(betyg=Good, R vid dagens R) − S
+        vinst_sen = S(betyg=Good, R vid förfallodagen) − S
+        andel     = vinst_nu / vinst_sen
+
+och väger ihop dem. Talet är en andel av full nytta, alltså "hur mycket av
+det kortet vore värt vid förfallodagen får du om du gör det nu".
+
+| hur tidigt | andel av full nytta |
+|---|---|
+| 11 dygn (nyss infört) | 0 % |
+| 8 dygn | 35 % |
+| 5 dygn | 63 % |
+| 3 dygn | 79 % |
+| 1 dygn | 93 % |
+| i tid | 100 % |
+
+Noll på dag ett är inte en avrundning utan FSRS korttidsformel: samma dygn
+är R = 1,000 och stabilitetsfaktorn klämmer till 1,0×. **Julius gissning att
+det "kanske inte händer något när man repeterar ord som man har gjort samma
+dag" är alltså bokstavligt riktig** — och det är därför knappen är låst just
+då, inte av försiktighet.
+
+Mätt på två verkliga lägen: den simulerade fjortondagarsleken gav **56 %**
+med hundra kort i kön, och ett läge där korten förfaller inom kort gav
+**98 %**. Måttet skiljer alltså på lägena i stället för att visa en konstant.
+
+**Det som INTE går att lova är Julius andra hälft** — *"kanske till och med
+skapa tillräckligt med rum i kalendern så att det finns plats för ett nytt
+kort"*. Det är precis vad RÄTTELSE ovan mätte och fann omvänt: extrapasset
+sänkte belastningen 13,21 → 11,83 men minskade morgondagens utrymme för nya
+kort från 13 till 11. Extraövning köper repetitioner, inte rum. Knappen
+säger därför vad den ger — "X early available · about 56 % of the value of
+waiting" — och lovar ingenting om nya kort.
+
 ### B7 ✓ — Ett fel får inte lämnas ofixat
 
 Kortet kommer tillbaka i en ANNAN mening samma pass.
@@ -3148,6 +3192,53 @@ Mätt på en färsk franskkurs:
 Efter ett enda pass med tolv drillade ord står nivå 2 öppen med bred marginal.
 Julius: *"varje gång jag gör klart första passet så kan jag levla upp på
 direkten vilket är för snabbt."*
+
+#### OCH DEN MÄTTE FEL NIVÅ (rättat 2026-08-26)
+
+Julius: *"Det står att det är drygt 5 dagar tills nästa nivå men ändå kunde
+jag direkt låsa upp alla. Man ska inte kunna låsa upp allt på en gång."*
+
+Mätt: efter EN dags franska gick **tjugo nivåer att låsa upp i följd**, 632
+kort, utan att öva emellan. Byggbarheten låg på 0,006–0,067 mot tröskeln
+0,00125, så varje nivå passerade.
+
+**Skälet är att `byggbarhet` mätte nivån man REDAN hade.** Den samplar
+kandidater på den nya nivån och frågar om de har högst ett okänt ord — men
+varje ny konstruktion är VALFRI, så på nivå 2 är en vanlig subjekt-verb-mening
+fortfarande giltig och utgör nästan hela urvalet. Måttet svarade "nivå 2 går
+att öva" genom att visa att nivå 1 går att öva.
+
+*Rättat: `byggbarhet(nivå=N)` kräver att specen faktiskt ANVÄNDER den
+konstruktion nivån låser upp.* Predikaten är fält på `Mening` — `m.objekt is
+not None` för objekt, `m.bisats is not None` för bisats, och så vidare för
+alla tjugo. En konstruktion som inte går att se i specen hör inte hemma på
+komplexitetsstegen, så listan är komplett per konstruktion.
+
+**Och urvalet måste kunna upplösa tröskeln.** `redo_för_nivå` frågar om
+andelen är minst `1/kandidater` = 1/800, men måttet samplade 200 — ett urval
+som inte kan skilja 1/800 från noll. Mätt: nivå 6 (possessiv) hade den sanna
+andelen 2/800, alltså över tröskeln, men skattningen blev noll gång på gång
+och kursen låstes fast. Talet är nu detsamma som tröskeln härleds ur.
+
+**Utfallet, simulerat med användarens egna svarstider:**
+
+    dag 1  nivå 1 → 2      dag 4  nivå 4 → 5
+    dag 2  nivå 2 → 3      dag 5  nivå 5 → 6
+    dag 3  nivå 3 → 4      dag 6–13  stängd — nivå 7 (indirekt objekt)
+                                     kräver ditransitiva verb och fler
+                                     substantiv än ordförrådet har
+    dag 14 nivå 6 → 7
+
+Alltså en nivå per dag i början och sedan en verklig platå, i stället för
+allt på en gång. **Grinden mäter numera rätt sak; om den är strängt nog är
+en annan fråga** — den släpper fortfarande igenom en nivå per dag så länge
+konstruktionen går att bygga, och postens ursprungliga öppna fråga om
+förkunskaper står kvar.
+
+**Motsägelsen i gränssnittet var en etikett.** "At your pace that is 4 days"
+stod bredvid domen "Ready" och lästes som "fyra dagar tills du kan låsa upp".
+Talet säger hur länge det NYA materialet räcker vid din takt. Etiketten heter
+numera "Time to work through that", och domen säger vad den gäller.
 
 **Grinden gör precis det den härleddes för**, och härledningen är riktig: den
 handlar om huruvida SÖKNINGEN kan fungera. Den säger ingenting om huruvida

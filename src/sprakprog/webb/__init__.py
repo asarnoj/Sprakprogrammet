@@ -48,7 +48,7 @@ from ..kort import (
     upplåsningsläge,
 )
 from ..kort.db import STANDARD_KORT_DB
-from ..kort.schemalaggning import kostnad
+from ..kort.schemalaggning import extranytta, kostnad
 from .lektion import Lektioner
 from .ordbok import Ordbok
 
@@ -888,8 +888,7 @@ class Övningstjänst:
         klarade = {k for k, v in utfall.items() if v}
         return len((g.passkö_ider() | fällda) - klarade)
 
-    @staticmethod
-    def _extraläge(p: dict) -> dict:
+    def _extraläge(self, p: dict) -> dict:
         """Vad extraövningen har att ta av — noll tills dagen är gjord.
 
         Att öva extra före de förfallna korten är att välja bort det FSRS
@@ -901,9 +900,23 @@ class Övningstjänst:
         # in är precis den sortens indikator som ser sann ut och inte är det.
         # Talen kommer tillbaka i samma sekund som dagen är gjord.
         if not p["klar"]:
-            return {"nya": 0, "tidiga": 0, "finns": 0, "låst": True}
+            return {"nya": 0, "tidiga": 0, "finns": 0, "låst": True,
+                    "nytta": None}
+        # OCH HUR MYCKET DET ÄR VÄRT. B6 mätte att extraövning fungerar men
+        # AVTAGANDE — en tidig repetition ger en mindre stabilitetsökning —
+        # och knappen har hittills lovat "träna extra" utan att skilja en dag
+        # då det ger nästan allt från en då det ger noll. `extranytta` är
+        # kvoten mellan de två, räknad med FSRS egna formler. Se den.
+        # RÄKNAS HÄR OCH INTE I `dagsplan`, av två skäl. Det ena är
+        # kostnad: `extranytta` kör FSRS två gånger per kort över hela
+        # extrakön, och `dagsplan` anropas flera gånger per sidladdning för
+        # ett tal som bara visas när dagen är gjord. Det andra är att hålla
+        # extraövningens beroenden i extraövningens väg — `kommande()` hör
+        # dit, och när `tjänsteprov` saboterar den för att pröva just den
+        # invarianten ska felet inte slå ut hela dagsplanen.
         return {"nya": 0, "tidiga": p["tidiga"], "finns": p["tidiga"],
-                "låst": False}
+                "låst": False,
+                "nytta": extranytta(self.kort_db, p["språk"])}
 
     def _glöm(self) -> None:
         """Kasta ALLT härlett tillstånd. Anropas när kortleken bytts ut.

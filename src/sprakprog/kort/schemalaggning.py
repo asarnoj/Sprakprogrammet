@@ -868,6 +868,55 @@ def sekunder_per_repetition(kort_db: sqlite3.Connection, språk: str,
     return ms / n / 1000 if n and ms else None
 
 
+def extranytta(kort_db: sqlite3.Connection, språk: str,
+               nu: datetime | None = None) -> float | None:
+    """Hur mycket en extraövning är värd JUST NU, som andel av full nytta.
+
+    B6 slog fast att extraövning fungerar men avtagande: en repetition före
+    förfallodagen ger en mindre stabilitetsökning, eftersom tillväxttermen
+    `(e^(w10·(1−R)) − 1)` går mot noll när R går mot ett (B1). Vad som saknats
+    är att SÄGA det. Knappen har hela tiden lovat "träna extra" utan att
+    skilja en dag då det ger nästan allt från en då det ger noll.
+
+    MÅTTET ÄR EN KVOT OCH INGET VALT TAL: för varje kort i extraövningens kö
+    körs FSRS två gånger — en gång nu, en gång på kortets förfallodag — och
+    kvoten mellan stabilitetsökningarna är hur stor del av nyttan man får ut
+    av att göra det i förtid. Mätt på ett moget kort (S = 10,96, D = 2,11,
+    förfaller om elva dygn):
+
+        repeteras   11 d före    8 d      5 d      3 d      1 d    i tid
+        andel av
+        full nytta        0 %   35 %     63 %     79 %     93 %    100 %
+
+    Och samma dygn som kortet infördes är svaret exakt noll: FSRS
+    korttidsformel klämmer ökningen till 1,0× när mindre än ett dygn gått
+    (E2), så en extraövning på dag ett bokför ingenting alls.
+
+    None när kön är tom — det finns då ingen nytta att uttala sig om.
+    """
+    nu = nu or datetime.now(UTC)
+    rader = Schemaläggare(kort_db).kommande(språk, 100, nu)
+    if not rader:
+        return None
+    s = _skapa_schemaläggare(fuzza=False)
+    andelar = []
+    for rad in rader:
+        if rad["stabilitet"] is None or rad["förfaller"] is None:
+            continue
+        kort = _till_card(rad)
+        före = kort.stability
+        nu_kort, _ = s.review_card(kort, RÄTT, review_datetime=nu)
+        # SAMMA KORT, PRÖVAT PÅ SIN FÖRFALLODAG. Det är nämnaren: den fulla
+        # nyttan man avstår från genom att göra det i förtid.
+        i_tid, _ = s.review_card(
+            _till_card(rad), RÄTT,
+            review_datetime=datetime.fromisoformat(rad["förfaller"]))
+        full = i_tid.stability - före
+        andelar.append(max(0.0, (nu_kort.stability - före) / full)
+                       if full > 0 else 0.0)
+    return sum(andelar) / len(andelar) if andelar else None
+
+
 def sekunder_per_rad(kort_db: sqlite3.Connection, språk: str) -> float | None:
     """Vad EN PASSRAD kostar i tid. Växelkursen mellan `att_göra` och minuter.
 
@@ -1260,7 +1309,8 @@ def dagsplan(kort_db: sqlite3.Connection, språk: str,
     # ett tak B5 tog bort: dagen tar slut när KORTEN är gjorda, aldrig efter
     # N meningar. Ingen läste den. Samma sak med `belastning`, `per_kort`
     # och `kapacitet_kort` längre ner — noll läsare utanför den här filen.
-    return {"mål": meningar_per_dag, "gjort": gjort,
+    return {"språk": språk,
+            "mål": meningar_per_dag, "gjort": gjort,
             "förfallna": förfallna, "igen": passkö, "nya": nya,
             "nya_extra": nya_extra, "tidiga": tidiga,
             "att_göra": finns_idag,
@@ -1376,7 +1426,12 @@ def kostnad(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection, språk: 
         # allmänhet utan om den går att bygga för DEN HÄR användaren, nu.
         from ..generator import Generator
         g = Generator(språk_db, prov, språk, nivå=nivå, cefr=cefr, frö=0)
-        byggbar = g.byggbarhet()
+        # OCH DEN MÄTS PÅ NIVÅNS EGEN KONSTRUKTION. Utan `nivå=` räknas varje
+        # byggbar mening, också de som inte innehåller det nivån handlar om —
+        # och eftersom varje ny konstruktion är VALFRI bestod urvalet nästan
+        # helt av meningar från nivån under. Grinden mätte alltså den nivå
+        # användaren redan hade. Mätt: tjugo nivåer i följd efter en dag.
+        byggbar = g.byggbarhet(nivå=nivå)
         prov.close()
     return {"nivå": nivå, "före": läge, "efter": efter,
             "nya_kort": efter["totalt"] - läge["totalt"],

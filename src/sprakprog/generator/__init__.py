@@ -34,7 +34,7 @@ from ..kort import Schemaläggare, spec_json
 from ..rendering import RENDERARE, Mening, RenderingsFel, Uppslag, Validator
 from .poang import Poäng, Poängsättare
 from .rattning import Anmärkning, Rättare, Rättning
-from .urval import Ordförråd, Samplare
+from .urval import Ordförråd, Samplare, använder_nivån
 
 
 @dataclass(frozen=True, slots=True)
@@ -768,7 +768,20 @@ class Generator:
         """
         return [k for k in koncept if self.samplare.duger_som_mål(k)]
 
-    def byggbarhet(self, *, kandidater: int = 200) -> float | None:
+    #: URVALET MÅSTE KUNNA UPPLÖSA TRÖSKELN. `redo_för_nivå` frågar om
+    #: `byggbarhet × kandidater ≥ 1`, alltså om andelen är minst 1/800 — men
+    #: måttet samplade 200 kandidater, och ett urval på 200 kan inte skilja
+    #: 1/800 från noll. Grinden prövade en gräns dess eget underlag inte nådde
+    #: ner till.
+    #:
+    #: Mätt 2026-08-26: nivå 6 (possessiv) hade den sanna andelen 2/800, alltså
+    #: över tröskeln — men med 200 kandidater blev skattningen noll gång på
+    #: gång, och kursen stod låst på nivå 5 i evighet. Talet är därför
+    #: detsamma som sökningens: samma tal som tröskeln härleds ur.
+    STANDARDKANDIDATER = 800
+
+    def byggbarhet(self, *, kandidater: int = STANDARDKANDIDATER,
+                   nivå: int | None = None) -> float | None:
         """Andel samplade meningar med HÖGST ETT okänt ord.
 
         Måttet finns för upplåsningen (F1). Efter B2 är kapaciteten inte
@@ -784,6 +797,24 @@ class Generator:
         Samma okändgräns som genereringen redan använder (C5), och samma skäl:
         ett okänt ord i en mening man annars förstår går att sluta sig till,
         två går inte.
+
+        `nivå` KRÄVER ATT MENINGEN ANVÄNDER NIVÅNS KONSTRUKTION, och utan det
+        mätte grinden fel sak. `upplåst(nivå)` säger vad som är TILLÅTET, så
+        på nivå 2 är en vanlig subjekt-verb-mening fortfarande giltig — och
+        eftersom objekt är valfritt bestod nästan hela urvalet av
+        nivå-1-meningar. Måttet svarade alltså "nivå 2 går att öva" genom att
+        visa att nivå 1 går att öva.
+
+        Mätt 2026-08-26: efter EN dags franska gick tjugo nivåer att låsa upp
+        i följd — 632 kort, utan att öva emellan — med byggbarhet 0,006–0,067
+        mot tröskeln 0,00125. Med kravet inkopplat mäts i stället hur många av
+        meningarna som faktiskt bär det nivån handlar om.
+
+        NÄMNAREN ÄR ALLA BYGGDA MENINGAR, inte bara de som använder
+        konstruktionen. Det är avsiktligt: frågan är hur ofta sökningen kan
+        producera en ÖVBAR mening på den nya nivån, och en nivå vars
+        konstruktion nästan aldrig går att bygga är inte redo — oavsett hur
+        bra de meningar som lyckas råkar vara.
         """
         sedda = self._sedda_koncept()
         träffar = byggda = 0
@@ -799,7 +830,7 @@ class Generator:
             okända = sum(1 for k in kort
                          if k["typ"] == "ord" and k["sedd"] is None
                          and k["koncept"] not in sedda)
-            träffar += okända <= 1
+            träffar += okända <= 1 and (nivå is None or använder_nivån(m, nivå))
         return träffar / byggda if byggda else None
 
     def registrera(self, förslag: Förslag, utfall: dict[int, bool],

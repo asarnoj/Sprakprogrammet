@@ -282,7 +282,11 @@
                <dd id="n-ordkvar">–</dd></div>
           <div><dt>Level <span id="n-nästnr">–</span> would add</dt>
                <dd id="n-nästa">–</dd></div>
-          <div><dt>At your pace that is</dt><dd id="n-dygn">–</dd></div>
+          <!-- "At your pace that is 4 days" stod bredvid domen "Ready" och
+               lästes som "fyra dagar tills du kan låsa upp". Det är inte vad
+               talet är: det säger hur länge det NYA materialet räcker vid din
+               takt. Etiketten säger nu vilket av de två den handlar om. -->
+          <div><dt>Time to work through that</dt><dd id="n-dygn">–</dd></div>
         </dl>
         <p class="mager" id="n-redo"></p>
         <button class="gör" id="lås-upp" hidden>See the next level</button>
@@ -495,6 +499,16 @@ const T = {
   över:         (k, c) => `Your cards need ${k} sentences a day; you practise ${c}.`,
   extra_finns:  (t, n) => [t && `${t} early`, n && `${n} new`]
                             .filter(Boolean).join(", ") + " available",
+  //: HUR MYCKET EXTRAÖVNINGEN ÄR VÄRD. En repetition före förfallodagen ger
+  //: en mindre stabilitetsökning (B6), och hur mycket mindre är RÄKNAT med
+  //: FSRS egna formler — inte gissat. Utan talet ser en dag då extraövning
+  //: ger nästan allt likadan ut som en då den ger noll.
+  extra_nytta:  a => a >= 0.85 ? "nearly as good as waiting"
+                  : a >= 0.5  ? `about ${Math.round(a * 100)} % of the value `
+                                + `of waiting`
+                  : a > 0     ? `only about ${Math.round(a * 100)} % of the `
+                                + `value of waiting — these are not due yet`
+                  :             "no effect yet — these were introduced today",
   // DAGENS DELAR. Servern skickar nyckel och antal; texten bor här, så att
   // ett andra programspråk är en kolumn i den här tabellen och ingenting
   // annat. Sidan RÄKNAR INTE — den härledde tidigare sin egen uppdelning
@@ -693,11 +707,20 @@ async function hem() {
 
   const x = $("extra");
   x.disabled = !e.finns || e.låst;
+  // OCH VAD DET ÄR VÄRT. Knappen sa bara hur MYCKET som fanns, aldrig hur
+  // mycket det ger — och de två är olika frågor: hundra kort som inte är
+  // förfallna kan vara värda hälften av samma hundra i tid.
   sätt("extra-under", e.låst ? "finish today's cards first"
-                    : e.finns ? T.extra_finns(e.tidiga, e.nya) : "nothing ahead");
+                    : e.finns
+                      ? T.extra_finns(e.tidiga, e.nya)
+                        + (e.nytta == null ? "" : " · " + T.extra_nytta(e.nytta))
+                      : "nothing ahead — come back tomorrow");
 
   // Högerkolumnen. Efter F1 är villkoret BYGGBARHET och inte kapacitet, så
   // det som visas är om nivån går att öva — inte hur många kort som fattas.
+  // DOMEN SÄGER VAD DEN GÄLLER. "Ready" ensamt lästes som ett allmänt
+  // omdöme om användaren; det är en dom om NÄSTA NIVÅ: går den att öva med
+  // det ordförråd du har?
   sätt("n-saknas", n.redo === null || n.redo === undefined ? "–"
                  : n.redo ? "Ready" : "Not yet");
   // TAKTEN, inte kapacitetsavståndet. `krävs`/`plats` byggde på det gamla
@@ -720,9 +743,15 @@ async function hem() {
   // regleras per dygn oavsett vilka nivåer som är öppna, så en öppnad nivå
   // kan inte öka arbetsbördan. Det som återstår är om nivån går att ÖVA.
   $("lås-upp").hidden = !(n.redo && n.nu < n.av);
+  // OCH DEN SÄGER VAD DEN MÄTER, åt båda hållen. Grinden frågar om
+  // meningar som faktiskt ANVÄNDER nästa nivås konstruktion går att bygga
+  // med det ordförråd du har — inte om du behärskar nivån du är på.
   sätt("n-redo", n.redo === null ? ""
-       : n.redo ? "" : "Learn a few more words first — sentences at the next "
-                       + "level would be mostly unknown vocabulary.");
+       : n.redo
+         ? `Sentences using level ${n.nu + 1} can be built with the words `
+           + `you know.`
+         : `Not enough vocabulary yet for level ${n.nu + 1}'s sentences. `
+           + `It opens on its own as you learn more words.`);
 
   sätt("kurssteg", `level ${n.nu} · ${h.kurs.cefr}`);
   visa("hem");

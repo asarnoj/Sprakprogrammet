@@ -66,6 +66,68 @@ def upplåst(nivå: int) -> set[str]:
     return {namn for n, namn in NIVÅ.items() if n <= nivå}
 
 
+def _någon_fras(m):
+    """Meningens nominalfraser, inklusive bisatsens."""
+    for nf in (m.subjekt, m.objekt, m.io, m.predikativ):
+        if nf is not None and not isinstance(nf, str):
+            yield nf
+    if m.bisats is not None:
+        yield from _någon_fras(m.bisats.sats)
+
+
+#: ANVÄNDER MENINGEN FAKTISKT NIVÅNS KONSTRUKTION?
+#:
+#: `upplåst(nivå)` säger vad som är TILLÅTET. Det här säger vad en färdig spec
+#: faktiskt GJORDE, och skillnaden är hela skälet till att upplåsningsgrinden
+#: inte fungerade: `byggbarhet` samplade meningar på nivån och frågade bara om
+#: de hade högst ett okänt ord. På nivå 2 är en vanlig subjekt-verb-mening
+#: fortfarande giltig, så måttet mätte nivå 1 och släppte igenom nivå 2.
+#:
+#: Mätt 2026-08-26: efter EN dags franska gick tjugo nivåer att låsa upp i
+#: följd, 632 kort, utan att öva emellan. Byggbarheten låg på 0,006–0,067 och
+#: tröskeln är 0,00125, så varje nivå passerade — mätt på meningar som inte
+#: innehöll det nivån handlade om.
+#:
+#: Predikaten är fält på `Mening` och inget annat. En konstruktion som inte
+#: går att se i specen hör inte hemma på komplexitetsstegen.
+ANVÄNDER = {
+    "objekt":           lambda m: m.objekt is not None,
+    "bestämdhet":       lambda m: any(f.bestämdhet is not Bestämdhet.OBESTÄMD
+                                      for f in _någon_fras(m)),
+    "numerus":          lambda m: any(f.numerus is Numerus.PL
+                                      for f in _någon_fras(m)),
+    "attribut":         lambda m: any(f.attribut for f in _någon_fras(m)),
+    "possessiv":        lambda m: any(f.possessiv for f in _någon_fras(m)),
+    "io":               lambda m: m.io is not None,
+    "adverbial":        lambda m: any(isinstance(a, str) for a in m.adverbial),
+    "tempus":           lambda m: m.tid is not Tidsreferens.NUTID,
+    "genitiv":          lambda m: any(f.ägare for f in _någon_fras(m)),
+    "predikativ":       lambda m: m.predikativ is not None,
+    "negation":         lambda m: m.negerad,
+    "komplement":       lambda m: m.komplement is not None,
+    "perfekt":          lambda m: m.aspekt is Aspekt.PERFEKT,
+    "prepositionsfras": lambda m: any(isinstance(a, Prepositionsfras)
+                                      for a in m.adverbial),
+    "fråga":            lambda m: m.fråga,
+    "passiv":           lambda m: m.diates is not Diates.AKTIV,
+    "komparation":      lambda m: any(a.grad is not Grad.POSITIV
+                                      for f in _någon_fras(m) for a in f.attribut),
+    "imperativ":        lambda m: m.modus is Satsmodus.IMPERATIV,
+    "bisats":           lambda m: m.bisats is not None,
+    "whfråga":          lambda m: m.fråga_om is not None,
+}
+
+
+def använder_nivån(m, nivå: int) -> bool:
+    """Använder specen den konstruktion `nivå` låser upp?
+
+    Nivå 1 har ingen egen konstruktion — den ÄR grundsatsen — så varje mening
+    räknas där.
+    """
+    namn = NIVÅ.get(nivå)
+    return True if namn is None else ANVÄNDER[namn](m)
+
+
 class Ordförråd:
     """Index från semantiskt krav till de koncept som uppfyller det.
 
