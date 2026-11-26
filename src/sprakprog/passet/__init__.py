@@ -126,7 +126,22 @@ class Passet:
         säker; budgeten släpps bara här, och bara för att det annars inte blir
         någon övning alls. Bland de kortaste meningarna väljs den säkraste: en
         längre mening bär fler kort och är därför inte säkrare.
+
+        SÖKNINGEN SLUTAR NÄR RISKEN SLUTAR SJUNKA. Reservsteg 2 vill ha den
+        minst riskabla meningen, och att veta vilken det är kräver att alla
+        räknas upp. Tidigt i kursen är det förödande och meningslöst på en
+        gång: varje kort är nytt, alla har samma p, alltså har varje mening
+        av samma längd SAMMA risk, och uppräkningen kan aldrig hitta något
+        bättre. Kortet `regel:ordning/frågeord_först` gav sin första mening
+        på 6 s och fortsatte sedan genom 104 likvärdiga fyraordsmeningar på
+        två minuter utan att passet kom vidare.
+
+        Därför: en kandidat som inte förbättrar den bästa risken avslutar
+        sökningen. Ingen gräns är satt i förväg — det är datan som säger när
+        det är klart. Den dag reservsteg 1 (ensamövningen, 6.3) finns
+        behöver reservsteg 2 sällan tas alls.
         """
+        ställda = self.data.dagens_källtexter()
         bäst: tuple[float, Uppgift] | None = None
         längd: int | None = None
         for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA, per_mall=1,
@@ -136,13 +151,20 @@ class Passet:
             elif träff.ord > längd:
                 break
             risk = _minst_ett_fel([self.p(k) for k in träff.kort])
-            if bäst is not None and risk >= bäst[0] and risk > self.τ:
-                continue
+            if bäst is not None and risk >= bäst[0]:
+                # Ingen förbättring: ur reservsteg 2:s synvinkel är resten av
+                # längdgruppen lika bra som den bästa vi redan har.
+                break
             mål = mål_av(träff)
             try:
                 ut = spåra(self.s.renderare, träff.mening)
                 källtext = self.s.par.rendera(träff.mening)
             except RenderingsFel:
+                continue
+            if källtext in ställda:
+                # 6.1 punkt 8: källmeningen har redan ställts i dag. Den mäter
+                # då minnet av facit i stället för kortet. Risken räknas ändå,
+                # så en utesluten kandidat inte får avsluta sökningen.
                 continue
             uppgift = Uppgift(träff, ut, källtext, frozenset(mål),
                               frozenset(träff.kort - mål))

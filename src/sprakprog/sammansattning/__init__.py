@@ -1530,18 +1530,45 @@ class Sammansättare:
         visade: set = set()
         nåbar = self._nåbarhet(mål)
         for n in range(1, högst_ord + 1):
-            for villkor, händelser, ord, _, _, _ in self._delen(
+            for villkor, händelser, ord, _, _, rot in self._delen(
                     "rendera", ROT, {"m": "m"}, {}, n, tillåten, (), nåbar, nåbar is not None):
                 if ord != n or (mål is not None and not self._kan_innehålla(händelser, mål)):
                     continue
+                # SAMMA BESKÄRNING SOM `_leta`. Utan den renderas varje
+                # sammansättning på nytt, också de som ett bevis redan
+                # avfärdat, och inga bevis lärs eftersom det bara sker här.
+                # Passet väljer sina uppgifter genom den här metoden, och
+                # ett kort som `finns` besvarar på 3,8 s frös den i minuter.
+                #
+                # Till skillnad från `_leta` startas uppräkningen inte om när
+                # ett bevis lärs. Ett bevis skär bara bort, så det som redan
+                # lämnats ut är fortfarande giltigt; att inte gå om kostar
+                # bara att beskärningen börjar gälla längre fram.
+                giltiga = self._giltiga(rot, villkor, tillåten) if tillåten is not None else []
+                if tillåten is not None and (
+                        any(nd.täckt for nd in rot.alla())
+                        or self._någon_täckt(giltiga, villkor, händelser, tillåten)):
+                    self.statistik["sammansättningar bevisade"] += 1
+                    continue
+                hoppa = (None if tillåten is None else
+                         lambda bundna: self._avfärdad(giltiga, villkor, bundna, tillåten))
+                förbud = None if hoppa is None else [
+                    [(absolut(nod.bindning, rel), atomer) for rel, _, atomer in b.platser]
+                    for nod, bevis in giltiga for b in bevis]
                 träffar = 0
-                for mening, _, _ in self._meningar_ur(villkor, händelser, tillåten, mål,
-                                                      grupperat=grupperat):
+                for mening, bundna, platser in self._meningar_ur(
+                        villkor, händelser, tillåten, mål, grupperat=grupperat,
+                        hoppa=hoppa, förbud=förbud):
                     if mening in sedda:
                         continue
                     sedda.add(mening)
-                    träff = self._pröva(mening, mål, tillåten)[0]
-                    if träff is None or (träff.text, träff.kort) in visade:
+                    träff, ut, kort = self._pröva(mening, mål, tillåten)
+                    if träff is None:
+                        if tillåten is not None and ut is not None:
+                            self._lär(rot, villkor, bundna, platser, ut, kort,
+                                      tillåten, mål)
+                        continue
+                    if (träff.text, träff.kort) in visade:
                         continue
                     visade.add((träff.text, träff.kort))
                     yield träff

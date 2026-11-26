@@ -242,6 +242,18 @@ class Kursdata:
         self.conn.commit()
         return rad["id"]
 
+    def dagens_källtexter(self) -> set[str]:
+        """Källmeningarna som redan ställts i dag (KÄRNAN 6.1 punkt 8).
+
+        Efter ett fel har användaren sett facit, och samma fråga igen mäter
+        minnet av facit i stället för kortet. En annan dag gäller inte
+        villkoret, så frågan är avgränsad till dygnet (5.1).
+        """
+        dag = self.dag()
+        return {r["källtext"] for r in self.conn.execute(
+            "SELECT tid, källtext FROM mening WHERE kurs_id = ?", (self.id,))
+            if self.dag(r["tid"]) == dag}
+
     def svara(self, mening_id: int, svar: str, sekunder: float) -> None:
         self.conn.execute("UPDATE mening SET svar = ?, sekunder = ? WHERE id = ?",
                           (svar, sekunder, mening_id))
