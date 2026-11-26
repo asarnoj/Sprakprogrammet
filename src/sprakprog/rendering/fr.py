@@ -10,6 +10,16 @@ from __future__ import annotations
 from .romansk import MASKULIN, Numerus, RomanskRenderare
 
 
+# Ord som tappar sin slutvokal framför vokalljud. Listan är sluten och
+# lexikal — det är enstaka småord, inte en fonologisk regel som gäller alla
+# ord på -e. je/me/te/se är subjekts- och objektsklitika, le/la artiklar och
+# objektsklitika, de/ne prepositioner och negationsförled.
+#
+# Att den saknade var skälet till att 224 franska verbformer hade pronomenet
+# inbakat i datan: "j'écoute" gick inte att bygga, så någon skrev in det.
+ELIDERAR = frozenset({"je", "me", "te", "se", "le", "la", "de", "ne", "ce"})
+
+
 class FranskRenderare(RomanskRenderare):
     SPRÅK = "fr"
     SUBJEKTSCELL = "sujet"
@@ -53,12 +63,12 @@ class FranskRenderare(RomanskRenderare):
         h aspiré-ord (héros) skulle kräva en flagga på Lexem, i stil med
         prenominal — skillnaden syns inte i stavningen.
         """
-        if första == "ne" or första == "que" or första.endswith(" que"):
-            # que elideras framför vokal precis som ne: "qu'il est venu",
-            # "parce qu'elle lit", "est-ce qu'elle lit". Regeln gäller ORDET
-            # que, inte ändelsen -que: "la bibliothèque a" elideras inte.
-            # Därför krävs mellanslag före i de sammansatta subjunktionerna,
-            # som alla är flerordiga (parce que, bien que, jusqu'à ce que).
+        if första == "que" or första.endswith(" que"):
+            # que elideras framför vokal: "qu'il est venu", "parce qu'elle
+            # lit", "est-ce qu'elle lit". Regeln gäller ORDET que, inte
+            # ändelsen -que: "la bibliothèque a" elideras inte. Därför krävs
+            # mellanslag före i de sammansatta subjunktionerna, som alla är
+            # flerordiga (parce que, bien que, jusqu'à ce que).
             return andra[:1].lower() in self.VOKAL | {"h"}
-        return (första in ("le", "la")
+        return (första in ELIDERAR
                 and andra[:1].lower() in self.VOKAL | {"h"})

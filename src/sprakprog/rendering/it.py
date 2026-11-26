@@ -67,6 +67,16 @@ class ItalienskRenderare(RomanskRenderare):
                   ("su", "il"): "sul", ("su", "la"): "sulla",
                   ("con", "il"): "col"}
 
+    def frågedeterminantcell(self, genus: int, numerus: Numerus) -> str:
+        # quale/quali skiljer numerus men inte genus.
+        return "pl" if numerus is Numerus.PL else "m_sg"
+
+    def frågecell(self, koncept: str, subjekt: bool) -> str:
+        # chi och cosa har identiska axelkoordinater i slot-filen, så båda
+        # cellnamnen ger samma rad. Se ordbok/beslut.tsv — beslutet att
+        # låta det vara förutsatte just att renderaren väljer lemma först.
+        return "chi"
+
     def possessivcell(self, genus: int, numerus: Numerus) -> str:
         kön = "m" if genus == MASKULIN else "f"
         return f"{kön}_{'pl' if numerus is Numerus.PL else 'sg'}"

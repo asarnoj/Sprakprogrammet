@@ -16,6 +16,10 @@ from ..generering.granskning import _former_per_cell
 from ..kaikki_mappning.paradigm import ladda_legend, ladda_slot
 from .spec import RenderingsFel
 
+# docs/BITMASK.md §11. Enda biten uppslaget behöver känna till, och bara
+# för att välja mellan vem och vad.
+MÄNSKLIG = 32
+
 
 class Uppslag:
     """Slår upp lexem och former för ETT språk."""
@@ -93,6 +97,19 @@ class Uppslag:
                WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = 'komplement'""",
             (verb, self.språk)).fetchone()
         return rad["nyckel"] if rad else None
+
+    def frågepronomen(self, koncept: str) -> str:
+        """vem eller vad — avgörs på det EFTERFRÅGADE, inte på slotten.
+
+        "Vem läser boken?" men "Vad läser flickan?": samma slot, olika ord,
+        och skillnaden ligger i om svaret är mänskligt. Semantikbiten som
+        restriktionerna redan använder räcker för att avgöra det, så
+        frågeordet behöver ingen egen taggning.
+        """
+        rad = self.conn.execute(
+            "SELECT semantik FROM Koncept WHERE nyckel = ?", (koncept,)).fetchone()
+        mänsklig = bool(rad and (rad["semantik"] or 0) & MÄNSKLIG)
+        return "frågepronomen_person" if mänsklig else "frågepronomen_sak"
 
     def _slot_för(self, ordklass: str):
         if ordklass not in self._slot:

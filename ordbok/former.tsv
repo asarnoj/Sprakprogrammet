@@ -11283,51 +11283,51 @@ arb_arbeta	es	trabajar	trabajáramos	2				5120		1	1
 arb_arbeta	es	trabajar	trabajé	1				4		1	1
 arb_arbeta	es	trabajar	trabajéis	2				1024		2	1
 arb_arbeta	es	trabajar	trabajó	1				4		3	1
-arb_arbeta	fr	travailler	il/elle travailla	1				4		3	1
-arb_arbeta	fr	travailler	il/elle travaillait	1				4096		3	1
-arb_arbeta	fr	travailler	il/elle travaille	1				2		3	1
-arb_arbeta	fr	travailler	il/elle travaillera	1				64		3	1
-arb_arbeta	fr	travailler	il/elle travaillerait	1				2048		3	1
-arb_arbeta	fr	travailler	ils/elles travaillaient	2				4096		3	1
-arb_arbeta	fr	travailler	ils/elles travaillent	2				2		3	1
-arb_arbeta	fr	travailler	ils/elles travailleraient	2				2048		3	1
-arb_arbeta	fr	travailler	ils/elles travailleront	2				64		3	1
-arb_arbeta	fr	travailler	ils/elles travaillèrent	2				4		3	1
-arb_arbeta	fr	travailler	je travaillai	1				4		1	1
-arb_arbeta	fr	travailler	je travaillais	1				4096		1	1
-arb_arbeta	fr	travailler	je travaille	1				2		1	1
-arb_arbeta	fr	travailler	je travaillerai	1				64		1	1
-arb_arbeta	fr	travailler	je travaillerais	1				2048		1	1
-arb_arbeta	fr	travailler	nous travaillerions	2				2048		1	1
-arb_arbeta	fr	travailler	nous travaillerons	2				64		1	1
-arb_arbeta	fr	travailler	nous travaillions	2				4096		1	1
-arb_arbeta	fr	travailler	nous travaillons	2				2		1	1
-arb_arbeta	fr	travailler	nous travaillâmes	2				4		1	1
-arb_arbeta	fr	travailler	qu'il/elle travaille	1				1024		3	1
-arb_arbeta	fr	travailler	qu'ils/elles travaillent	2				1024		3	1
 arb_arbeta	fr	travailler	que je travaille	1				1024		1	1
 arb_arbeta	fr	travailler	que nous travaillions	2				1024		1	1
 arb_arbeta	fr	travailler	que tu travailles	1				1024		2	1
 arb_arbeta	fr	travailler	que vous travailliez	2				1024		2	1
+arb_arbeta	fr	travailler	travailla	1				4		3	1
+arb_arbeta	fr	travailler	travaillai	1				4		1	1
+arb_arbeta	fr	travailler	travaillaient	2				4096		3	1
+arb_arbeta	fr	travailler	travaillais	1				4096		1	1
+arb_arbeta	fr	travailler	travaillais	1				4096		2	1
+arb_arbeta	fr	travailler	travaillait	1				4096		3	1
 arb_arbeta	fr	travailler	travaillant					128			1
+arb_arbeta	fr	travailler	travaillas	1				4		2	1
+arb_arbeta	fr	travailler	travaille	1				2		1	1
+arb_arbeta	fr	travailler	travaille	1				2		3	1
 arb_arbeta	fr	travailler	travaille	1				16		2	1
+arb_arbeta	fr	travailler	travaille	1				1024		3	1
+arb_arbeta	fr	travailler	travaillent	2				2		3	1
+arb_arbeta	fr	travailler	travaillent	2				1024		3	1
 arb_arbeta	fr	travailler	travailler					1			1
+arb_arbeta	fr	travailler	travaillera	1				64		3	1
+arb_arbeta	fr	travailler	travaillerai	1				64		1	1
+arb_arbeta	fr	travailler	travailleraient	2				2048		3	1
+arb_arbeta	fr	travailler	travaillerais	1				2048		1	1
+arb_arbeta	fr	travailler	travaillerais	1				2048		2	1
+arb_arbeta	fr	travailler	travaillerait	1				2048		3	1
+arb_arbeta	fr	travailler	travailleras	1				64		2	1
+arb_arbeta	fr	travailler	travaillerez	2				64		2	1
+arb_arbeta	fr	travailler	travailleriez	2				2048		2	1
+arb_arbeta	fr	travailler	travaillerions	2				2048		1	1
+arb_arbeta	fr	travailler	travaillerons	2				64		1	1
+arb_arbeta	fr	travailler	travailleront	2				64		3	1
+arb_arbeta	fr	travailler	travailles	1				2		2	1
+arb_arbeta	fr	travailler	travaillez	2				2		2	1
 arb_arbeta	fr	travailler	travaillez	2				16		2	1
+arb_arbeta	fr	travailler	travailliez	2				4096		2	1
+arb_arbeta	fr	travailler	travaillions	2				4096		1	1
+arb_arbeta	fr	travailler	travaillons	2				2		1	1
 arb_arbeta	fr	travailler	travaillons	2				16		1	1
+arb_arbeta	fr	travailler	travaillâmes	2				4		1	1
+arb_arbeta	fr	travailler	travaillâtes	2				4		2	1
+arb_arbeta	fr	travailler	travaillèrent	2				4		3	1
 arb_arbeta	fr	travailler	travaillé	1			1	8			1
 arb_arbeta	fr	travailler	travaillée	1			2	8			1
 arb_arbeta	fr	travailler	travaillées	2			2	8			1
 arb_arbeta	fr	travailler	travaillés	2			1	8			1
-arb_arbeta	fr	travailler	tu travaillais	1				4096		2	1
-arb_arbeta	fr	travailler	tu travaillas	1				4		2	1
-arb_arbeta	fr	travailler	tu travaillerais	1				2048		2	1
-arb_arbeta	fr	travailler	tu travailleras	1				64		2	1
-arb_arbeta	fr	travailler	tu travailles	1				2		2	1
-arb_arbeta	fr	travailler	vous travaillerez	2				64		2	1
-arb_arbeta	fr	travailler	vous travailleriez	2				2048		2	1
-arb_arbeta	fr	travailler	vous travaillez	2				2		2	1
-arb_arbeta	fr	travailler	vous travailliez	2				4096		2	1
-arb_arbeta	fr	travailler	vous travaillâtes	2				4		2	1
 arb_arbeta	it	lavorare	lavora	1				2		3	1
 arb_arbeta	it	lavorare	lavora	1				16		2	1
 arb_arbeta	it	lavorare	lavorai	1				4		1	1
@@ -12181,47 +12181,47 @@ arb_spara	es	ahorrar	ahorráramos	2				5120		1	1
 arb_spara	es	ahorrar	ahorré	1				4		1	1
 arb_spara	es	ahorrar	ahorréis	2				1024		2	1
 arb_spara	es	ahorrar	ahorró	1				4		3	1
-arb_spara	fr	économiser	il économisa	1				4		3	1
-arb_spara	fr	économiser	il économisait	1				4096		3	1
-arb_spara	fr	économiser	il économise	1				2		3	1
-arb_spara	fr	économiser	il économisera	1				64		3	1
-arb_spara	fr	économiser	il économiserait	1				2048		3	1
-arb_spara	fr	économiser	ils économisaient	2				4096		3	1
-arb_spara	fr	économiser	ils économisent	2				2		3	1
-arb_spara	fr	économiser	ils économiseraient	2				2048		3	1
-arb_spara	fr	économiser	ils économiseront	2				64		3	1
-arb_spara	fr	économiser	ils économisèrent	2				4		3	1
-arb_spara	fr	économiser	j'économisai	1				4		1	1
-arb_spara	fr	économiser	j'économisais	1				4096		1	1
-arb_spara	fr	économiser	j'économise	1				2		1	1
-arb_spara	fr	économiser	j'économiserai	1				64		1	1
-arb_spara	fr	économiser	j'économiserais	1				2048		1	1
-arb_spara	fr	économiser	nous économiserions	2				2048		1	1
-arb_spara	fr	économiser	nous économiserons	2				64		1	1
-arb_spara	fr	économiser	nous économisions	2				4096		1	1
-arb_spara	fr	économiser	nous économisons	2				2		1	1
-arb_spara	fr	économiser	nous économisâmes	2				4		1	1
-arb_spara	fr	économiser	qu'il économise	1				1024		3	1
-arb_spara	fr	économiser	qu'ils économisent	2				1024		3	1
 arb_spara	fr	économiser	que j'économise	1				1024		1	1
 arb_spara	fr	économiser	que nous économisions	2				1024		1	1
 arb_spara	fr	économiser	que tu économises	1				1024		2	1
 arb_spara	fr	économiser	que vous économisiez	2				1024		2	1
-arb_spara	fr	économiser	tu économisais	1				4096		2	1
-arb_spara	fr	économiser	tu économisas	1				4		2	1
-arb_spara	fr	économiser	tu économiserais	1				2048		2	1
-arb_spara	fr	économiser	tu économiseras	1				64		2	1
-arb_spara	fr	économiser	tu économises	1				2		2	1
-arb_spara	fr	économiser	vous économiserez	2				64		2	1
-arb_spara	fr	économiser	vous économiseriez	2				2048		2	1
-arb_spara	fr	économiser	vous économisez	2				2		2	1
-arb_spara	fr	économiser	vous économisiez	2				4096		2	1
-arb_spara	fr	économiser	vous économisâtes	2				4		2	1
+arb_spara	fr	économiser	économisa	1				4		3	1
+arb_spara	fr	économiser	économisai	1				4		1	1
+arb_spara	fr	économiser	économisaient	2				4096		3	1
+arb_spara	fr	économiser	économisais	1				4096		1	1
+arb_spara	fr	économiser	économisais	1				4096		2	1
+arb_spara	fr	économiser	économisait	1				4096		3	1
 arb_spara	fr	économiser	économisant					128			1
+arb_spara	fr	économiser	économisas	1				4		2	1
+arb_spara	fr	économiser	économise	1				2		1	1
+arb_spara	fr	économiser	économise	1				2		3	1
 arb_spara	fr	économiser	économise	1				16		2	1
+arb_spara	fr	économiser	économise	1				1024		3	1
+arb_spara	fr	économiser	économisent	2				2		3	1
+arb_spara	fr	économiser	économisent	2				1024		3	1
 arb_spara	fr	économiser	économiser					1			1
+arb_spara	fr	économiser	économisera	1				64		3	1
+arb_spara	fr	économiser	économiserai	1				64		1	1
+arb_spara	fr	économiser	économiseraient	2				2048		3	1
+arb_spara	fr	économiser	économiserais	1				2048		1	1
+arb_spara	fr	économiser	économiserais	1				2048		2	1
+arb_spara	fr	économiser	économiserait	1				2048		3	1
+arb_spara	fr	économiser	économiseras	1				64		2	1
+arb_spara	fr	économiser	économiserez	2				64		2	1
+arb_spara	fr	économiser	économiseriez	2				2048		2	1
+arb_spara	fr	économiser	économiserions	2				2048		1	1
+arb_spara	fr	économiser	économiserons	2				64		1	1
+arb_spara	fr	économiser	économiseront	2				64		3	1
+arb_spara	fr	économiser	économises	1				2		2	1
+arb_spara	fr	économiser	économisez	2				2		2	1
 arb_spara	fr	économiser	économisez	2				16		2	1
+arb_spara	fr	économiser	économisiez	2				4096		2	1
+arb_spara	fr	économiser	économisions	2				4096		1	1
+arb_spara	fr	économiser	économisons	2				2		1	1
 arb_spara	fr	économiser	économisons	2				16		1	1
+arb_spara	fr	économiser	économisâmes	2				4		1	1
+arb_spara	fr	économiser	économisâtes	2				4		2	1
+arb_spara	fr	économiser	économisèrent	2				4		3	1
 arb_spara	fr	économiser	économisé	1			1	8			1
 arb_spara	fr	économiser	économisée	1			2	8			1
 arb_spara	fr	économiser	économisées	2			2	8			1
@@ -15633,7 +15633,7 @@ frågepronomen_sak	de	was	wessen			8
 frågepronomen_sak	en	what	what			7					
 frågepronomen_sak	es	qué	qué			7					
 frågepronomen_sak	fr	que	qu'est-ce qui			1					
-frågepronomen_sak	fr	que	que/quoi			6					
+frågepronomen_sak	fr	que	que			6					
 frågepronomen_sak	it	cosa	cosa			7					
 frågepronomen_sak	ja	何	何								
 frågepronomen_sak	sv	vad	vad			7					
@@ -24107,47 +24107,47 @@ gen_misslyckas	es	fracasar	fracasáramos	2				5120		1	1
 gen_misslyckas	es	fracasar	fracasé	1				4		1	1
 gen_misslyckas	es	fracasar	fracaséis	2				1024		2	1
 gen_misslyckas	es	fracasar	fracasó	1				4		3	1
-gen_misslyckas	fr	échouer	il échoua	1				4		3	1
-gen_misslyckas	fr	échouer	il échouait	1				4096		3	1
-gen_misslyckas	fr	échouer	il échoue	1				2		3	1
-gen_misslyckas	fr	échouer	il échouera	1				64		3	1
-gen_misslyckas	fr	échouer	il échouerait	1				2048		3	1
-gen_misslyckas	fr	échouer	ils échouaient	2				4096		3	1
-gen_misslyckas	fr	échouer	ils échouent	2				2		3	1
-gen_misslyckas	fr	échouer	ils échoueraient	2				2048		3	1
-gen_misslyckas	fr	échouer	ils échoueront	2				64		3	1
-gen_misslyckas	fr	échouer	ils échouèrent	2				4		3	1
-gen_misslyckas	fr	échouer	j'échouai	1				4		1	1
-gen_misslyckas	fr	échouer	j'échouais	1				4096		1	1
-gen_misslyckas	fr	échouer	j'échoue	1				2		1	1
-gen_misslyckas	fr	échouer	j'échouerai	1				64		1	1
-gen_misslyckas	fr	échouer	j'échouerais	1				2048		1	1
-gen_misslyckas	fr	échouer	nous échouerions	2				2048		1	1
-gen_misslyckas	fr	échouer	nous échouerons	2				64		1	1
-gen_misslyckas	fr	échouer	nous échouions	2				4096		1	1
-gen_misslyckas	fr	échouer	nous échouons	2				2		1	1
-gen_misslyckas	fr	échouer	nous échouâmes	2				4		1	1
-gen_misslyckas	fr	échouer	qu'il échoue	1				1024		3	1
-gen_misslyckas	fr	échouer	qu'ils échouent	2				1024		3	1
 gen_misslyckas	fr	échouer	que j'échoue	1				1024		1	1
 gen_misslyckas	fr	échouer	que nous échouions	2				1024		1	1
 gen_misslyckas	fr	échouer	que tu échoues	1				1024		2	1
 gen_misslyckas	fr	échouer	que vous échouiez	2				1024		2	1
-gen_misslyckas	fr	échouer	tu échouais	1				4096		2	1
-gen_misslyckas	fr	échouer	tu échouas	1				4		2	1
-gen_misslyckas	fr	échouer	tu échouerais	1				2048		2	1
-gen_misslyckas	fr	échouer	tu échoueras	1				64		2	1
-gen_misslyckas	fr	échouer	tu échoues	1				2		2	1
-gen_misslyckas	fr	échouer	vous échouerez	2				64		2	1
-gen_misslyckas	fr	échouer	vous échoueriez	2				2048		2	1
-gen_misslyckas	fr	échouer	vous échouez	2				2		2	1
-gen_misslyckas	fr	échouer	vous échouiez	2				4096		2	1
-gen_misslyckas	fr	échouer	vous échouâtes	2				4		2	1
+gen_misslyckas	fr	échouer	échoua	1				4		3	1
+gen_misslyckas	fr	échouer	échouai	1				4		1	1
+gen_misslyckas	fr	échouer	échouaient	2				4096		3	1
+gen_misslyckas	fr	échouer	échouais	1				4096		1	1
+gen_misslyckas	fr	échouer	échouais	1				4096		2	1
+gen_misslyckas	fr	échouer	échouait	1				4096		3	1
 gen_misslyckas	fr	échouer	échouant					128			1
+gen_misslyckas	fr	échouer	échouas	1				4		2	1
+gen_misslyckas	fr	échouer	échoue	1				2		1	1
+gen_misslyckas	fr	échouer	échoue	1				2		3	1
 gen_misslyckas	fr	échouer	échoue	1				16		2	1
+gen_misslyckas	fr	échouer	échoue	1				1024		3	1
+gen_misslyckas	fr	échouer	échouent	2				2		3	1
+gen_misslyckas	fr	échouer	échouent	2				1024		3	1
 gen_misslyckas	fr	échouer	échouer					1			1
+gen_misslyckas	fr	échouer	échouera	1				64		3	1
+gen_misslyckas	fr	échouer	échouerai	1				64		1	1
+gen_misslyckas	fr	échouer	échoueraient	2				2048		3	1
+gen_misslyckas	fr	échouer	échouerais	1				2048		1	1
+gen_misslyckas	fr	échouer	échouerais	1				2048		2	1
+gen_misslyckas	fr	échouer	échouerait	1				2048		3	1
+gen_misslyckas	fr	échouer	échoueras	1				64		2	1
+gen_misslyckas	fr	échouer	échouerez	2				64		2	1
+gen_misslyckas	fr	échouer	échoueriez	2				2048		2	1
+gen_misslyckas	fr	échouer	échouerions	2				2048		1	1
+gen_misslyckas	fr	échouer	échouerons	2				64		1	1
+gen_misslyckas	fr	échouer	échoueront	2				64		3	1
+gen_misslyckas	fr	échouer	échoues	1				2		2	1
+gen_misslyckas	fr	échouer	échouez	2				2		2	1
 gen_misslyckas	fr	échouer	échouez	2				16		2	1
+gen_misslyckas	fr	échouer	échouiez	2				4096		2	1
+gen_misslyckas	fr	échouer	échouions	2				4096		1	1
+gen_misslyckas	fr	échouer	échouons	2				2		1	1
 gen_misslyckas	fr	échouer	échouons	2				16		1	1
+gen_misslyckas	fr	échouer	échouâmes	2				4		1	1
+gen_misslyckas	fr	échouer	échouâtes	2				4		2	1
+gen_misslyckas	fr	échouer	échouèrent	2				4		3	1
 gen_misslyckas	fr	échouer	échoué	1			1	8			1
 gen_misslyckas	fr	échouer	échouée	1			2	8			1
 gen_misslyckas	fr	échouer	échouées	2			2	8			1
@@ -32529,51 +32529,51 @@ kom_skriva	es	escribir	escrita	1			2	8			1
 kom_skriva	es	escribir	escritas	2			2	8			1
 kom_skriva	es	escribir	escrito	1			1	8			1
 kom_skriva	es	escribir	escritos	2			1	8			1
-kom_skriva	fr	écrire	il écrira	1				64		3	1
-kom_skriva	fr	écrire	il écrirait	1				2048		3	1
-kom_skriva	fr	écrire	il écrit	1				2		3	1
-kom_skriva	fr	écrire	il écrivait	1				4096		3	1
-kom_skriva	fr	écrire	il écrivit	1				4		3	1
-kom_skriva	fr	écrire	ils écriraient	2				2048		3	1
-kom_skriva	fr	écrire	ils écriront	2				64		3	1
-kom_skriva	fr	écrire	ils écrivaient	2				4096		3	1
-kom_skriva	fr	écrire	ils écrivent	2				2		3	1
-kom_skriva	fr	écrire	ils écrivirent	2				4		3	1
-kom_skriva	fr	écrire	j'écrirai	1				64		1	1
-kom_skriva	fr	écrire	j'écrirais	1				2048		1	1
-kom_skriva	fr	écrire	j'écris	1				2		1	1
-kom_skriva	fr	écrire	j'écrivais	1				4096		1	1
-kom_skriva	fr	écrire	j'écrivis	1				4		1	1
-kom_skriva	fr	écrire	nous écririons	2				2048		1	1
-kom_skriva	fr	écrire	nous écrirons	2				64		1	1
-kom_skriva	fr	écrire	nous écrivions	2				4096		1	1
-kom_skriva	fr	écrire	nous écrivons	2				2		1	1
-kom_skriva	fr	écrire	nous écrivîmes	2				4		1	1
-kom_skriva	fr	écrire	qu'il écrive	1				1024		3	1
-kom_skriva	fr	écrire	qu'ils écrivent	2				1024		3	1
 kom_skriva	fr	écrire	que j'écrive	1				1024		1	1
 kom_skriva	fr	écrire	que nous écrivions	2				1024		1	1
 kom_skriva	fr	écrire	que tu écrives	1				1024		2	1
 kom_skriva	fr	écrire	que vous écriviez	2				1024		2	1
-kom_skriva	fr	écrire	tu écrirais	1				2048		2	1
-kom_skriva	fr	écrire	tu écriras	1				64		2	1
-kom_skriva	fr	écrire	tu écris	1				2		2	1
-kom_skriva	fr	écrire	tu écrivais	1				4096		2	1
-kom_skriva	fr	écrire	tu écrivis	1				4		2	1
-kom_skriva	fr	écrire	vous écrirez	2				64		2	1
-kom_skriva	fr	écrire	vous écririez	2				2048		2	1
-kom_skriva	fr	écrire	vous écrivez	2				2		2	1
-kom_skriva	fr	écrire	vous écriviez	2				4096		2	1
-kom_skriva	fr	écrire	vous écrivîtes	2				4		2	1
+kom_skriva	fr	écrire	écrira	1				64		3	1
+kom_skriva	fr	écrire	écrirai	1				64		1	1
+kom_skriva	fr	écrire	écriraient	2				2048		3	1
+kom_skriva	fr	écrire	écrirais	1				2048		1	1
+kom_skriva	fr	écrire	écrirais	1				2048		2	1
+kom_skriva	fr	écrire	écrirait	1				2048		3	1
+kom_skriva	fr	écrire	écriras	1				64		2	1
 kom_skriva	fr	écrire	écrire					1			1
+kom_skriva	fr	écrire	écrirez	2				64		2	1
+kom_skriva	fr	écrire	écririez	2				2048		2	1
+kom_skriva	fr	écrire	écririons	2				2048		1	1
+kom_skriva	fr	écrire	écrirons	2				64		1	1
+kom_skriva	fr	écrire	écriront	2				64		3	1
+kom_skriva	fr	écrire	écris	1				2		1	1
+kom_skriva	fr	écrire	écris	1				2		2	1
 kom_skriva	fr	écrire	écris	1				16		2	1
+kom_skriva	fr	écrire	écrit	1				2		3	1
 kom_skriva	fr	écrire	écrit	1			1	8			1
 kom_skriva	fr	écrire	écrite	1			2	8			1
 kom_skriva	fr	écrire	écrites	2			2	8			1
 kom_skriva	fr	écrire	écrits	2			1	8			1
+kom_skriva	fr	écrire	écrivaient	2				4096		3	1
+kom_skriva	fr	écrire	écrivais	1				4096		1	1
+kom_skriva	fr	écrire	écrivais	1				4096		2	1
+kom_skriva	fr	écrire	écrivait	1				4096		3	1
 kom_skriva	fr	écrire	écrivant					128			1
+kom_skriva	fr	écrire	écrive	1				1024		3	1
+kom_skriva	fr	écrire	écrivent	2				2		3	1
+kom_skriva	fr	écrire	écrivent	2				1024		3	1
+kom_skriva	fr	écrire	écrivez	2				2		2	1
 kom_skriva	fr	écrire	écrivez	2				16		2	1
+kom_skriva	fr	écrire	écriviez	2				4096		2	1
+kom_skriva	fr	écrire	écrivions	2				4096		1	1
+kom_skriva	fr	écrire	écrivirent	2				4		3	1
+kom_skriva	fr	écrire	écrivis	1				4		1	1
+kom_skriva	fr	écrire	écrivis	1				4		2	1
+kom_skriva	fr	écrire	écrivit	1				4		3	1
+kom_skriva	fr	écrire	écrivons	2				2		1	1
 kom_skriva	fr	écrire	écrivons	2				16		1	1
+kom_skriva	fr	écrire	écrivîmes	2				4		1	1
+kom_skriva	fr	écrire	écrivîtes	2				4		2	1
 kom_skriva	it	scrivere	scrisse	1				4		3	1
 kom_skriva	it	scrivere	scrissero	2				4		3	1
 kom_skriva	it	scrivere	scrissi	1				4		1	1
@@ -39364,47 +39364,47 @@ per_lyssna	es	escuchar	escucháramos	2				5120		1	1
 per_lyssna	es	escuchar	escuché	1				4		1	1
 per_lyssna	es	escuchar	escuchéis	2				1024		2	1
 per_lyssna	es	escuchar	escuchó	1				4		3	1
-per_lyssna	fr	écouter	il écouta	1				4		3	1
-per_lyssna	fr	écouter	il écoutait	1				4096		3	1
-per_lyssna	fr	écouter	il écoute	1				2		3	1
-per_lyssna	fr	écouter	il écoutera	1				64		3	1
-per_lyssna	fr	écouter	il écouterait	1				2048		3	1
-per_lyssna	fr	écouter	ils écoutaient	2				4096		3	1
-per_lyssna	fr	écouter	ils écoutent	2				2		3	1
-per_lyssna	fr	écouter	ils écouteraient	2				2048		3	1
-per_lyssna	fr	écouter	ils écouteront	2				64		3	1
-per_lyssna	fr	écouter	ils écoutèrent	2				4		3	1
-per_lyssna	fr	écouter	j'écoutai	1				4		1	1
-per_lyssna	fr	écouter	j'écoutais	1				4096		1	1
-per_lyssna	fr	écouter	j'écoute	1				2		1	1
-per_lyssna	fr	écouter	j'écouterai	1				64		1	1
-per_lyssna	fr	écouter	j'écouterais	1				2048		1	1
-per_lyssna	fr	écouter	nous écouterions	2				2048		1	1
-per_lyssna	fr	écouter	nous écouterons	2				64		1	1
-per_lyssna	fr	écouter	nous écoutions	2				4096		1	1
-per_lyssna	fr	écouter	nous écoutons	2				2		1	1
-per_lyssna	fr	écouter	nous écoutâmes	2				4		1	1
-per_lyssna	fr	écouter	qu'il écoute	1				1024		3	1
-per_lyssna	fr	écouter	qu'ils écoutent	2				1024		3	1
 per_lyssna	fr	écouter	que j'écoute	1				1024		1	1
 per_lyssna	fr	écouter	que nous écoutions	2				1024		1	1
 per_lyssna	fr	écouter	que tu écoutes	1				1024		2	1
 per_lyssna	fr	écouter	que vous écoutiez	2				1024		2	1
-per_lyssna	fr	écouter	tu écoutais	1				4096		2	1
-per_lyssna	fr	écouter	tu écoutas	1				4		2	1
-per_lyssna	fr	écouter	tu écouterais	1				2048		2	1
-per_lyssna	fr	écouter	tu écouteras	1				64		2	1
-per_lyssna	fr	écouter	tu écoutes	1				2		2	1
-per_lyssna	fr	écouter	vous écouterez	2				64		2	1
-per_lyssna	fr	écouter	vous écouteriez	2				2048		2	1
-per_lyssna	fr	écouter	vous écoutez	2				2		2	1
-per_lyssna	fr	écouter	vous écoutiez	2				4096		2	1
-per_lyssna	fr	écouter	vous écoutâtes	2				4		2	1
+per_lyssna	fr	écouter	écouta	1				4		3	1
+per_lyssna	fr	écouter	écoutai	1				4		1	1
+per_lyssna	fr	écouter	écoutaient	2				4096		3	1
+per_lyssna	fr	écouter	écoutais	1				4096		1	1
+per_lyssna	fr	écouter	écoutais	1				4096		2	1
+per_lyssna	fr	écouter	écoutait	1				4096		3	1
 per_lyssna	fr	écouter	écoutant					128			1
+per_lyssna	fr	écouter	écoutas	1				4		2	1
+per_lyssna	fr	écouter	écoute	1				2		1	1
+per_lyssna	fr	écouter	écoute	1				2		3	1
 per_lyssna	fr	écouter	écoute	1				16		2	1
+per_lyssna	fr	écouter	écoute	1				1024		3	1
+per_lyssna	fr	écouter	écoutent	2				2		3	1
+per_lyssna	fr	écouter	écoutent	2				1024		3	1
 per_lyssna	fr	écouter	écouter					1			1
+per_lyssna	fr	écouter	écoutera	1				64		3	1
+per_lyssna	fr	écouter	écouterai	1				64		1	1
+per_lyssna	fr	écouter	écouteraient	2				2048		3	1
+per_lyssna	fr	écouter	écouterais	1				2048		1	1
+per_lyssna	fr	écouter	écouterais	1				2048		2	1
+per_lyssna	fr	écouter	écouterait	1				2048		3	1
+per_lyssna	fr	écouter	écouteras	1				64		2	1
+per_lyssna	fr	écouter	écouterez	2				64		2	1
+per_lyssna	fr	écouter	écouteriez	2				2048		2	1
+per_lyssna	fr	écouter	écouterions	2				2048		1	1
+per_lyssna	fr	écouter	écouterons	2				64		1	1
+per_lyssna	fr	écouter	écouteront	2				64		3	1
+per_lyssna	fr	écouter	écoutes	1				2		2	1
+per_lyssna	fr	écouter	écoutez	2				2		2	1
 per_lyssna	fr	écouter	écoutez	2				16		2	1
+per_lyssna	fr	écouter	écoutiez	2				4096		2	1
+per_lyssna	fr	écouter	écoutions	2				4096		1	1
+per_lyssna	fr	écouter	écoutons	2				2		1	1
 per_lyssna	fr	écouter	écoutons	2				16		1	1
+per_lyssna	fr	écouter	écoutâmes	2				4		1	1
+per_lyssna	fr	écouter	écoutâtes	2				4		2	1
+per_lyssna	fr	écouter	écoutèrent	2				4		3	1
 per_lyssna	fr	écouter	écouté	1			1	8			1
 per_lyssna	fr	écouter	écoutée	1			2	8			1
 per_lyssna	fr	écouter	écoutées	2			2	8			1
@@ -41680,7 +41680,7 @@ pronomen_2pl	es	ustedes	los			2
 pronomen_2pl	es	ustedes	ustedes			1					
 pronomen_2pl	es	ustedes	ustedes			8					
 pronomen_2pl	es	vosotros	os			6					
-pronomen_2pl	es	vosotros	vosotros/vosotras			9					
+pronomen_2pl	es	vosotros	vosotros			9					
 pronomen_2pl	fr	vous	vous			15					
 pronomen_2pl	it	voi	vi			6					
 pronomen_2pl	it	voi	voi			9					
@@ -42192,47 +42192,47 @@ rör_byta	es	intercambiar	intercambiáramos	2				5120		1	1
 rör_byta	es	intercambiar	intercambié	1				4		1	1
 rör_byta	es	intercambiar	intercambiéis	2				1024		2	1
 rör_byta	es	intercambiar	intercambió	1				4		3	1
-rör_byta	fr	échanger	il échange	1				2		3	1
-rör_byta	fr	échanger	il échangea	1				4		3	1
-rör_byta	fr	échanger	il échangeait	1				4096		3	1
-rör_byta	fr	échanger	il échangera	1				64		3	1
-rör_byta	fr	échanger	il échangerait	1				2048		3	1
-rör_byta	fr	échanger	ils échangeaient	2				4096		3	1
-rör_byta	fr	échanger	ils échangent	2				2		3	1
-rör_byta	fr	échanger	ils échangeraient	2				2048		3	1
-rör_byta	fr	échanger	ils échangeront	2				64		3	1
-rör_byta	fr	échanger	ils échangèrent	2				4		3	1
-rör_byta	fr	échanger	j'échange	1				2		1	1
-rör_byta	fr	échanger	j'échangeai	1				4		1	1
-rör_byta	fr	échanger	j'échangeais	1				4096		1	1
-rör_byta	fr	échanger	j'échangerai	1				64		1	1
-rör_byta	fr	échanger	j'échangerais	1				2048		1	1
-rör_byta	fr	échanger	nous échangeons	2				2		1	1
-rör_byta	fr	échanger	nous échangerions	2				2048		1	1
-rör_byta	fr	échanger	nous échangerons	2				64		1	1
-rör_byta	fr	échanger	nous échangeâmes	2				4		1	1
-rör_byta	fr	échanger	nous échangions	2				4096		1	1
-rör_byta	fr	échanger	qu'il échange	1				1024		3	1
-rör_byta	fr	échanger	qu'ils échangent	2				1024		3	1
 rör_byta	fr	échanger	que j'échange	1				1024		1	1
 rör_byta	fr	échanger	que nous échangions	2				1024		1	1
 rör_byta	fr	échanger	que tu échanges	1				1024		2	1
 rör_byta	fr	échanger	que vous échangiez	2				1024		2	1
-rör_byta	fr	échanger	tu échangeais	1				4096		2	1
-rör_byta	fr	échanger	tu échangeas	1				4		2	1
-rör_byta	fr	échanger	tu échangerais	1				2048		2	1
-rör_byta	fr	échanger	tu échangeras	1				64		2	1
-rör_byta	fr	échanger	tu échanges	1				2		2	1
-rör_byta	fr	échanger	vous échangerez	2				64		2	1
-rör_byta	fr	échanger	vous échangeriez	2				2048		2	1
-rör_byta	fr	échanger	vous échangez	2				2		2	1
-rör_byta	fr	échanger	vous échangeâtes	2				4		2	1
-rör_byta	fr	échanger	vous échangiez	2				4096		2	1
+rör_byta	fr	échanger	échange	1				2		1	1
+rör_byta	fr	échanger	échange	1				2		3	1
 rör_byta	fr	échanger	échange	1				16		2	1
+rör_byta	fr	échanger	échange	1				1024		3	1
+rör_byta	fr	échanger	échangea	1				4		3	1
+rör_byta	fr	échanger	échangeai	1				4		1	1
+rör_byta	fr	échanger	échangeaient	2				4096		3	1
+rör_byta	fr	échanger	échangeais	1				4096		1	1
+rör_byta	fr	échanger	échangeais	1				4096		2	1
+rör_byta	fr	échanger	échangeait	1				4096		3	1
 rör_byta	fr	échanger	échangeant					128			1
+rör_byta	fr	échanger	échangeas	1				4		2	1
+rör_byta	fr	échanger	échangent	2				2		3	1
+rör_byta	fr	échanger	échangent	2				1024		3	1
+rör_byta	fr	échanger	échangeons	2				2		1	1
 rör_byta	fr	échanger	échangeons	2				16		1	1
 rör_byta	fr	échanger	échanger					1			1
+rör_byta	fr	échanger	échangera	1				64		3	1
+rör_byta	fr	échanger	échangerai	1				64		1	1
+rör_byta	fr	échanger	échangeraient	2				2048		3	1
+rör_byta	fr	échanger	échangerais	1				2048		1	1
+rör_byta	fr	échanger	échangerais	1				2048		2	1
+rör_byta	fr	échanger	échangerait	1				2048		3	1
+rör_byta	fr	échanger	échangeras	1				64		2	1
+rör_byta	fr	échanger	échangerez	2				64		2	1
+rör_byta	fr	échanger	échangeriez	2				2048		2	1
+rör_byta	fr	échanger	échangerions	2				2048		1	1
+rör_byta	fr	échanger	échangerons	2				64		1	1
+rör_byta	fr	échanger	échangeront	2				64		3	1
+rör_byta	fr	échanger	échanges	1				2		2	1
+rör_byta	fr	échanger	échangez	2				2		2	1
 rör_byta	fr	échanger	échangez	2				16		2	1
+rör_byta	fr	échanger	échangeâmes	2				4		1	1
+rör_byta	fr	échanger	échangeâtes	2				4		2	1
+rör_byta	fr	échanger	échangiez	2				4096		2	1
+rör_byta	fr	échanger	échangions	2				4096		1	1
+rör_byta	fr	échanger	échangèrent	2				4		3	1
 rör_byta	fr	échanger	échangé	1			1	8			1
 rör_byta	fr	échanger	échangée	1			2	8			1
 rör_byta	fr	échanger	échangées	2			2	8			1
@@ -44371,47 +44371,47 @@ rör_resa	es	viajar	viajáramos	2				5120		1	1
 rör_resa	es	viajar	viajé	1				4		1	1
 rör_resa	es	viajar	viajéis	2				1024		2	1
 rör_resa	es	viajar	viajó	1				4		3	1
-rör_resa	fr	voyager	il voyage	1				2		3	1
-rör_resa	fr	voyager	il voyagea	1				4		3	1
-rör_resa	fr	voyager	il voyageait	1				4096		3	1
-rör_resa	fr	voyager	il voyagera	1				64		3	1
-rör_resa	fr	voyager	il voyagerait	1				2048		3	1
-rör_resa	fr	voyager	ils voyageaient	2				4096		3	1
-rör_resa	fr	voyager	ils voyagent	2				2		3	1
-rör_resa	fr	voyager	ils voyageraient	2				2048		3	1
-rör_resa	fr	voyager	ils voyageront	2				64		3	1
-rör_resa	fr	voyager	ils voyagèrent	2				4		3	1
-rör_resa	fr	voyager	je voyage	1				2		1	1
-rör_resa	fr	voyager	je voyageai	1				4		1	1
-rör_resa	fr	voyager	je voyageais	1				4096		1	1
-rör_resa	fr	voyager	je voyagerai	1				64		1	1
-rör_resa	fr	voyager	je voyagerais	1				2048		1	1
-rör_resa	fr	voyager	nous voyageons	2				2		1	1
-rör_resa	fr	voyager	nous voyagerions	2				2048		1	1
-rör_resa	fr	voyager	nous voyagerons	2				64		1	1
-rör_resa	fr	voyager	nous voyageâmes	2				4		1	1
-rör_resa	fr	voyager	nous voyagions	2				4096		1	1
-rör_resa	fr	voyager	qu'il voyage	1				1024		3	1
-rör_resa	fr	voyager	qu'ils voyagent	2				1024		3	1
 rör_resa	fr	voyager	que je voyage	1				1024		1	1
 rör_resa	fr	voyager	que nous voyagions	2				1024		1	1
 rör_resa	fr	voyager	que tu voyages	1				1024		2	1
 rör_resa	fr	voyager	que vous voyagiez	2				1024		2	1
-rör_resa	fr	voyager	tu voyageais	1				4096		2	1
-rör_resa	fr	voyager	tu voyageas	1				4		2	1
-rör_resa	fr	voyager	tu voyagerais	1				2048		2	1
-rör_resa	fr	voyager	tu voyageras	1				64		2	1
-rör_resa	fr	voyager	tu voyages	1				2		2	1
-rör_resa	fr	voyager	vous voyagerez	2				64		2	1
-rör_resa	fr	voyager	vous voyageriez	2				2048		2	1
-rör_resa	fr	voyager	vous voyagez	2				2		2	1
-rör_resa	fr	voyager	vous voyageâtes	2				4		2	1
-rör_resa	fr	voyager	vous voyagiez	2				4096		2	1
+rör_resa	fr	voyager	voyage	1				2		1	1
+rör_resa	fr	voyager	voyage	1				2		3	1
 rör_resa	fr	voyager	voyage	1				16		2	1
+rör_resa	fr	voyager	voyage	1				1024		3	1
+rör_resa	fr	voyager	voyagea	1				4		3	1
+rör_resa	fr	voyager	voyageai	1				4		1	1
+rör_resa	fr	voyager	voyageaient	2				4096		3	1
+rör_resa	fr	voyager	voyageais	1				4096		1	1
+rör_resa	fr	voyager	voyageais	1				4096		2	1
+rör_resa	fr	voyager	voyageait	1				4096		3	1
 rör_resa	fr	voyager	voyageant					128			1
+rör_resa	fr	voyager	voyageas	1				4		2	1
+rör_resa	fr	voyager	voyagent	2				2		3	1
+rör_resa	fr	voyager	voyagent	2				1024		3	1
+rör_resa	fr	voyager	voyageons	2				2		1	1
 rör_resa	fr	voyager	voyageons	2				16		1	1
 rör_resa	fr	voyager	voyager					1			1
+rör_resa	fr	voyager	voyagera	1				64		3	1
+rör_resa	fr	voyager	voyagerai	1				64		1	1
+rör_resa	fr	voyager	voyageraient	2				2048		3	1
+rör_resa	fr	voyager	voyagerais	1				2048		1	1
+rör_resa	fr	voyager	voyagerais	1				2048		2	1
+rör_resa	fr	voyager	voyagerait	1				2048		3	1
+rör_resa	fr	voyager	voyageras	1				64		2	1
+rör_resa	fr	voyager	voyagerez	2				64		2	1
+rör_resa	fr	voyager	voyageriez	2				2048		2	1
+rör_resa	fr	voyager	voyagerions	2				2048		1	1
+rör_resa	fr	voyager	voyagerons	2				64		1	1
+rör_resa	fr	voyager	voyageront	2				64		3	1
+rör_resa	fr	voyager	voyages	1				2		2	1
+rör_resa	fr	voyager	voyagez	2				2		2	1
 rör_resa	fr	voyager	voyagez	2				16		2	1
+rör_resa	fr	voyager	voyageâmes	2				4		1	1
+rör_resa	fr	voyager	voyageâtes	2				4		2	1
+rör_resa	fr	voyager	voyagiez	2				4096		2	1
+rör_resa	fr	voyager	voyagions	2				4096		1	1
+rör_resa	fr	voyager	voyagèrent	2				4		3	1
 rör_resa	fr	voyager	voyagé	1			1	8			1
 rör_resa	fr	voyager	voyagée	1			2	8			1
 rör_resa	fr	voyager	voyagées	2			2	8			1

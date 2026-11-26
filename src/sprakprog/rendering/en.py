@@ -17,7 +17,7 @@ from dataclasses import replace
 
 from .spec import (
     Aspekt, Bestämdhet, Bisats, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel,
-    Satsmodus, Tidsreferens, slutar, tilltal,
+    FRÅGESLOTTAR, Satsmodus, Tidsreferens, slutar, tilltal,
 )
 from .uppslag import Uppslag
 
@@ -42,7 +42,9 @@ class EngelskRenderare:
             return [self.u.form(huvud, "nom" if roll == "subjekt" else "obl")]
 
         ord: list[str] = []
-        if nf.ägare is not None:
+        if nf.frågedeterminant is not None:
+            ord.append(self.u.form_för(nf.frågedeterminant, "inv"))
+        elif nf.ägare is not None:
             # "the girl's book" — ägaren står först och tar artikelplatsen.
             ord.extend(self.nominalfras(nf.ägare, genitiv=True))
         elif nf.possessiv is not None:
@@ -232,7 +234,17 @@ class EngelskRenderare:
         subjekt = ([] if m.modus is Satsmodus.IMPERATIV
                    else self.nominalfras(m.subjekt, "subjekt"))
         verb = self.verbdelar(m)
-        if m.fråga:
+        # Subjektsfrågan tar frågeordets plats i subjektet och inverterar
+        # inte: "Who reads the book?", aldrig "Who does read the book?".
+        # Det är samma ordföljd som ett påstående — do-omskrivningen finns
+        # bara för att något ska kunna flytta förbi subjektet, och här
+        # flyttar ingenting.
+        frågeord = self.frågeord(m)
+        if frågeord is not None and m.fråga_om == "subjekt":
+            subjekt = [frågeord]
+            frågeord = None
+
+        if m.fråga or frågeord is not None:
             # Engelskan kräver do-omskrivning i frågor precis som i
             # negationer, och av samma skäl: bara hjälpverb får inverteras.
             # "Does the girl read?" men "Is she happy?"
@@ -243,6 +255,8 @@ class EngelskRenderare:
                     else "inf_imp")
                 verb = [hjälp, self.u.form_för(m.verb, "inf_imp")]
             ord = [verb[0], *subjekt, *verb[1:]]
+            if frågeord is not None:
+                ord.insert(0, frågeord)
         else:
             ord = [*subjekt, *verb]
         if m.komplement is not None:
@@ -261,8 +275,8 @@ class EngelskRenderare:
                 ord.append(self.u.form_för(m.komplement, "inf_imp"))
         if m.predikativ is not None:
             ord += self.predikativ(m)
-        for nf in (m.io, m.objekt):
-            if nf is not None:
+        for slot, nf in (("io", m.io), ("objekt", m.objekt)):
+            if nf is not None and slot != m.fråga_om:
                 ord += self.nominalfras(nf)
         for adverbial in m.adverbial:
             if isinstance(adverbial, str):
@@ -275,6 +289,23 @@ class EngelskRenderare:
         if m.bisats is not None:
             ord += self.bisats(m.bisats)
         return ord
+
+    def frågeord(self, m: Mening) -> str | None:
+        """who/whom/what. Engelskan har kasus kvar bara på who."""
+        if m.fråga_om is None:
+            return None
+        if m.fråga_om not in FRÅGESLOTTAR:
+            return self.u.form_för(m.fråga_om, "inv")
+        efterfrågat = {"subjekt": m.subjekt, "objekt": m.objekt, "io": m.io}[m.fråga_om]
+        if efterfrågat is None:
+            raise RenderingsFel(
+                f"en: fråga_om={m.fråga_om!r} men den slotten är tom")
+        if efterfrågat.frågedeterminant is not None:
+            return " ".join(self.nominalfras(
+                efterfrågat, "subjekt" if m.fråga_om == "subjekt" else "objekt"))
+        return self.u.form_för(
+            self.u.frågepronomen(efterfrågat.koncept),
+            "nom" if m.fråga_om == "subjekt" else "obl")
 
     def bisats(self, b: Bisats) -> list[str]:
         return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(b.sats)]
