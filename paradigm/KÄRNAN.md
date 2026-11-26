@@ -61,17 +61,31 @@ Ett kort är **en sak användaren ska kunna producera**. Två test avgör:
   heller inte planeras, och då bryter det mot axiomet.
 - **Produktionstestet** — är facit en form en människa faktiskt skriver?
 
-| Typ | Franskan | Isolering | Produktion | Beslut |
-|---|---|---|---|---|
-| `ord` | 227 | ja | ja | oförändrat |
-| `egenskap: genus` | 162 | ja | ja | står kvar |
-| `egenskap: hjälpverb` | 55 | ja | ja | står kvar |
-| `egenskap: böjningsklass` | 210 | ja | **nej** | **stryks** |
-| `stam` | 105 | ja | nej | härledningen byts, modellen står |
-| `form` | 30 | ja | ja | oförändrat |
-| `system` | 16 | ja | ja | oförändrat |
-| `ordföljd` | 3 | nej | — | blir nivå **och** kort |
-| `rektion` | 2 | ja | ja | oförändrat |
+**Korttyperna, efter omgång 3.** Varje typ är ett läromoment som går att
+klara eller missa oberoende av de andra — det är hela kriteriet.
+
+| Typ | Läromomentet | Ersätter |
+|---|---|---|
+| `ord` | ordet finns och betyder detta | `ord` |
+| `ändelse` | mönstret för den här cellen | `system`, utvidgad |
+| `oregelbunden` | **just detta ord** bryter mönstret här | `stam` + `form` |
+| `egenskap: genus` | substantivets genus | oförändrat |
+| `egenskap: hjälpverb` | avoir eller être | oförändrat |
+| `rektion` | vilket kasus verbet styr | oförändrat |
+| `regel` | renderarens beslut — blir nivå **och** kort | `ordföljd`, utvidgad |
+
+**Borta:** `stam` och `form` som egna typer, och `egenskap: böjningsklass`.
+
+`stam` föll på produktionstestet — «vad är stammen för *arbeta*?» är ingen
+fråga en människa besvarar — och på att den är **härledbar ur lemmat för 121 av
+franskans 174 verb**. `form` och `stam` visade sig dessutom vara samma
+läromoment: `aur-` och `vais` är båda «detta ord bryter mönstret här», och
+skillnaden är bara om en regelbunden ändelse råkar fästa efteråt.
+
+**Regelbundenhet spåras inte — bara undantagen.** Av franskans 1 946
+(ord × tempus)-par följer 1 527 regeln «stryk `-er/-ir/-re/-oir`» och 419
+bryter mot den. De 78 % som följer behöver inget kort; basen faller ur
+ordkortet. Så lär sig också en människa: mönstret först, sedan undantagen.
 
 ### 541 kort som ingen kan möta
 
@@ -672,35 +686,73 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-*Omgång 1–6 avklarade. Femton punkter strukna. Kvar är en.*
+*Omgång 1–6 avklarade. En ny punkt föddes när Julius upptäckte att punkt 2
+aldrig uppdaterats efter omgång 3.*
 
 ---
 
-### 1 · Korttypernas mix skiljer sig mellan språken
+### 1 · Vad är enheten för ett `oregelbunden`-kort?
 
-**Idag.** Korttyperna är desamma i alla språk, men fördelningen är det inte:
+*Ny 2026-09-10. Upptäckt när talen skulle räknas om för alla språk.*
 
-    typ         sv    en    de    fr    ja
-    egenskap     0   140   382   427     0
-    form         0     3    11    30   145
-    ord          0   203   199   227   200
-    stam         0   206    86   105    55
-    system       0     5    10    16     4
-    ordföljd     0     3     6     3     4
-    rektion      0     0     6     2     0
+Omgång 3 avgjorde att `stam` och `form` slås ihop till `oregelbunden` —
+«just detta ord bryter mönstret här». **Men «här» är inte definierat**, och
+talet svänger med hur gränsen dras. Mätt på franskan, samma data, tre
+tolkningar:
 
-**Luckan.** Specens korttabell visar franskan. Den säger aldrig att japanskan
-har **noll** egenskapskort och **flest** formkort, eller att svenskan inte har
-några kort alls därför att ingen kurs har svenska som målspråk.
+    per FORM              4 460 kort   varje oregelbunden form för sig
+    per (ord × grupp)     1 037 kort   grupp = tempus och species
+    per (ord × tempus)      419 kort   grupp = bara tempus
 
-Det är inget fel — japanskan har inget genus — men en läsare som bygger mot
-tabellen antar att alla typer finns överallt.
+**En faktor tio mellan ytterligheterna.** Och skillnaden är ett verkligt
+läromoment, inte en teknikalitet:
+
+- `avoir` har futurumbasen `aur-`, och den bär sex celler. Är det **ett**
+  läromoment eller **sex**?
+- `aller` har `vais`, `vas`, `va`, `vont` men `all-` i imperfekt. De fyra är
+  suppletiva var för sig och delar ingen bas.
+
+Den första talar för gruppnivå, den andra för formnivå. **Båda finns i samma
+språk**, vilket är skälet att frågan inte har ett självklart svar.
+
+**Alternativ.**
+
+- **a) Per form.** Varje oregelbunden form är sitt eget kort. Renast mot
+  produktionstestet — facit är alltid något man skriver — men 4 460 kort i
+  franskan och varje cell måste införas.
+- **b) Per grupp, där en gemensam bas finns.** `aur-` blir ett kort som bär sex
+  celler; `vais` blir ett eget eftersom ingen bas delas. Följer språket, men
+  gruppgränsen måste definieras per dimension och det är där de tre talen ovan
+  kommer ifrån.
+- **c) Per grupp, med gruppen given av paradigmets egen struktur** — alltså
+  det renderaren slår upp som en enhet. Skjuter frågan till renderaren, som
+  redan vet, men kräver att den redovisar det (samma arbete som de 111
+  besluten).
+
+---
+
+### 2 · Korttypernas mix skiljer sig mellan språken
+
+**Idag.** Räknat i den nya modellen, per (lexem × tempusgrupp):
+
+    språk    ord    ändelse    oregelbunden
+    en       734         63             144
+    de       734        577             956
+    fr       732        298           1 037
+    ja       724         23           1 554
+
+**Luckan.** Specen visar franskan och säger aldrig att japanskan har **23
+ändelser mot franskans 298** och nästan allt i `oregelbunden` — vilket är rätt
+för ett agglutinerande språk, men överraskande för en läsare. Svenskan har
+inga kort alls, eftersom ingen kurs har svenska som målspråk.
+
+*Talen ovan hänger på punkt 1 och ändras när den avgörs.*
 
 **Alternativ.**
 
 - **a)** Tabellen får en kolumn per språk.
-- **b)** Specen säger att korttyperna är en möjlig mängd som varje språk fyller
-  efter behov, och visar mixen som en mätning i stället för som en norm.
+- **b)** Korttyperna är en möjlig mängd som varje språk fyller efter behov, och
+  mixen visas som en mätning i stället för som en norm.
 
 ---
 
