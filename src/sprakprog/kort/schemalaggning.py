@@ -188,6 +188,37 @@ class Schemaläggare:
                 if r["typ"] in ("form", "stam") and r["koncept"] in fallna_ord}
 
 
+#: Nivån öppnas när så här stor del av dess schemalagda kort har en
+#: stabilitet över UPPLÅSNINGSDAGAR. Stabilitet är det FSRS faktiskt
+#: modellerar; sju dagar betyder "överlevt minst en riktig glömskekurva";
+#: nittio procent lämnar plats för de svåraste korten att släpa efter utan
+#: att blockera.
+#:
+#: Två tal, båda första gissningar av samma sort som vikterna i poang.py —
+#: men till skillnad från dem är de lätta att ändra och lätta att förstå.
+UPPLÅSNINGSANDEL = 0.9
+UPPLÅSNINGSDAGAR = 7.0
+
+
+def upplåsningsläge(kort_db: sqlite3.Connection, språk: str) -> dict:
+    """Hur nära nästa nivå kursen står.
+
+    Räknar bara SCHEMALAGDA kort. De mätta står aldrig i kön och kan därför
+    aldrig bli mogna på kösidan — att kräva det av dem vore att kräva något
+    systemet med flit inte gör.
+    """
+    rad = kort_db.execute(
+        """SELECT COUNT(*) AS totalt,
+                  SUM(CASE WHEN stabilitet >= ? THEN 1 ELSE 0 END) AS mogna
+           FROM Kort WHERE språk = ? AND schemalagt = 1""",
+        (UPPLÅSNINGSDAGAR, språk)).fetchone()
+    totalt = rad["totalt"] or 0
+    mogna = rad["mogna"] or 0
+    andel = mogna / totalt if totalt else 0.0
+    return {"totalt": totalt, "mogna": mogna, "andel": andel,
+            "klar": andel >= UPPLÅSNINGSANDEL}
+
+
 def kö(kort_db: sqlite3.Connection, språk: str, antal: int = 20) -> list[sqlite3.Row]:
     """Dagens kort: förfallna först, sedan osedda om det finns plats."""
     s = Schemaläggare(kort_db)

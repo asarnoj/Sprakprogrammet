@@ -102,16 +102,46 @@ def _ändelserader(språk: set[str]):
                 yield rad
 
 
-def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
-    """Alla kort som ska finnas, som rader redo att sättas in."""
+def härled(språk_db: sqlite3.Connection, språk: set[str],
+           nåbart: dict[str, set[tuple]] | None = None) -> list[tuple]:
+    """Alla kort som ska finnas, som rader redo att sättas in.
+
+    `nåbart` är språk → {(koncept, variant, cell)} som går att möta på
+    kursens nivå. Utelämnad betyder hela beståndet.
+
+    Filtret måste ligga HÄR och inte efteråt, därför att varje korttyp har
+    sin egen koppling till celler: en stam täcker många, en rest exakt en,
+    ett systemkort hör till en klass och inte till ett ord. Att filtrera på
+    raderna efteråt skulle kräva den kopplingen en gång till.
+    """
     kort: list[tuple] = []
+
+    def nås(s_: str, koncept: str, variant: str | None, celler) -> bool:
+        if nåbart is None:
+            return True
+        mängd = nåbart.get(s_, set())
+        return any((koncept, variant, c) in mängd for c in celler)
+
+    # Egenskaps- och rektionskort hänger på ORDET och inte på en cell, men
+    # de ska ändå följa med det: att veta att Buch är neutrum är meningslöst
+    # innan Buch finns i kursen.
+    nådda_ord: dict[str, set] = {}
+    if nåbart is not None:
+        for s_, mängd in nåbart.items():
+            nådda_ord[s_] = {k for k, _, _ in mängd}
+
+    def ordet_finns(s_: str, koncept: str) -> bool:
+        return nåbart is None or koncept in nådda_ord.get(s_, set())
 
     # ── ordkort: att ordet finns och betyder något ────────────────────
     for r in språk_db.execute(
             """SELECT k.nyckel, k.ordklass, l.språk, l.lemma, l.variant
                FROM Lexem l JOIN Koncept k ON k.id = l.koncept_id
                WHERE EXISTS (SELECT 1 FROM Former f WHERE f.lexem_id = l.id)"""):
-        if r["språk"] in språk:
+        if r["språk"] in språk and (
+                nåbart is None
+                or any(k == r["nyckel"] and v == r["variant"]
+                       for k, v, _ in nåbart.get(r["språk"], ()))):
             _lägg_till(kort, "ord", r["språk"], r["lemma"],
                        koncept=r["nyckel"], variant=r["variant"],
                        ordklass=r["ordklass"])
@@ -123,6 +153,8 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
     for rad in _stamrader(språk):
         grupp = int(rad["stamgrupp"])
         celler = rad["celler"].split(",")
+        if not nås(rad["språk"], rad["koncept"], rad["variant"] or None, celler):
+            continue
         if grupp >= 0:
             _lägg_till(kort, "stam", rad["språk"], rad["form"],
                        koncept=rad["koncept"], variant=rad["variant"] or None,
@@ -157,6 +189,8 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
             except Exception:
                 continue
             for cell, form in celler.items():
+                if not nås(s_, r["nyckel"], r["variant"], [cell]):
+                    continue
                 _lägg_till(kort, "form", s_, form, koncept=r["nyckel"],
                            variant=r["variant"], ordklass=r["ordklass"],
                            cell=cell, räckvidd=1)
@@ -169,7 +203,13 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
         if int(rad["stamgrupp"]) == 0:
             nyckel = (rad["språk"], rad["ordklass"], rad["klass"])
             klasstorlek[nyckel] = klasstorlek.get(nyckel, 0) + 1
+    nådda_celler: dict[str, set] = {}
+    if nåbart is not None:
+        for s_, mängd in nåbart.items():
+            nådda_celler[s_] = {c for _, _, c in mängd}
     for rad in _ändelserader(språk):
+        if nåbart is not None and rad["cell"] not in nådda_celler.get(rad["språk"], set()):
+            continue
         n = klasstorlek.get((rad["språk"], rad["ordklass"], rad["klass"]), 1)
         _lägg_till(kort, "system", rad["språk"], rad["ändelse"] or "∅",
                    ordklass=rad["ordklass"], klass=rad["klass"],
@@ -185,7 +225,7 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
                WHERE m.språk IS NOT NULL
                  AND (mk.kasus IS NOT NULL OR mk.tempus IS NOT NULL
                       OR mk.preposition_koncept_id IS NOT NULL)"""):
-        if r["språk"] not in språk:
+        if r["språk"] not in språk or not ordet_finns(r["språk"], r["nyckel"]):
             continue
         for egenskap, värde in (("kasus", r["kasus"]), ("modus", r["tempus"]),
                                 ("preposition", r["prep"])):
@@ -201,7 +241,7 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
                     FROM Lexem l JOIN Koncept k ON k.id = l.koncept_id
                     WHERE k.ordklass = ? AND l.{egenskap} IS NOT NULL""",
                 (ordklass,)):
-            if r["språk"] in språk:
+            if r["språk"] in språk and ordet_finns(r["språk"], r["nyckel"]):
                 _lägg_till(kort, "egenskap", r["språk"], str(r["värde"]),
                            koncept=r["nyckel"], variant=r["variant"],
                            ordklass=ordklass, egenskap=egenskap)
@@ -216,7 +256,7 @@ def härled(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
         if len(klasser[(rad["språk"], rad["ordklass"])]) < 2:
             continue
         id_ = (rad["språk"], rad["koncept"], rad["variant"])
-        if id_ in sedda:
+        if id_ in sedda or not ordet_finns(rad["språk"], rad["koncept"]):
             continue
         sedda.add(id_)
         _lägg_till(kort, "egenskap", rad["språk"], rad["klass"],
@@ -280,15 +320,77 @@ def _cellkort(språk: set[str]) -> list[tuple]:
     return ut
 
 
+def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
+           kandidater: int = 4000) -> set[tuple]:
+    """(koncept, variant, cell) som GÅR att möta på den här nivån.
+
+    Mätt och inte härledd: samplaren bygger meningar på nivån, renderaren
+    renderar dem, och instrumenteringen säger vilka former som slogs upp.
+    Den bakvägen — från cell till de specparametrar som ger den — finns inte
+    och behöver inte finnas.
+
+    Skälet att alls mäta: en tysk nybörjare har 2 119 kort på A1, men på
+    nivå 4 går bara 643 av dem att möta. De övriga 1 476 skulle ligga i kön,
+    väljas som mål, och aldrig kunna nås av någon mening.
+    """
+    import random
+
+    from ..generator.urval import Ordförråd, Samplare
+    from ..rendering import RenderingsFel, Uppslag, Validator
+    from ..rendering import (
+        EngelskRenderare, FranskRenderare, ItalienskRenderare,
+        JapanskRenderare, SpanskRenderare, SvenskRenderare, TyskRenderare,
+    )
+    renderare = {"sv": SvenskRenderare, "en": EngelskRenderare,
+                 "de": TyskRenderare, "fr": FranskRenderare,
+                 "es": SpanskRenderare, "it": ItalienskRenderare,
+                 "ja": JapanskRenderare}[språk](språk_db)
+    validator = Validator(språk_db)
+    samplare = Samplare(Ordförråd(språk_db, språk, cefr), nivå, random.Random(0))
+
+    rörda: list = []
+    original = Uppslag.form
+
+    def logga(själv, lexem, cell):
+        rörda.append((lexem["nyckel"], lexem["variant"], cell))
+        return original(själv, lexem, cell)
+
+    Uppslag.form = logga
+    sedda: set[tuple] = set()
+    try:
+        for _ in range(kandidater):
+            m = samplare.kandidat()
+            if m is None or validator.validera(m):
+                continue
+            rörda.clear()
+            try:
+                renderare.rendera(m)
+            except (RenderingsFel, KeyError, ValueError):
+                continue
+            sedda.update(rörda)
+    finally:
+        Uppslag.form = original
+    return sedda
+
+
 def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
-            språk: set[str]) -> dict[str, int]:
+            språk: set[str], *, nivå: int | None = None,
+            cefr: str = "C2") -> dict[str, int]:
     """Sätt in de kort som saknas. Rör aldrig ett kort som redan finns.
 
     Additivt av ett skäl: ett befintligt kort bär repetitionshistorik, och
     att skriva över det för att beståndet räknats om vore att kasta det enda
-    som inte går att återskapa.
+    som inte går att återskapa. Därför går funktionen att köra om vid varje
+    upplåsning — det är så en nivå ÖPPNAS: nya kort skapas.
+
+    Med `nivå` satt skapas bara kort som går att möta på den nivån. Ett kort
+    som inte går att nå hör inte hemma i kön; principen är densamma som för
+    former specen inte når, bara med en gräns som flyttar sig.
     """
-    rader = härled(språk_db, språk)
+    nåbart = None
+    if nivå is not None:
+        nåbart = {s_: nåbara(språk_db, s_, nivå, cefr) for s_ in sorted(språk)}
+    rader = härled(språk_db, språk, nåbart)
     före = kort_db.execute("SELECT COUNT(*) FROM Kort").fetchone()[0]
     kort_db.executemany(
         """INSERT OR IGNORE INTO Kort
@@ -311,9 +413,15 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
     kopplingar = kort_db.execute("SELECT COUNT(*) FROM Cellkort").fetchone()[0]
 
     # Kort utan täckning i den härledda mängden — rapporteras, tas inte bort.
-    härledda = {r[0] for r in rader}
-    föräldralösa = [r["nyckel"] for r in kort_db.execute("SELECT nyckel FROM Kort")
-                    if r["nyckel"] not in härledda]
+    #
+    # Bara när HELA beståndet härletts. Med en nivåspärr är mängden SAMPLAD,
+    # och två svep når inte exakt samma kort — då är "föräldralös" bara
+    # brus. Att ändå behålla korten är rätt: de bär historik.
+    föräldralösa: list[str] = []
+    if nåbart is None:
+        härledda = {r[0] for r in rader}
+        föräldralösa = [r["nyckel"] for r in kort_db.execute("SELECT nyckel FROM Kort")
+                        if r["nyckel"] not in härledda]
     return {"härledda": len(rader), "nya": efter - före, "totalt": efter,
             "kopplingar": kopplingar, "föräldralösa": len(föräldralösa)}
 
