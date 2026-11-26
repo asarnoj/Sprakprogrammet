@@ -206,6 +206,7 @@ class Sammansättare:
         #: Frågans mål, som bevisen om osynlighet gäller.
         self._mål: Kort | None = None
         self._nytt_bevis = False
+        self._budget_skar = False
         self.statistik: Counter = Counter()
         for del_, vägar in karta["vägar"].items():
             for väg in vägar:
@@ -386,6 +387,8 @@ class Sammansättare:
         for väg in self._index[del_].get(etiketter, ()):
             i = id(väg)
             if self._min_väg[i] > budget:
+                # Vägen ryms inte i den här längden, men kan rymmas i en längre.
+                self._budget_skar = True
                 continue
             # En väg som anropar en del som redan står två gånger längs grenen
             # blir aldrig klar, så dess övriga anrop behöver inte gås igenom.
@@ -1521,19 +1524,33 @@ class Sammansättare:
         sedda: set = set()
         self._mål = mål
         nåbar = self._nåbarhet(mål)
+        gräns = 1
         while True:
-            träff = self._leta(mål, tillåten, nåbar, sedda)
-            if träff is not None or not self._nytt_bevis:
+            self._budget_skar = False
+            träff = self._leta(mål, tillåten, nåbar, sedda, gräns)
+            if träff is not None:
                 return träff
-            # Ett nytt bevis gäller från början: uppräkningen har redan gått
-            # förbi de delar det skär bort, och kommer inte tillbaka dit.
-            self.statistik["omstarter"] += 1
+            if self._nytt_bevis:
+                # Ett nytt bevis gäller från början: uppräkningen har redan gått
+                # förbi de delar det skär bort, och kommer inte tillbaka dit.
+                self.statistik["omstarter"] += 1
+                continue
+            if not self._budget_skar:
+                # Ingen väg föll på längden: det finns inget längre att bygga.
+                return None
+            gräns += 1
+            self.statistik["sökt längre"] += 1
 
-    def _leta(self, mål: Kort, tillåten: Tillåten, nåbar, sedda: set) -> Träff | None:
-        """Ett varv genom sammansättningarna. Slutar också när ett nytt bevis lärts."""
+    def _leta(self, mål: Kort, tillåten: Tillåten, nåbar, sedda: set,
+              gräns: float) -> Träff | None:
+        """Ett varv genom sammansättningarna med högst `gräns` ord.
+
+        Slutar också när ett nytt bevis lärts, så att beviset får gälla från
+        början.
+        """
         self._nytt_bevis = False
         for villkor, händelser, ord, _, _, rot in self._delen(
-                "rendera", ROT, {"m": "m"}, {}, math.inf, tillåten, (), nåbar, True):
+                "rendera", ROT, {"m": "m"}, {}, gräns, tillåten, (), nåbar, True):
             if not self._kan_innehålla(händelser, mål):
                 continue
             noder = rot.alla()
