@@ -37,38 +37,49 @@ def kör(args: argparse.Namespace) -> int:
     # utan --nivå skapar befolka() hela beståndet, och `--läge` är en fråga
     # och inte en ändring.
     if args.läge:
-        from ..kort import upplåsningsläge
-        print("\nUpplåsning — ryms nästa nivå i dagen?")
-        print(f"   {'':4}{'kort':>7}{'rep/dag':>10}{'kort/mening':>13}"
-              f"{'meningar/dag':>14}{'du valt':>9}")
+        # VYN VISAR DET SOM GRINDAR, och ingenting annat. Fram till
+        # 2026-08-26 visade den `rep/dag`, `meningar/dag` och "hela högen
+        # ryms" — tal räknade med det gamla `per_kort`, som B2 mätte som fem
+        # till trettio gånger för högt, och som efter F1 inte grindade
+        # någonting. Webbvyn hade redan slutat skicka dem; den här vyn var
+        # den sista läsaren och därmed det enda skälet att räkna dem alls.
+        #
+        # Kvar står de två tal som betyder något: går nivån att ÖVA, och hur
+        # lång tid tar den i den takt du faktiskt håller.
+        from ..kort import dagsplan, upplåsningsläge
+        print("\nBeståndet — och vad nästa nivå skulle kosta (--kostnad NIVÅ)")
+        print(f"   {'':4}{'kort':>7}{'osedda':>8}{'kort/mening':>13}")
         for s_ in sorted(språk):
-            l = upplåsningsläge(kort_db, s_, args.meningar_per_dag)
+            l = upplåsningsläge(kort_db, s_)
             if not l["totalt"]:
                 continue
+            # `kort/mening` är mätt ur historiken och saknas på en oövad
+            # kurs. "—" och inte noll: noll vore ett påstående.
             k = f"{l['kort_per_mening']:.1f}" if l["kort_per_mening"] else "—"
-            krävs = f"{l['krävs']:.1f}" if l["krävs"] is not None else "oövad"
-            rep = f"{l['rep_per_dag']:.1f}" if l["rep_per_dag"] is not None else "—"
-            märke = "  ✓ plats finns" if l["klar"] else ""
-            print(f"   {s_:4}{l['totalt']:7}{rep:>10}{k:>13}"
-                  f"{krävs:>14}{l['kapacitet']:9}{märke}")
+            print(f"   {s_:4}{l['totalt']:7}{l['osedda']:8}{k:>13}")
         if args.kostnad:
             from ..kort.schemalaggning import kostnad
             with anslut() as språk_db:
                 språk_db.row_factory = sqlite3.Row
                 for s_ in sorted(språk):
-                    k = kostnad(kort_db, språk_db, s_, args.kostnad, args.cefr,
-                                args.meningar_per_dag)
+                    k = kostnad(kort_db, språk_db, s_, args.kostnad, args.cefr)
                     if not k["före"]["totalt"]:
                         continue
-                    e = k["efter"]
                     rad = f"\n   {s_} → nivå {args.kostnad}: +{k['nya_kort']} kort"
-                    if e["krävs"] is None:
-                        print(rad + " — kursen oövad, kostnaden går inte att mäta")
+                    if k["byggbarhet"] is None:
+                        print(rad + " — byggbarheten går inte att mäta")
                         continue
-                    print(f"{rad}, {e['rep_per_dag']:.0f} rep/dag "
-                          f"= {e['krävs']:.1f} meningar/dag   "
-                          + ("✓ ryms" if k["ryms"] else
-                             f"✗ över de {e['kapacitet']} du valt"))
+                    # NIVÅNS STORLEK I DYGN, inte i kort. "Ryms N kort" har
+                    # inget svar när villkoret sitter på en takt; "hur länge
+                    # tar N kort" har det (F1).
+                    p = dagsplan(kort_db, s_)
+                    takt = p["inflödestak"]
+                    tid = (f", {-(-k['nya_kort'] // takt)} dygn i din takt"
+                           if takt else ", takten inte mätt än")
+                    print(f"{rad}{tid}   byggbarhet {k['byggbarhet']:.3f}   "
+                          + ("✓ går att öva" if k["redo"] else
+                             "✗ för få kända ord — varje mening blir en "
+                             "ordlektion"))
         return 0
 
     if args.kö:
@@ -84,19 +95,30 @@ def kör(args: argparse.Namespace) -> int:
 
 
     with anslut() as språk_db:
-        r = befolka(kort_db, språk_db, språk, nivå=args.nivå, cefr=args.cefr)
+        # Befolkningen mäter exponeringen själv — beståndet ändrades, alltså
+        # ändrades också hur ofta korten möts. `--meningar` finns kvar för att
+        # kunna mäta noggrannare än förvalet.
+        r = befolka(kort_db, språk_db, språk, nivå=args.nivå, cefr=args.cefr,
+                    mät=not args.utan_mätning)
         print(f"✓ {r['nya']} nya kort, {r['totalt']} totalt, "
               f"{r['kopplingar']} cellkopplingar")
         if r["föräldralösa"]:
             print(f"  ⚠ {r['föräldralösa']} kort saknar täckning i språkdatabasen "
                   f"— behålls, historiken kastas inte")
 
-        if args.mät:
+        if args.meningar and not args.utan_mätning:
             for s in sorted(språk):
                 n = mät_exponering(kort_db, språk_db, s, args.meningar)
-                print(f"  {s}: exponering mätt på {n} meningar")
-            print(f"✓ {sätt_schemalagt(kort_db)} kort möts för ofta för att "
+                # Skriv flaggan för det språk som just mätts, inte för alla
+                # — se `sätt_schemalagt`.
+                sätt_schemalagt(kort_db, språk=s)
+                print(f"  {s}: exponering ommätt på {n} meningar")
+        if not args.utan_mätning:
+            print(f"✓ {r['ej_schemalagda']} kort möts för ofta för att "
                   f"schemaläggas — de mäts i stället")
+            if r["omätta"]:
+                print(f"  {r['omätta']} kort har ingen mätning "
+                      f"(andra språk) — de förblir schemalagda")
 
     print()
     print(f"{'':4}{'typ':12}{'antal':>7}{'schemalagda':>13}{'räckvidd':>10}")
@@ -113,10 +135,12 @@ def lägg_till_parser(sub) -> None:
     p.add_argument("--ja", action="store_true", help="hoppa över bekräftelsen")
     p.add_argument("--språk", nargs="+", choices=SPRÅK,
                    help="bara dessa språk (förval: alla sju)")
-    p.add_argument("--mät", action="store_true",
-                   help="mät exponering och sätt schemalagt/mätt")
-    p.add_argument("--meningar", type=int, default=2000,
-                   help="antal meningar per språk vid mätning")
+    p.add_argument("--utan-mätning", action="store_true", dest="utan_mätning",
+                   help="hoppa över exponeringsmätningen (snabbare, men "
+                        "allestädes närvarande kort hamnar i kön)")
+    p.add_argument("--meningar", type=int,
+                   help="mät om exponeringen på så här många meningar per "
+                        "språk (förvalet räcker i normalfallet)")
     p.add_argument("--nivå", type=int,
                    help="skapa bara kort som går att möta på den här nivån "
                         "på komplexitetsstegen (utelämnad: alla)")
@@ -125,8 +149,10 @@ def lägg_till_parser(sub) -> None:
                    help="tak på ordförrådets CEFR-nivå")
     p.add_argument("--kö", choices=SPRÅK, help="visa dagens kö för ett språk")
     p.add_argument("--antal", type=int, default=20, help="kölängd")
-    p.add_argument("--meningar-per-dag", type=int, dest="meningar_per_dag",
-                   help="hur mycket du vill öva — annars kursens inställning")
+    # `--meningar-per-dag` TOGS BORT 2026-08-26. Den matade bara den gamla
+    # kapacitetsmatten i `upplåsningsläge`, som inte grindar något efter F1
+    # och räknade fem till trettio gånger fel. Användarens ratt är minuter
+    # och sätts på kursen (`ordbok kurs`, eller kursvyn).
     p.add_argument("--kostnad", type=int, metavar="NIVÅ",
                    help="vad en nivå skulle kosta, utan att låsa upp den")
     p.add_argument("--läge", action="store_true",

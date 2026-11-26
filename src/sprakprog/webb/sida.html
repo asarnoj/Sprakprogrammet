@@ -5,252 +5,341 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Språkprogrammet</title>
 <style>
+  /* ── SERIFEN BÄR DET SOM BETYDER NÅGOT. ───────────────────────────
+     Serif: språket man lär sig — meningen, facit, orden och formerna — OCH
+     det som bär sidan: rubriker, de stora talen, domen efter ett svar.
+
+     Sans: apparaten runtomkring. Etiketter, menyval, förklaringar,
+     tabellhuvuden, hjälptexter. Sådant man läser en gång och sedan hittar
+     på formen.
+
+     Gränsen är alltså vikt och inte språk: det man ska läsa står i serif,
+     det som bara ska gå att hitta står i sans.
+
+     Systemets egna snitt, inga webbtypsnitt: målet är en Tauri-app runt
+     systemets webbvy, och ett teckensnitt som ska buntas är verkligt arbete.
+     ────────────────────────────────────────────────────────────────── */
   :root {
-    --bg:#fbfaf8; --panel:#fff; --text:#1c1a17; --svag:#6b655c; --linje:#e4dfd6;
-    --rätt:#1f7a4d; --fel:#b03a30; --accent:#3c4f76; --varm:#a8681f;
-    --spår:#ebe6dc;
+    --bg:#fdfcfa; --text:#1a1815; --svag:#6d675e; --linje:#e2ddd4;
+    --rätt:#1c6b45; --fel:#a33529;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+            Arial, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+             "Times New Roman", serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#161513; --panel:#1e1c1a; --text:#ece7df; --svag:#989084;
-      --linje:#2f2c28; --rätt:#5fbe8b; --fel:#e08b80; --accent:#97aad6;
-      --varm:#d6a05c; --spår:#2a2724;
-    }
+    :root { --bg:#15140f; --text:#eae5da; --svag:#948d80; --linje:#302d27;
+            --rätt:#63bd8c; --fel:#e08e82; }
   }
+  /* Serif: språket, rubrikerna, talen, domen. */
+  .språk, h1, h2, h3, .tal, .dom { font-family:var(--serif); }
+  /* Palatino sätter gemena siffror som förval — de duger i löptext men inte
+     som ett tal på 2 rem bredvid ett annat. Versala och tabellbreda här. */
+  .tal, .raknare b { font-variant-numeric:lining-nums tabular-nums; }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); min-height:100vh;
-         font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-         display:flex; flex-direction:column; }
-  header { border-bottom:1px solid var(--linje); padding:.6rem 1.2rem;
-           display:flex; gap:.3rem; align-items:center; }
-  header .titel { font-weight:600; margin-right:auto; letter-spacing:.01em;
-      font-family:inherit; font-size:1rem; color:var(--text); background:none;
-      border:none; padding:.35rem .5rem; border-radius:6px; cursor:pointer; }
-  header .titel:hover { background:var(--spår); }
-  header .titel::after { content:" ▾"; color:var(--svag); font-size:.8rem; }
-  nav button { font:inherit; font-size:.88rem; color:var(--svag);
-               background:none; border:none; padding:.35rem .7rem;
-               border-radius:6px; cursor:pointer; }
-  nav button[aria-current="page"] { color:var(--text); background:var(--spår);
-                                    font-weight:600; }
-  nav button:disabled { opacity:.4; cursor:default; }
-  main { flex:1; display:flex; justify-content:center; padding:2rem 1.2rem 4rem; }
-  .kort { width:100%; max-width:42rem; }
+  /* Vinner över egna display-regler. `button.gör { display:block }` slog ut
+     webbläsarens [hidden] och visade upplåsningsknappen på en nivå som inte
+     var upplåst — attributet satt, men reglen under förlorade. */
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--text);
+         font:15px/1.55 var(--sans); display:flex; min-height:100vh; }
+  h1, h2, h3 { font-weight:600; font-family:inherit; }
+  button, input, select { font:inherit; color:inherit; }
 
-  /* ── hem ─────────────────────────────────────────────────────── */
-  .rubrik { font-size:.74rem; letter-spacing:.11em; text-transform:uppercase;
-            color:var(--svag); margin:0 0 .7rem; }
-  .nivåkort { border:1px solid var(--linje); background:var(--panel);
-              border-radius:12px; padding:1.1rem 1.3rem; margin-bottom:1.4rem; }
-  .nivårad { display:flex; align-items:baseline; gap:.6rem; margin-bottom:.7rem; }
-  .nivånr { font-size:1.5rem; font-weight:600; }
-  .spår { height:7px; background:var(--spår); border-radius:99px;
-          overflow:hidden; display:flex; }
-  .spår i { background:var(--accent); display:block; }
-  .spårtext { font-size:.83rem; color:var(--svag); margin-top:.55rem; }
-  .spårtext b { color:var(--text); font-weight:600; }
-  .klar { color:var(--rätt); font-weight:600; }
+  /* ── menyn, alltid till vänster ───────────────────────────────── */
+  nav { width:12rem; flex:none; border-right:1px solid var(--linje);
+        padding:1.4rem 0; display:flex; flex-direction:column; }
+  nav .kurs { padding:0 1.2rem 1rem; }
+  nav .kurs button { background:none; border:none; padding:0; cursor:pointer;
+        text-align:left; font-size:1rem; font-weight:600;
+        font-family:var(--serif); }
+  nav .kurs button:hover { text-decoration:underline; }
+  nav .kurs .steg { display:block; font-size:.8rem; color:var(--svag);
+        font-weight:400; }
+  nav a { display:block; padding:.3rem 1.2rem; color:var(--svag);
+          cursor:pointer; text-decoration:none; font-size:.92rem; }
+  nav a:hover { color:var(--text); }
+  nav a[aria-current="page"] { color:var(--text); font-weight:600;
+          box-shadow:inset 2px 0 0 var(--text); }
 
-  table { width:100%; border-collapse:collapse; font-size:.92rem;
-          margin-bottom:1.5rem; }
-  th, td { text-align:right; padding:.42rem .3rem; }
-  th:first-child, td:first-child { text-align:left; }
-  thead th { font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
-             color:var(--svag); font-weight:600;
-             border-bottom:1px solid var(--linje); }
-  tbody tr:last-child td { border-top:1px solid var(--linje); font-weight:600;
-                           padding-top:.55rem; }
-  td.noll { color:var(--svag); }
-  .ny { color:var(--accent); } .förf { color:var(--varm); }
-  .igen { color:var(--fel); }
+  main { flex:1; padding:1.8rem 2rem 3rem; max-width:56rem; }
 
-  button.stor { font:inherit; font-size:1.02rem; font-weight:600;
-                color:var(--bg); background:var(--accent); border:none;
-                border-radius:9px; padding:.75rem 1.5rem; cursor:pointer; }
-  button.stor.tom { background:var(--spår); color:var(--svag); }
-  button.andra { font:inherit; font-size:.9rem; color:var(--accent);
-                 background:none; border:1px solid var(--linje);
-                 border-radius:9px; padding:.7rem 1.1rem; cursor:pointer; }
-  .knappar { display:flex; gap:.7rem; align-items:center; flex-wrap:wrap; }
-  .knappar small { color:var(--svag); font-size:.83rem; }
+  /* ── hemvyns två kolumner ─────────────────────────────────────── */
+  .tva { display:grid; grid-template-columns:1fr 1fr; gap:3rem; }
+  @media (max-width:52rem) {
+    body { display:block; }
+    nav { width:auto; border-right:none; border-bottom:1px solid var(--linje);
+          flex-direction:row; flex-wrap:wrap; align-items:baseline;
+          padding:.8rem 1rem; gap:.2rem; }
+    nav .kurs { padding:0 .8rem 0 0; }
+    main { padding:1.4rem 1rem 2.5rem; }
+    .tva { grid-template-columns:1fr; gap:2rem; }
+  }
+  h2.kol { font-size:.95rem; margin:0 0 1rem; font-weight:600;
+           color:var(--text);
+           padding-bottom:.4rem; border-bottom:1px solid var(--linje); }
+  .tal { font-size:2rem; line-height:1; font-weight:600; margin:0; }
+  .tal small { font-size:.88rem; font-weight:400; color:var(--svag);
+               margin-left:.4rem; }
+  .under { color:var(--svag); margin:.4rem 0 1.2rem; font-size:.92rem; }
+  dl.delar { margin:0 0 1.2rem; font-size:.92rem; }
+  dl.delar div { display:flex; justify-content:space-between;
+                 padding:.25rem 0; border-bottom:1px solid var(--linje); }
+  dl.delar dt { color:var(--svag); }
+  dl.delar dd { margin:0; font-variant-numeric:tabular-nums; }
 
-  /* ── övning ──────────────────────────────────────────────────── */
-  .status { display:flex; gap:1.1rem; font-size:.8rem; color:var(--svag);
-            margin-bottom:1.6rem; }
-  .status b { color:var(--text); }
-  .riktning { font-size:.74rem; letter-spacing:.11em; text-transform:uppercase;
-              color:var(--svag); margin-bottom:.5rem; }
-  .uppgift { font-size:1.75rem; line-height:1.3; margin:0 0 1.5rem;
-             font-weight:500; }
-  input[type=text] { width:100%; padding:.8rem .9rem; font-size:1.2rem;
-                     font-family:inherit; color:var(--text);
-                     background:var(--panel); border:1px solid var(--linje);
-                     border-radius:8px; }
-  input[type=text]:focus { outline:2px solid var(--accent); outline-offset:1px; }
-  input[type=text]:disabled { opacity:.65; }
-  .utfall { margin-top:1.3rem; }
-  .dom { font-size:1.1rem; font-weight:600; }
+  button.gör { display:block; width:100%; text-align:left; cursor:pointer;
+      background:var(--text); color:var(--bg); border:1px solid var(--text);
+      padding:.5rem .8rem; font-size:.95rem; font-weight:600; }
+  button.gör:disabled { background:none; color:var(--svag);
+      border-color:var(--linje); cursor:default; }
+  button.andra { display:block; width:100%; text-align:left; cursor:pointer;
+      background:none; border:1px solid var(--linje); padding:.5rem .8rem;
+      margin-top:.5rem; font-size:.95rem; }
+  button.andra:hover:not(:disabled) { border-color:var(--svag); }
+  button.andra:disabled { color:var(--svag); cursor:default; }
+  button.andra small, button.gör small { display:block; font-weight:400;
+      font-size:.8rem; opacity:.75; }
+
+  /* ── uppgiftsskärmen ──────────────────────────────────────────── */
+  .raknare { display:flex; gap:1.8rem; margin-bottom:2rem;
+             border-bottom:1px solid var(--linje); padding-bottom:.7rem; }
+  .raknare div { display:flex; flex-direction:column; }
+  .raknare b { font-size:1.15rem; font-weight:600;
+               font-variant-numeric:tabular-nums; }
+  .raknare span { font-size:.76rem; color:var(--svag); }
+  .fraga { font-size:1.5rem; line-height:1.35; margin:0 0 1.2rem; }
+  input[type=text] { width:100%; padding:.5rem 0; font-size:1.25rem;
+      font-family:var(--serif); background:none; border:none;
+      border-bottom:1px solid var(--text); border-radius:0; }
+  input[type=text]:focus { outline:none; border-bottom-width:2px; }
+  input[type=text]:disabled { color:var(--svag); }
+  .dom { font-size:.95rem; font-weight:600; margin:1.2rem 0 .25rem; }
   .dom.ja { color:var(--rätt); } .dom.nej { color:var(--fel); }
-  .facit { font-size:1.3rem; margin:.45rem 0 0; }
-  ul.anm { list-style:none; padding:0; margin:.9rem 0 0;
-           border-top:1px solid var(--linje); }
-  ul.anm li { padding:.5rem 0; border-bottom:1px solid var(--linje);
-              font-size:.9rem; display:flex; gap:.5rem; flex-wrap:wrap;
-              align-items:baseline; }
-  .ord { font-weight:600; }
-  .ord.skrev { color:var(--fel); text-decoration:line-through; }
-  .ord.väntat { color:var(--rätt); }
-  .varför { color:var(--svag); }
-  .osäker { font-size:.72rem; border:1px solid var(--linje); border-radius:99px;
-            padding:.05rem .5rem; color:var(--varm); }
-  .hjälp { margin-top:1.3rem; font-size:.85rem; color:var(--svag); }
-  kbd { font:inherit; font-size:.8rem; border:1px solid var(--linje);
-        border-bottom-width:2px; border-radius:4px; padding:.05rem .35rem;
-        background:var(--panel); }
-  .mitten { text-align:center; color:var(--svag); }
+  .facit { font-size:1.25rem; margin:0; }
+  ul.anm { list-style:none; padding:0; margin:1rem 0 0; }
+  ul.anm li { padding:.35rem 0; border-top:1px solid var(--linje);
+      font-size:.88rem; display:flex; gap:.45rem; flex-wrap:wrap;
+      align-items:baseline; cursor:pointer; }
+  ul.anm li[data-rattad="1"] { opacity:.5; }
+  ul.anm li[data-rattad="1"] .skrev { text-decoration:none; color:var(--rätt); }
+  ul.anm .vand { font-size:.76rem; color:var(--svag); font-style:italic; }
+  .skrev, .vantat { font-family:var(--serif); }
+  .skrev { color:var(--fel); text-decoration:line-through; }
+  .vantat { color:var(--rätt); }
+  .varfor { color:var(--svag); }
+  .osaker { font-size:.76rem; color:var(--svag); font-style:italic; }
+  .hjalp { color:var(--svag); font-size:.84rem; margin-top:1.2rem; }
+  button.info { margin-left:auto; align-self:center; width:1.5rem;
+      height:1.5rem; border-radius:50%; border:1px solid var(--linje);
+      background:none; color:var(--svag); cursor:pointer; font-size:.78rem;
+      font-style:italic; line-height:1; padding:0; }
+  button.info:hover { color:var(--text); border-color:var(--svag); }
+  button.info[aria-expanded="true"] { color:var(--text); border-color:var(--text); }
+  table.typer { border-collapse:collapse; font-size:.85rem;
+      margin:-1.2rem 0 1.6rem; }
+  table.typer th { font-weight:400; color:var(--svag); text-align:right;
+      padding:.15rem .55rem; font-size:.78rem; }
+  table.typer th:first-child { text-align:left; }
+  table.typer td { text-align:right; padding:.15rem .55rem;
+      font-variant-numeric:tabular-nums; }
+  table.typer td:first-child { text-align:left; color:var(--svag); }
+  table.typer td.noll { color:var(--linje); }
+  .korten { font-size:.85rem; color:var(--svag); margin:-1rem 0 1.6rem; }
+  .korten b { color:var(--text); font-weight:400; font-family:var(--serif); }
+  ul.kortlista { list-style:none; padding:0; margin:.8rem 0 0; font-size:.85rem; }
+  ul.kortlista > li { display:flex; gap:.7rem; align-items:baseline;
+      padding:.3rem 0; border-top:1px solid var(--linje); }
+  ul.kortlista .typ { color:var(--svag); font-size:.78rem; min-width:6.5rem;
+      flex:none; padding-top:.1rem; }
+  ul.kortlista .rad { display:flex; flex-wrap:wrap; gap:.3rem .9rem; flex:1; }
+  ul.kortlista .kort { display:inline-flex; gap:.3rem; align-items:baseline; }
+  ul.kortlista .fac { font-family:var(--serif); }
+  ul.kortlista .när { color:var(--svag); font-size:.74rem;
+      font-variant-numeric:tabular-nums; }
+  ul.kortlista .ja  { color:var(--rätt); }
+  ul.kortlista .nej { color:var(--fel); }
+  ul.kortlista .utan { color:var(--svag); }
 
-  /* ── lektionerna ─────────────────────────────────────────────── */
-  ol.steglista { list-style:none; padding:0; margin:0; counter-reset:steg; }
-  ol.steglista li { display:flex; gap:.9rem; align-items:baseline;
-      padding:.55rem .3rem; border-bottom:1px solid var(--linje); }
-  ol.steglista li.upplåst { cursor:pointer; }
-  ol.steglista li.upplåst:hover { background:var(--spår); }
-  ol.steglista li.låst { opacity:.4; }
-  ol.steglista .nr { font-variant-numeric:tabular-nums; color:var(--svag);
-      font-size:.85rem; min-width:1.6rem; text-align:right; }
-  ol.steglista .ti { font-weight:600; flex:1; }
-  ol.steglista .lås { font-size:.78rem; color:var(--svag); }
-  .lead { font-size:1.12rem; line-height:1.5; margin:0 0 1rem; }
-  .spana { font-size:.95rem; color:var(--svag); background:var(--panel);
-      border:1px solid var(--linje); border-left:3px solid var(--varm);
-      border-radius:0 8px 8px 0; padding:.8rem 1rem; margin:0; }
-  .spana b { color:var(--text); }
-  .exempelpar { border-bottom:1px solid var(--linje); padding:.6rem 0; }
-  .exempelpar .källa { color:var(--svag); font-size:.92rem; }
-  .exempelpar .mål { font-size:1.12rem; font-weight:500; }
+  /* ── listor: ordbok, lektioner, kurser ────────────────────────── */
+  ul.lista { list-style:none; padding:0; margin:0; }
+  ul.lista li { display:flex; gap:.7rem; align-items:baseline; padding:.35rem 0;
+      border-bottom:1px solid var(--linje); cursor:pointer; font-size:.92rem; }
+  ul.lista li:hover { color:var(--svag); }
+  ul.lista li.last { opacity:.45; cursor:default; }
+  ul.lista .namn { flex:1; }
+  ul.lista .bi { font-size:.82rem; color:var(--svag); }
+  .filter { display:flex; gap:.6rem; margin-bottom:1rem; flex-wrap:wrap;
+      align-items:center; }
+  .filter input, .filter select { padding:.3rem .1rem; background:none;
+      border:none; border-bottom:1px solid var(--linje); font-size:.92rem; }
+  .filter input { flex:1; min-width:8rem; }
+  .tillbaka { background:none; border:none; padding:0; cursor:pointer;
+      color:var(--svag); margin-bottom:1rem; font-size:.88rem; }
+  .tillbaka:hover { color:var(--text); }
+  p.mager { color:var(--svag); font-size:.92rem; }
+  button.lank { background:none; border:none; padding:0; cursor:pointer;
+      font:inherit; text-decoration:underline; text-underline-offset:2px;
+      text-decoration-color:var(--linje); }
+  button.lank:hover { text-decoration-color:var(--text); }
+  h1.titel { font-size:1.25rem; margin:0 0 .15rem; }
+  h1.titel.språk { font-size:1.5rem; }
+  .undertitel { color:var(--svag); margin:0 0 1.4rem; font-size:.92rem; }
 
-  /* ── ordboken ────────────────────────────────────────────────── */
-  .filter { display:flex; gap:.6rem; margin-bottom:1.1rem; flex-wrap:wrap; }
-  .filter input, .filter select { font:inherit; font-size:.9rem; padding:.45rem .6rem;
-      border:1px solid var(--linje); border-radius:7px;
-      background:var(--panel); color:var(--text); }
-  .filter input { flex:1; min-width:9rem; }
-  ul.ordlista { list-style:none; padding:0; margin:0; }
-  ul.ordlista li { display:flex; gap:.8rem; align-items:center; padding:.5rem .3rem;
-      border-bottom:1px solid var(--linje); cursor:pointer; }
-  ul.ordlista li:hover { background:var(--spår); }
-  ul.ordlista .lem { font-weight:600; flex:1; }
-  ul.ordlista .kl { font-size:.78rem; color:var(--svag); }
-  ul.ordlista .mini { width:64px; height:6px; background:var(--spår);
-      border-radius:99px; overflow:hidden; }
-  ul.ordlista .mini i { display:block; height:100%; background:var(--rätt); }
-
-  .ordrubrik { display:flex; align-items:baseline; gap:.7rem; margin-bottom:1.2rem; }
-  .ordrubrik h2 { margin:0; font-size:1.6rem; }
-  .ordrubrik .kl { color:var(--svag); font-size:.9rem; }
-  .paradigm { margin-bottom:1.6rem; }
-  .paradigm h3 { font-size:.74rem; letter-spacing:.09em; text-transform:uppercase;
-      color:var(--svag); margin:0 0 .45rem; font-weight:600; }
-  table.para { border-collapse:separate; border-spacing:3px; font-size:.9rem; }
-  table.para th { font-size:.7rem; letter-spacing:.05em; color:var(--svag);
-      font-weight:600; padding:.1rem .4rem; text-align:center; white-space:nowrap; }
-  table.para th.rad { text-align:right; }
-  /* Modifierarna kvalificeras med table.para — annars vinner basregeln på
-     specificitet (0,1,2 mot 0,1,1) och alla rutor blir lika. */
-  table.para td { padding:.35rem .6rem; border-radius:6px; text-align:center;
-      white-space:nowrap; background:var(--spår); cursor:default;
-      border:1px solid transparent; }
-  table.para td.utanför { background:none; border-color:transparent;
-      color:var(--svag); opacity:.45; }
-  table.para td.oöppnad { background:none; border:1px dashed var(--linje);
-      color:var(--text); }
-  table.para td.delvis { background:linear-gradient(135deg,
-      color-mix(in srgb, var(--rätt) 26%, transparent) 50%, transparent 50%);
-      border:1px dashed var(--linje); }
-  table.para td.stark { background:color-mix(in srgb, var(--rätt) 30%, transparent); }
-  table.para td.medel { background:color-mix(in srgb, var(--varm) 32%, transparent); }
-  table.para td.svag  { background:color-mix(in srgb, var(--fel) 28%, transparent); }
-  .delar { font-size:.82rem; color:var(--svag); min-height:1.4rem;
-      border-top:1px solid var(--linje); padding-top:.7rem; margin-top:.4rem; }
-  .delar b { color:var(--text); }
-  .legend { display:flex; gap:.9rem; font-size:.76rem; color:var(--svag);
-      margin:.2rem 0 1.3rem; flex-wrap:wrap; align-items:center; }
-  .legend i { display:inline-block; width:.85rem; height:.85rem; border-radius:3px;
-      vertical-align:-2px; margin-right:.25rem; }
+  /* ── paradigmtabellen ─────────────────────────────────────────── */
+  table.para { border-collapse:collapse; margin-bottom:1.2rem; font-size:.92rem; }
+  table.para th { font-size:.76rem; color:var(--svag); font-weight:400;
+      padding:.2rem .6rem; text-align:left; white-space:nowrap;
+      font-family:var(--sans); }
+  table.para td { padding:.2rem .6rem; white-space:nowrap;
+      border-bottom:1px solid var(--linje); font-family:var(--serif); }
+  table.para td.utanför { color:var(--svag); opacity:.4; }
+  table.para td.svag { color:var(--fel); }
+  table.para td.oöppnad { color:var(--svag); font-style:italic; }
+  .delar-rad { font-size:.84rem; color:var(--svag); min-height:1.4rem;
+      border-top:1px solid var(--linje); padding-top:.5rem; }
+  .exempel { padding:.4rem 0; border-bottom:1px solid var(--linje); }
+  .exempel .källa { color:var(--svag); font-size:.88rem; }
+  .exempel .mål { font-family:var(--serif); font-size:1.05rem; }
+  ul.ordpar { list-style:none; padding:0; margin:0;
+      columns:3; column-gap:2rem; font-size:.92rem; }
+  @media (max-width:52rem) { ul.ordpar { columns:2; } }
+  ul.ordpar li { padding:.18rem 0; break-inside:avoid;
+      display:flex; gap:.5rem; }
+  ul.ordpar .mål { font-family:var(--serif); flex:1; }
+  ul.ordpar .källa { color:var(--svag); font-size:.85rem; text-align:right; }
 </style>
 </head>
 <body>
-<header>
-  <button class="titel kursknapp" id="titel">…</button>
-  <nav>
-    <button id="nav-hem" aria-current="page">Home</button>
-    <button id="nav-ord" disabled>Dictionary</button>
-    <button id="nav-stat" disabled>Progress</button>
-    <button id="nav-lekt" disabled>Lessons</button>
-  </nav>
-</header>
 
-<main><div class="kort">
+<nav>
+  <div class="kurs">
+    <button id="kursknapp">…<span class="steg" id="kurssteg"></span></button>
+  </div>
+  <a id="nav-hem" aria-current="page">Today</a>
+  <a id="nav-ord">Dictionary</a>
+  <a id="nav-lekt">Lessons</a>
+  <a id="nav-kurs">Courses</a>
+</nav>
 
-  <section id="vy-kurs" hidden>
-    <p class="rubrik">Your courses</p>
-    <ul class="ordlista" id="kurslistan"></ul>
+<main>
 
-    <p class="rubrik" style="margin-top:2rem">Start a new course</p>
-    <div class="filter">
-      <select id="k-källa"></select>
-      <span style="align-self:center;color:var(--svag)">→</span>
-      <select id="k-mål"></select>
-      <button class="stor" id="k-skapa">Create</button>
-    </div>
-    <p class="delar" id="k-varning" style="border:none;padding:.2rem 0"></p>
-
-    <p class="rubrik" style="margin-top:2rem">Reset a course</p>
-    <p class="delar" style="border:none;padding:0">
-      This deletes every repetition you have made in that course. It is the
-      only thing in the program that cannot be rebuilt.</p>
-    <div class="filter">
-      <select id="k-nollställ"></select>
-      <input type="text" id="k-bekräfta" placeholder="Type RESET to confirm">
-      <button class="andra" id="k-kör">Reset</button>
-    </div>
-    <p class="delar" id="k-svar" style="border:none;padding:.2rem 0"></p>
-  </section>
-
+  <!-- ── hem: dagens övning | vägen till nästa nivå ───────────── -->
   <section id="vy-hem" hidden>
-    <div class="nivåkort">
-      <div class="nivårad">
-        <span class="rubrik" style="margin:0">Level</span>
-        <span class="nivånr" id="nivå">–</span>
-        <span style="color:var(--svag)">of <span id="nivåer">21</span></span>
+    <div class="tva">
+      <div>
+        <h2 class="kol">Today</h2>
+        <p class="tal"><span id="d-antal">0</span><small>cards</small></p>
+        <p class="under" id="d-under"></p>
+        <!-- BARA DET NÖDVÄNDIGA. Fyra rader med fackord — "New forms, met
+             in sentences" — svarade på frågor användaren inte ställt, och
+             dolde den enda som räknas: vad ska jag göra nu, och hur länge?
+             Uppdelningen finns kvar bakom i-knappen på övningsskärmen. -->
+        <button class="gör" id="starta">Practise
+          <small id="starta-under"></small></button>
+        <p class="mager" id="d-vad"></p>
+        <button class="andra" id="extra">Keep practising
+          <small id="extra-under"></small></button>
       </div>
-      <div class="spår"><i id="stapel" style="width:0"></i></div>
-      <p class="spårtext" id="spårtext"></p>
-      <div id="upplåsning" hidden style="margin-top:1rem">
-        <button class="stor" id="lås-upp">See the next step</button>
+
+      <div>
+        <h2 class="kol">Next level</h2>
+        <p class="tal"><span id="n-saknas">–</span><small>cards to go</small></p>
+        <p class="under" id="n-under"></p>
+        <dl class="delar">
+          <div><dt>Level</dt>
+               <dd><button class="lank" id="n-lankka"><span id="n-nivå">–</span>
+                   of 21</button></dd></div>
+          <div><dt>Words in this level's vocabulary</dt>
+               <dd id="n-osedda">–</dd></div>
+          <div><dt>Level <span id="n-nästnr">–</span> would add</dt>
+               <dd id="n-nästa">–</dd></div>
+          <div><dt>At your pace that is</dt><dd id="n-dygn">–</dd></div>
+        </dl>
+        <p class="mager" id="n-redo"></p>
+        <button class="gör" id="lås-upp" hidden>See the next level</button>
       </div>
-    </div>
-
-    <p class="rubrik">Today</p>
-    <table>
-      <thead><tr><th>Card type</th><th>New</th><th>Due</th><th>Retry</th></tr></thead>
-      <tbody id="räknare"></tbody>
-    </table>
-
-    <p class="rubrik" style="margin-top:1.6rem">Coming up next</p>
-    <ul class="ordlista" id="nästa-ord"></ul>
-
-    <div class="knappar" style="margin-top:1.4rem">
-      <button class="stor" id="starta">Start today's practice</button>
-      <button class="andra" id="extra">Extra practice</button>
-      <small id="hemhjälp"></small>
     </div>
   </section>
 
+  <!-- ── uppgiften ────────────────────────────────────────────── -->
+  <section id="vy-öva" hidden>
+    <div class="raknare">
+      <div><b id="r-nya">0</b><span>new left</span></div>
+      <div><b id="r-igen">0</b><span>to retry</span></div>
+      <div><b id="r-förf">0</b><span>due today</span></div>
+      <div><b id="r-gjort">0</b><span>sentences</span></div>
+      <button class="info" id="info-knapp" title="What is in these numbers?"
+              aria-label="Details">i</button>
+    </div>
+    <table class="typer" id="typtabell" hidden>
+      <tr><th></th><th>New</th><th>Retry</th><th>Due</th></tr>
+    </table>
+    <p class="korten" id="korten" hidden></p>
+    <div id="fråga" hidden>
+      <p class="fraga språk" id="uppgift"></p>
+      <!-- Ingen <form>. Enter i ett ensamt fält är "implicit submission", en
+           gammal HTML-bekvämlighet som INTE utlöstes här — och svarstangenten
+           trycks en gång per mening, hela passet igenom. Målet är dessutom en
+           Tauri-webbvy, alltså en annan motor än den som provas här. En egen
+           tangentlyssnare säger vad som ska hända i stället för att hoppas. -->
+      <input type="text" id="svar" autocomplete="off" autocapitalize="off"
+             autocorrect="off" spellcheck="false" placeholder="Write it">
+      <div id="utfall" hidden>
+        <p class="dom" id="dom"></p>
+        <p class="facit språk" id="facitrad"></p>
+        <ul class="anm" id="anm"></ul>
+        <button class="tillbaka" id="ocksa-ratt" hidden
+                style="margin:.8rem 0 0">My answer was also correct</button>
+        <ul class="kortlista" id="kortlista" hidden></ul>
+      </div>
+      <p class="hjalp" id="hjälp">Enter to answer</p>
+      <button class="gör" id="vidare" hidden style="width:auto">Next</button>
+    </div>
+    <div id="klart" hidden>
+      <p class="dom ja" id="klarttitel">Done for today</p>
+      <p class="under" id="klarttext"></p>
+      <button class="andra" id="fortsätt" style="width:auto">Keep practising</button>
+      <button class="andra" id="tillbaka" style="width:auto">Back</button>
+    </div>
+  </section>
+
+  <!-- ── glosorna: nya ord LÄSES innan de ska produceras ──────── -->
+  <section id="vy-glosor" hidden>
+    <div id="glos-lista">
+      <h1 class="titel">New words</h1>
+      <p class="undertitel" id="glos-under"></p>
+      <ul class="ordpar" id="glos-orden"></ul>
+      <button class="gör" id="glos-start"
+              style="width:auto;margin-top:1.4rem">Practise these</button>
+    </div>
+    <div id="glos-drill" hidden>
+      <p class="under" id="glos-räknare"></p>
+      <p class="fraga" id="glos-fråga"></p>
+      <input type="text" id="glos-svar" autocomplete="off" autocapitalize="off"
+             autocorrect="off" spellcheck="false" placeholder="Write it">
+      <div id="glos-utfall" hidden>
+        <p class="dom" id="glos-dom"></p>
+        <p class="facit språk" id="glos-facit"></p>
+      </div>
+      <p class="hjalp" id="glos-hjälp">Enter to answer</p>
+      <button class="gör" id="glos-nästa" hidden
+              style="width:auto;margin-top:1.2rem">Next</button>
+    </div>
+    <div id="glos-klart" hidden>
+      <p class="dom ja">Words learned</p>
+      <p class="under" id="glos-klarttext"></p>
+      <button class="gör" id="glos-vidare" style="width:auto">Practise sentences</button>
+    </div>
+  </section>
+
+  <!-- ── ordboken ─────────────────────────────────────────────── -->
   <section id="vy-ord" hidden>
     <div id="ordlistan">
+      <h1 class="titel">Dictionary</h1>
+      <p class="undertitel" id="ord-antal"></p>
       <div class="filter">
-        <input type="search" id="sök" placeholder="Search words…">
+        <input type="search" id="sök" placeholder="Search">
         <select id="ordklass"><option value="">All word classes</option></select>
         <select id="tillstånd">
           <option value="">All</option>
@@ -258,170 +347,570 @@
           <option value="ny">Not started</option>
         </select>
       </div>
-      <ul class="ordlista" id="orden"></ul>
+      <ul class="lista" id="orden"></ul>
     </div>
     <div id="ordet" hidden>
-      <div class="ordrubrik">
-        <h2 id="o-lemma"></h2><span class="kl" id="o-klass"></span>
-        <button class="andra" id="o-tillbaka" style="margin-left:auto">Back</button>
-      </div>
-      <div class="legend">
-        <span><i style="background:color-mix(in srgb,var(--rätt) 26%,transparent)"></i>strong</span>
-        <span><i style="background:color-mix(in srgb,var(--varm) 26%,transparent)"></i>shaky</span>
-        <span><i style="background:color-mix(in srgb,var(--fel) 24%,transparent)"></i>weak</span>
-        <span><i style="background:linear-gradient(135deg,color-mix(in srgb,var(--rätt) 26%,transparent) 50%,transparent 50%);border:1px dashed var(--linje)"></i>partly known</span>
-        <span><i style="border:1px dashed var(--linje)"></i>not met yet</span>
-        <span><i style="border:1px solid var(--linje);opacity:.4"></i>not in your course yet</span>
-      </div>
+      <button class="tillbaka" id="o-tillbaka">← Dictionary</button>
+      <h1 class="titel språk" id="o-lemma"></h1>
+      <p class="undertitel" id="o-klass"></p>
       <div id="paradigm"></div>
-      <p class="delar" id="delar">Hover a form to see which cards carry it.</p>
+      <p class="delar-rad" id="delar">Hover a form to see its cards.</p>
     </div>
   </section>
 
+  <!-- ── lektionerna ──────────────────────────────────────────── -->
   <section id="vy-lekt" hidden>
     <div id="lektlistan">
-      <p class="rubrik">The course, step by step</p>
-      <ol class="steglista" id="stegen"></ol>
+      <h1 class="titel">Lessons</h1>
+      <p class="undertitel">The course, step by step.</p>
+      <ul class="lista" id="stegen"></ul>
     </div>
     <div id="lektionen" hidden>
-      <div class="ordrubrik">
-        <h2 id="l-titel"></h2><span class="kl" id="l-nr"></span>
-        <button class="andra" id="l-tillbaka" style="margin-left:auto">Back</button>
-      </div>
-      <p class="lead" id="l-vad"></p>
-      <p class="spana"><b>What to watch for.</b> <span id="l-spana"></span></p>
-      <p class="rubrik" style="margin-top:1.6rem">Examples</p>
+      <button class="tillbaka" id="l-tillbaka">← Lessons</button>
+      <h1 class="titel" id="l-titel"></h1>
+      <p class="undertitel" id="l-nr"></p>
+      <p id="l-vad"></p>
+      <p><b>What to watch for.</b> <span id="l-spana"></span></p>
+      <h2 class="kol" style="margin-top:2rem">Examples</h2>
       <div id="l-exempel"></div>
-      <p class="rubrik" style="margin-top:1.6rem">What this step unlocks</p>
-      <p id="l-nytt" class="delar" style="border:none;padding:0"></p>
-      <div id="l-aktivera" hidden style="margin-top:1.4rem">
-        <button class="stor" id="l-aktivera-knapp">Add this step to my course</button>
+      <h2 class="kol" style="margin-top:2rem">What it unlocks</h2>
+      <p id="l-nytt" class="mager"></p>
+      <div id="l-ord" hidden>
+        <h2 class="kol" style="margin-top:2rem">
+          New words <span id="l-ordantal" class="mager"></span></h2>
+        <ul class="ordpar" id="l-ordlista"></ul>
       </div>
+      <!-- DAGENS LEKTION LEDER VIDARE IN I ÖVNINGEN. Utan knappen slutade
+           lektionen i en återvändsgränd och man fick hitta tillbaka själv. -->
+      <button class="gör" id="l-fortsatt" hidden style="width:auto">Continue</button>
+      <button class="gör" id="l-aktivera" hidden style="width:auto">
+        Add this level to my course</button>
     </div>
   </section>
 
-  <section id="vy-öva" hidden>
-    <div class="status">
-      <span>today <b id="s-gjort">0</b></span>
-      <span>due <b id="s-förf">0</b></span>
-      <span>retry <b id="s-igen">0</b></span>
-      <span id="s-extra"></span>
+  <!-- ── kurserna ─────────────────────────────────────────────────
+       En lista och en rad. Sidan var tre rubriker, tre stycken brödtext och
+       sex kontroller för något man gör en gång i månaden — nollställningen
+       tog lika stor plats som kursbytet, fast den är den enda knapp i
+       programmet som förstör något. Den ligger nu bakom en länk: nåbar,
+       men inte i vägen. -->
+  <section id="vy-kurs" hidden>
+    <h1 class="titel">Courses</h1>
+    <p class="undertitel">Pick one to switch to it.</p>
+    <ul class="lista" id="kurslistan"></ul>
+
+    <div class="filter" style="margin-top:1.4rem">
+      <select id="k-källa"></select>
+      <span style="color:var(--svag)">→</span>
+      <select id="k-mål"></select>
+      <button class="andra" id="k-skapa"
+              style="width:auto;margin:0">Add course</button>
+      <span class="mager" id="k-varning"></span>
     </div>
-    <div id="fråga" hidden>
-      <div class="riktning" id="riktning"></div>
-      <p class="uppgift" id="uppgift"></p>
-      <form id="frm" autocomplete="off">
-        <input type="text" id="svar" autocomplete="off" autocapitalize="off"
-               autocorrect="off" spellcheck="false" placeholder="Type the sentence…">
-      </form>
-      <div class="utfall" id="utfall" hidden>
-        <div class="dom" id="dom"></div>
-        <p class="facit" id="facitrad"></p>
-        <ul class="anm" id="anm"></ul>
+
+    <!-- HUR MYCKET DU VILL ÖVA, i minuter. Det enda tal du behöver ange:
+         allt annat räknas fram. Det sätter inget tak på dagens arbete —
+         förfallna kort ska göras — utan styr hur mycket NYTT som förs in. -->
+    <div class="filter" style="margin-top:1.6rem">
+      <label for="k-minuter" style="color:var(--svag)">Minutes a day</label>
+      <input type="number" id="k-minuter" min="1" max="600" step="5"
+             style="width:5rem">
+      <button class="andra" id="k-spara-minuter"
+              style="width:auto;margin:0">Save</button>
+      <span class="mager" id="k-minuter-svar"></span>
+    </div>
+    <p class="mager" style="margin-top:.4rem">
+      This is not a limit on today's work — cards that are due get done.
+      It decides how much <em>new</em> material comes in.
+      <span id="k-takt"></span></p>
+
+    <p style="margin-top:2rem">
+      <button class="tillbaka" id="k-visa-reset">Reset a course…</button></p>
+    <div id="k-reset" hidden>
+      <p class="mager">Deletes every repetition in that course. It is the only
+        thing in the program that cannot be rebuilt.</p>
+      <div class="filter">
+        <select id="k-nollställ"></select>
+        <input type="text" id="k-bekräfta" placeholder="Type RESET to confirm">
+        <button class="andra" id="k-kör" style="width:auto;margin:0">Reset</button>
       </div>
-      <p class="hjälp" id="hjälp"><kbd>Enter</kbd> to answer</p>
-      <button class="stor" id="vidare" hidden>Next sentence</button>
-    </div>
-    <div id="klart" hidden>
-      <p class="dom ja" style="font-size:1.3rem">✓ Session complete</p>
-      <p id="klarttext" style="color:var(--svag)"></p>
-      <button class="stor" id="tillbaka">Back to home</button>
+      <p class="mager" id="k-svar"></p>
     </div>
   </section>
 
-  <p class="mitten" id="laddar">Loading…</p>
-</div></main>
+  <p class="mager" id="laddar">Loading…</p>
+</main>
 
 <script>
-// All gränssnittstext samlad. Programspråket är INTE kursens källspråk —
-// en svensk som lär sig tyska kan vilja ha engelskt gränssnitt. När fler
-// språk läggs till blir det här en kolumn per språk, inget annat ändras.
+// All gränssnittstext samlad. Programspråket är INTE kursens källspråk — en
+// svensk som lär sig tyska kan vilja ha engelskt gränssnitt. Blir det fler
+// språk är det här en kolumn per språk, och inget annat ändras.
 const T = {
-  klart_alla:   n => `${n} sentences today — that is your target.`,
-  kvar_i_kön:   n => `${n} card${n === 1 ? "" : "s"} still shaky; they are ` +
+  inget_idag:   "Nothing scheduled. Come back tomorrow, or keep practising.",
+  kvar_idag:    (n, g) => `${n} card${n === 1 ? "" : "s"} left` +
+                          (g ? ` · ${g} sentence${g === 1 ? "" : "s"} so far` : ""),
+  klart_idag:   (g) => `All cards done — ${g} sentence${g === 1 ? "" : "s"} today.`,
+  igen_kvar:    n => `${n} card${n === 1 ? "" : "s"} still shaky. They are ` +
                      `scheduled for tomorrow.`,
-  klart_extra:  n => `${n} sentences of extra practice.`,
-  inget_att_gora: "Nothing due — come back tomorrow, or do extra practice.",
-  redo:         (f, n) => `${f} due, ${n} new`,
-  plats:        (k, c) => `Ready for the next level — ${k} of ${c} sentences a day`,
-  belastning:   (k, c) => `${k} of ${c} sentences a day at this pace`,
-  oövad:        "Practise a little and the pace shows up here",
-  totalt:       "All types",
+  oövad:        "Practise a little and the pace shows up here.",
+  ryms:         "There is room for the next level.",
+  över:         (k, c) => `Your cards need ${k} sentences a day; you practise ${c}.`,
+  extra_finns:  (t, n) => [t && `${t} early`, n && `${n} new`]
+                            .filter(Boolean).join(", ") + " available",
 };
 
 const $ = id => document.getElementById(id);
-let kurs = null, uppgift = null, gjort = 0, extraläge = false;
+let kurs = null, uppgift = null, extraläge = false;
+//: Meningen som är rättad men ännu inte bokförd. Självrättningens fönster.
+let obokförd = null;
+//: Uppdelningen bakom de tre talen, och korten den aktuella meningen prövar.
+//: Ligger bakom info-knappen: skärmen ska vara tom när man övar, men det ska
+//: gå att se exakt vad siffrorna består av.
+let typer = [], visaInfo = false;
+//: Glosportionen som läses in nu, och var i drillen vi är.
+let glosor = [], glosnr = 0, glosKvar = 0;
+//: Meningar gjorda idag, enligt servern vid senaste hämtningen. Räknas upp
+//: lokalt när man svarat, så att siffran rör sig i samma ögonblick som man
+//: orsakade den — annars stod den still till nästa mening laddats, vilket
+//: såg ut som att svaret inte räknades.
+let gjortIdag = 0;
 
 async function hämta(v, i) {
   // Servern svarar med JSON även på fel, och `fel`-fältet är avsett att
-  // visas. Att kasta på statuskoden skulle svälja just det meddelandet —
-  // vilket den gjorde för nollställning utan bekräftelseord.
+  // visas. Att kasta på statuskoden skulle svälja just det meddelandet.
   const r = await fetch(v, i);
   try { return await r.json(); }
   catch { throw new Error(`${r.status} ${r.statusText}`); }
 }
-const visa = (...vyer) => {
-  for (const v of ["kurs", "hem", "ord", "lekt", "öva"])
-    $("vy-" + v).hidden = !vyer.includes(v);
-  for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"], ["nav-lekt","lekt"]])
-    $(id).setAttribute("aria-current", vyer.includes(v) ? "page" : "false");
+// ETT TYST FEL SER UT SOM ETT TRASIGT PROGRAM. En gammal serverprocess med
+// nytt sida.html gav en API-form JS:en inte kände igen; undantaget kastades i
+// en klickhanterare, ingen fångade det, och sidan såg bara ut att inte gå att
+// klicka på. Felet fanns i konsolen — men konsolen är inte gränssnittet.
+function fel(e) {
+  const p = $("laddar");
+  p.hidden = false;
+  p.textContent = "Something went wrong: " + (e && e.message || e)
+    + ". If you just changed the code, restart `ordbok webb`.";
+}
+window.addEventListener("error", e => fel(e.error || e.message));
+window.addEventListener("unhandledrejection", e => fel(e.reason));
+
+const visa = vy => {
+  for (const v of ["hem", "öva", "glosor", "ord", "lekt", "kurs"])
+    $("vy-" + v).hidden = v !== vy;
+  for (const [id, v] of [["nav-hem","hem"], ["nav-ord","ord"],
+                         ["nav-lekt","lekt"], ["nav-kurs","kurs"]])
+    $(id).setAttribute("aria-current", v === vy ? "page" : "false");
   $("laddar").hidden = true;
 };
+const sätt = (id, v) => { $(id).textContent = v; };
 
 // ── hem ───────────────────────────────────────────────────────────
 async function hem() {
   const h = await hämta(`/api/hem/${kurs.id}`);
-  $("nivå").textContent = h.nivå;
-  $("nivåer").textContent = h.nivåer;
-  $("stapel").style.width = `${h.nivå / h.nivåer * 100}%`;
-  $("spårtext").innerHTML = h.krävs === null ? T.oövad
-    : h.plats ? `<span class="klar">${T.plats(h.krävs.toFixed(0), h.kapacitet)}</span>`
-              : T.belastning(`<b>${h.krävs.toFixed(0)}</b>`, h.kapacitet);
-  // Systemet säger bara att det FINNS plats. Användaren klickar när hen vill.
-  $("upplåsning").hidden = !(h.plats && h.nivå < h.nivåer);
+  const d = h.idag, n = h.nivå, e = h.extra;
 
-  const kropp = $("räknare");
-  kropp.innerHTML = "";
-  const rad = (namn, r, fet) => {
+  sätt("d-antal", d.att_göra);
+  // DAGEN I MINUTER när takten är mätt. Minuter är användarens enhet (B4),
+  // så dagens arbete ska gå att läsa i den enheten och inte bara i kort.
+  sätt("d-under", d.klar ? T.klart_idag(d.gjort)
+                         : !d.finns ? T.inget_idag
+                         : d.minuter_kvar != null
+                           ? `about ${d.minuter_kvar} min left`
+                           : T.kvar_idag(d.att_göra, d.gjort));
+  // EN RAD I KLARTEXT om vad dagen består av, i den ordning man möter det.
+  // Fyra rader med fackord — "New forms, met in sentences" — svarade på
+  // frågor användaren inte ställt och dolde den enda som räknas: vad ska jag
+  // göra nu, och hur länge? Uppdelningen finns kvar bakom i-knappen i
+  // övningen.
+  const bitar = [];
+  if (d.glosor) bitar.push(`${d.glosor} new word${d.glosor === 1 ? "" : "s"} to read`);
+  if (d.förfallna) bitar.push(`${d.förfallna} to review`);
+  const former = Math.max(0, d.nya - (d.glosor ?? 0));
+  if (former) bitar.push(`${former} new form${former === 1 ? "" : "s"} in sentences`);
+  if (d.igen) bitar.push(`${d.igen} to retry`);
+  sätt("d-vad", d.klar ? "" : bitar.join(" · "));
+
+  const s = $("starta");
+  s.disabled = d.klar || !d.finns;
+  s.firstChild.textContent = d.klar ? "Done for today" : "Practise";
+  // Inget meningsmål: dagen är slut när korten är gjorda. Talet som visas
+  // är därför arbetet som återstår, inte hur långt till en kvot.
+  sätt("starta-under", d.klar ? "" :
+    `${d.förfallna} due · ${d.nya} new` + (d.igen ? ` · ${d.igen} to retry` : ""));
+
+  const x = $("extra");
+  x.disabled = !e.finns || e.låst;
+  sätt("extra-under", e.låst ? "finish today's cards first"
+                    : e.finns ? T.extra_finns(e.tidiga, e.nya) : "nothing ahead");
+
+  // Högerkolumnen. Efter F1 är villkoret BYGGBARHET och inte kapacitet, så
+  // det som visas är om nivån går att öva — inte hur många kort som fattas.
+  sätt("n-saknas", n.redo === null || n.redo === undefined ? "–"
+                 : n.redo ? "Ready" : "Not yet");
+  // TAKTEN, inte kapacitetsavståndet. `krävs`/`plats` byggde på det gamla
+  // per_kort-måttet och grindar ingenting efter F1.
+  sätt("n-under", d.inflödestak === null || d.inflödestak === undefined
+       ? T.oövad
+       : `${d.inflödestak} new card${d.inflödestak === 1 ? "" : "s"} a day `
+         + `at ${d.minuter} min`);
+  sätt("n-nivå", n.nu);
+  sätt("n-osedda", n.osedda);
+  // TIDEN, INTE ANTALET. Efter B2 styrs inflödet per dygn, så nivåns storlek
+  // är inte ett hinder utan en varaktighet.
+  sätt("n-dygn", n.dygn === null || n.dygn === undefined
+       ? "–" : `${n.dygn} day${n.dygn === 1 ? "" : "s"}`);
+  sätt("n-nästnr", n.nu + 1);
+  sätt("n-nästa", n.nästa_kort === null ? "–" : `${n.nästa_kort} cards`);
+  // GRINDEN ÄR BYGGBARHETEN. Kapaciteten låser ingenting längre — takten
+  // regleras per dygn oavsett vilka nivåer som är öppna, så en öppnad nivå
+  // kan inte öka arbetsbördan. Det som återstår är om nivån går att ÖVA.
+  $("lås-upp").hidden = !(n.redo && n.nu < n.av);
+  sätt("n-redo", n.redo === null ? ""
+       : n.redo ? "" : "Learn a few more words first — sentences at the next "
+                       + "level would be mostly unknown vocabulary.");
+
+  sätt("kurssteg", `level ${n.nu} · ${h.kurs.cefr}`);
+  visa("hem");
+}
+
+// ── glosorna ──────────────────────────────────────────────────────
+// NYA ORD LÄSES INNAN DE SKA PRODUCERAS. Ett ordkort frågar vad ordet
+// betyder, och den frågan går inte att besvara ur en mening man inte kan
+// läsa: en ny fransk kurs inledde med "Hon tittar." → "Elle regarde." där
+// båda orden var okända. Portionen visas därför först som en lista att läsa
+// igenom, och drillas sedan ord för ord.
+async function glosvy() {
+  const g = await hämta(`/api/glosor/${kurs.id}`);
+  glosor = g.ord; glosnr = 0; glosKvar = g.kvar;
+  if (!glosor.length) return startaPass(false);
+  sätt("glos-under",
+    `${glosor.length} of ${g.kvar} words left · read them, then practise`);
+  const ul = $("glos-orden");
+  ul.innerHTML = "";
+  for (const o of glosor) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mål"></span><span class="källa"></span>`;
+    li.querySelector(".mål").textContent = o.mål;
+    li.querySelector(".källa").textContent = o.källa;
+    ul.append(li);
+  }
+  $("glos-drill").hidden = true; $("glos-klart").hidden = true;
+  $("glos-lista").hidden = false;
+  visa("glosor");
+}
+
+function glosfråga() {
+  if (glosnr >= glosor.length) {
+    $("glos-drill").hidden = true; $("glos-klart").hidden = false;
+    sätt("glos-klarttext",
+      `${glosor.length} words added. ${glosKvar - glosor.length} still to come.`);
+    return;
+  }
+  const o = glosor[glosnr];
+  sätt("glos-räknare", `${glosnr + 1} of ${glosor.length}`);
+  sätt("glos-fråga", o.källa);
+  $("glos-utfall").hidden = true;
+  $("glos-hjälp").hidden = false;
+  $("glos-nästa").hidden = true;
+  const f = $("glos-svar");
+  f.value = ""; f.disabled = false; f.focus();
+}
+
+async function glossvara() {
+  const o = glosor[glosnr];
+  const f = $("glos-svar");
+  const rätt = f.value.trim().toLowerCase() === (o.mål || "").toLowerCase();
+  f.disabled = true;
+  await hämta("/api/glossvar", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({kurs: kurs.id, kort_id: o.kort_id, rätt})});
+  const d = $("glos-dom");
+  d.className = "dom " + (rätt ? "ja" : "nej");
+  d.textContent = rätt ? "Correct" : "Not quite";
+  sätt("glos-facit", o.mål);
+  $("glos-utfall").hidden = false;
+  $("glos-hjälp").hidden = true;
+  $("glos-nästa").hidden = false;
+  $("glos-nästa").focus();
+  // FEL ORD GÅR TILLBAKA SIST I KÖN. Att bara gå vidare gjorde svaret
+  // betydelselöst i praktiken: ordet bokfördes som Again och kom sedan inte
+  // igen förrän i morgon, trots att hela poängen med genomgången är att
+  // LÄRA IN orden innan de ska produceras i en mening.
+  //
+  // Kön växer alltså vid fel, och listan är slut först när varje ord suttit
+  // en gång. Det är samma regel som passkön följer för meningar (B7).
+  if (!rätt) glosor.push(o);
+  glosnr += 1;
+  sätt("glos-räknare", `${glosnr} of ${glosor.length}`);
+}
+
+// ── uppgiften ─────────────────────────────────────────────────────
+//: NIVÅTEXTEN VISAS EN GÅNG PER NIVÅ, inte en gång per dag. Det är samma
+//: text tills man går upp ett steg, så en daglig visning vore brus — men
+//: första gången på en ny nivå ska man få veta vad steget går ut på.
+//:
+//: Nyckeln är kurs + nivå. En upplåsning har sin egen väg in (`l-aktivera`),
+//: och den här gäller alltså nivån man redan står på: en ny kurs, eller en
+//: nollställd.
+function nivåtextSedd(id, nivå) {
+  return localStorage.getItem(`nivåtext:${id}`) === String(nivå); }
+
+//: Sann medan nivåtexten visas som inledning till ett pass. Styr om
+//: Continue-knappen syns — att bläddra i nivålistan ska inte ge en knapp
+//: som startar övningen.
+let dagensLektion = false;
+
+async function startaPass(extra) {
+  extraläge = extra;
+  // DAGENS LEKTION FÖRST. Steget man övar ska gå att läsa innan man möter
+  // det — men en gång per dag, inte vid varje start.
+  const nivå = kurs.nivå ?? 1;
+  if (!extra && !nivåtextSedd(kurs.id, nivå)) {
+    localStorage.setItem(`nivåtext:${kurs.id}`, String(nivå));
+    väntandeNivå = null;
+    dagensLektion = true;
+    await lektion(nivå);
+    return;
+  }
+  if (!extra) await hämta(`/api/nytt-pass/${kurs.id}`);
+  $("klart").hidden = true;
+  visa("öva");
+  await nästa();
+}
+
+function ritaTyper() {
+  const tab = $("typtabell");
+  for (const rad of [...tab.querySelectorAll("tr")].slice(1)) rad.remove();
+  for (const t of typer) {
     const tr = document.createElement("tr");
-    for (const [text, kl] of [[namn, ""], [r.nya, "ny"], [r.förfallna, "förf"],
-                              [r.igen, "igen"]]) {
+    for (const [v, kl] of [[t.namn, ""], [t.nya, "n"], [t.igen, "n"],
+                           [t.förfallna, "n"]]) {
       const td = document.createElement("td");
-      td.textContent = text;
-      if (kl) td.className = text === 0 ? "noll" : kl;
+      td.textContent = v;
+      if (kl && v === 0) td.className = "noll";
       tr.append(td);
     }
-    kropp.append(tr);
-  };
-  for (const r of h.rader) rad(r.namn, r);
-  rad(T.totalt, h.summa, true);
-
-  const kommande = $("nästa-ord");
-  kommande.innerHTML = "";
-  for (const o of h.nästa_ord ?? []) {
-    const li = document.createElement("li");
-    li.innerHTML = `<span class="lem"></span><span class="kl"></span>`;
-    li.querySelector(".lem").textContent = o.lemma;
-    li.querySelector(".kl").textContent =
-      `${o.ordklass}${o.former > 1 ? ` · ${o.former} forms` : ""}`;
-    li.style.cursor = "pointer";
-    li.addEventListener("click", () => { ordbok().then(() => ordet(o.koncept)); });
-    kommande.append(li);
+    tab.append(tr);
   }
+  tab.hidden = !visaInfo || !typer.length;
+  $("korten").hidden = !visaInfo;
+  $("kortlista").hidden = !visaInfo || !$("kortlista").children.length;
+}
 
-  const attGöra = h.summa.förfallna + h.summa.igen;
-  const s = $("starta");
-  s.textContent = attGöra || h.summa.nya ? "Start today's practice" : "Nothing due";
-  s.disabled = !(attGöra || h.summa.nya);
-  s.classList.toggle("tom", s.disabled);
-  $("hemhjälp").textContent = h.idag >= h.mål && !attGöra
-    ? `Done for today — ${h.idag} sentences.`
-    : `${h.idag}/${h.mål} today · ${attGöra} due · ${h.summa.nya} new words waiting`;
-  visa("hem");
+function visaKorten(u) {
+  // Vilka kort meningen på skärmen prövar — typ och antal, aldrig facit.
+  // Korten ÄR svaret: att skriva ut att meningen prövar formkortet
+  // `lies down` vore att sätta lösningen bredvid frågan. Facit kommer i
+  // `visaKortutfall`, efter att svaret är givet.
+  $("kortlista").hidden = true;
+  if (!u) { sätt("korten", ""); return; }
+  const delar = (u.typer || []).map(t => `${t.antal} ${t.namn.toLowerCase()}`);
+  $("korten").innerHTML = "";
+  $("korten").append(document.createTextNode(
+    `This sentence tests ${delar.join(", ")}` +
+    (u.nya ? ` · ${u.nya} new` : "") + " · expected errors "));
+  const b = document.createElement("b");
+  b.textContent = u.förväntat.toFixed(2);
+  $("korten").append(b);
+}
+
+function närText(k) {
+  // Förfallotiden FÖRE prövningen: hur långt fram FSRS hade lagt kortet.
+  // Ett nytt kort har ingen — den räknas ut först när svaret bokförs.
+  if (!k.sedd) return "new";
+  if (!k.förfaller) return "";
+  const dagar = (new Date(k.förfaller) - new Date()) / 86400000;
+  const abs = Math.abs(dagar);
+  const tal = abs < 1 / 24 ? `${Math.round(abs * 1440)} min`
+            : abs < 1     ? `${Math.round(abs * 24)} h`
+            : abs < 60    ? `${Math.round(abs)} d`
+            :               `${Math.round(abs / 30)} mån`;
+  return dagar < 0 ? `due ${tal}` : `in ${tal}`;
+}
+
+function visaKortutfall(kort) {
+  // EN RAD PER KORTTYP, uppifrån och ner i den ordning korten införs: orden
+  // först, sedan deras egenskaper, sedan böjningen, sist meningsstrukturen.
+  // Som platt lista gick det inte att se vilket lager en mening egentligen
+  // prövade — och lagren är hela poängen med kortmodellen.
+  const ul = $("kortlista");
+  ul.innerHTML = "";
+  const grupper = [];
+  for (const k of kort) {
+    const sist = grupper[grupper.length - 1];
+    if (sist && sist.namn === k.namn) sist.kort.push(k);
+    else grupper.push({namn: k.namn, kort: [k]});
+  }
+  for (const g of grupper) {
+    const li = document.createElement("li");
+    const typ = document.createElement("span");
+    typ.className = "typ"; typ.textContent = g.namn; li.append(typ);
+    const rad = document.createElement("span");
+    rad.className = "rad";
+    for (const k of g.kort) {
+      const box = document.createElement("span");
+      box.className = "kort";
+      const dom = document.createElement("span");
+      dom.className = k.dom === true ? "ja" : k.dom === false ? "nej" : "utan";
+      dom.textContent = k.dom === true ? "✓" : k.dom === false ? "✗" : "–";
+      const fac = document.createElement("span");
+      fac.className = "fac"; fac.textContent = k.facit ?? "";
+      const när = document.createElement("span");
+      när.className = "när"; när.textContent = närText(k);
+      box.append(dom, fac, när);
+      rad.append(box);
+    }
+    li.append(rad);
+    ul.append(li);
+  }
+  ul.hidden = !visaInfo || !kort.length;
+}
+
+function rensaUtfall() {
+  $("kortlista").hidden = true;
+  $("utfall").hidden = true;
+  $("anm").innerHTML = "";
+  $("ocksa-ratt").hidden = true;
+}
+
+async function bokför() {
+  if (obokförd === null) return;
+  const id = obokförd; obokförd = null;
+  await hämta("/api/bokför", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id})});
+}
+
+async function vändAnmärkning(li, kort_id) {
+  if (obokförd === null) return;
+  await hämta("/api/självrätta", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: obokförd, kort_id})});
+  li.dataset.rattad = li.dataset.rattad === "1" ? "0" : "1";
+}
+
+async function nästa() {
+  await bokför();
+  // FACIT STÅR KVAR TILLS NÄSTA FRÅGA ÄR HÄMTAD. Att tömma rutan först fick
+  // sidan att falla ihop under hämtningen, så "Next"-knappen hoppade uppåt
+  // en bråkdel av en sekund innan den nya meningen sköt ner den igen.
+  // LÄTT ANROP. `hem` räknar även nivån, vars byggbarhet kostar en kopia av
+  // databasen och tvåhundra renderingar — ~600 ms per mening för ett tal
+  // övningsskärmen inte visar.
+  const h = await hämta(`/api/dag/${kurs.id}`);
+  const d = h.idag;
+  typer = h.typer || [];
+  // De tre räknarna, plus meningsräkningen. `igen` börjar på noll och växer
+  // — den bär även kort som föll i en mening de bara råkade stå i, vilket är
+  // själva skälet att den inte går att förutse.
+  sätt("r-nya", d.nya); sätt("r-igen", d.igen); sätt("r-förf", d.förfallna);
+  gjortIdag = d.gjort;
+  sätt("r-gjort", d.gjort);
+  ritaTyper();
+
+  // DAGEN ÄR KLAR NÄR KORTEN ÄR GJORDA, inte efter N meningar. FSRS bygger på
+  // att rätt kort repeteras i tid; ett pass som slutar med förfallna kort kvar
+  // bryter mot det, och ett som fortsätter efter att allt är gjort ger massade
+  // repetitioner utan värde. `meningar_per_dag` är kvar som kapacitetsmått och
+  // tak för nytt material, men avslutar inte längre passet.
+  if (!extraläge && d.klar) { rensaUtfall(); return slut(d); }
+
+  const u = await hämta(`/api/uppgift/${kurs.id}${extraläge ? "?extra=1" : ""}`);
+  if (u.tomt) {
+    // TALEN HÄMTAS OM. `d` är från FÖRE anropet ovan, och det är just under
+    // det anropet passet kan upptäcka att inget av dagens nya kort går att
+    // bygga en mening kring (B8). Skärmen sa då "Done for today" med
+    // räknarna och uppdelningen kvar på det den trodde innan — mätt i drift:
+    // "1 new" bredvid en klar dag, och "7 new" gången före.
+    const om = await hämta(`/api/dag/${kurs.id}`);
+    typer = om.typer || [];
+    sätt("r-nya", om.idag.nya); sätt("r-igen", om.idag.igen);
+    sätt("r-förf", om.idag.förfallna); sätt("r-gjort", om.idag.gjort);
+    ritaTyper();
+    rensaUtfall();
+    return slut(om.idag, u.oåtkomliga);
+  }
+  if (u.fel) { rensaUtfall(); $("fråga").hidden = true;
+               $("klart").hidden = false;
+               sätt("klarttitel", "Could not build a sentence");
+               sätt("klarttext", u.fel); return; }
+  uppgift = u;
+  visaKorten(u);
+  rensaUtfall();
+  $("fråga").hidden = false;
+  sätt("uppgift", u.uppgift ?? "(this course has no source language)");
+  const f = $("svar");
+  f.value = ""; f.disabled = false; f.focus();
+  $("hjälp").hidden = false; $("vidare").hidden = true;
+}
+
+function slut(d) {
+  $("fråga").hidden = true; $("klart").hidden = false;
+  sätt("klarttitel", extraläge ? "Nothing more ahead" : "Done for today");
+  sätt("klarttext", T.klart_idag(d.gjort)
+                    + (d.igen ? " " + T.igen_kvar(d.igen) : ""));
+  $("fortsätt").hidden = extraläge;
+}
+
+async function svara() {
+  const f = $("svar");
+  if (!f.value.trim()) return;
+  f.disabled = true;
+  const r = await hämta("/api/svar", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: uppgift.id, svar: f.value})});
+  obokförd = r.id;
+  $("utfall").hidden = false;
+  const dom = $("dom");
+  dom.className = "dom " + (r.korrekt ? "ja" : "nej");
+  dom.textContent = r.korrekt ? "Correct" : "Not quite";
+  sätt("facitrad", r.korrekt ? "" : r.facit);
+  // SJÄLVRÄTTNINGEN ÖPPNAR HÄR och stängs när man går vidare. Betyget är
+  // ännu inte bokfört: FSRS är en tillståndsmaskin, så ett Again som redan
+  // lagts går inte att ta tillbaka, och en kompenserande Good samma minut
+  // är nästan verkningslös. Rättelsen måste alltså komma före betyget.
+  $("ocksa-ratt").hidden = r.korrekt;
+  for (const a of r.anmärkningar) {
+    const li = document.createElement("li");
+    const del = (kl, txt) => { if (!txt) return;
+      const e = document.createElement("span"); e.className = kl;
+      e.textContent = txt; li.append(e); };
+    // ORDFÖLJD: ordet var rätt, bara på fel plats. Att rita det med .skrev
+    // vore att stryka över ett korrekt skrivet ord — alltså att påstå fel
+    // sak i gränssnittet samtidigt som rättningen påstår rätt sak.
+    if (a.ordföljd) { del("vantat", a.väntat); }
+    else { del("skrev", a.skrev); del("vantat", a.väntat); }
+    del("varfor", a.slutsats); if (a.osäker) del("osaker", "uncertain");
+    if (a.kort_id !== null) {
+      del("vand", "— click if this was right");
+      li.addEventListener("click", () => vändAnmärkning(li, a.kort_id));
+    } else {
+      li.style.cursor = "default";
+    }
+    $("anm").append(li);
+  }
+  sätt("r-igen", r.igen);
+  visaKortutfall(r.kort || []);
+  gjortIdag += 1;
+  sätt("r-gjort", gjortIdag);
+  $("hjälp").hidden = true;
+  $("vidare").hidden = false;
+  $("vidare").focus();
 }
 
 // ── kurserna ──────────────────────────────────────────────────────
 let språk = null, väntandeNivå = null;
+
+async function sparaMinuter() {
+  const n = parseInt($("k-minuter").value, 10);
+  const svar = $("k-minuter-svar");
+  const r = await hämta(`/api/minuter/${kurs.id}`, {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({minuter: n})});
+  svar.textContent = r?.minuter ? `Saved — ${r.minuter} min/day` : "1–600 please";
+  if (r?.minuter) setTimeout(() => { svar.textContent = ""; }, 2500);
+}
 
 async function kursvy() {
   if (!språk) språk = await hämta("/api/språk");
@@ -430,14 +919,31 @@ async function kursvy() {
   ul.innerHTML = "";
   for (const k of kurser) {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="lem"></span><span class="kl"></span>`;
-    li.querySelector(".lem").textContent = `${k.källnamn} → ${k.målnamn}`;
-    li.querySelector(".kl").textContent = `step ${k.nivå}, ${k.cefr}`;
+    li.innerHTML = `<span class="namn"></span><span class="bi"></span>`;
+    li.querySelector(".namn").textContent = `${k.källnamn} → ${k.målnamn}`;
+    li.querySelector(".bi").textContent = `level ${k.nivå} · ${k.cefr}`;
     li.addEventListener("click", () => byt(k.id));
     ul.append(li);
   }
-  if (!kurser.length) ul.innerHTML = '<li style="color:var(--svag)">None yet</li>';
-  for (const [id, tom] of [["k-källa", "From…"], ["k-mål", "To…"]]) {
+  if (!kurser.length) ul.innerHTML = '<li class="last">None yet</li>';
+  // Minutfältet visar den AKTIVA kursens värde — det är per kurs, eftersom
+  // olika språk kan förtjäna olika mycket av dygnet.
+  const denna = kurser.find(k => k.id === kurs?.id) ?? kurser[0];
+  if (denna) {
+    $("k-minuter").value = denna.minuter_per_dag ?? 20;
+    // ÄRLIGT OM DET INTE VERKAR ÄN. Minuter räknas om till kort via din egen
+    // uppmätta takt, och den finns inte förrän några pass tidtagits.
+    // PROGNOSEN, ur samma två tal som styr inflödet. Inget nytt antagande,
+    // så kurvan kan inte lova något annat än vad systemet faktiskt gör.
+    sätt("k-takt", denna.sek_per_rep
+      ? `Your measured pace is ${denna.sek_per_rep.toFixed(1)} s per card.`
+        + (denna.dygn_till_klart
+           ? ` At this setting: about ${denna.ord_per_dygn} new words a day, `
+             + `${denna.ord_kvar} left, ${denna.dygn_till_klart} days to finish `
+             + `the level's vocabulary.` : "")
+      : "Not in effect yet — it needs a few timed sessions first.");
+  }
+  for (const [id, tom] of [["k-källa", "From"], ["k-mål", "To"]]) {
     const sel = $(id);
     if (sel.options.length) continue;
     sel.add(new Option(tom, ""));
@@ -445,7 +951,7 @@ async function kursvy() {
   }
   const ns = $("k-nollställ");
   ns.innerHTML = "";
-  ns.add(new Option("Choose a course…", ""));
+  ns.add(new Option("Choose a course", ""));
   for (const k of kurser) ns.add(new Option(`${k.källnamn} → ${k.målnamn}`, k.id));
   visa("kurs");
 }
@@ -456,14 +962,15 @@ async function byt(id) {
   ordlista = null;
   const alla = await hämta("/api/kurser");
   const full = alla.find(k => k.id === id) || kurs;
-  $("titel").textContent = `${full.källnamn ?? kurs.källspråk} → ${full.målnamn ?? kurs.målspråk}`;
+  $("kursknapp").firstChild.textContent =
+    `${full.källnamn ?? kurs.källspråk} → ${full.målnamn ?? kurs.målspråk}`;
   await hem();
 }
 
 function visaVarning() {
   const valda = [$("k-källa").value, $("k-mål").value];
-  const varningar = språk.filter(s => valda.includes(s.kod) && s.varning);
-  $("k-varning").textContent = varningar.map(s => s.varning).join(" ");
+  sätt("k-varning", språk.filter(s => valda.includes(s.kod) && s.varning)
+                         .map(s => s.varning).join(" "));
 }
 
 // ── lektionerna ───────────────────────────────────────────────────
@@ -473,12 +980,12 @@ async function lektioner() {
   ol.innerHTML = "";
   for (const s of steg) {
     const li = document.createElement("li");
-    li.className = s.upplåst ? "upplåst" : "låst";
-    li.innerHTML = `<span class="nr"></span><span class="ti"></span>
-                    <span class="lås"></span>`;
-    li.querySelector(".nr").textContent = s.nivå;
-    li.querySelector(".ti").textContent = s.titel;
-    li.querySelector(".lås").textContent = s.upplåst ? "" : "locked";
+    if (!s.upplåst) li.className = "last";
+    li.innerHTML = `<span class="bi"></span><span class="namn"></span>
+                    <span class="bi"></span>`;
+    const d = li.querySelectorAll("span");
+    d[0].textContent = s.nivå; d[1].textContent = s.titel;
+    d[2].textContent = s.upplåst ? "" : "locked";
     if (s.upplåst) li.addEventListener("click", () => lektion(s.nivå));
     ol.append(li);
   }
@@ -490,24 +997,42 @@ async function lektion(nivå, aktiverbar) {
   const d = await hämta(`/api/lektion/${kurs.id}/${nivå}`);
   väntandeNivå = aktiverbar ? nivå : null;
   $("l-aktivera").hidden = !aktiverbar;
-  $("l-titel").textContent = d.titel;
-  $("l-nr").textContent = `step ${d.nivå} of 21`;
-  $("l-vad").textContent = d.vad;
-  $("l-spana").textContent = d.spana;
+  // Continue visas när lektionen inleder DAGENS PASS — inte när man bläddrar
+  // i listan, och inte när den är en upplåsning (då gäller aktiveraknappen).
+  $("l-fortsatt").hidden = !(dagensLektion && !aktiverbar);
+  // INBYGGD I PASSET, inte en avstickare till lektionslistan. Är det passets
+  // inledning finns ingen väg tillbaka till listan — bara framåt — så steget
+  // läses som en del av övningen och inte som en meny man råkat hamna i.
+  $("l-tillbaka").hidden = dagensLektion;
+  sätt("l-titel", d.titel); sätt("l-nr", `Level ${d.nivå} of 21`);
+  sätt("l-vad", d.vad); sätt("l-spana", d.spana);
   const ex = $("l-exempel");
   ex.innerHTML = "";
   for (const e of d.exempel) {
     const div = document.createElement("div");
-    div.className = "exempelpar";
+    div.className = "exempel";
     div.innerHTML = `<div class="källa"></div><div class="mål"></div>`;
     div.querySelector(".källa").textContent = e.uppgift ?? "";
     div.querySelector(".mål").textContent = e.text;
     ex.append(div);
   }
   if (!d.exempel.length) ex.textContent = "No example could be built here yet.";
-  $("l-nytt").textContent = d.nya_kort
+  sätt("l-nytt", d.nya_kort
     ? `${d.nya_kort} new cards: ` + d.nytt.map(x => `${x.antal} ${x.typ}`).join(", ")
-    : "No new word forms — this step is about structure.";
+    : "No new word forms — this level is about structure.");
+  // ORDEN steget för in. Räknarna säger hur mycket, den här listan vad.
+  const ordlista = $("l-ordlista");
+  ordlista.innerHTML = "";
+  const ord = d.nya_ord || [];
+  for (const o of ord) {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="mål"></span><span class="källa"></span>`;
+    li.querySelector(".mål").textContent = o[kurs.målspråk] ?? o.koncept;
+    li.querySelector(".källa").textContent = o[kurs.källspråk] ?? "";
+    ordlista.append(li);
+  }
+  sätt("l-ordantal", ord.length ? `· ${ord.length}` : "");
+  $("l-ord").hidden = !ord.length;
   $("lektlistan").hidden = true; $("lektionen").hidden = false;
   visa("lekt");
 }
@@ -517,10 +1042,10 @@ let ordlista = null;
 
 async function ordbok() {
   if (!ordlista) ordlista = await hämta(`/api/ordlista/${kurs.id}`);
-  const klasser = [...new Set(ordlista.map(o => o.ordklass))].sort();
   const sel = $("ordklass");
   if (sel.options.length === 1)
-    for (const k of klasser) sel.add(new Option(k, k));
+    for (const k of [...new Set(ordlista.map(o => o.ordklass))].sort())
+      sel.add(new Option(k, k));
   $("ordet").hidden = true; $("ordlistan").hidden = false;
   ritaLista();
   visa("ord");
@@ -535,29 +1060,28 @@ function ritaLista() {
     (!q || o.lemma.toLowerCase().includes(q) || o.koncept.includes(q)) &&
     (!kl || o.ordklass === kl) &&
     (!till || (till === "påbörjad" ? o.sedda > 0 : o.sedda === 0)));
+  sätt("ord-antal", `${träffar.length} of ${ordlista.length} words`);
   for (const o of träffar.slice(0, 400)) {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="lem"></span><span class="kl"></span>
-      <span class="mini"><i style="width:${Math.round(o.andel*100)}%"></i></span>`;
-    li.querySelector(".lem").textContent = o.lemma;
-    li.querySelector(".kl").textContent = o.ordklass;
+    li.innerHTML = `<span class="namn språk"></span><span class="bi"></span>`;
+    li.querySelector(".namn").textContent = o.lemma;
+    li.querySelector(".bi").textContent =
+      `${o.ordklass}${o.sedda ? ` · ${Math.round(o.andel*100)}%` : ""}`;
     li.addEventListener("click", () => ordet(o.koncept));
     ul.append(li);
   }
-  if (!träffar.length) ul.innerHTML = "<li style=\"color:var(--svag)\">No matches</li>";
+  if (!träffar.length) ul.innerHTML = '<li class="last">No matches</li>';
 }
 
 async function ordet(koncept) {
   const d = await hämta(`/api/ord/${kurs.id}/${encodeURIComponent(koncept)}`);
-  $("o-lemma").textContent = d.lemma;
-  $("o-klass").textContent = d.ordklass;
+  sätt("o-lemma", d.lemma); sätt("o-klass", d.ordklass);
   const rot = $("paradigm");
   rot.innerHTML = "";
   for (const t of d.tabeller) {
-    const box = document.createElement("div");
-    box.className = "paradigm";
-    if (t.rubrik) { const h = document.createElement("h3");
-                    h.textContent = t.rubrik; box.append(h); }
+    if (t.rubrik) { const h = document.createElement("h2");
+                    h.className = "kol"; h.style.marginTop = "1.6rem";
+                    h.textContent = t.rubrik; rot.append(h); }
     const tab = document.createElement("table");
     tab.className = "para";
     if (t.kolumner.some(k => k)) {
@@ -570,23 +1094,22 @@ async function ordet(koncept) {
     for (const r of t.rader) {
       const tr = document.createElement("tr");
       const th = document.createElement("th");
-      th.className = "rad"; th.textContent = r.etikett; tr.append(th);
+      th.textContent = r.etikett; tr.append(th);
       for (const ruta of r.rutor) {
         const td = document.createElement("td");
-        if (!ruta) { td.className = "utanför"; td.textContent = ""; }
+        if (!ruta) { td.className = "utanför"; }
         else {
           td.textContent = ruta.form || "—";
           td.className = ruta.styrka === null ? "utanför"
-            : ruta.delvis ? "delvis"
             : ruta.outforskad ? "oöppnad"
-            : ruta.styrka >= 0.9 ? "stark" : ruta.styrka >= 0.7 ? "medel" : "svag";
+            : ruta.styrka >= 0.7 ? "" : "svag";
           td.addEventListener("mouseenter", () => beskriv(ruta));
         }
         tr.append(td);
       }
       tab.append(tr);
     }
-    box.append(tab); rot.append(box);
+    rot.append(tab);
   }
   $("ordlistan").hidden = true; $("ordet").hidden = false;
 }
@@ -595,158 +1118,144 @@ function beskriv(ruta) {
   const d = $("delar");
   if (!ruta.delar.length) {
     d.textContent = `${ruta.form} — not part of your course yet.`; return; }
-  const bit = x => `${x.typ} <b>${x.facit}</b>` +
-    (x.sedd ? ` ${Math.round(x.r*100)}%` : " not met");
-  d.innerHTML = `<b>${ruta.form}</b> — ` + ruta.delar.map(bit).join(" + ")
-    + (ruta.not ? `<br>${ruta.not}` : "");
-}
-
-// ── övning ────────────────────────────────────────────────────────
-async function startaPass(extra) {
-  extraläge = extra;
-  gjort = 0;
-  if (!extra) await hämta(`/api/nytt-pass/${kurs.id}`);
-  $("s-extra").textContent = extra ? "extra practice" : "";
-  $("klart").hidden = true;
-  visa("öva");
-  await nästa();
-}
-
-async function nästa() {
-  $("utfall").hidden = true;
-  $("anm").innerHTML = "";
-  const h = await hämta(`/api/hem/${kurs.id}`);
-  $("s-gjort").textContent = `${h.idag}/${h.mål}`;
-  $("s-förf").textContent = h.summa.förfallna;
-  $("s-igen").textContent = h.summa.igen;
-  // PASSET SLUTAR VID DAGENS MÅL. Det första villkoret var "köerna tomma",
-  // och det är oåtkomligt MED FLIT: budgeten siktar på ~1,5 felaktiga kort
-  // per mening, så bara 7 % av meningarna blir helt rätta (mätt vid budget
-  // 1,5). Passkön planade ut kring 25 och nådde aldrig noll på 120 meningar.
-  //
-  // De två mekanismerna är var för sig riktiga men har olika enhet: budgeten
-  // räknar KORT, passvillkoret räknade MENINGAR. Målet — `meningar_per_dag`,
-  // användarens eget val och samma tal kapacitetsmodellen använder — är det
-  // enda som ger ett pass med förutsägbar längd.
-  //
-  // Kort som är kvar i passkön är inte förlorade: FSRS har redan
-  // schemalagt dem till i morgon.
-  const kvar = h.summa.förfallna + h.summa.igen;
-  if (!extraläge && h.idag >= h.mål && !h.summa.förfallna && gjort > 0) {
-    $("fråga").hidden = true; $("klart").hidden = false;
-    $("klarttext").textContent = T.klart_alla(h.idag)
-      + (h.summa.igen ? " " + T.kvar_i_kön(h.summa.igen) : "");
-    return;
-  }
-  const u = await hämta(`/api/uppgift/${kurs.id}`);
-  if (u.fel) { $("fråga").hidden = true; $("klart").hidden = false;
-               $("klarttext").textContent = u.fel; return; }
-  uppgift = u;
-  $("fråga").hidden = false;
-  $("riktning").textContent = `${u.källspråk} → ${u.målspråk}`;
-  $("uppgift").textContent = u.uppgift ?? "(course has no source language)";
-  const f = $("svar");
-  f.value = ""; f.disabled = false; f.focus();
-  $("hjälp").hidden = false; $("vidare").hidden = true;
-}
-
-async function svara() {
-  const f = $("svar");
-  if (!f.value.trim()) return;
-  f.disabled = true;
-  const r = await hämta("/api/svar", {
-    method: "POST", headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({id: uppgift.id, svar: f.value})});
-  gjort++;
-  $("utfall").hidden = false;
-  const d = $("dom");
-  d.className = "dom " + (r.korrekt ? "ja" : "nej");
-  d.textContent = r.korrekt ? "✓ Correct" : "✗ Not quite";
-  $("facitrad").textContent = r.korrekt ? "" : r.facit;
-  for (const a of r.anmärkningar) {
-    const li = document.createElement("li");
-    const del = (kl, txt) => { if (!txt) return;
-      const e = document.createElement("span"); e.className = kl;
-      e.textContent = txt; li.append(e); };
-    del("ord skrev", a.skrev); del("ord väntat", a.väntat);
-    del("varför", a.slutsats); if (a.osäker) del("osäker", "uncertain");
-    $("anm").append(li);
-  }
-  $("s-gjort").textContent = gjort;
-  $("s-igen").textContent = r.igen;
-  $("hjälp").hidden = true;
-  $("vidare").hidden = false;
-  $("vidare").focus();
+  const bit = x => `${x.typ} ${x.facit}` +
+    (x.sedd ? ` ${Math.round(x.r*100)}%` : " (not met)");
+  d.textContent = `${ruta.form} — ` + ruta.delar.map(bit).join(" + ")
+    + (ruta.not ? ` · ${ruta.not}` : "");
 }
 
 // ── start ─────────────────────────────────────────────────────────
-$("frm").addEventListener("submit", e => { e.preventDefault(); svara(); });
+// Enter svarar, och Enter går vidare när facit står uppe. Samma tangent
+// hela vägen — passet ska gå att köra utan att lyfta händerna.
+$("svar").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); svara(); }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !$("vy-öva").hidden && !$("vidare").hidden) {
+    e.preventDefault(); nästa();
+  }
+});
+$("info-knapp").addEventListener("click", () => {
+  visaInfo = !visaInfo;
+  $("info-knapp").setAttribute("aria-expanded", visaInfo ? "true" : "false");
+  ritaTyper();
+});
 $("vidare").addEventListener("click", () => nästa());
-$("starta").addEventListener("click", () => startaPass(false));
+$("ocksa-ratt").addEventListener("click", async () => {
+  if (obokförd === null) return;
+  await hämta("/api/självrätta", {method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({id: obokförd, hela: true})});
+  const d = $("dom");
+  d.className = "dom ja"; d.textContent = "Counted as correct";
+  $("ocksa-ratt").hidden = true;
+  for (const li of $("anm").children) li.dataset.rattad = "1";
+});
+// Glosorna först när det finns nya ord: orden ska läsas innan de möts.
+$("starta").addEventListener("click", async () => {
+  const h = await hämta(`/api/hem/${kurs.id}`);
+  if (h.idag.glosor) return glosvy();
+  startaPass(false);
+});
+$("n-lankka").addEventListener("click", async () => {
+  const h = await hämta(`/api/hem/${kurs.id}`);
+  await lektion(h.nivå.nu);
+});
+$("glos-start").addEventListener("click", () => {
+  $("glos-lista").hidden = true; $("glos-drill").hidden = false; glosfråga();
+});
+$("glos-svar").addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if ($("glos-utfall").hidden) glossvara(); else glosfråga();
+});
+$("glos-nästa").addEventListener("click", () => glosfråga());
+$("glos-vidare").addEventListener("click", () => startaPass(false));
 $("extra").addEventListener("click", () => startaPass(true));
-$("tillbaka").addEventListener("click", () => hem());
-$("nav-hem").addEventListener("click", () => hem());
-$("titel").addEventListener("click", () => kursvy());
+$("fortsätt").addEventListener("click", async () => { await bokför(); startaPass(true); });
+$("tillbaka").addEventListener("click", async () => { await bokför(); hem(); });
+// Lämnar man uppgiftsvyn med ett obokfört svar ska det ändå räknas —
+// annars försvinner en mening ur historiken för att man klickade fel.
+$("nav-hem").addEventListener("click", async () => { await bokför(); hem(); });
+$("nav-ord").addEventListener("click", async () => { await bokför(); ordbok(); });
+$("nav-lekt").addEventListener("click", async () => { await bokför(); lektioner(); });
+$("nav-kurs").addEventListener("click", async () => { await bokför(); kursvy(); });
+$("kursknapp").addEventListener("click", () => kursvy());
+$("o-tillbaka").addEventListener("click", () => {
+  $("ordet").hidden = true; $("ordlistan").hidden = false; });
+$("l-tillbaka").addEventListener("click", () => {
+  $("lektionen").hidden = true; $("lektlistan").hidden = false; });
+for (const id of ["sök", "ordklass", "tillstånd"])
+  $(id).addEventListener("input", ritaLista);
 for (const id of ["k-källa", "k-mål"])
   $(id).addEventListener("change", visaVarning);
+
+$("k-visa-reset").addEventListener("click", () => {
+  const r = $("k-reset");
+  r.hidden = !r.hidden;
+  $("k-visa-reset").textContent = r.hidden ? "Reset a course…" : "Never mind";
+});
+$("k-spara-minuter").addEventListener("click", sparaMinuter);
+$("k-minuter").addEventListener("keydown", e => {
+  if (e.key === "Enter") { e.preventDefault(); sparaMinuter(); } });
+
 $("k-skapa").addEventListener("click", async () => {
   const [a, b] = [$("k-källa").value, $("k-mål").value];
-  if (!a || !b || a === b) { $("k-varning").textContent =
-    "Pick two different languages."; return; }
+  if (!a || !b || a === b) {
+    sätt("k-varning", "Pick two different languages."); return; }
   const ny = await hämta("/api/kurs", {method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({källspråk: a, målspråk: b})});
-  if (ny.fel) { $("k-varning").textContent = ny.fel; return; }
+  if (ny.fel) { sätt("k-varning", ny.fel); return; }
+  // KURSEN ÖPPNAS PÅ HEMSKÄRMEN. Lektionen hör till att STARTA passet, inte
+  // till att skapa kursen — den poppade förut upp mitt i ett kursbyte, utan
+  // att man bett om den.
   await byt(ny.id);
 });
 $("k-kör").addEventListener("click", async () => {
   const id = $("k-nollställ").value;
-  if (!id) { $("k-svar").textContent = "Pick a course first."; return; }
+  if (!id) { sätt("k-svar", "Pick a course first."); return; }
   const r = await hämta(`/api/nollställ/${id}`, {method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({bekräftelse: $("k-bekräfta").value})});
   $("k-bekräfta").value = "";
-  $("k-svar").textContent = r.fel
+  sätt("k-svar", r.fel
     ? "Type RESET exactly to confirm — nothing was deleted."
-    : `Reset done. ${r.nollställd} is back at step 1.`;
+    : `Reset done. ${r.nollställd} is back at level 1.`);
   if (r.fel) return;
   ordlista = null;
   await kursvy();
 });
+// Lektionen FÖRST, sedan korten — nivån ändras när användaren aktiverar den,
+// inte när hen läser om den.
 $("lås-upp").addEventListener("click", async () => {
-  // Lektionen FÖRST, sedan korten — Julius val. Nivån ändras när han
-  // klickar på aktivera, inte när han läser.
   const h = await hämta(`/api/hem/${kurs.id}`);
-  await lektion(h.nivå + 1, true);
+  await lektion(h.nivå.nu + 1, true);
 });
-$("l-aktivera-knapp").addEventListener("click", async () => {
+$("l-fortsatt").addEventListener("click", async () => {
+  dagensLektion = false;
+  await startaPass(false);
+});
+
+$("l-aktivera").addEventListener("click", async () => {
   const r = await hämta(`/api/lås-upp/${kurs.id}`, {method: "POST",
     headers: {"Content-Type": "application/json"}, body: "{}"});
   if (r.fel) return;
   kurs.nivå = r.nivå; ordlista = null;
   await hem();
 });
-$("nav-ord").addEventListener("click", () => ordbok());
-$("nav-ord").disabled = false;
-$("nav-lekt").addEventListener("click", () => lektioner());
-$("nav-lekt").disabled = false;
-$("l-tillbaka").addEventListener("click", () => {
-  $("lektionen").hidden = true; $("lektlistan").hidden = false; });
-$("o-tillbaka").addEventListener("click", () => {
-  $("ordet").hidden = true; $("ordlistan").hidden = false; });
-for (const id of ["sök", "ordklass", "tillstånd"])
-  $(id).addEventListener("input", ritaLista);
 
 (async () => {
   const kurser = await hämta("/api/kurser");
   if (!kurser.length) {
-    $("laddar").textContent = "No course yet. Create one with `ordbok kurs --ny sv de`.";
+    sätt("laddar", "No course yet. Create one with `ordbok kurs --ny sv de`.");
     return;
   }
   kurs = kurser[0];
-  $("titel").textContent = `${kurs.källspråk} → ${kurs.målspråk}`;
+  $("kursknapp").firstChild.textContent =
+    `${kurs.källnamn ?? kurs.källspråk} → ${kurs.målnamn ?? kurs.målspråk}`;
   await hem();
-})().catch(e => { $("laddar").textContent = "Server error: " + e.message; });
+})().catch(e => { sätt("laddar", "Server error: " + e.message); });
 </script>
 </body>
 </html>

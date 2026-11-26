@@ -60,7 +60,7 @@ import math
 import sqlite3
 from dataclasses import dataclass
 
-from ..kort.schemalaggning import _skapa_schemaläggare
+from ..kort.schemalaggning import NYKVOT, _skapa_schemaläggare
 
 VIKT = {
     "täckning": 10.0,
@@ -73,10 +73,10 @@ VIKT = {
     "längd": -0.15,
 }
 
-#: Så många osedda kort får en mening introducera gratis. Över det straffas
-#: varje ytterligare. Två är en gissning som ska mätas mot verklig
-#: användning, som alla vikter här.
-NYKVOT = 2
+#: NYKVOT — så många osedda kort en mening får introducera gratis — bor i
+#: `kort.schemalaggning` och importeras hit. Den styr takten nytt material
+#: kommer in i, vilket `dagsplan` också måste veta; två kopior av samma regel
+#: kunde ha sagt olika saker om hur mycket ett pass bär.
 
 #: Vid eller under det här R räknas kortet som ett stretchkort — utfallet är
 #: genuint osäkert. Över det är kortet stöd: det fyller meningen utan att pröva.

@@ -26,3 +26,8 @@ natt2.log
 kort.db
 kort.db-wal
 kort.db-shm
+
+# Säkerhetskopior av densamma. Måste stå här EXPLICIT: `*.db` överst matchar
+# inte `kort.db.före-D3-20260824`, eftersom filnamnet slutar på datumet.
+säkerhetskopior/
+kort.db.*

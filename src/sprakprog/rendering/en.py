@@ -291,6 +291,7 @@ class EngelskRenderare:
             # negationer, och av samma skäl: bara hjälpverb får inverteras.
             # "Does the girl read?" men "Is she happy?"
             if len(verb) == 1 and m.verb != "verb_vara":
+                self.u.ordföljd("do_omskrivning")
                 hjälp = self.u.form_för(
                     "fys_göra", "pret" if m.tid is Tidsreferens.FÖRFLUTEN
                     else "pres_3sg" if self._tredje_person_sg(m.subjekt)
@@ -300,6 +301,7 @@ class EngelskRenderare:
             if frågeord is not None:
                 ord.insert(0, frågeord)
         else:
+            self.u.ordföljd("svo")
             ord = [*subjekt, *verb]
         if m.komplement is not None:
             # Engelskan varierar inte bara MARKÖREN utan också FORMEN:
@@ -317,6 +319,11 @@ class EngelskRenderare:
                 ord.append(self.u.form_för(m.komplement, "inf_imp"))
         if m.predikativ is not None:
             ord += self.predikativ(m)
+        # DATIVVÄXLINGEN GÄLLER BARA NÄR BÅDA OBJEKTEN FINNS. "Gave her the
+        # book" har en ordning att lära sig; "gave the book" har ingen.
+        if (m.io is not None and m.objekt is not None
+                and m.fråga_om not in ("io", "objekt")):
+            self.u.ordföljd("dativväxling")
         for slot, nf in (("io", m.io), ("objekt", m.objekt)):
             if nf is not None and slot != m.fråga_om:
                 ord += self.nominalfras(nf)
@@ -353,5 +360,6 @@ class EngelskRenderare:
         return [self.u.form_för(b.subjunktion, "inv"), *self.satsled(b.sats)]
 
     def rendera(self, m: Mening) -> str:
-        mening = " ".join(self.sandhi(self.satsled(m)))
+        self.osammansmält = self.satsled(m)
+        mening = " ".join(self.sandhi(self.osammansmält))
         return mening[0].upper() + mening[1:] + slutar(m)

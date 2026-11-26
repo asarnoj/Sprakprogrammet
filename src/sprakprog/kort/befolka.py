@@ -176,7 +176,7 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
     # är sitt eget kort. Det är inte en reservlösning utan modellens
     # nedre gräns, och den syns här därför att den faktiskt inträffar.
     analyserade = {(rad["språk"], rad["ordklass"]) for rad in _stamrader(språk)}
-    from ..rendering import Uppslag
+    from ..rendering import RenderingsFel, Uppslag
     for s_ in sorted(språk):
         u = Uppslag(språk_db, s_)
         for r in språk_db.execute(
@@ -184,9 +184,12 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
                    JOIN Koncept k ON k.id = l.koncept_id WHERE l.språk = ?""", (s_,)):
             if (s_, r["ordklass"]) in analyserade:
                 continue
+            # Smal fångst: ett lexem utan läsbart paradigm hoppas över, men
+            # ett programfel ska synas. Mätt kastar `_celler` aldrig över hela
+            # lexikonet, så grenen är en spärr och ingen normalväg.
             try:
                 celler = {c: f for c, f in u._celler(r).items() if f}
-            except Exception:
+            except (RenderingsFel, KeyError):
                 continue
             for cell, form in celler.items():
                 if not nås(s_, r["nyckel"], r["variant"], [cell]):
@@ -273,7 +276,7 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
 
 def _golvkort(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
     """Beroendekartan för de ordklasser som inte har någon stamanalys."""
-    from ..rendering import Uppslag
+    from ..rendering import RenderingsFel, Uppslag
     analyserade = {(rad["språk"], rad["ordklass"]) for rad in _stamrader(språk)}
     ut = []
     for s_ in sorted(språk):
@@ -285,7 +288,7 @@ def _golvkort(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
                 continue
             try:
                 celler = {c: f for c, f in u._celler(r).items() if f}
-            except Exception:
+            except (RenderingsFel, KeyError):
                 continue
             for cell in celler:
                 ut.append((s_, r["nyckel"], r["variant"], cell,
@@ -375,7 +378,7 @@ def nåbara(språk_db: sqlite3.Connection, språk: str, nivå: int, cefr: str,
 
 def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             språk: set[str], *, nivå: int | None = None,
-            cefr: str = "C2") -> dict[str, int]:
+            cefr: str = "C2", mät: bool = True) -> dict[str, int]:
     """Sätt in de kort som saknas. Rör aldrig ett kort som redan finns.
 
     Additivt av ett skäl: ett befintligt kort bär repetitionshistorik, och
@@ -402,8 +405,19 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
 
     # Beroendekartan byggs om varje gång — den bär ingen historik, bara
     # kopplingen, och den ska följa språkdatabasen.
+    #
+    # BARA FÖR DE SPRÅK SOM BEFOLKAS. Raderingen gällde hela tabellen medan
+    # återuppbyggnaden bara gällde `språk`, så varje befolkning av ETT språk
+    # tömde kartan för ALLA ANDRA. Att skapa kursen sv→en 2026-08-15 raderade
+    # därmed tyskans 3 000 kopplingar, och tyskan hade sedan dess bara sina
+    # ORDKORT: rättningen kunde inte skylla ett böjningsfel på vare sig stam
+    # eller ändelse, och svarade "inget kort hör till ordet" på varje
+    # formfel. Beståndet såg oskadat ut hela tiden — Kort-tabellen var hel,
+    # och raden som rapporterades ("1 290 kopplingar") räknade det språk som
+    # just byggts, aldrig det som tappats.
     idn = {r["nyckel"]: r["id"] for r in kort_db.execute("SELECT id, nyckel FROM Kort")}
-    kort_db.execute("DELETE FROM Cellkort")
+    kort_db.executemany("DELETE FROM Cellkort WHERE språk = ?",
+                        [(s_,) for s_ in sorted(språk)])
     kort_db.executemany(
         "INSERT INTO Cellkort (språk, koncept, variant, cell, kort_id) VALUES (?,?,?,?,?)",
         [(s, k, v, c, idn[n])
@@ -422,8 +436,109 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
         härledda = {r[0] for r in rader}
         föräldralösa = [r["nyckel"] for r in kort_db.execute("SELECT nyckel FROM Kort")
                         if r["nyckel"] not in härledda]
+    # Införandeordningen skrivs om varje gång, precis som beroendekartan:
+    # den bär ingen historik utan följer språkdatabasen.
+    for s_ in sorted(språk):
+        rang = _rang(språk_db, s_, cefr)
+        if rang:
+            kort_db.executemany(
+                "UPDATE Kort SET rang = ? WHERE språk = ? AND koncept = ?",
+                [(v, s_, k) for k, v in rang.items()])
+    kort_db.commit()
+
+    # EXPONERINGEN MÅSTE MÄTAS OM NÄR BESTÅNDET ÄNDRAS, och det är precis här
+    # det gör det. Mätningen fanns, tröskeln fanns, kolumnen fanns — men
+    # ingenting anropade dem, så `exponering` var NULL på varje kort och
+    # `schemalagt` 1 på alla. Följden var att de allestädes närvarande korten
+    # låg i kön och betygsattes om och om igen: `∅` möts 0,93 gånger per
+    # mening, `a` 0,41, och de fick var sitt Good i nästan varje mening.
+    #
+    # Kostar 1,7 s för tyskan och 0,4 för engelskan — försumbart mot att köra
+    # befolkningen, som ändå bara sker när en nivå öppnas.
+    #
+    # `kostnad()` ställer en HYPOTETISK fråga i en kopia och stänger av det
+    # här: den vill veta hur många kort en nivå skulle lägga till, inte hur
+    # ofta de skulle mötas.
+    if mät:
+        # SPRÅKVIS, PARVIS. Mätningen och skrivningen hör ihop: bara det
+        # språk vars exponering just mätts får sin flagga omskriven. Att
+        # skriva alla på slutet lät en språkmätning ändra ett annat språks
+        # kö — se `sätt_schemalagt`.
+        for s_ in sorted(språk):
+            mät_exponering(kort_db, språk_db, s_)
+            sätt_schemalagt(kort_db, språk=s_)
+
     return {"härledda": len(rader), "nya": efter - före, "totalt": efter,
-            "kopplingar": kopplingar, "föräldralösa": len(föräldralösa)}
+            "kopplingar": kopplingar, "föräldralösa": len(föräldralösa),
+            "omätta": kort_db.execute(
+                "SELECT COUNT(*) FROM Kort WHERE exponering IS NULL").fetchone()[0],
+            "ej_schemalagda": kort_db.execute(
+                "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0").fetchone()[0]}
+
+
+#: CEFR som rangordning. A1 före A2 före B1 — samma ordning som `CEFR` i
+#: urval.py, men som tal.
+_NIVÅRANG = {"A1": 0, "A2": 1, "B1": 2, "B2": 3, "C1": 4, "C2": 5}
+
+#: Ordklasser en minimal sats inte kan vara utan: verbet, frashuvudet och
+#: artikeln det kräver. Allt annat är bestämningar som dessutom är låsta
+#: bakom en nivå på komplexitetsstegen, så de behövs inte först.
+_OUMBÄRLIGA = {"Verb", "Pronomen", "Substantiv", "Artikel"}
+
+
+def _rang(språk_db: sqlite3.Connection, språk: str, cefr: str) -> dict[str, int]:
+    """Konceptnyckel → införandeordning. Lägre = tidigare.
+
+    Tre signaler, alla redan i språkdatabasen:
+
+        källa        bas_kärna före grundord. De slutna ordklasserna ÄR
+                     kärnan, och uppdelningen är redan gjord i nivålistorna.
+        nivå         A1 före A2.
+        centralitet  hur många meningar ordet gör möjliga — för ett
+                     substantiv antalet verb det kan stå med, för ett verb
+                     antalet ord som kan vara dess subjekt.
+
+    CENTRALITETEN NORMALISERAS INOM ORDKLASS. Ett verb med 169 möjliga
+    subjekt och ett pronomen med 65 möjliga verb mäter inte samma sak, och
+    att jämföra talen rakt av satte modalverben före pronomenen — man kan
+    inte böja ett verb innan man har någon att böja det efter.
+
+    Rangen är per KONCEPT, så alla kort som hör till ett ord delar den.
+    """
+    from ..generator.urval import Ordförråd
+
+    o = Ordförråd(språk_db, språk, cefr)
+    meta = {r["nyckel"]: r for r in språk_db.execute(
+        "SELECT nyckel, källa, nivå, ordklass FROM Koncept")}
+
+    def råcentralitet(k: str) -> int:
+        ordklass = o.ordklass.get(k)
+        if ordklass in ("Substantiv", "Pronomen"):
+            return len(o.verb_för(k))
+        if ordklass == "Verb":
+            krav = o.verb.get(k)
+            return len(o.uppfyller(krav.get("subjekt", []))) if krav else 0
+        return 0
+
+    tak: dict[str, int] = {}
+    rå: dict[str, int] = {}
+    for k in o.ordklass:
+        if k not in meta:
+            continue
+        rå[k] = råcentralitet(k)
+        ordklass = o.ordklass[k]
+        tak[ordklass] = max(tak.get(ordklass, 0), rå[k])
+
+    def nyckel(k: str):
+        m = meta[k]
+        t = tak.get(o.ordklass.get(k), 0)
+        andel = rå[k] / t if t else 0.0
+        return (0 if m["källa"] == "bas_kärna" else 1,
+                _NIVÅRANG.get(m["nivå"], 9),
+                0 if m["ordklass"] in _OUMBÄRLIGA else 1,
+                -andel, k)
+
+    return {k: i for i, k in enumerate(sorted(rå, key=nyckel))}
 
 
 def exponeringsgräns(meningar_per_dag: int) -> float:
@@ -443,22 +558,47 @@ def exponeringsgräns(meningar_per_dag: int) -> float:
 
 
 def sätt_schemalagt(kort_db: sqlite3.Connection,
-                    meningar_per_dag: int | None = None) -> int:
+                    meningar_per_dag: int | None = None, *,
+                    språk: str | None = None) -> int:
     """Kort som möts oftare än gränsen mäts men schemaläggs inte.
 
     Kräver att `exponering` är mätt. Omätta kort lämnas schemalagda — att
     gissa vore att bygga in en tumregel där beslutet säger mätning.
+
+    SKRIVNINGEN ÄR SPRÅKVIS, och det var den inte. `UPDATE Kort SET
+    schemalagt = …` utan `WHERE språk` skrev om ALLA språks flagga vid varje
+    anrop, också de vars exponering aldrig mättes i den körningen — och
+    gränsen kom dessutom ur `MIN(meningar_per_dag)` över samtliga kurser, så
+    en kurs inställning avgjorde en annan kurss kö.
+
+    Det är exakt samma felklass som I3: `befolka` körde en gång
+    `DELETE FROM Cellkort` utan språkfilter, och att skapa en engelsk kurs
+    raderade därmed tyskans hela beroendekarta — i en månad, utan att något
+    syntes. Skrivningar i det här lagret ska aldrig sträcka sig utanför det
+    språk anroparen bad om.
+
+    `meningar_per_dag` hämtas nu ur KURSEN för språket i fråga. Talet är i
+    övrigt en kvarleva efter B4 — användarens ratt är minuter — och E6 säger
+    att gränsen egentligen ska följa den uppmätta takten. Att räkna om den
+    är ett beslut och inte en rättelse, så den står kvar som den är; det som
+    ändrats är bara att den inte längre är någon annans.
     """
     from .schemalaggning import STANDARD_MENINGAR_PER_DAG
     if meningar_per_dag is None:
-        rad = kort_db.execute("SELECT MIN(meningar_per_dag) AS m FROM Kurs").fetchone()
+        rad = kort_db.execute(
+            "SELECT MIN(meningar_per_dag) AS m FROM Kurs"
+            + (" WHERE målspråk = ?" if språk else ""),
+            (språk,) if språk else ()).fetchone()
         meningar_per_dag = (rad["m"] if rad and rad["m"] else STANDARD_MENINGAR_PER_DAG)
-    n = kort_db.execute(
-        "UPDATE Kort SET schemalagt = (exponering IS NULL OR exponering <= ?)",
-        (exponeringsgräns(meningar_per_dag),)).rowcount
+    kort_db.execute(
+        "UPDATE Kort SET schemalagt = (exponering IS NULL OR exponering <= ?)"
+        + (" WHERE språk = ?" if språk else ""),
+        (exponeringsgräns(meningar_per_dag),) + ((språk,) if språk else ()))
     kort_db.commit()
     return kort_db.execute(
-        "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0").fetchone()[0]
+        "SELECT COUNT(*) FROM Kort WHERE schemalagt = 0"
+        + (" AND språk = ?" if språk else ""),
+        (språk,) if språk else ()).fetchone()[0]
 
 
 def sammanfattning(kort_db: sqlite3.Connection) -> list[sqlite3.Row]:
@@ -499,12 +639,62 @@ def mät_exponering(kort_db, språk_db, språk: str, meningar: int = 2000) -> in
         rörda.append((self.språk, lexem["nyckel"], lexem["variant"], cell))
         return original(self, lexem, cell)
 
+    original_egenskap = Uppslag.egenskap
+    egenskaper: list = []
+
+    def logga_egenskap(self, lexem, namn):
+        egenskaper.append((lexem["nyckel"], namn))
+        return original_egenskap(self, lexem, namn)
+
+    # ORDFÖLJDEN MÄTS HÄR, och det är den mätningen som gör E6:s uppdelning
+    # automatisk. En regel som gäller i varje mening får exponering nära 1
+    # och lyfts ur schemat av `sätt_schemalagt`; en som bara gäller när en
+    # konstruktion är i spel får en exponering som går att schemalägga.
+    # A7 punkt 2 behöver alltså ingen egen lista över vilka regler som är
+    # högfrekventa — den följer ur samma mätning som allt annat.
+    #
+    # KÄND GRÄNS: svepet nedan bygger bara enkla påståendesatser, så regler
+    # som kräver fråga, bisats eller två objekt får exponering 0,0. Det är
+    # "inte mätt" och inte "mätt som sällsynt" — men utfallet blir rätt ändå,
+    # eftersom just de reglerna är de som SKA vara schemalagda.
+    original_ordföljd = Uppslag.ordföljd
+    ordföljder: list = []
+
+    def logga_ordföljd(self, regel):
+        ordföljder.append(regel)
+        return original_ordföljd(self, regel)
+
     karta: dict = collections.defaultdict(list)
     for rad in kort_db.execute(
             "SELECT språk, koncept, variant, cell, kort_id FROM Cellkort WHERE språk = ?",
             (språk,)):
         karta[(rad["språk"], rad["koncept"], rad["variant"], rad["cell"])].append(
             rad["kort_id"])
+
+    # ORDKORT OCH EGENSKAPSKORT HÄNGER PÅ KONCEPTET, inte på en cell, och står
+    # därför inte i Cellkort. Utan de här två uppslagen mättes de aldrig: alla
+    # 223 tyska ordkort och alla 428 genuskort fick exponering 0, vilket är
+    # samma lucka som en gång gjorde att varje mening attribuerade noll
+    # ordkort. Det är dessutom just de korten som ska sorteras på exponering
+    # när nya ord ska införas — ett ord man kommer att möta ofta hör hemma
+    # tidigt.
+    ordkort: dict = collections.defaultdict(list)
+    for rad in kort_db.execute(
+            """SELECT koncept, variant, id FROM Kort
+               WHERE språk = ? AND typ = 'ord' AND koncept IS NOT NULL""",
+            (språk,)):
+        ordkort[(rad["koncept"], rad["variant"])].append(rad["id"])
+    ordföljdskort: dict = {}
+    for rad in kort_db.execute(
+            """SELECT egenskap, id FROM Kort
+               WHERE språk = ? AND typ = 'ordföljd'""", (språk,)):
+        ordföljdskort[rad["egenskap"]] = rad["id"]
+    egenskapskort: dict = collections.defaultdict(list)
+    for rad in kort_db.execute(
+            """SELECT koncept, egenskap, id FROM Kort
+               WHERE språk = ? AND typ = 'egenskap' AND koncept IS NOT NULL""",
+            (språk,)):
+        egenskapskort[(rad["koncept"], rad["egenskap"])].append(rad["id"])
 
     subst = [r[0] for r in språk_db.execute(
         """SELECT k.nyckel FROM Koncept k JOIN Lexem l ON l.koncept_id = k.id
@@ -522,6 +712,8 @@ def mät_exponering(kort_db, språk_db, språk: str, meningar: int = 2000) -> in
 
     random.seed(3)
     Uppslag.form = logga
+    Uppslag.egenskap = logga_egenskap
+    Uppslag.ordföljd = logga_ordföljd
     try:
         träffar: collections.Counter = collections.Counter()
         byggda = försök = 0
@@ -541,6 +733,8 @@ def mät_exponering(kort_db, språk_db, språk: str, meningar: int = 2000) -> in
             if validator.validera(m):
                 continue
             rörda.clear()
+            egenskaper.clear()
+            ordföljder.clear()
             try:
                 renderare.rendera(m)
             except RenderingsFel:
@@ -549,8 +743,20 @@ def mät_exponering(kort_db, språk_db, språk: str, meningar: int = 2000) -> in
             for nyckel in set(rörda):
                 for kid in karta.get(nyckel, []):
                     träffar[kid] += 1
+            for _, koncept, variant, _ in set(rörda):
+                for kid in ordkort.get((koncept, variant), []):
+                    träffar[kid] += 1
+            for nyckel in set(egenskaper):
+                for kid in egenskapskort.get(nyckel, []):
+                    träffar[kid] += 1
+            for regel in set(ordföljder):
+                kid = ordföljdskort.get(regel)
+                if kid is not None:
+                    träffar[kid] += 1
     finally:
         Uppslag.form = original
+        Uppslag.egenskap = original_egenskap
+        Uppslag.ordföljd = original_ordföljd
     if not byggda:
         return 0
     kort_db.executemany("UPDATE Kort SET exponering = ? WHERE id = ?",

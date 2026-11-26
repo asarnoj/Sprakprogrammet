@@ -198,7 +198,11 @@ class Lektioner:
                 k.executescript(
                     (Path(__file__).resolve().parents[3] / "kort.sql")
                     .read_text(encoding="utf-8"))
-                befolka(k, self.s, {språk}, nivå=n, cefr=cefr)
+                # Ingen exponeringsmätning: det här är en jämförelse av två
+                # HYPOTETISKA bestånd för att visa vad steget lägger till.
+                # Mätningen kostar ~2 s per språk och anropet sker två gånger
+                # per lektionsvisning.
+                befolka(k, self.s, {språk}, nivå=n, cefr=cefr, mät=False)
                 return {r["nyckel"]: dict(r) for r in k.execute(
                     "SELECT * FROM Kort WHERE språk = ?", (språk,))}
 
@@ -250,7 +254,35 @@ class Lektioner:
             "nya_kort": len(nya),
             "nytt": [{"typ": t, "antal": len(v), "prov": v[:12]}
                      for t, v in sorted(per_typ.items(), key=lambda x: -len(x[1]))],
+            "nya_ord": self.nya_ord(nya),
         }
+
+    def nya_ord(self, nya: list) -> list[dict]:
+        """ORDEN steget för in, med sitt lemma på båda språken.
+
+        Räknarna per korttyp säger hur MYCKET som tillkommer; det här säger
+        VAD. Julius: "innan nivån vill jag få en lista på orden som är nya och
+        introduceras" — och samma sak gäller nivå 1, alltså när en kurs
+        startas, där listan är hela grundordförrådet.
+
+        Bara ordkorten. Stammar, ändelser och genus hör till orden och skulle
+        göra listan till en kortdump i stället för en ordlista.
+        """
+        koncept = [r["koncept"] for r in nya
+                   if r["typ"] == "ord" and r["koncept"]]
+        if not koncept:
+            return []
+        platser = ",".join("?" * len(koncept))
+        rader = self.s.execute(
+            f"""SELECT k.nyckel, l.språk, l.lemma FROM Koncept k
+                JOIN Lexem l ON l.koncept_id = k.id
+                WHERE k.nyckel IN ({platser})""", tuple(koncept)).fetchall()
+        per: dict[str, dict] = {}
+        for r in rader:
+            per.setdefault(r["nyckel"], {})[r["språk"]] = r["lemma"]
+        # Ordningen är den korten införs i, inte alfabetisk: listan ska
+        # kunna läsas som "det här möter du härnäst".
+        return [{"koncept": k, **per.get(k, {})} for k in koncept if k in per]
 
 
 def _fras_har(m, attribut: str) -> bool:

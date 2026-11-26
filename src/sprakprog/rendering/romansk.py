@@ -120,7 +120,13 @@ class RomanskRenderare:
                WHERE k.nyckel = ? AND m.språk = ? AND mk.slot = ?""",
             (verb, self.SPRÅK, slot),
         ).fetchone()
-        return rad["nyckel"] if rad else None
+        # SAKNAS RADEN LOGGAS INGENTING. Att verbet inte kräver en
+        # preposition är inte kunskap ett kort bär — det finns inget
+        # rektionskort för frånvaron, och en logg utan kort vore brus i
+        # nåbarhetsmätningen. Se `uppslag.rektion`.
+        if rad is None:
+            return None
+        return self.u.rektion(verb, slot, "preposition", rad["nyckel"])
 
     # ── nominalfras ──────────────────────────────────────────────────
 
@@ -144,7 +150,18 @@ class RomanskRenderare:
 
         self.u.kontrollera_naken(nf)
 
-        genus = huvud["genus"]
+        # LOGGAS I BÅDA NUMERUS, till skillnad från tyskan och svenskan.
+        # Spanskan och italienskan skiljer genus även i plural — "los libros"
+        # mot "las mesas", "i libri" mot "le tavole" — så en plural prövar
+        # genuset lika mycket som en singular.
+        #
+        # Franskans bestämda och obestämda plural är däremot genusneutrala
+        # (les, des), och där överkrediteras genuskortet av en pluralfras
+        # UTAN attributivt adjektiv. Med adjektiv är franskan tillbaka i
+        # samma läge ("les grandes maisons"), så felet gäller en delmängd av
+        # en delmängd. Det står här hellre än att en tredje regel läggs till
+        # för ett språk som ännu inte har någon kurs.
+        genus = self.u.egenskap(huvud, "genus")
         if genus is None:
             raise RenderingsFel(
                 f"{self.SPRÅK}/{huvud['lemma']}: genus saknas — artikel, "
@@ -259,7 +276,7 @@ class RomanskRenderare:
         if nf.referent is not None:
             genus = FEMININ if nf.referent is Referentgenus.FEMININ else MASKULIN
         else:
-            genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
+            genus = self.u.egenskap_för(nf.koncept, "genus") or MASKULIN
         return person, numerus, genus
 
     def verbdelar(self, m: Mening, föregående_objekt=None) -> list[str]:
@@ -409,7 +426,7 @@ class RomanskRenderare:
         if nf.referent is not None:
             genus = FEMININ if nf.referent is Referentgenus.FEMININ else MASKULIN
         else:
-            genus = self.u.lexem(nf.koncept)["genus"] or MASKULIN
+            genus = self.u.egenskap_för(nf.koncept, "genus") or MASKULIN
         return genus, numerus
 
     # Tilltal → imperativcell. De tre språken skiljer sig på artigheten:
@@ -536,9 +553,14 @@ class RomanskRenderare:
         # genom est-ce que, som är hela skälet att den konstruktionen finns.
         inverterar = (frågeord is not None and m.fråga_om != "subjekt"
                       and not self.FRÅGEINLEDNING)
+        if inverterar:
+            self.u.ordföljd("inversion_wh")
         if frågeord is not None:
             ord += frågeord
             if m.fråga_om != "subjekt" and self.FRÅGEINLEDNING:
+                # est-ce que är franskans sätt att SLIPPA inversionen, och
+                # därmed en egen regel att lära sig — se `FRÅGEINLEDNING`.
+                self.u.ordföljd("est_ce_que")
                 ord.append(self.FRÅGEINLEDNING)
         # Imperativen säger inte ut den tilltalade, och subjektsfrågan har
         # frågeordet på subjektets plats.
@@ -553,6 +575,8 @@ class RomanskRenderare:
         coi = self._klitika(m.io, "coi")
         if coi is None and self.DUBBLERAR and m.io is not None:
             coi = self._dubblering(m.io)
+            if coi is not None:
+                self.u.ordföljd("klitikadubblering")
         if (m.modus is Satsmodus.IMPERATIV and not m.negerad
                 and (cod is not None or coi is not None)):
             # JAKANDE imperativ fäster klitikan EFTER verbet, och inte som
@@ -568,6 +592,8 @@ class RomanskRenderare:
 
         före, efter = self.negation(m)
         ord += före
+        if cod is not None or coi is not None:
+            self.u.ordföljd("klitika_före")
         ord += self.ordna_klitika(cod, coi)
         verb = self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
         # Negationens efterled hamnar efter det FINITA verbet, inte efter
@@ -577,6 +603,11 @@ class RomanskRenderare:
         ord += verb[1:]
         if inverterar:
             ord += self.nominalfras(m.subjekt, "subjekt")
+        else:
+            # SVO är det som gäller NÄR INGET FLYTTAR. Loggas här och inte
+            # vid ingången, så att regeln mäts på de meningar den faktiskt
+            # styr och inte på dem där inversionen tog över.
+            self.u.ordföljd("svo")
 
         if m.komplement is not None:
             markör = self.u.infinitivmarkör(m.verb)
@@ -713,7 +744,7 @@ class RomanskRenderare:
         return rad["slot"] if rad else "objekt"
 
     def rendera(self, m: Mening) -> str:
-        ord = self.satsled(m)
+        ord = self.osammansmält = self.satsled(m)
         mening = " ".join(self.sandhi(ord))
         mening = mening[0].upper() + mening[1:]
         if m.fråga or m.fråga_om is not None:

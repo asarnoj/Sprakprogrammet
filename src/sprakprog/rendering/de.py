@@ -115,7 +115,10 @@ class TyskRenderare:
                  AND mk.kasus IS NOT NULL""",
             (verb, slot),
         ).fetchone()
-        return rad["kasus"] if rad else STANDARDKASUS[slot]
+        # GENOM `Uppslag.rektion`, inte förbi den: det är den vägen som
+        # kopplar kravet till rektionskortet. Se `uppslag.rektion`.
+        return self.u.rektion(verb, slot, "kasus",
+                              rad["kasus"] if rad else STANDARDKASUS[slot])
 
     # ── nominalfras ──────────────────────────────────────────────────
 
@@ -135,7 +138,15 @@ class TyskRenderare:
 
         self.u.kontrollera_naken(nf)
 
-        genus = huvud["genus"]
+        # GENUS AVGÖR CELLEN BARA I SINGULAR. I plural är artikeln och
+        # adjektivändelsen gemensamma för de tre genusen ("die Kinder", "die
+        # Bücher", "die Männer"), så en plural prövar inte om användaren vet
+        # att Kind är neutrum. Uppslaget går därför genom `egenskap` — som
+        # beroendekartan lyssnar på — bara i singular; i plural läses värdet
+        # förbi den. Annars skulle varje plural ge genuskortet beröm för
+        # något den aldrig testade.
+        genus = (self.u.egenskap(huvud, "genus") if nf.numerus is Numerus.SG
+                 else huvud["genus"])
         if genus is None:
             raise RenderingsFel(
                 f"de/{huvud['lemma']}: genus saknas — artikel, adjektivändelse "
@@ -199,6 +210,31 @@ class TyskRenderare:
             ord.append(self.u.form_för(
                 a.koncept,
                 f"{GRADSTAM[a.grad]}_{deklination}_{formgenus}_{k}"))
+
+        # FRASLEXEM MED FRAMFÖRSTÄLLT ADJEKTIV bär en deklination de inte kan
+        # byta. "älterer Bruder" är lagrat som ett substantiv, och paradigmet
+        # har SVAG böjning inbakad i varje cell (nom_sg = "ältere Bruder").
+        # Det är rätt efter bestämd artikel — "der ältere Bruder" — och fel
+        # överallt annars: "ein ÄLTERER Bruder" (blandad), "ÄLTERE Brüder"
+        # (stark). Lemmat säger dessutom emot paradigmet: det ÄR den starka
+        # formen.
+        #
+        # Ingen statisk uppsättning former kan vara rätt, eftersom ändelsen
+        # beror på determineraren — alltså på satsen, inte på ordet. Den
+        # riktiga lösningen är att dela upp konceptet i substantiv + attribut
+        # och låta adjektivböjningen ovan göra sitt, men attribut låses upp
+        # först på nivå 5 och det är en ändring i datamodellen.
+        #
+        # Tills dess vägrar renderaren hellre än visar fel tyska. Kandidaten
+        # förkastas och generatorn tar en annan mening — samma reservutgång
+        # som för varje annan form specen inte når. Gäller fyra lexem
+        # (äldre/yngre bror/syster); de romanska språken har adjektivet
+        # EFTER substantivet och berörs inte.
+        if " " in (huvud["lemma"] or "") and deklination != "svag":
+            raise RenderingsFel(
+                f"de/{huvud['lemma']}: fraslexem med framförställt adjektiv "
+                f"har svag böjning inbakad och kan bara stå i bestämd fras — "
+                f"{deklination} deklination skulle ge fel ändelse")
 
         try:
             ord.append(self.u.form(huvud, _substantivcell(kasus, nf.numerus)))
@@ -439,10 +475,16 @@ class TyskRenderare:
         efterfält: list[str] = []
         for adverbial in m.adverbial:
             if isinstance(adverbial, Bisats):
+                self.u.ordföljd("nachfeld")
                 efterfält += [",", *self.bisats(adverbial)]
             else:
                 mittelfeld += self.adverbial(adverbial)
         if m.objekt is not None and m.fråga_om != "objekt":
+            # REGELN GÄLLER BARA NÄR BÅDA FINNS. Att logga den för varje
+            # objekt vore att mäta något annat än den säger: ordningen mellan
+            # två objekt kan inte tillämpas på ett.
+            if m.io is not None and m.fråga_om != "io":
+                self.u.ordföljd("dativ_före_ackusativ")
             mittelfeld += self.nominalfras(
                 m.objekt, self.kasus_för(m.verb, "objekt"), negerad=kein_objekt)
 
@@ -494,6 +536,7 @@ class TyskRenderare:
         # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.
         # Satsklammern består — infinita delar hamnar sist ändå.
         if m.bisats is not None:
+            self.u.ordföljd("nachfeld")
             efterfält += [",", *self.bisats(m.bisats)]
         if bisats:
             # I bisats står verbet sist, och DÄR återförenas partikeln med
@@ -510,7 +553,10 @@ class TyskRenderare:
                 # ordning som i huvudsatsen; det är bara hjälpverbet som
                 # byter sida, och det är det enda stället i tyskan där
                 # bisatsens finita verb inte står sist.
+                # Dubbelinfinitiven är UNDANTAGET från verbet-sist, så
+                # regeln loggas inte här: den tillämpades inte.
                 return [*vorfeld, *mittelfeld, finit, *infinit, *efterfält]
+            self.u.ordföljd("verb_sist")
             return [*vorfeld, *mittelfeld, *infinit, finit, *efterfält]
         # I HUVUDSATS lämnar partikeln det finita verbet och går sist i
         # satsklammern: "Das Mädchen ruft den Bruder an". Det är samma
@@ -519,9 +565,16 @@ class TyskRenderare:
         finit, partikel = _dela_partikel(finit)
         if partikel is not None:
             infinit = [*infinit, partikel]
-        return ([finit, *vorfeld, *mittelfeld, *infinit, *efterfält]
-                if m.fråga or m.modus is Satsmodus.IMPERATIV
-                else [*vorfeld, finit, *mittelfeld, *infinit, *efterfält])
+        # SATSKLAMMERN FINNS BARA NÄR DET FINNS NÅGOT ATT SÄTTA SIST. Är
+        # slutfältet tomt är klammern inte tillämpad utan bara möjlig, och en
+        # regel som loggas när den inte gör något mäter fel.
+        if infinit:
+            self.u.ordföljd("satsklammer")
+        if m.fråga or m.modus is Satsmodus.IMPERATIV:
+            self.u.ordföljd("v1_fråga")
+            return [finit, *vorfeld, *mittelfeld, *infinit, *efterfält]
+        self.u.ordföljd("v2")
+        return [*vorfeld, finit, *mittelfeld, *infinit, *efterfält]
 
     def frågeord(self, m: Mening) -> str | None:
         """wer/wen/wem/was — tyskan är det enda språk som böjer frågeordet.
@@ -568,5 +621,6 @@ class TyskRenderare:
         return "engångs_dåtid" if engångs else "upprepad"
 
     def rendera(self, m: Mening) -> str:
-        mening = " ".join(self.satsled(m)).replace(" ,", ",")
+        self.osammansmält = self.satsled(m)
+        mening = " ".join(self.osammansmält).replace(" ,", ",")
         return mening[0].upper() + mening[1:] + slutar(m)

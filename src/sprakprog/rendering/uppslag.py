@@ -156,3 +156,72 @@ class Uppslag:
 
     def form_för(self, koncept: str, cell: str, variant: str | None = None) -> str:
         return self.form(self.lexem(koncept, variant), cell)
+
+    def egenskap(self, lexem: sqlite3.Row, namn: str):
+        """En LEXIKAL egenskap som avgör vilken cell som ska slås upp.
+
+        Ser onödig ut — den returnerar `lexem[namn]` och inget mer — och det
+        är hela poängen: den finns för att gå att INSTRUMENTERA, precis som
+        `form`. Beroendekartan säger idag vilka FORMER en mening rörde, och
+        därmed vilka kort. Men genus är inget cellvärde utan det som VÄLJER
+        cellen: `das` slogs upp i `n_nom` därför att Kind är neutrum, och den
+        kunskapen är ett eget kort som meningen faktiskt prövade.
+
+        Utan den här funktionen var de korten oåtkomliga. 428 av tyskans
+        1 112 kort — den största korttypen — hade noll kopplingar, noll
+        prövningar, och stod ändå som schemalagda i kön: mål som ingen mening
+        kunde nå. Rättningen kunde heller aldrig skylla ett artikelfel på
+        substantivets genus, bara på artikelformen, vilket är fel kort i
+        nästan varje verkligt fall.
+
+        Att läsa `lexem["genus"]` direkt förbi den här går fortfarande — och
+        gör kortet osynligt igen. Samma regel som för `form`.
+        """
+        return lexem[namn]
+
+    def egenskap_för(self, koncept: str, namn: str, variant: str | None = None):
+        return self.egenskap(self.lexem(koncept, variant), namn)
+
+    def ordföljd(self, regel: str) -> None:
+        """Renderaren tillämpade en ORDFÖLJDSREGEL. Fjärde instrumenteringen.
+
+        Samma tomma form som `egenskap` och `rektion`, men utan värde att
+        lämna tillbaka: här ÄR anropet hela informationen. Regeln kom inte ur
+        databasen — den är kod, den är renderarens egen struktur — så det
+        enda som går att observera utifrån är att den tillämpades.
+
+        Nyckeln är regelns namn ur `befolka.ORDFÖLJD` (`v2`, `verb_sist`,
+        `satsklammer`). Kortet bär det i `egenskap` och beskrivningen i
+        `facit`.
+
+        VARFÖR DET RÄCKER ATT LOGGA TILLÄMPNINGEN. E6 delar upp reglerna åt
+        oss utan att någon behöver välja: en regel som gäller i varje mening
+        får exponering nära 1 och lyfts ur schemat automatiskt (tyskans V2,
+        engelskans SVO), medan en som bara gäller när nivån öppnat
+        konstruktionen — bisatsordföljd, inversion i frågor — får en
+        exponering som går att schemalägga. Uppdelningen i A7 punkt 2 är
+        alltså ingen ny regel utan en följd av den mätning som redan finns.
+
+        Utan den här loggen var ordföljdskorten oåtkomliga: 6 tyska, 3
+        engelska, 3 franska och 4 japanska kort, `schemalagt = 1`, som ingen
+        mening kunde röra (A3).
+        """
+
+    def rektion(self, koncept: str, slot: str, namn: str, värde):
+        """Vad ett VERBS mönster kräver av en slot. Tredje instrumenteringen.
+
+        Samma tomma form som `egenskap`, och av exakt samma skäl: den
+        returnerar sitt argument och finns för att gå att logga. Skillnaden
+        mot `egenskap` är vem kunskapen hör till. Genus är ett faktum om
+        SUBSTANTIVET; rektion är ett faktum om VERBET som styr frasen —
+        `helfen` tar dativ, `fragen` ackusativ — så nyckeln är verbets
+        koncept plus slotten, inte det uppslagna lexemet.
+
+        Utan den här loggen var rektionskorten oåtkomliga. Mätt över alla
+        språk: 6 tyska och 2 franska rektionskort som ingen mening kunde
+        röra, `schemalagt = 1`, alltså mål i kön som aldrig kunde nås (A3).
+
+        Att läsa mönsterkravet direkt förbi den här går fortfarande — och gör
+        kortet osynligt igen. Samma regel som för `form` och `egenskap`.
+        """
+        return värde

@@ -331,6 +331,8 @@ class JapanskRenderare:
         # syntaktiska skillnaden mot de sex andra språken, som alla flyttar
         # frågeordet först. Ett efterfrågat subjekt tar dessutom alltid が —
         # 誰は finns inte, eftersom det okända inte kan vara tema.
+        if m.fråga_om is not None:
+            self.u.ordföljd("frågeord_kvar")
         if m.fråga_om == "subjekt":
             huvud = (self.nominalfras(m.subjekt)
                      if m.subjekt.frågedeterminant is not None
@@ -352,10 +354,12 @@ class JapanskRenderare:
             if isinstance(adverbial, str):
                 delar.append(self.u.form_för(adverbial, "inv") + "、")
             elif isinstance(adverbial, Bisats):
+                self.u.ordföljd("bisats_före")
                 delar.append(self.bisats(adverbial) + "、")
             else:
                 # Japanskan har POSTpositioner: 学校で, inte で学校.
                 # Ordningen är alltså omvänd mot alla sex andra språken.
+                self.u.ordföljd("postpositioner")
                 delar.append(self.nominalfras(adverbial.komplement)
                              + self.u.form_för(adverbial.preposition, "inv"))
         if m.bisats is not None:
@@ -363,6 +367,7 @@ class JapanskRenderare:
             # och tar objektspartikeln を som vilket objekt som helst —
             # ingen egen mekanism behövs, vilket är hela poängen med att
             # subjunktionen ligger i databasen som ett vanligt lemma.
+            self.u.ordföljd("bisats_före")
             delar.append(self.bisats(m.bisats) + OBJEKT)
         if m.io is not None:
             delar.append(self._led(m, "io", m.io) + DATIV)
@@ -378,6 +383,10 @@ class JapanskRenderare:
                 if not bisats:
                     delar.append(self.u.form_för(m.verb, "masu"))
                 return delar
+        # SOV loggas HÄR och inte vid ingången: det är att verbet läggs
+        # SIST som är regeln, och den vägen ovanför som returnerar tidigt
+        # (i-adjektiv i kopulasats) sätter aldrig ut något verb alls.
+        self.u.ordföljd("sov")
         delar.append(self.verbform(m, enkel=bisats))
         return delar
 
@@ -397,4 +406,8 @@ class JapanskRenderare:
 
     def rendera(self, m: Mening) -> str:
         frågande = m.fråga or m.fråga_om is not None
-        return "".join(self.satsled(m)) + ("か。" if frågande else "。")
+        # Japanskan skrivs utan mellanslag, så listan är inte en ordlista i
+        # samma mening som de andra språkens — men den finns för symmetrins
+        # skull, och rättningen använder den bara för språk i `ORDMELLANRUM`.
+        self.osammansmält = self.satsled(m)
+        return "".join(self.osammansmält) + ("か。" if frågande else "。")

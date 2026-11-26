@@ -23,5 +23,14 @@ __all__ = [
     "Nominalfras", "Numerus", "Prepositionsfras", "Referentgenus",
     "RenderingsFel", "Satsmodus",
     "SpanskRenderare", "SvenskRenderare", "Tidsreferens", "TyskRenderare",
-    "Uppslag", "Validator",
+    "RENDERARE", "Uppslag", "Validator",
 ]
+
+#: språk → renderarklass. Bor HÄR och inte i generatorn, därför att den som
+#: behöver den inte alltid bygger meningar: rättningen frågar renderaren om
+#: dess sandhi för att kunna spåra en sammansmält token tillbaka till sina
+#: uppslag (`Rättare._sammansmälta`), och att importera den ur generatorn
+#: hade varit en cirkel.
+RENDERARE = {"sv": SvenskRenderare, "en": EngelskRenderare, "de": TyskRenderare,
+             "fr": FranskRenderare, "es": SpanskRenderare,
+             "it": ItalienskRenderare, "ja": JapanskRenderare}

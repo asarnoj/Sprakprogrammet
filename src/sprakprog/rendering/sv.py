@@ -125,7 +125,12 @@ class SvenskRenderare:
 
         self.u.kontrollera_naken(nf)
 
-        genus = huvud["genus"]
+        # Genus avgör cellen bara i SINGULAR: artikel, possessiv och
+        # adjektiv är alla genusneutrala i plural ("de stora böckerna",
+        # "de stora husen"). Uppslaget loggas därför bara där — annars
+        # ger varje plural genuskortet beröm den aldrig prövade.
+        genus = (self.u.egenskap(huvud, "genus")
+                 if nf.numerus is Numerus.SG else huvud["genus"])
         if genus is None:
             raise RenderingsFel(
                 f"sv/{huvud['lemma']}: genus saknas — artikel och "
@@ -258,7 +263,9 @@ class SvenskRenderare:
             if m.grad is not Grad.POSITIV:
                 return self._komparation(m)
             huvud = self.u.lexem(m.subjekt.koncept)
-            genus = huvud["genus"] or UTRUM
+            genus = (self.u.egenskap(huvud, "genus")
+                     if m.subjekt.numerus is Numerus.SG
+                     else huvud["genus"]) or UTRUM
             return [self.u.form_för(
                 m.predikativ, _predikativcell(m.subjekt.numerus, genus))]
         # Predikativt substantiv står utan artikel: "hon är läkare".
@@ -284,7 +291,10 @@ class SvenskRenderare:
             huvud = self.u.lexem(m.subjekt.koncept)
             ut = [self.u.form_för(markör, "pos"),
                   self.u.form_för(m.predikativ, _predikativcell(
-                      m.subjekt.numerus, huvud["genus"] or UTRUM))]
+                      m.subjekt.numerus,
+                      (self.u.egenskap(huvud, "genus")
+                       if m.subjekt.numerus is Numerus.SG
+                       else huvud["genus"]) or UTRUM))]
         if m.jämförelse is not None:
             ut.append(self.u.form_för("komp_än", "inv"))
             ut += self.nominalfras(m.jämförelse)
@@ -310,7 +320,9 @@ class SvenskRenderare:
             # "boken blev läst" — bli plus perfektparticip, som kongruerar
             # med subjektet. Den betonar händelsen; s-passiven är omarkerad.
             huvud = self.u.lexem(m.subjekt.koncept)
-            genus = huvud["genus"] or UTRUM
+            genus = (self.u.egenskap(huvud, "genus")
+                     if m.subjekt.numerus is Numerus.SG
+                     else huvud["genus"]) or UTRUM
             cell = ("perfpart_a" if m.subjekt.numerus is Numerus.PL
                     else "perfpart_obest_utr_sg" if genus == UTRUM
                     else "perfpart_obest_neu_sg")
@@ -377,12 +389,20 @@ class SvenskRenderare:
 
         if bisats:
             # BIFF: negationen kilar in sig mellan subjektet och verbet.
+            # Regeln SYNS bara när det finns ett satsadverbial att flytta —
+            # utan negation är bisatsen identisk med huvudsatsen, och då
+            # tillämpades ingen regel.
             ord = [*subjekt]
             if m.negerad:
+                self.u.ordföljd("biff")
                 ord.append(self.u.form_för("neg_inte", "inv"))
             ord.extend(verb)
         else:
             omvänd = m.fråga or frågeord is not None
+            if omvänd:
+                self.u.ordföljd("v2_fråga")
+            else:
+                self.u.ordföljd("svo")
             ord = [verb[0], *subjekt] if omvänd else [*subjekt, verb[0]]
             if frågeord is not None:
                 ord.insert(0, frågeord)
@@ -398,6 +418,8 @@ class SvenskRenderare:
             ord.extend(self.komplement(m))
         if m.predikativ is not None:
             ord.extend(self.predikativ(m))
+        if m.adverbial:
+            self.u.ordföljd("adverbial_sist")
         for adverbial in m.adverbial:
             ord.extend(self.adverbial(adverbial))
         if m.bisats is not None:
@@ -442,5 +464,6 @@ class SvenskRenderare:
         kräva en riktig ordföljdsmodell, och den byggs när det andra språket
         visar vilken form den behöver ha, inte innan.
         """
-        mening = " ".join(self.satsled(m))
+        self.osammansmält = self.satsled(m)
+        mening = " ".join(self.osammansmält)
         return mening[0].upper() + mening[1:] + slutar(m)

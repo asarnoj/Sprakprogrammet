@@ -173,6 +173,79 @@ class Samplare:
         self.o = ordförråd
         self.tillåtet = upplåst(nivå)
         self.rng = rng or random.Random()
+        #: Koncept som fyllnaden ska hålla sig till, eller None för alla.
+        #: Sätts av `begränsa` när dagens utrymme för nytt är slut.
+        self.känt: set[str] | None = None
+
+    def begränsa(self, koncept: set[str] | None) -> None:
+        """Håll FYLLNADEN till de här koncepten. None släpper begränsningen.
+
+        DET HÄR ÄR VAD SOM GÖR DAGSPLANENS TAK BINDANDE. Taket räknades först
+        bara mot generatorns KÖ, alltså mot vilka kort en mening byggs runt —
+        men en mening består inte bara av sitt målord. Resten av orden väljs
+        fritt här, och varje osett ord som råkar hamna i en mening blir sett,
+        betygsatt och infört.
+
+        Mätt: sextio meningar med taket satt till NOLL nya kort införde ändå
+        35 stycken, som lade 17,5 repetitioner per dygn på belastningen. De
+        tidiga repetitionerna samma pass frigjorde 6,1. Taket var alltså inte
+        bara otätt utan överröstat, och kapacitetsmodellen kunde beskriva
+        arbetsbördan utan att kunna styra den.
+
+        Målordet går fri: det väljs av kön och inte här, och att bygga en
+        mening runt ett nytt kort är hela poängen med att införa det.
+        """
+        self.känt = koncept
+
+    def _välj(self, kandidater):
+        """Ett koncept ur `kandidater`, helst ett användaren redan mött.
+
+        GER UPP HELLRE ÄN FALLER TILLBAKA. Tidigare togs ett OSETT ord när
+        begränsningen tömde sloten, och det skedde tyst och per slot — så ett
+        ord användaren aldrig mött kunde stå i meningen trots att dagens tak
+        var noll. Mätt i bruk: `kostar` dök upp i en fransk mening samma dag
+        som sex ord introducerats, och `kostar` var inte ett av dem.
+
+        Reservutgången finns kvar, men på SÖKNINGENS nivå (`Generator._sök`):
+        hittar hela sökningen ingenting med bara kända ord körs den om utan
+        begränsning. Skillnaden är att undantaget då är ett undantag — ett
+        beslut för hela meningen — i stället för något som smyger in ett ord
+        i taget.
+
+        `None` ÄR ETT SVAR OCH MÅSTE HANTERAS AV ANROPAREN. Det var det inte:
+        tolv av fjorton anropsställen tog emot `None` och byggde specen ändå.
+        Mätt på 3 000 kandidater med begränsat ordförråd, per nivå:
+
+            nivå  5   attribut       4–24 % fick `Attribut(None)`
+            nivå  5   objekt          0–10 % fick `Nominalfras(None)`
+            nivå  8   adverbial      15 %   fick ett naket `None` i tupeln
+            nivå 15   prepositions-  20 %   fick `Prepositionsfras(None, …)`
+            nivå 20   bisats                `self.o.verb[None]` → KeyError
+
+        De två första gav `RenderingsFel`, alltså tyst kastade kandidater —
+        27 % av engelskans sökning på nivå 5, utan att något mätte det. De
+        två sista gav `AttributeError` respektive `KeyError` UTANFÖR det
+        `_rendera` fångar, alltså en krasch rakt ut ur `föreslå`.
+
+        REGELN ÄR ATT KONSTRUKTIONEN FALLER, INTE ATT DEN BYGGS MED ETT HÅL,
+        och vilken sorts fall beror på slotten:
+
+            utsmyckning     attribut, adverbial, prepositionsfras, possessiv,
+                            genitiv — HOPPAS ÖVER. Meningen är hel utan den.
+            obligatorisk    subjekt, objekt, io, komplement, predikativ,
+                            bisatsens verb — KANDIDATEN KASTAS, samma svar
+                            som verbslotten redan gav.
+
+        Att skilja på dem är inte en detalj: en utsmyckning som kastar hela
+        kandidaten skulle tömma sökningen vid kallstart, och en obligatorisk
+        slot som hoppas över ger en mening utan subjekt.
+        """
+        if not kandidater:
+            return None
+        if self.känt is not None:
+            kända = [k for k in kandidater if k in self.känt]
+            return self.rng.choice(kända) if kända else None
+        return self.rng.choice(list(kandidater))
 
     #: Hur ofta samplaren FÖRSÖKER med en konstruktion. Det här är inga
     #: inställningar och inga trösklar: sökningen tar bästa av tusen
@@ -184,8 +257,18 @@ class Samplare:
     FÖRSÖK = {"possessiv": 0.15, "genitiv": 0.10, "adverbial": 0.15,
               "prepositionsfras": 0.20, "bisats": 0.25}
 
-    def _nf(self, koncept: str, *, attributkandidater: list[str],
-            djup: int = 0) -> Nominalfras:
+    def _nf(self, koncept: str | None, *, attributkandidater: list[str],
+            djup: int = 0) -> Nominalfras | None:
+        """Nominalfrasen, eller None när `koncept` är None.
+
+        Att ta emot None och lämna vidare None är hela poängen: varje anropare
+        väljer sitt koncept med `_välj`, som ger upp när begränsningen tömt
+        sloten. Utan den här grinden byggdes `Nominalfras(None)` i stället,
+        och renderaren svarade med `RenderingsFel` — en tyst kastad kandidat
+        som ingen räknade.
+        """
+        if koncept is None:
+            return None
         r = self.rng
         # Ett pronomen ÄR hela frasen — det tar varken artikel, numerus
         # eller attribut, och renderarna vägrar om man försöker.
@@ -204,7 +287,12 @@ class Samplare:
                 grad = r.choice([Grad.KOMPARATIV, Grad.SUPERLATIV])
             if grad is Grad.SUPERLATIV and best is not Bestämdhet.BESTÄMD:
                 grad = Grad.KOMPARATIV
-            attribut = (Attribut(r.choice(attributkandidater), grad),)
+            # UTSMYCKNING: tömde begränsningen adjektiven blir frasen naken,
+            # inte trasig. `Attribut(None)` gav RenderingsFel — 24 % av
+            # engelskans kandidater på nivå 5.
+            valt = self._välj(attributkandidater)
+            if valt is not None:
+                attribut = (Attribut(valt, grad),)
 
         # Possessiv och genitivägare tar ARTIKELNS plats — "mitt hus", inte
         # "det mitt hus". Frasen är bestämd ändå (spec.bestämd_fras), så
@@ -214,7 +302,12 @@ class Samplare:
         possessiva = self.o.per_ordklass.get("Possessiv", [])
         if ("possessiv" in self.tillåtet and possessiva
                 and r.random() < self.FÖRSÖK["possessiv"]):
-            possessiv, best = r.choice(possessiva), Bestämdhet.OBESTÄMD
+            # UTSMYCKNING. Bestämdheten flyttas bara när ägaren faktiskt
+            # blev av — annars vore frasen obestämd utan att något tagit
+            # artikelns plats.
+            valt = self._välj(possessiva)
+            if valt is not None:
+                possessiv, best = valt, Bestämdhet.OBESTÄMD
         elif ("genitiv" in self.tillåtet and djup == 0
                 and r.random() < self.FÖRSÖK["genitiv"]):
             # Ägaren är en egen nominalfras, och den byggs på DJUP 1 så att
@@ -222,12 +315,42 @@ class Samplare:
             # grammatiskt men ingen övningsmening.
             möjliga = self.o.uppfyller([], "Substantiv")
             if möjliga:
-                ägare = self._nf(r.choice(möjliga), attributkandidater=[],
+                # UTSMYCKNING, och `_nf` ger None när begränsningen tömt
+                # substantiven. Utan grinden gick `None` in i `replace`.
+                ägare = self._nf(self._välj(möjliga), attributkandidater=[],
                                  djup=1)
-                ägare = replace(ägare, bestämdhet=Bestämdhet.BESTÄMD)
-                best = Bestämdhet.OBESTÄMD
+                if ägare is not None:
+                    ägare = replace(ägare, bestämdhet=Bestämdhet.BESTÄMD)
+                    best = Bestämdhet.OBESTÄMD
         return Nominalfras(koncept, best, num, attribut,
                            possessiv=possessiv, ägare=ägare)
+
+    def duger_som_mål(self, koncept: str) -> bool:
+        """Skulle `kandidat(kring=koncept)` faktiskt placera ordet?
+
+        SAMMA VILLKOR SOM `kandidat` SJÄLV använder, läst ur den och inte
+        gissat: verbet blir målordet om det är ett verb i mönstret, och en
+        nominalfras byggs kring det om ordklassen är ett frashuvud som något
+        verb tar. Allt annat — artiklar, adverb, systemord — går rakt igenom
+        `else`-grenen och får ett SLUMPMÄSSIGT verb i stället. Målordet
+        ignoreras alltså tyst.
+
+        Det tysta ignorerandet var en riktig låsning. `un` drillades som ord,
+        blev därmed "infört men inte övat", och stod först i målordslistan —
+        men en artikel går inte att bygga en mening KRING, bara att få med på
+        köpet i en nominalfras. Eftersom listan ERSATTE kön i stället för att
+        gå före den blev varje mening byggd kring ett ignorerat mål, alltså
+        kring ett slumpvis verb, och kön rördes aldrig. Mätt: fyra meningar i
+        rundgång, täckning noll, 330 gånger.
+
+        Regeln är alltså inte "artiklar duger inte" utan "fråga samplaren vad
+        den kan bygga kring". Skulle `kandidat` lära sig fler frashuvuden
+        följer det här med av sig självt.
+        """
+        ordklass = self.o.ordklass.get(koncept)
+        if ordklass == "Verb":
+            return koncept in self.o.verb
+        return ordklass in self.o.FRASHUVUD and bool(self.o.verb_för(koncept))
 
     def kandidat(self, *, kring: str | None = None) -> Mening | None:
         """En kandidatmening, byggd runt `kring` om det går."""
@@ -239,9 +362,9 @@ class Samplare:
             verb = kring
         elif kring and self.o.ordklass.get(kring) in self.o.FRASHUVUD:
             möjliga = self.o.verb_för(kring)
-            verb = r.choice(möjliga) if möjliga else None
+            verb = self._välj(möjliga)
         else:
-            verb = r.choice(list(self.o.verb)) if self.o.verb else None
+            verb = self._välj(list(self.o.verb))
         if verb is None:
             return None
         slotkrav = self.o.verb[verb]
@@ -256,7 +379,7 @@ class Samplare:
             if (kring and self.o.ordklass.get(kring) in self.o.FRASHUVUD
                     and kring in val):
                 return self._nf(kring, attributkandidater=adjektiv)
-            return self._nf(r.choice(val), attributkandidater=adjektiv)
+            return self._nf(self._välj(val), attributkandidater=adjektiv)
 
         subjekt = fyll("subjekt")
         if subjekt is None:
@@ -271,7 +394,12 @@ class Samplare:
         if "komplement" in slotkrav:
             if "komplement" not in self.tillåtet:
                 return None
-            komplement = r.choice(list(self.o.verb))
+            # OBLIGATORISK SLOT: tömde begränsningen verben finns inget
+            # huvudverb, och "He will." är ingen mening. Samma svar som
+            # verbslotten ovan ger — kandidaten kastas, den byggs inte halv.
+            komplement = self._välj(list(self.o.verb))
+            if komplement is None:
+                return None
 
         # Samma sak för kopulan: "Sie ist." är ingen mening. Ett verb med
         # predikativslot MÅSTE få ett predikativ, och det får vara adjektiv
@@ -280,13 +408,17 @@ class Samplare:
         if "predikativ" in slotkrav:
             if "predikativ" not in self.tillåtet:
                 return None
+            # OBLIGATORISK SLOT, av samma skäl: "Sie ist." är ingen mening.
             if adjektiv and r.random() < 0.7:
-                predikativ = r.choice(adjektiv)
+                predikativ = self._välj(adjektiv)
             else:
                 val = self.o.uppfyller([], "Substantiv")
                 if not val:
                     return None
-                predikativ = Nominalfras(r.choice(val))
+                valt = self._välj(val)
+                predikativ = None if valt is None else Nominalfras(valt)
+            if predikativ is None:
+                return None
         m = Mening(verb, subjekt, objekt=objekt, io=io, komplement=komplement,
                    predikativ=predikativ)
         if "tempus" in self.tillåtet:
@@ -318,19 +450,31 @@ class Samplare:
         # De ligger i samma tuple men är två olika nivåer, och den ena får
         # inte smyga in den andra: ett naket adverb är nivå 8, en
         # prepositionsfras nivå 15.
+        # BÅDA ÄR UTSMYCKNINGAR och hoppas därför över när begränsningen
+        # tömt dem. Det var här den enda HÅRDA kraschen satt: ett naket
+        # `None` i tupeln träffar renderarens `else`-gren, som läser
+        # `.preposition` — en AttributeError utanför det `_rendera` fångar,
+        # alltså rakt ut ur `föreslå`. Mätt: 176 av 1 500 tyska kandidater
+        # på nivå 8, och varje anrop till `ordbok öva` föll på den.
         adverbial: list = []
         adverb = self.o.per_ordklass.get("Adverb", [])
         if ("adverbial" in self.tillåtet and adverb
                 and r.random() < self.FÖRSÖK["adverbial"]):
-            adverbial.append(r.choice(adverb))
+            valt = self._välj(adverb)
+            if valt is not None:
+                adverbial.append(valt)
         prepositioner = self.o.per_ordklass.get("Preposition", [])
         if ("prepositionsfras" in self.tillåtet and prepositioner
                 and r.random() < self.FÖRSÖK["prepositionsfras"]):
             möjliga = self.o.uppfyller([], "Substantiv")
             if möjliga:
-                adverbial.append(Prepositionsfras(
-                    r.choice(prepositioner),
-                    self._nf(r.choice(möjliga), attributkandidater=[], djup=1)))
+                prep = self._välj(prepositioner)
+                komplement_nf = self._nf(self._välj(möjliga),
+                                         attributkandidater=[], djup=1)
+                # BÅDA DELARNA KRÄVS. En prepositionsfras utan preposition
+                # eller utan komplement är inte en halv fras, den är ingen.
+                if prep is not None and komplement_nf is not None:
+                    adverbial.append(Prepositionsfras(prep, komplement_nf))
         if adverbial:
             m = _med(m, adverbial=tuple(adverbial))
 
@@ -346,13 +490,18 @@ class Samplare:
                 and not m.fråga and m.modus is Satsmodus.INDIKATIV
                 and m.fråga_om is None
                 and r.random() < self.FÖRSÖK["bisats"]):
-            inre_verb = r.choice(list(self.o.verb))
-            inre_krav = self.o.verb[inre_verb]
-            if "komplement" not in inre_krav and "predikativ" not in inre_krav:
+            # Bisatsen är en UTSMYCKNING på huvudsatsen men har en
+            # obligatorisk slot inuti sig: utan verb finns ingen sats att
+            # bygga. `self.o.verb[None]` gav KeyError — i `kandidat`, alltså
+            # utanför det `_rendera` fångar.
+            inre_verb = self._välj(list(self.o.verb))
+            inre_krav = {} if inre_verb is None else self.o.verb[inre_verb]
+            if (inre_verb is not None and "komplement" not in inre_krav
+                    and "predikativ" not in inre_krav):
                 inre_subjekt = None
                 val = self.o.uppfyller(inre_krav.get("subjekt", []))
                 if val:
-                    inre_subjekt = self._nf(r.choice(val),
+                    inre_subjekt = self._nf(self._välj(val),
                                             attributkandidater=[], djup=1)
                 if inre_subjekt is not None:
                     inre = Mening(inre_verb, inre_subjekt)

@@ -65,6 +65,29 @@ CREATE TABLE Kort (
     /* hur många celler stammen eller ändelsen täcker */
     räckvidd   INTEGER NOT NULL DEFAULT 1,
 
+    /* I VILKEN ORDNING ORD SKA INFÖRAS. Lägre = tidigare.
+
+       Utan den sorterades nya kort på `räckvidd` och sedan på id — men
+       räckvidden är 1 för samtliga ordkort, så det som återstod var
+       databasordningen, alltså i praktiken ordlistornas filordning. Följden
+       var att en fransk nybörjare mötte `argent`, `s'asseoir` och `kosten`
+       före `je` och `le`.
+
+       Rangen väger tre saker som ALLA redan finns i språkdatabasen:
+
+         källa        bas_kärna före grundord — de slutna ordklasserna är
+                      kärnan, och den uppdelningen är redan gjord i
+                      ordbok/nivålistor/
+         nivå         A1 före A2 före B1
+         centralitet  hur många meningar ordet gör möjliga, normaliserat
+                      INOM ordklassen: 169 möjliga subjekt och 65 möjliga
+                      verb är inte samma skala, och att jämföra dem rakt av
+                      satte modalverben före pronomenen
+
+       Se befolka._rang. Kort utan koncept — ordföljd, systemkort — får
+       samma neutrala rang och ordnas som förut. */
+    rang       INTEGER NOT NULL DEFAULT 0,
+
     /* uppmätt antal möten per genererad mening. NULL = inte mätt än.
        Räckvidden duger INTE som proxy: alla celler i en klass har samma
        räckvidd, men nom_sg möts i varannan mening och gen_pl nästan aldrig.
@@ -158,7 +181,18 @@ CREATE TABLE Mening (
     förväntat  REAL,
     sedda      INTEGER,
     nya        INTEGER,
-    fel        INTEGER NOT NULL DEFAULT 0
+    fel        INTEGER NOT NULL DEFAULT 0,
+
+    /* Hur länge uppgiften tog, RÅTT och okapat. En mening är ett tidtaget
+       moment hur många kort den än rör, så det är här tiden faktiskt mäts.
+
+       Kostnaden per repetition är därmed en fråga och ingen kolumn: den här
+       tiden delad på meningens bedömda kort. Att dela så är legitimt just för
+       att det är en KOSTNAD — ansträngning går inte att fördela mellan kort,
+       sekunder gör det.
+
+       Svarstid är aldrig en signal om minnet. Se `Repetition.millisekunder`. */
+    millisekunder INTEGER
 );
 
 CREATE INDEX idx_mening_tid ON Mening(tidpunkt);
@@ -195,11 +229,65 @@ CREATE TABLE Repetition (
     kort_id   INTEGER NOT NULL REFERENCES Kort(id) ON DELETE CASCADE,
     mening_id INTEGER          REFERENCES Mening(id) ON DELETE SET NULL,
     tidpunkt  TEXT    NOT NULL,
-    betyg     INTEGER NOT NULL CHECK (betyg IN (1, 2, 3, 4)),
+
+    /* BETYG SAKNAS NÄR INGEN MÄTNING ÄGDE RUM. Raden finns ändå, och den har
+       ett jobb: `_redan_idag` läser dagens rader för att veta vad som redan
+       bedömts, och en betyglös rad skyddar därför kortet resten av dygnet
+       utan att en enda regel behöver ändras.
+
+       Utan raden var kortet oskyddat på det farligaste sättet som finns. Ett
+       undanhållet kort behöll sitt passerade förfallodatum, stod alltså kvar
+       i kön, och plockades gärna till NÄSTA mening — efter att facit visats.
+       Klarade användaren det då fick kortet ett fullt Good med hela den
+       förflutna tiden inräknad. Mätt: stabiliteten hoppade 10,96 → 46,28 i
+       stället för till ~11.
+
+       `skäl` säger vilken sorts icke-mätning det var, och gör dem räknebara:
+
+         undanhållen  diffen kunde inte knyta felet till ett kort (D3)
+         skyddad      ordkortet fallerade, så formen prövades aldrig (E5)
+         visad        lektionen eller glosläget visade kortets facit (F4)
+
+       NYA kort får aldrig en sådan rad. Deras första möte ÄR introduktionen,
+       och FSRS begynnelsestabilitet är byggd för precis det. */
+    betyg     INTEGER          CHECK (betyg IS NULL OR betyg IN (1, 2, 3, 4)),
+    skäl      TEXT             CHECK (skäl IS NULL OR skäl IN
+                                      ('undanhållen', 'skyddad', 'visad')),
+
     förfluten REAL,
     r_före    REAL,
     stabilitet REAL,
-    svårighet  REAL
+    svårighet  REAL,
+
+    /* Betyget kom från ANVÄNDAREN och inte från diffen mot facit.
+
+       Självrättningen finns för de fall bara människan kan avgöra: hen skrev
+       en annan giltig mening, eller en variant systemet inte känner. Utan
+       den vore de felen inte bara omätta utan felmätta — ett rätt svar som
+       registreras som fel sänker stabiliteten på kort som mår bra, vilket är
+       den enda feltypen som fördärvar data i stället för att bara sakna den.
+
+       Kolumnen gör den till ett INSTRUMENT och inte bara en eftergift: blir
+       en viss sorts anmärkning överprövad om och om igen är det rättningen
+       som har fel, och användningen säger det utan att någon behöver gissa.
+       Jämför andelen självrättade betyg per konstruktion — stiger den är det
+       generatorn eller renderaren som ska ses över, inte användaren. */
+    /* Bara för rader UTAN mening — glosläget, där ett kort och ett svar är
+       hela momentet. Har raden en mening ligger tiden på den, och delas.
+
+       ANVÄNDS ALDRIG SOM MINNESSIGNAL. FSRS optimerare läser tidpunkt och
+       betyg, och skickar uttryckligen `review_duration=None` när parametrarna
+       anpassas. Talet finns för `compute_optimal_retention`, som väljer
+       retentionsmålet på mest kunskap per minut, och för omräkningen mellan
+       användarens minuter per dag och en kortlek. */
+    millisekunder INTEGER,
+
+    självrättad INTEGER NOT NULL DEFAULT 0 CHECK (självrättad IN (0, 1)),
+
+    /* Exakt ett av dem, aldrig båda och aldrig ingetdera: raden är ANTINGEN
+       en bedömning ELLER en anteckning om att ingen bedömning gjordes. */
+    CHECK ((betyg IS NULL AND skäl IS NOT NULL)
+        OR (betyg IS NOT NULL AND skäl IS NULL))
 );
 
 CREATE INDEX idx_repetition_kort ON Repetition(kort_id, tidpunkt);
@@ -225,6 +313,22 @@ CREATE TABLE Kurs (
     nivå      INTEGER NOT NULL DEFAULT 1,
     cefr      TEXT    NOT NULL DEFAULT 'C2',
     budget    REAL    NOT NULL DEFAULT 1.5,
+
+    /* HUR MYCKET ANVÄNDAREN VILL ÖVA, i minuter. Det enda valda talet i hela
+       arbetsbörderäkningen — ett faktum om användarens dygn, inte om språket,
+       och därför omöjligt att räkna fram.
+
+       Det ersätter `meningar_per_dag`, som var fel storhet av två skäl. Ingen
+       människas begränsning är "tjugo meningar"; begränsningen är tid. Och
+       ett tak på antalet ÖVNINGAR konkurrerade med kravet att alla förfallna
+       kort ska göras — två regler som kan säga olika saker om när dagen är
+       slut är en regel för mycket.
+
+       Antalet meningar är numera en KONSEKVENS: dagen innehåller de kort som
+       förfallit, och hur många meningar det blir följer av hur många kort en
+       mening rymmer. Arbetsbördan regleras i stället genom hur mycket nytt
+       som förs in — se kort/arbetsborda.py. */
+    minuter_per_dag INTEGER NOT NULL DEFAULT 20,
     meningar_per_dag INTEGER NOT NULL DEFAULT 20,
     startad   TEXT    NOT NULL,
     /* När kursen senast öppnades. Programmet startar i den som användes
