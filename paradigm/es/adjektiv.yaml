@@ -1,0 +1,86 @@
+---
+meta:
+  version: 2
+  språk: es
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för spanska adjektiv. Kongruerar med
+    substantivets genus och numerus — 4 grundformer (m.sg, f.sg, m.pl, f.pl).
+
+    OBS: adjektiv som slutar på -e eller konsonant är tvåformiga (sg/pl,
+    genus-neutrala): "grande/grandes", "fácil/fáciles". Dessa fyller bara
+    pos_msc_sg (= pos_fem_sg → bitmask-OR-kollaps) och pos_msc_pl.
+
+    Komparativ och superlativ är analytiska för de flesta adjektiv
+    ("más grande", "el más grande"). Oregelbundna: bueno→mejor, malo→peor,
+    grande→mayor, pequeño→menor. Dessa böjs i genus+numerus.
+
+    Aktiva axlar: genus, numerus, grad.
+
+celler:
+  # ── Positiv ────────────────────────────────────────────────────────
+  - id: pos_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Pos
+    # "grande", "pequeño", "bueno", "fácil".
+
+  - id: pos_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Pos
+    # "grande" (identisk), "pequeña", "buena", "fácil" (identisk).
+
+  - id: pos_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Pos
+    # "grandes", "pequeños", "buenos", "fáciles".
+
+  - id: pos_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Pos
+    # "grandes" (identisk), "pequeñas", "buenas", "fáciles" (identisk).
+
+  # ── Komparativ (bara oregelbundna) ─────────────────────────────────
+  - id: komp_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Komp
+
+  - id: komp_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Komp
+
+  - id: komp_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Komp
+
+  - id: komp_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Komp
+
+  # ── Superlativ (bara oregelbundna) ─────────────────────────────────
+  - id: superl_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Superl
+
+  - id: superl_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Superl
+
+  - id: superl_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Superl
+
+  - id: superl_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Superl

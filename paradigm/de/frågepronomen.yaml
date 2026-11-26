@@ -1,0 +1,102 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Frågepronomen
+  beskrivning: >
+    Inflektionsrum för tyska interrogativa pronomen.
+
+    "Wer" (vem, animate) böjs i alla 4 kasus: wer/wen/wem/wessen.
+    "Was" (vad, inanimate) är delvis defektivt: Nom/Akk "was", Dat/Gen ovanliga.
+    "Welcher/welche/welches" (vilken) deklineras som adjektiv (svag deklination).
+    Genus-variation (welcher/welche/welches) + numerus (welche pl).
+
+    Aktiva axlar: kasus, genus, numerus.
+
+celler:
+  # Wer / Was
+  - id: wer_nom
+    kasus: [Nom]
+    # "wer" (animate), "was" (inanimate).
+
+  - id: wer_akk
+    kasus: [Ack]
+    # "wen" (animate), "was" (inanimate — identisk med nom → bitmask-OR-kollaps).
+
+  - id: wer_dat
+    kasus: [Dat]
+    # "wem" (animate). "was" har sällan dativ (analytisk: "womit?" etc.).
+
+  - id: wer_gen
+    kasus: [Gen]
+    # "wessen" (animate och inanimate).
+
+  # Welcher — deklineras som svag adjektiv, genus+kasus+numerus varierar
+  - id: welch_m_nom
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+    # "welcher".
+
+  - id: welch_m_akk
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+    # "welchen".
+
+  - id: welch_m_dat
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+    # "welchem".
+
+  - id: welch_m_gen
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+    # "welches".
+
+  - id: welch_f_nom_akk
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom, Ack]
+    # "welche".
+
+  - id: welch_f_dat_gen
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat, Gen]
+    # "welcher".
+
+  - id: welch_n_nom_akk
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom, Ack]
+    # "welches".
+
+  - id: welch_n_dat
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+    # "welchem".
+
+  - id: welch_n_gen
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+    # "welches" — identisk med nom/akk → bitmask-OR-kollaps.
+
+  - id: welch_pl_nom_akk
+    numerus: Pl
+    kasus: [Nom, Ack]
+    # "welche".
+
+  - id: welch_pl_dat
+    numerus: Pl
+    kasus: [Dat]
+    # "welchen".
+
+  - id: welch_pl_gen
+    numerus: Pl
+    kasus: [Gen]
+    # "welcher".

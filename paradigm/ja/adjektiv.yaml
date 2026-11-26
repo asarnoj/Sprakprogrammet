@@ -1,0 +1,61 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för japanska adjektiv.
+
+    Två fundamentalt olika adjektivtyper:
+
+    い-adjektiv (形容詞): morfologiskt inflekterade, slutar på い.
+      - 高い (takai), 新しい (atarashii), 大きい (ookii)
+      - Har egna böjningsformer för tid, negation och konditionalis.
+
+    な-adjektiv (形容動詞 / "adjektivala substantiv"): grammatiskt
+      närmast substantiv, inflekterar via kopulan だ/です.
+      - 静か (shizuka), 便利 (benri), 好き (suki)
+      - Har bara EN morfologisk form (stammen). Kopula-former lagras ej.
+      - Attributivt: stam + な ("静かな部屋")
+      - な lagras ej separat — pipelinen/renderaren lägger till det.
+
+    な-adjektiv fyller bara `jisho`-cellen. Övriga celler lämnas tomma.
+    Pipelinen sätter lexem-modifierare `na_adj` för renderaren.
+
+    Aktiva axlar: tempus (för い-adj).
+
+celler:
+  - id: jisho
+    tempus: [Inf]
+    grad: Pos
+    # い-adj: 高い, 大きい. な-adj: 静か, 便利.
+    # Grundform / uppslagsform.
+
+  - id: ta
+    tempus: [Pret]
+    grad: Pos
+    # い-adj past: 高かった, 大きかった.
+    # Saknas för な-adj (kopula-past: 静かだった — analytisk).
+
+  - id: nai
+    tempus: [Neg]
+    grad: Pos
+    # い-adj negative: 高くない, 大きくない.
+    # Saknas för な-adj (kopula-neg: 静かではない — analytisk).
+
+  - id: ku
+    tempus: [Te]
+    grad: Pos
+    # い-adj adverbial/te-form: 高く, 大きく.
+    # Används adverbialt ("高く跳ぶ") och i konstruktioner (〜くなる, 〜くて).
+    # Saknas för な-adj (kopula-te: 静かで — analytisk).
+
+  - id: kereba
+    tempus: [Kond]
+    grad: Pos
+    # い-adj conditional (ば-form): 高ければ, 大きければ.
+    # "Om det är högt/stort". Saknas för な-adj (静かなら — analytisk).
+
+  # Komparativ och superlativ: japanska saknar morfologisk komparation.
+  # "Mer X" = もっとX / Xの方が; "mest X" = 一番X — analytiska konstruktioner.
+  # Inga komp/superl-celler.

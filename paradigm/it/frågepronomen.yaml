@@ -1,0 +1,52 @@
+---
+meta:
+  version: 2
+  språk: it
+  ordklass: Frågepronomen
+  beskrivning: >
+    Inflektionsrum för italienska interrogativa pronomen.
+
+    "Chi" (vem) — animate, invariant (ej genus- eller numerusböjning).
+    "Che/cosa/che cosa" (vad) — inanimate, invariant.
+    "Quale/quali" (vilken/vilket/vilka) — böjs bara efter numerus, ej genus.
+    "Quanto/a/i/e" (hur mycket/många) — böjs efter genus och numerus.
+
+    Aktiva axlar: kasus, genus, numerus.
+
+celler:
+  - id: chi
+    kasus: [Nom, Ack, Dat]
+    # "chi" — animate, invariant för alla kasus och numerus.
+    # "Chi sei?" / "Chi vedi?" / "A chi parli?"
+
+  - id: cosa
+    kasus: [Nom, Ack, Dat]
+    # "che / cosa / che cosa" — inanimate, invariant.
+
+  - id: quale_sg
+    numerus: Sg
+    # "quale" — m+f sg (genusneutralt).
+
+  - id: quale_pl
+    numerus: Pl
+    # "quali" — m+f pl.
+
+  - id: quanto_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    # "quanto".
+
+  - id: quanto_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    # "quanta".
+
+  - id: quanto_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    # "quanti".
+
+  - id: quanto_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    # "quante".

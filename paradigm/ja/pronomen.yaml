@@ -1,0 +1,20 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Pronomen
+  beskrivning: >
+    Inflektionsrum för japanska pronomen. Japanska pronomen är grammatiskt
+    substantiv och inflekterar inte morfologiskt — kasus markeras av partiklar.
+
+    Register-varianter (私/僕/俺 för första person) lagras som separata
+    Lexem-rader under samma koncept (multi-lemma per koncept-konventionen).
+
+    En enda cell lagrar grundformen.
+
+    Aktiva axlar: inga.
+
+celler:
+  - id: jisho
+    # 私 (watashi), 僕 (boku), あなた (anata), 彼 (kare), 彼女 (kanojo).
+    # Invariant.

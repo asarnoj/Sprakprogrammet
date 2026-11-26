@@ -1,0 +1,23 @@
+---
+meta:
+  version: 2
+  språk: ja
+  ordklass: Substantiv
+  beskrivning: >
+    Inflektionsrum för japanska substantiv. Japanska substantiv är
+    MORFOLOGISKT INVARIANTA — de böjs inte efter kasus, numerus eller genus.
+
+    Kasus markeras av efterföljande partiklar (が, を, に, で, の etc.)
+    som är separata ord/morfem — de lagras inte i Former.
+    Numerus markeras analytiskt (一つ, 二つ / 〜たち) — ej morfologiskt.
+    Genus saknas.
+
+    En enda cell lagrar grundformen. Former-tabellen fungerar som
+    konsistent datakälla för renderaren oavsett språk.
+
+    Aktiva axlar: inga (NULL för alla axlar).
+
+celler:
+  - id: jisho
+    # 猫 (neko), 家 (ie), 水 (mizu).
+    # Invariant — kasus/numerus/genus alla NULL i Former.

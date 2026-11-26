@@ -1,0 +1,38 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Substantiv
+  beskrivning: >
+    Fullständigt inflektionsrum för engelska substantiv. Engelska substantiv
+    böjs bara efter numerus. Kasus har reducerats till genitiv (possessiv 's)
+    — nominativ/ackusativ/dativ är identiska och särskiljs inte morfologiskt.
+
+    Genus saknas i engelskan (genus på Lexem-nivå = NULL).
+    Oräknebara substantiv (information, water) saknar pluralform —
+    markeras via Koncept.räknebar = 0, inte i denna fil.
+
+    Aktiva axlar: numerus, kasus.
+
+celler:
+  - id: sg
+    numerus: Sg
+    kasus: [Nom, Ack, Dat]
+    # "dog", "house", "information". Täcker alla icke-genitiv-användningar.
+
+  - id: pl
+    numerus: Pl
+    kasus: [Nom, Ack, Dat]
+    # Regelbundet: +s/"es ("dogs", "boxes"). Oregelbundet: "children", "feet".
+    # Saknas för oräknebara substantiv.
+
+  - id: sg_gen
+    numerus: Sg
+    kasus: [Gen]
+    # "dog's", "child's". Regelbundet +apostrophe-s.
+
+  - id: pl_gen
+    numerus: Pl
+    kasus: [Gen]
+    # "dogs'", "children's". Regelbundet: apostrophe efter s-final plural.
+    # Oregelbundet plural: +'s ("children's", "feet's" → men "feet's" är ovanligt).

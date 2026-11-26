@@ -1,0 +1,30 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Frågepronomen
+  beskrivning: >
+    Inflektionsrum för engelska interrogativa pronomen.
+
+    "who/whom/whose" böjs efter kasus (nom/oblique/gen).
+    "what" är invariant (en cell).
+    "which" är invariant men kan ta genitiv: "which one's" (ovanligt).
+
+    I modernt talspråk används "who" för alla kasus ("Who did you see?");
+    "whom" är formellt. Båda lagras om de är distinkta i kaikki.
+
+    Aktiva axlar: kasus.
+
+celler:
+  - id: nom
+    kasus: [Nom]
+    # "who", "what", "which".
+
+  - id: obl
+    kasus: [Ack, Dat]
+    # "whom" (formellt), "what", "which".
+    # För "what" och "which": identisk med nom → bitmask-OR-kollaps.
+
+  - id: gen
+    kasus: [Gen]
+    # "whose". Saknas för "what" och "which" (analytiskt: "which one's" är ovanligt).

@@ -1,0 +1,47 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Pronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för engelska personliga och possessiva pronomen.
+    Engelska pronomen är helt suppletiva — ingen morfologisk regel förbinder
+    formerna (I/me/my/mine är inte avledda av varandra).
+
+    Person och numerus är lexikala egenskaper (på Lexem-nivå, ej axlar i Former).
+
+    Possessivt pronomen har två distinkta former som inte särskiljs av kasus-axeln:
+      - Attributivt (determiner): "my book", "her idea"
+      - Predikativt (självständigt): "the book is mine", "it's hers"
+    Dessa lagras i separata celler via genus-axeln som diskriminator
+    (poss_attr = genus: UtrMask, poss_pred = genus: NeuFem — en konvention,
+    ej semantisk genus). Renderaren vet vilken form som ska användas utifrån
+    syntaktisk kontext.
+
+    Aktiva axlar: kasus, genus (som konventionell attributiv/predikativ-diskriminator).
+
+celler:
+  - id: nom
+    kasus: [Nom]
+    # "I", "you", "he", "she", "it", "we", "they".
+
+  - id: obl
+    kasus: [Ack, Dat]
+    # Oblique/objektsform: "me", "you", "him", "her", "it", "us", "them".
+    # Engelska särskiljer inte ackusativ och dativ morfologiskt.
+
+  - id: poss_attr
+    kasus: [Gen]
+    genus: UtrMask
+    # Attributivt possessivt (determiner): "my", "your", "his", "her",
+    # "its", "our", "their". Används attributivt: "my book".
+    # genus=UtrMask används som konventionell diskriminator mot poss_pred.
+
+  - id: poss_pred
+    kasus: [Gen]
+    genus: NeuFem
+    # Predikativt possessivt (självständigt pronomen): "mine", "yours",
+    # "his", "hers", "its", "ours", "theirs". Används predikativt: "it's mine".
+    # genus=NeuFem används som konventionell diskriminator mot poss_attr.
+    # OBS: "his" och "its" är identiska i båda cellerna — bitmask-OR-kollaps
+    # vid lagring.

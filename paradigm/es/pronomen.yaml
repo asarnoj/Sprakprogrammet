@@ -1,0 +1,46 @@
+---
+meta:
+  version: 2
+  språk: es
+  ordklass: Pronomen
+  beskrivning: >
+    Fullständigt inflektionsrum för spanska personliga pronomen.
+
+    Former per position:
+      - Sujeto (subjekt): yo, tú, él/ella/usted, nosotros/as, vosotros/as, ellos/ellas/ustedes
+      - COD direkt objekt: me, te, lo/la, nos, os, los/las
+      - COI indirekt objekt: me, te, le, nos, os, les
+      - Tónico / preposicionell: mí, ti, él/ella, nosotros/as, vosotros/as, ellos/ellas
+
+    COD och COI identiska för P1/P2 (me, te, nos, os) → bitmask-OR-kollaps.
+    Tónico kodas med kasus=Gen som konvention.
+
+    Reflexivt pronomen "se" (P3 sg+pl) täcks ej här — det är ett separat
+    lexem eller lexem-modifierare.
+
+    OBS: "vosotros/os" används i Spanien men ej i Latinamerika (ustedes/los
+    används där för P2pl). Båda regionala varianter lagras under samma lexem
+    via multi-lemma (två Lexem-rader per koncept).
+
+    Aktiva axlar: kasus, genus (för P3 och possessiv).
+
+celler:
+  - id: sujeto
+    kasus: [Nom]
+    # yo, tú, él, ella, usted, nosotros, vosotros, ellos, ellas, ustedes.
+
+  - id: cod
+    kasus: [Ack]
+    # me, te, lo, la, nos, os, los, las.
+    # P3 sg: lo (UtrMask) / la (NeuFem).
+
+  - id: coi
+    kasus: [Dat]
+    # me, te, le, nos, os, les.
+    # P3: genusneutralt — "le" oavsett genus.
+
+  - id: tonico
+    kasus: [Gen]
+    # mí, ti, él, ella, nosotros/as, vosotros/as, ellos, ellas.
+    # Används efter preposition ("para mí", "sin ti") och vid betoning.
+    # OBS: "mí" har accent för att skilja från "mi" (possessivt).

@@ -1,0 +1,1026 @@
+---
+meta:
+  version: 2
+  språk: de
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för tyska adjektiv. Tyska adjektiv deklineras
+    i tre mönster beroende på föregående determinant:
+
+      species: Obest  = Starke Deklination  (inget artikel: "großer Mann")
+      species: Best   = Schwache Deklination (def. artikel: "der große Mann")
+      species: Bland  = Gemischte Deklination (indef. artikel: "ein großer Mann")
+
+    Genus i singularis:
+      UtrMask = Maskulinum, NeuFem = Femininum, Alla = Neutrum (de-konvention).
+    Plural: genus varierar ej — genus lämnas NULL (ej satt i cell).
+
+    Komparativ och Superlativ följer EXAKT samma 48-cells-mönster som
+    Positiv, fast med annan stam (groß → größer- → größt-).
+    Celler för Komp/Superl är identiska i struktur.
+
+    Oregelbundna: gut/besser/best-, hoch/höher/höchst-,
+    nah/näher/nächst-, viel/mehr/meist-, gern/lieber/liebst-.
+
+    Predikativ-användning (utan deklination) = Positiv-stammen utan ändelse:
+    "Er ist groß". Lagras ej separat — renderaren vet att predikativ = stam.
+
+    Aktiva axlar: genus, numerus, kasus, species, grad.
+    Totalt: 3 species × (3 genus×4 kasus sg + 4 kasus pl) × 3 grad = 144 celler.
+
+# ══════════════════════════════════════════════════════════════════════
+# POSITIV
+# ══════════════════════════════════════════════════════════════════════
+
+celler:
+  # ── Pos / Stark / Mask sg ──────────────────────────────────────────
+  - id: pos_stark_m_nom
+    grad: Pos
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_stark_m_akk
+    grad: Pos
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_stark_m_dat
+    grad: Pos
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_stark_m_gen
+    grad: Pos
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Stark / Fem sg ───────────────────────────────────────────
+  - id: pos_stark_f_nom
+    grad: Pos
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_stark_f_akk
+    grad: Pos
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_stark_f_dat
+    grad: Pos
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_stark_f_gen
+    grad: Pos
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Stark / Neutr sg ─────────────────────────────────────────
+  - id: pos_stark_n_nom
+    grad: Pos
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_stark_n_akk
+    grad: Pos
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_stark_n_dat
+    grad: Pos
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_stark_n_gen
+    grad: Pos
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Stark / Pl ──────────────────────────────────────────────
+  - id: pos_stark_pl_nom
+    grad: Pos
+    species: Obest
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: pos_stark_pl_akk
+    grad: Pos
+    species: Obest
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: pos_stark_pl_dat
+    grad: Pos
+    species: Obest
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: pos_stark_pl_gen
+    grad: Pos
+    species: Obest
+    numerus: Pl
+    kasus: [Gen]
+
+  # ── Pos / Svag / Mask sg ───────────────────────────────────────────
+  - id: pos_svag_m_nom
+    grad: Pos
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_svag_m_akk
+    grad: Pos
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_svag_m_dat
+    grad: Pos
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_svag_m_gen
+    grad: Pos
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Svag / Fem sg ────────────────────────────────────────────
+  - id: pos_svag_f_nom
+    grad: Pos
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_svag_f_akk
+    grad: Pos
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_svag_f_dat
+    grad: Pos
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_svag_f_gen
+    grad: Pos
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Svag / Neutr sg ──────────────────────────────────────────
+  - id: pos_svag_n_nom
+    grad: Pos
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_svag_n_akk
+    grad: Pos
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_svag_n_dat
+    grad: Pos
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_svag_n_gen
+    grad: Pos
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Svag / Pl ───────────────────────────────────────────────
+  - id: pos_svag_pl_nom
+    grad: Pos
+    species: Best
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: pos_svag_pl_akk
+    grad: Pos
+    species: Best
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: pos_svag_pl_dat
+    grad: Pos
+    species: Best
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: pos_svag_pl_gen
+    grad: Pos
+    species: Best
+    numerus: Pl
+    kasus: [Gen]
+
+  # ── Pos / Blandad / Mask sg ────────────────────────────────────────
+  - id: pos_bland_m_nom
+    grad: Pos
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_bland_m_akk
+    grad: Pos
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_bland_m_dat
+    grad: Pos
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_bland_m_gen
+    grad: Pos
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Blandad / Fem sg ─────────────────────────────────────────
+  - id: pos_bland_f_nom
+    grad: Pos
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_bland_f_akk
+    grad: Pos
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_bland_f_dat
+    grad: Pos
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_bland_f_gen
+    grad: Pos
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Blandad / Neutr sg ───────────────────────────────────────
+  - id: pos_bland_n_nom
+    grad: Pos
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: pos_bland_n_akk
+    grad: Pos
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: pos_bland_n_dat
+    grad: Pos
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: pos_bland_n_gen
+    grad: Pos
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  # ── Pos / Blandad / Pl ────────────────────────────────────────────
+  - id: pos_bland_pl_nom
+    grad: Pos
+    species: Bland
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: pos_bland_pl_akk
+    grad: Pos
+    species: Bland
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: pos_bland_pl_dat
+    grad: Pos
+    species: Bland
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: pos_bland_pl_gen
+    grad: Pos
+    species: Bland
+    numerus: Pl
+    kasus: [Gen]
+
+# ══════════════════════════════════════════════════════════════════════
+# KOMPARATIV — identisk cellstruktur som Positiv, grad: Komp
+# ══════════════════════════════════════════════════════════════════════
+
+  - id: komp_stark_m_nom
+    grad: Komp
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_stark_m_akk
+    grad: Komp
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_stark_m_dat
+    grad: Komp
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_stark_m_gen
+    grad: Komp
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_stark_f_nom
+    grad: Komp
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_stark_f_akk
+    grad: Komp
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_stark_f_dat
+    grad: Komp
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_stark_f_gen
+    grad: Komp
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_stark_n_nom
+    grad: Komp
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_stark_n_akk
+    grad: Komp
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_stark_n_dat
+    grad: Komp
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_stark_n_gen
+    grad: Komp
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_stark_pl_nom
+    grad: Komp
+    species: Obest
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: komp_stark_pl_akk
+    grad: Komp
+    species: Obest
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: komp_stark_pl_dat
+    grad: Komp
+    species: Obest
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: komp_stark_pl_gen
+    grad: Komp
+    species: Obest
+    numerus: Pl
+    kasus: [Gen]
+
+  - id: komp_svag_m_nom
+    grad: Komp
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_svag_m_akk
+    grad: Komp
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_svag_m_dat
+    grad: Komp
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_svag_m_gen
+    grad: Komp
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_svag_f_nom
+    grad: Komp
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_svag_f_akk
+    grad: Komp
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_svag_f_dat
+    grad: Komp
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_svag_f_gen
+    grad: Komp
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_svag_n_nom
+    grad: Komp
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_svag_n_akk
+    grad: Komp
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_svag_n_dat
+    grad: Komp
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_svag_n_gen
+    grad: Komp
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_svag_pl_nom
+    grad: Komp
+    species: Best
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: komp_svag_pl_akk
+    grad: Komp
+    species: Best
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: komp_svag_pl_dat
+    grad: Komp
+    species: Best
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: komp_svag_pl_gen
+    grad: Komp
+    species: Best
+    numerus: Pl
+    kasus: [Gen]
+
+  - id: komp_bland_m_nom
+    grad: Komp
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_bland_m_akk
+    grad: Komp
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_bland_m_dat
+    grad: Komp
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_bland_m_gen
+    grad: Komp
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_bland_f_nom
+    grad: Komp
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_bland_f_akk
+    grad: Komp
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_bland_f_dat
+    grad: Komp
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_bland_f_gen
+    grad: Komp
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_bland_n_nom
+    grad: Komp
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: komp_bland_n_akk
+    grad: Komp
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: komp_bland_n_dat
+    grad: Komp
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: komp_bland_n_gen
+    grad: Komp
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: komp_bland_pl_nom
+    grad: Komp
+    species: Bland
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: komp_bland_pl_akk
+    grad: Komp
+    species: Bland
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: komp_bland_pl_dat
+    grad: Komp
+    species: Bland
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: komp_bland_pl_gen
+    grad: Komp
+    species: Bland
+    numerus: Pl
+    kasus: [Gen]
+
+# ══════════════════════════════════════════════════════════════════════
+# SUPERLATIV — identisk cellstruktur, grad: Superl
+# ══════════════════════════════════════════════════════════════════════
+
+  - id: superl_stark_m_nom
+    grad: Superl
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_stark_m_akk
+    grad: Superl
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_stark_m_dat
+    grad: Superl
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_stark_m_gen
+    grad: Superl
+    species: Obest
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_stark_f_nom
+    grad: Superl
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_stark_f_akk
+    grad: Superl
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_stark_f_dat
+    grad: Superl
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_stark_f_gen
+    grad: Superl
+    species: Obest
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_stark_n_nom
+    grad: Superl
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_stark_n_akk
+    grad: Superl
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_stark_n_dat
+    grad: Superl
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_stark_n_gen
+    grad: Superl
+    species: Obest
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_stark_pl_nom
+    grad: Superl
+    species: Obest
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: superl_stark_pl_akk
+    grad: Superl
+    species: Obest
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: superl_stark_pl_dat
+    grad: Superl
+    species: Obest
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: superl_stark_pl_gen
+    grad: Superl
+    species: Obest
+    numerus: Pl
+    kasus: [Gen]
+
+  - id: superl_svag_m_nom
+    grad: Superl
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_svag_m_akk
+    grad: Superl
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_svag_m_dat
+    grad: Superl
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_svag_m_gen
+    grad: Superl
+    species: Best
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_svag_f_nom
+    grad: Superl
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_svag_f_akk
+    grad: Superl
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_svag_f_dat
+    grad: Superl
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_svag_f_gen
+    grad: Superl
+    species: Best
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_svag_n_nom
+    grad: Superl
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_svag_n_akk
+    grad: Superl
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_svag_n_dat
+    grad: Superl
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_svag_n_gen
+    grad: Superl
+    species: Best
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_svag_pl_nom
+    grad: Superl
+    species: Best
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: superl_svag_pl_akk
+    grad: Superl
+    species: Best
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: superl_svag_pl_dat
+    grad: Superl
+    species: Best
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: superl_svag_pl_gen
+    grad: Superl
+    species: Best
+    numerus: Pl
+    kasus: [Gen]
+
+  - id: superl_bland_m_nom
+    grad: Superl
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_bland_m_akk
+    grad: Superl
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_bland_m_dat
+    grad: Superl
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_bland_m_gen
+    grad: Superl
+    species: Bland
+    genus: UtrMask
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_bland_f_nom
+    grad: Superl
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_bland_f_akk
+    grad: Superl
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_bland_f_dat
+    grad: Superl
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_bland_f_gen
+    grad: Superl
+    species: Bland
+    genus: NeuFem
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_bland_n_nom
+    grad: Superl
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Nom]
+
+  - id: superl_bland_n_akk
+    grad: Superl
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Ack]
+
+  - id: superl_bland_n_dat
+    grad: Superl
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Dat]
+
+  - id: superl_bland_n_gen
+    grad: Superl
+    species: Bland
+    genus: Alla
+    numerus: Sg
+    kasus: [Gen]
+
+  - id: superl_bland_pl_nom
+    grad: Superl
+    species: Bland
+    numerus: Pl
+    kasus: [Nom]
+
+  - id: superl_bland_pl_akk
+    grad: Superl
+    species: Bland
+    numerus: Pl
+    kasus: [Ack]
+
+  - id: superl_bland_pl_dat
+    grad: Superl
+    species: Bland
+    numerus: Pl
+    kasus: [Dat]
+
+  - id: superl_bland_pl_gen
+    grad: Superl
+    species: Bland
+    numerus: Pl
+    kasus: [Gen]

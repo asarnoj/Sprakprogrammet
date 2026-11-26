@@ -29,6 +29,8 @@ tempus:
   Pot:     512   # Potentialisform / 可能形
   Vol:     1024  # Volitiv / Konjunktiv / 意志形
   Kond:    2048  # Konditionalis
+  Imperf:  4096  # Imperfektum / Imparfait / Imperfecto — habituell/progressiv dåtid
+                 # (morfologiskt distinkt från Pret/passé simple i fr/es/it)
 
 kasus:
   Nom: 1

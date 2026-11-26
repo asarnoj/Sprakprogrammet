@@ -1,0 +1,98 @@
+---
+meta:
+  version: 2
+  språk: fr
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för franska adjektiv. Adjektiv kongruerar
+    med substantivets genus och numerus — 4 grundformer (m.sg, f.sg, m.pl, f.pl).
+
+    Komparativ och superlativ är analytiska för de flesta adjektiv
+    ("plus grand", "le plus grand") och lagras inte i Former. Undantag:
+    bon → meilleur, mauvais → pire, petit → moindre (formellt). Dessa
+    oregelbundna former böjs i sin tur efter genus+numerus.
+
+    Prenominal/postnominal-distinktionen är lexikal (BAGS-adjektiv vs övriga)
+    och hanteras via Lexem.prenominal — ej en böjningsdimension.
+
+    Aktiva axlar: genus, numerus, grad.
+
+celler:
+  # ── Positiv ────────────────────────────────────────────────────────
+  - id: pos_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Pos
+    # "grand", "petit", "beau" (prenominal), "bon".
+
+  - id: pos_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Pos
+    # "grande", "petite", "belle" (prenominal), "bonne".
+    # OBS: många adjektiv har oregelbunden femininum (beau→belle, vieux→vieille,
+    # nouveau→nouvelle, doux→douce, faux→fausse, etc.).
+
+  - id: pos_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Pos
+    # "grands", "petits", "beaux", "bons".
+
+  - id: pos_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Pos
+    # "grandes", "petites", "belles", "bonnes".
+
+  # ── Komparativ (bara oregelbundna) ─────────────────────────────────
+  - id: komp_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Komp
+    # "meilleur", "pire", "moindre". Tom för analytiska adjektiv.
+
+  - id: komp_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Komp
+    # "meilleure", "pire" (invariant), "moindre" (invariant).
+
+  - id: komp_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Komp
+    # "meilleurs", "pires", "moindres".
+
+  - id: komp_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Komp
+    # "meilleures", "pires", "moindres".
+
+  # ── Superlativ (bara oregelbundna) ─────────────────────────────────
+  # Superlativ bildas analytiskt (le/la/les + komparativform för oregelbundna).
+  # Lagrar bara den naken superlativformen utan artikel.
+  - id: superl_msc_sg
+    genus: UtrMask
+    numerus: Sg
+    grad: Superl
+    # "meilleur", "pire". Tom för analytiska adjektiv.
+
+  - id: superl_fem_sg
+    genus: NeuFem
+    numerus: Sg
+    grad: Superl
+    # "meilleure", "pire".
+
+  - id: superl_msc_pl
+    genus: UtrMask
+    numerus: Pl
+    grad: Superl
+    # "meilleurs", "pires".
+
+  - id: superl_fem_pl
+    genus: NeuFem
+    numerus: Pl
+    grad: Superl
+    # "meilleures", "pires".

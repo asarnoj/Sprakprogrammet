@@ -1,0 +1,37 @@
+---
+meta:
+  version: 2
+  språk: en
+  ordklass: Adjektiv
+  beskrivning: >
+    Fullständigt inflektionsrum för engelska adjektiv. Engelska adjektiv
+    kongruerar inte med substantiv (ingen genus-, numerus- eller species-
+    variation) — de böjs bara efter grad.
+
+    Komparativ och superlativ bildas antingen morfologiskt (+er/+est) eller
+    analytiskt (more/most). Korta adjektiv (1–2 stavelser): morfologiskt.
+    Långa adjektiv (3+ stavelser): analytiskt, och lagras då inte i Former
+    — sup och komp-cellerna lämnas tomma.
+
+    Oregelbundna grader (good/better/best, bad/worse/worst, far/further/furthest)
+    lagras per lexem.
+
+    Icke gradbara adjektiv (wooden, dead, annual) saknar komp och superl —
+    markeras via lexem-modifierare.
+
+    Aktiv axel: grad.
+
+celler:
+  - id: pos
+    grad: Pos
+    # Grundform: "fast", "beautiful", "good".
+
+  - id: komp
+    grad: Komp
+    # Morfologisk komparativ: "faster", "better".
+    # Tom för långa adjektiv (analytisk: "more beautiful").
+
+  - id: superl
+    grad: Superl
+    # Morfologisk superlativ: "fastest", "best".
+    # Tom för långa adjektiv (analytisk: "most beautiful").
