@@ -605,113 +605,92 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-**Ordningen är byggordningen.** Julius tar fyra i taget uppifrån. Löser ett
-svar en punkt stryks den; lämnar svaret något öppet blir resten en ny punkt.
+**Ordningen är byggordningen.** Julius tar dem uppifrån. Löser ett svar en
+punkt stryks den; lämnar svaret något öppet blir resten en ny punkt.
 
-*Omgång 1–3 avklarade. Nio punkter strukna, tre nya födda.*
-
----
-
-### 1 · Meningsurvalet
-
-*Julius: «detta är exakt vad användaren ska göra, så det är nästan viktigast.
-Jag vill att denna del ska vara riktigt proffsigt och sofistikerat.»*
-
-**Idag.** Generatorn samplar några hundra kandidater, poängsätter dem på
-täckning och budget, och tar den bästa. Urvalet är alltså en sortering på ett
-tal.
-
-**Luckan.** Specen säger att reglerna väljer formen, orden fyller den och
-budgeten sätter taket — men den säger ingenting om **hur man väljer när tusen
-kandidater är lämpliga**. Julius räknade upp vad som saknas:
-
-- variation i meningarnas **längd** och **typ**
-- kanske variation i **svårighetsgrad**, inte bara ett tak
-- hur en plats som inte är ett mål får sitt ord — substantiv eller pronomen?
-- **ska en mening ha ett förfallet kort eller flera?**
-
-Den sista är den bärande. Ett förfallet kort per mening ger många korta
-meningar och en ren attribution; flera ger färre meningar och tätare
-mätningar, men gör det svårare att veta vad som brast.
-
-**Det här är inte en lucka som avgörs med ett alternativ, utan ett avsnitt som
-saknas i specen.** Nästa omgång bör ägnas åt att skriva det.
+*Omgång 1–4 avklarade. Tolv punkter strukna, tre nya födda. Kvar är tre, och
+den översta är ett helt avsnitt som ska skrivas — inte ett val.*
 
 ---
 
-### 2 · Vad krävs för nästa nivå, och syns det?
+### 1 · Meningsurvalet — avsnittet som ska skrivas
 
-*Ny, ur Julius svar på gamla punkt 4.*
+*Julius: «jag pluggade nyligen algoritmer och komplexitet och vill ta
+inspiration från att hitta den optimala lösningen… jag vill gärna vara med och
+designa aspekterna och hur man ska kunna fatta beslut med så många olika
+parametrar.»*
 
-**Idag.** Grind 1 säger att materialet ska räcka: nivån går att öva. Vad som
-saknas räknas fram men visas inte.
+**Problemets form, mätt på franskan som den ser ut i dag:**
 
-**Luckan.** Julius: *«ifall systemet kräver specifika ordklasskort eller
-specifika böjningar är det väldigt frustrerande ifall användaren vill levla
-upp men tvingas lära sig nya kort som inte tar personen närmare nästa nivå.»*
+    införda kort                                85
+    byggbara kandidater av 2 000 försök      1 692
+    DISTINKTA kortmängder                      727    ← sökrummets bredd
+    införda kort per mening                   3–13, typvärde 7
 
-Införandeordningen är avgjord — frekvens inom ordklass — och den tar ingen
-hänsyn till vad nästa nivå kräver. En användare som vill öppna `objekt` kan
-alltså få tio ord i rad som inte hjälper.
+**Det är ett övertäckningsproblem (set cover).** Universum är dagens förfallna
+kort; mängderna är de meningar som går att bygga; varje mängd har en kostnad
+Σ(1−R) som måste rymmas i budgeten. Målet är att täcka universum med så få
+meningar som möjligt.
+
+Set cover är **NP-svårt** i allmänhet. Men instansen är liten — tiotals
+förfallna kort, hundratals distinkta mängder — så en exakt lösning är
+realistisk, och den giriga algoritmen ger ln(n)-approximation som undre gräns
+på kvaliteten.
+
+**Två saker gör problemet intressantare än läroboksversionen:**
+
+1. **Mängderna går inte att räkna upp.** Man kan bara sampla dem: 2 000 försök
+   gav 1 692 kandidater och 727 distinkta kortmängder. Det är alltså set cover
+   med ett *orakel som drar mängder*, och kostnaden ligger i dragningen, inte
+   i täckningen.
+
+2. **Dagens algoritm optimerar fel sak.** Den väljer bästa NÄSTA mening, inte
+   bästa UPPSÄTTNING meningar. Det är girig täckning utan att veta om det, och
+   det är där «sofistikerat» skulle börja: optimera dagen i stället för
+   meningen.
+
+**Parametrarna Julius räknade upp blir sekundära mål** — de skiljer mellan
+täckningar av samma storlek:
+
+- variation i **längd** och **konstruktionstyp**
+- spridning i **svårighetsgrad**, inte bara ett tak
+- hur en plats som inte är ett mål får sitt ord
+- **ett förfallet kort per mening eller flera?** Ett ger många korta meningar
+  och ren attribution; flera ger färre meningar och tätare mätningar men
+  suddigare skuld.
+
+**Nästa omgång ägnas åt att skriva det här avsnittet**, inte åt att beta av
+punkter.
+
+---
+
+### 2 · Källspråkets datahål
+
+*Kvar av gamla «tysta silen» efter mätningen.*
+
+**Idag.** Mätt på 2 557 franska kandidater föll 24 på svenskan, 0,9 %. De är
+två olika saker:
+
+    17   SPRÅKSKILLNAD — svenskan har ingen sådan form
+          «vantar» är plurale tantum, franskans «une moufle» finns i singular
+     7   DATAHÅL — formen saknas i svenska ordboken
+          sv/bröd, cellen best_pl_ack_dat_nom är tom
+
+**Luckan.** De 17 är **rätt beteende** — det universella meningsobjektet är
+riktigt, men ett enskilt språk realiserar inte varje cell, och då ska meningen
+inte ställas. De 7 är en bugg i ordboksdatan.
 
 **Alternativ.**
 
-- **a)** Ordningen är oförändrad, men gränssnittet **visar** vad som saknas
-  för nästa nivå. Användaren ser varför det dröjer.
-- **b)** Det som saknas för den närmaste låsta nivån **går före** i
-  införandeordningen. Snabbare upplåsning, men frekvensordningen bryts.
-- **c)** Användaren väljer: «sikta mot nästa nivå» eller «ge mig de vanligaste
-  orden». Två lägen, båda ärliga.
+- **a)** Skilj dem åt i loggen: språkskillnad räknas och tigs, datahål
+  rapporteras som fel att laga.
+- **b)** Laga de 7 och behandla resten som normal drift.
+- **c)** Låt byggbarheten räkna källspråket, så att ett kort som bara går att
+  nå med meningar svenskan inte klarar aldrig hamnar i planen.
 
 ---
 
-### 3 · Betygsskalan är inte omtagen
-
-**Idag.** `FEL, RÄTT = Rating.Again, Rating.Good` — två av FSRS fyra betyg,
-för att en diff bara ger två signaler.
-
-**Luckan.** Resonemanget gäller fortfarande men står ingenstans i specen. En
-läsare ser fyra betyg och svarstid i loggen och drar slutsatsen att `Hard`
-borde härledas. E3 avvisade just det: svarstid mäter inte minnet.
-
-**Alternativ.**
-
-- **a)** Två betyg, och skälet skrivs in.
-- **b)** Fyra betyg där `Hard`/`Easy` härleds ur något som först mätts.
-
----
-
-### 4 · Källspråkets rendering silar tyst
-
-**Idag.** Misslyckas källspråkets renderare hoppas kandidaten över. Mätt: **2
-av 505, 0,4 %.**
-
-**Luckan.** Mekanismen finns men står inte i specen, och den är en tyst sil.
-
-**Alternativ.**
-
-- **a)** Skriv in den och mät den som ett acceptansmått.
-- **b)** Låt byggbarheten räkna källspråket också.
-
----
-
-### 5 · Extraövning saknas helt
-
-**Idag.** Det gamla systemet hade «keep practising»: kort som ännu inte
-förfallit, tidigast först.
-
-**Luckan.** Modellen nämner det inte. Svaret kan ha blivit enklare: massning
-ovanpå vila kostar noll — `S = 11,29` mot 10,96.
-
-**Alternativ.**
-
-- **a)** Extraövning finns inte.
-- **b)** Samma kö som förut, nu utan invändningen.
-- **c)** Meningar av allt infört utan att sikta på något.
-
----
-
-### 6 · Korttabellen är franskspecifik
+### 3 · Korttabellen är franskspecifik
 
 **Idag.** `egenskap`-kort finns bara i tre språk. Japanskan har inga alls.
 
@@ -725,6 +704,76 @@ ovanpå vila kostar noll — `S = 11,29` mot 10,96.
 ---
 
 ## 12 · Beslut ur omgångarna
+
+### Omgång 4 (2026-09-10)
+
+#### Grind 1 är redan en fysisk begränsning
+
+Julius: *«det tar emot att sätta begränsningar i stället för att utnyttja
+fysiska begränsningar. Så fort jag sätter manuella begränsningar förstör jag
+renheten.»* — och invändningen bygger på ett missförstånd som är mitt fel att
+inte ha rett ut.
+
+Grind 1 är **inte** ett valt tal som «du behöver tjugo substantiv». Den frågar
+om generatorn faktiskt kan bygga meningar på nivån, och tröskeln är härledd ur
+sökningens egen takt:
+
+    byggbarhet × kandidater ≥ 1
+
+Alltså: andelen dugliga kandidater måste vara stor nog att minst en väntas per
+sökning. Samma form som exponeringströskeln och av samma skäl. Det **är** den
+fysiska begränsningen — nivån öppnas när språket och ordförrådet räcker, inte
+när någon tycker det.
+
+Julius fråga *«borde det finnas krav på ett visst antal ord per nivå?»* har
+därmed svaret nej, och det är redan så: kravet är byggbarhet, inte antal.
+
+#### En nivåuppgradering per dygn, härledd ur FSRS
+
+Julius ville ha regeln men uttryckt snyggt: *«i stället för att gå efter att
+kortet ska bli klart borde regeln vara att man endast kan höja nivån en gång
+per dag.»*
+
+Den behöver inget eget tak. Nivåns kort är ett kort som alla andra, och FSRS
+kortaste meningsfulla intervall är **ett dygn** — ett kort som införs i dag kan
+inte prövas igen förrän i morgon. Regeln blir därför:
+
+> **Nästa nivå öppnas när föregående nivås kort har prövats en gång, och den
+> prövningen inte skedde i dag.**
+
+Det ger exakt en nivåuppgradering per dygn, utan ett valt tal, och det stänger
+kryphålet Julius pekade på — att gå ut ur passet, höja nivån och gå in igen.
+Formuleringen är hans egen: kortet räknas som lärt först nästa dag.
+
+#### Två betyg nu, manuellt Hard/Easy senare
+
+Julius: *«vi kommer inte kunna mäta hard eller easy på något hållbart sätt. Det
+är användarens egna upplevelse. Däremot är jag inte emot att användaren själv
+kan skriva in det.»*
+
+Avgjort. `Again` och `Good` härleds ur diffen och räcker för FSRS. `Hard` och
+`Easy` **härleds aldrig** — särskilt inte ur svarstid, som E3 avvisade. Men
+användaren får senare markera dem för hand, med en genväg på kortet. Det är
+inom FSRS logik: betyget är då en uppgift från användaren och inte en gissning
+från systemet.
+
+#### Källspråket silar inte modellen, det silar datan
+
+Julius: *«detta är oroväckande eftersom vårt universella språksystem bygger på
+att man bygger upp universella meningar med pythonobjekt som sedan kan renderas
+till vilket språk som helst.»*
+
+Mätt, och arkitekturen står. Av 2 557 franska kandidater föll 24 på svenskan:
+
+    17   svenskan har ingen sådan form   «vantar» är plurale tantum
+     7   formen saknas i ordboken        sv/bröd, best_pl_ack_dat_nom tom
+
+De 17 är **rätt beteende**. Meningsobjektet är universellt, men ett enskilt
+språk realiserar inte varje cell — och då ska meningen inte ställas, för den
+går inte att översätta. De 7 är en datalucka, inte ett arkitekturfel.
+
+---
+
 
 ### Omgång 3 (2026-09-10)
 
