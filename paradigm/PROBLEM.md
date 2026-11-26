@@ -2413,10 +2413,16 @@ ingen gemensam fix.
 **Öppet:** om korten för onåbara celler ska finnas kvar (de räknas in i
 upplåsningen — se A3, samma fråga).
 
-### C9 ! — Prövar korten det de utger sig för att pröva?
+### C9 ✓ — Prövar korten det de utger sig för att pröva?
 
 Julius granskade en hel dag skärmbild för skärmbild och ställde tre frågor
 som alla visade sig ha samma svar: nej, inte alltid.
+
+**Status 2026-08-29:** alla fem fynden nedan är stängda och mätta. Beviset
+som håller markören är felsvepet: 280 prövningar per språk över åtta
+feltyper, **noll falska betyg** i franska, tyska och engelska — och nätet kan
+numera falla, med två sabotage som fäller det. Markören står så länge det
+talet gör det.
 
 #### ÄNDELSEKORT KRÄNGS PÅ FORMER SOM SAKNAR ÄNDELSEN
 
