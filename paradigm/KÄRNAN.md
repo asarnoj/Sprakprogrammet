@@ -77,15 +77,18 @@ klara eller missa oberoende av de andra — det är hela kriteriet.
 **Borta:** `stam` och `form` som egna typer, och `egenskap: böjningsklass`.
 
 `stam` föll på produktionstestet — «vad är stammen för *arbeta*?» är ingen
-fråga en människa besvarar — och på att den är **härledbar ur lemmat för 121 av
-franskans 174 verb**. `form` och `stam` visade sig dessutom vara samma
+fråga en människa besvarar — och på att den är härledbar ur lemmat för
+**franskans 122 `-er`-verb av 174**, den enda klass vars stam är lemmat minus
+infinitivändelsen. `form` och `stam` visade sig dessutom vara samma
 läromoment: `aur-` och `vais` är båda «detta ord bryter mönstret här», och
 skillnaden är bara om en regelbunden ändelse råkar fästa efteråt.
 
-**Regelbundenhet spåras inte — bara undantagen.** Av franskans 1 946
-(ord × tempus)-par följer 1 527 regeln «stryk `-er/-ir/-re/-oir`» och 419
-bryter mot den. De 78 % som följer behöver inget kort; basen faller ur
-ordkortet. Så lär sig också en människa: mönstret först, sedan undantagen.
+**Regelbundenhet spåras inte — bara undantagen.** Följer ordet mönstret
+behövs inget kort; basen faller ur ordkortet. Så lär sig också en människa:
+mönstret först, sedan undantagen.
+
+Hur många undantag det blir är **inte mätt** — se punkt 11.1. Utkast 1–21 stod
+«1 527 följer, 419 bryter»; det talet går inte att återskapa och är struket.
 
 ### 541 kort som ingen kan möta
 
@@ -95,27 +98,34 @@ skriver «K0», så kortet faller på produktionstestet. Mätt: **210 i franskan
 införts.**
 
 De behövs inte heller. Kunskapen «det här verbet böjs så här» bärs redan av
-**stammen**: `regarder` får imperfektstammen `regard-` och `finir` får
-`finiss-`, medan ändelsen `-ais` är densamma. Klassen *är* stammen.
+de två korttyper som finns kvar: `regarder` tar mönsterkortet för imperfekt och
+behöver inget mer, medan `finir` har `finiss-` och får ett `oregelbunden`-kort
+där. **Klassen är ändelsekortet plus undantagen** — den behöver ingen egen kod.
 
-Franskans lek går från 810 till **600 kort**.
+Franskan tappar därmed 210 kort. *(Den gamla modellens lek var 810 kort och
+blir 600 — båda mätta i `kort.db`. Den nya modellens totalsumma är inte
+bestämd, eftersom den hänger på punkt 11.1.)*
 
 ### Genus
 
 Julius: *«För tyska och franska måste man lära sig genuset på varendaste
 substantiv, vilket tar väldigt mycket tid. För varje substantiv man lär sig
-ingår även genuset.»* — 162 kort av 600, alltså 27 %, och det är rätt
-proportion.
+ingår även genuset.»* — 162 genuskort i franskan mot den gamla modellens
+600, alltså 27 %, och det är rätt proportion. Genus rörs inte av omgång 3, så
+talet står.
 
 *(Rättelse: utkast 2–4 skrev «427 genuskort, 53 %». 427 är alla
 `egenskap`-kort tillsammans.)*
 
 ### Faktoriseringen
 
-Stam plus ändelse ger 151 kort där en cell per lexem skulle ge 4 924. Modellen
-är rätt; det var härledningen som brast för lexem som böjs i två leder —
-`sœur aînée` blev `sœurs aînée`. **Stammen härleds ur de renderade formerna i
-stället för ur lemmasträngen** — renderarna kan redan kongruens.
+Att faktorisera är rätt: ett kort per cell och lexem skulle ge 4 924 kort i
+franskan, mönster plus undantag ger en bråkdel. Men det var **härledningen** som
+brast för lexem som böjs i två leder — `sœur aînée` blev `sœurs aînée`.
+
+Därför: **basen härleds ur de renderade formerna, inte ur lemmasträngen** —
+renderarna kan redan kongruens. Det är samma beroende som byggordningen redan
+vilar på, och skälet att punkt 11.1 inte kan avgöras före renderarna talat.
 
 ---
 
@@ -697,15 +707,7 @@ aldrig uppdaterats efter omgång 3.*
 
 Omgång 3 avgjorde att `stam` och `form` slås ihop till `oregelbunden` —
 «just detta ord bryter mönstret här». **Men «här» är inte definierat**, och
-talet svänger med hur gränsen dras. Mätt på franskan, samma data, tre
-tolkningar:
-
-    per FORM              4 460 kort   varje oregelbunden form för sig
-    per (ord × grupp)     1 037 kort   grupp = tempus och species
-    per (ord × tempus)      419 kort   grupp = bara tempus
-
-**En faktor tio mellan ytterligheterna.** Och skillnaden är ett verkligt
-läromoment, inte en teknikalitet:
+skillnaden är ett verkligt läromoment:
 
 - `avoir` har futurumbasen `aur-`, och den bär sex celler. Är det **ett**
   läromoment eller **sex**?
@@ -715,44 +717,74 @@ läromoment, inte en teknikalitet:
 Den första talar för gruppnivå, den andra för formnivå. **Båda finns i samma
 språk**, vilket är skälet att frågan inte har ett självklart svar.
 
-**Alternativ.**
+**Varför det inte går att räkna sig till svaret ännu.** Två försök att mäta hur
+många korten blir gav båda artefakter, inte språk:
+
+1. *Stam = lemmat minus infinitivändelsen.* Faller på franskans futurum, där
+   ändelsetabellen redan bär `-erai` och basen alltså är `parl`, inte `parler`.
+2. *Stam = lemmat minus klassens vanligaste avkortning.* Faller på tyskan:
+   `arbeiten` → `gearbeitet` är inte en avkortning av lemmat alls, så **alla
+   174 tyska verb** blev oregelbundna i particip. Samma sak i japanskan, 0 av
+   169 regelbundna.
+
+Båda felen har samma orsak: `stammar.tsv` har redan **valt var snittet går**,
+och det valet är ett renderarbeslut. `arbeiten` ligger där som fyra rader
+(`arbeit`, `arbeite`, `arbeitet`, `arbeitete`) därför att bindevokalen `-e-`
+bokförts i stammen i stället för i ändelsen. Att räkna kort på den tabellen
+mäter tabellens bokföring, inte tyskans oregelbundenhet.
+
+**Alltså är punkt 1 blockerad bakom renderarnas redovisning** — samma beroende
+som byggordningen (punkt 10) redan sätter först. När renderaren säger «här slog
+jag upp en lagrad form, här härledde jag» är oregelbundenhetens enhet definierad
+och talet faller ut. Inte förr.
+
+**Alternativ, att avgöra när redovisningen finns.**
 
 - **a) Per form.** Varje oregelbunden form är sitt eget kort. Renast mot
-  produktionstestet — facit är alltid något man skriver — men 4 460 kort i
-  franskan och varje cell måste införas.
+  produktionstestet — facit är alltid något man skriver — men flest kort, och
+  varje cell måste införas.
 - **b) Per grupp, där en gemensam bas finns.** `aur-` blir ett kort som bär sex
   celler; `vais` blir ett eget eftersom ingen bas delas. Följer språket, men
-  gruppgränsen måste definieras per dimension och det är där de tre talen ovan
-  kommer ifrån.
-- **c) Per grupp, med gruppen given av paradigmets egen struktur** — alltså
-  det renderaren slår upp som en enhet. Skjuter frågan till renderaren, som
-  redan vet, men kräver att den redovisar det (samma arbete som de 111
-  besluten).
+  gruppgränsen måste definieras.
+- **c) Gruppen är den renderaren själv slår upp som en enhet.** Kräver inget
+  eget gränsdragande — men förutsätter redovisningen och binder korten till
+  renderarens interna struktur.
 
 ---
 
 ### 2 · Korttypernas mix skiljer sig mellan språken
 
-**Idag.** Räknat i den nya modellen, per (lexem × tempusgrupp):
+**Idag.** Två av tre grundtyper går att räkna direkt. `ord` är ett per lexem i
+`sprak.db`; `ändelse` är en rad i `ordbok/ändelser.tsv`, alltså ett mönster per
+(klass × cell):
 
-    språk    ord    ändelse    oregelbunden
-    en       734         63             144
-    de       734        577             956
-    fr       732        298           1 037
-    ja       724         23           1 554
+    språk    ord    ändelse    klasser    oregelbunden
+    de       736        241          7         punkt 1
+    en       734         20          6         punkt 1
+    es       740        191          9         punkt 1
+    fr       733        111          8         punkt 1
+    it       733        180          9         punkt 1
+    ja       732         20          3         punkt 1
+    sv       741         68         10         punkt 1
 
-**Luckan.** Specen visar franskan och säger aldrig att japanskan har **23
-ändelser mot franskans 298** och nästan allt i `oregelbunden` — vilket är rätt
-för ett agglutinerande språk, men överraskande för en läsare. Svenskan har
-inga kort alls, eftersom ingen kurs har svenska som målspråk.
+**Luckan.** Specen visar franskan genomgående och säger aldrig att spannet är
+så här brett. Tyskan har **241 ändelsekort mot japanskans 20** — tolv gånger
+fler — och japanskan klarar sig med **tre böjningsklasser mot spanskans nio**.
+Det är rätt för språken, men överraskande för en läsare som bara sett franskan.
 
-*Talen ovan hänger på punkt 1 och ändras när den avgörs.*
+Svenskan står med i tabellen därför att den finns i ordboken, men har inga kort
+i `kort.db`: ingen kurs har svenska som målspråk.
 
 **Alternativ.**
 
-- **a)** Tabellen får en kolumn per språk.
+- **a)** Tabellen ovan flyttar in i punkt 2, så att korttyperna presenteras med
+  sitt spann från början.
 - **b)** Korttyperna är en möjlig mängd som varje språk fyller efter behov, och
-  mixen visas som en mätning i stället för som en norm.
+  mixen visas som en mätning i stället för som en norm. Då behöver specen bara
+  säga att den mäts, inte vad den blir.
+
+*Kolumnen `oregelbunden` kan inte fyllas förrän punkt 1 är avgjord — och det
+är hela poängen med att den står tom här i stället för att gissas.*
 
 ---
 
