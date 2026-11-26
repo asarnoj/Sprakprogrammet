@@ -1408,12 +1408,15 @@ class Sammansättare:
         return any(h[0] == "form" for h in händelser)
 
     def meningar(self, mål: Kort | None = None, tillåten: Tillåten = None, *,
-                 högst_ord: int, per_mall: int | None = None) -> Iterator[Träff]:
+                 högst_ord: int, per_mall: int | None = None,
+                 grupperat: bool = False) -> Iterator[Träff]:
         """Giltiga meningar som prövar `mål`, av kort som `tillåten` godtar.
 
         Kommer i ordning efter antal ord, upp till `högst_ord`. `per_mall` begränsar
         hur många ordval som prövas för varje sammansättning av vägar; None prövar
-        alla.
+        alla. `grupperat` prövar ett ord per signatur i stället för varje ord: två
+        ord med samma signatur ger samma kort i samma mening, så den som bara
+        behöver en mening per korttäckning slipper de andra.
         """
         sedda: set = set()
         # Två specar som ger samma mening med samma kort är samma mening här.
@@ -1425,7 +1428,8 @@ class Sammansättare:
                 if ord != n or (mål is not None and not self._kan_innehålla(händelser, mål)):
                     continue
                 träffar = 0
-                for mening, _, _ in self._meningar_ur(villkor, händelser, tillåten, mål):
+                for mening, _, _ in self._meningar_ur(villkor, händelser, tillåten, mål,
+                                                      grupperat=grupperat):
                     if mening in sedda:
                         continue
                     sedda.add(mening)

@@ -17,8 +17,8 @@ VAD SOM INTE ÄR BYGGT ÄN, och som därför är enkelt här:
   kortaste som ryms.
 - Tidsmodellen (5.5) säger hur många nya kort dagen ska ha; här väljer användaren
   själv när ett nytt kort ska tas.
-- Reservstegen (6.3) — ensamövning och den minst riskabla meningen — saknas, så
-  ett kort som ingen mening inom budgeten når väntar till nästa dag.
+- Reservsteg 1 i 6.3, ensamövningen, saknas. Reservsteg 2 — den minst riskabla
+  meningen — finns, och behövs redan dag ett, då varje kort är nytt.
 - Entydighetsfiltret (6.5) ger flera godtagna varianter; här är facit den mening
   som ställdes.
 """
@@ -129,7 +129,8 @@ class Passet:
         """
         bäst: tuple[float, Uppgift] | None = None
         längd: int | None = None
-        for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA, per_mall=1):
+        for träff in self.s.meningar(kort, tillåten, högst_ord=LÄNGSTA, per_mall=1,
+                                     grupperat=True):
             if längd is None:
                 längd = träff.ord
             elif träff.ord > längd:
