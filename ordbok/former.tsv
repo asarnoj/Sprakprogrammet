@@ -12150,6 +12150,36 @@ arb_öva	sv	öva	övas					3			2
 arb_öva	sv	öva	övat					8			1
 arb_öva	sv	öva	övat	1	1		2	8			1
 arb_öva	sv	öva	övats					8			2
+artikel_bestamd	de	der	das	1		1	3				
+artikel_bestamd	de	der	das	1		2	3				
+artikel_bestamd	de	der	dem	1		4	1				
+artikel_bestamd	de	der	dem	1		4	3				
+artikel_bestamd	de	der	den	1		2	1				
+artikel_bestamd	de	der	den	2		4					
+artikel_bestamd	de	der	der	1		1	1				
+artikel_bestamd	de	der	der	1		4	2				
+artikel_bestamd	de	der	der	1		8	2				
+artikel_bestamd	de	der	der	2		8					
+artikel_bestamd	de	der	des	1		8	1				
+artikel_bestamd	de	der	des	1		8	3				
+artikel_bestamd	de	der	die	1		1	2				
+artikel_bestamd	de	der	die	1		2	2				
+artikel_bestamd	de	der	die	2		1					
+artikel_bestamd	de	der	die	2		2					
+artikel_obestamd	de	ein	ein	1		1	1				
+artikel_obestamd	de	ein	ein	1		1	3				
+artikel_obestamd	de	ein	ein	1		2	3				
+artikel_obestamd	de	ein	eine	1		1	2				
+artikel_obestamd	de	ein	eine	1		2	2				
+artikel_obestamd	de	ein	einem	1		4	1				
+artikel_obestamd	de	ein	einem	1		4	3				
+artikel_obestamd	de	ein	einen	1		2	1				
+artikel_obestamd	de	ein	einer	1		4	2				
+artikel_obestamd	de	ein	einer	1		8	2				
+artikel_obestamd	de	ein	eines	1		8	1				
+artikel_obestamd	de	ein	eines	1		8	3				
+artikel_obestamd	sv	en	en	1			1				
+artikel_obestamd	sv	en	ett	1			2				
 asp_börja	de	anfangen	Fangen Sie an!	1				16		3	1
 asp_börja	de	anfangen	Fangen wir an!	2				16		1	1
 asp_börja	de	anfangen	anfangen					1			1
@@ -12687,6 +12717,47 @@ asp_sluta	sv	sluta	slutas					3			2
 asp_sluta	sv	sluta	slutat					8			1
 asp_sluta	sv	sluta	slutat	1	1		2	8			1
 asp_sluta	sv	sluta	slutats					8			2
+demonstrativ_fjärran	de	jener	jene	1		1	2				
+demonstrativ_fjärran	de	jener	jene	1		2	2				
+demonstrativ_fjärran	de	jener	jene	2		1					
+demonstrativ_fjärran	de	jener	jene	2		2					
+demonstrativ_fjärran	de	jener	jenem	1		4	1				
+demonstrativ_fjärran	de	jener	jenem	1		4	3				
+demonstrativ_fjärran	de	jener	jenen	1		2	1				
+demonstrativ_fjärran	de	jener	jenen	2		4					
+demonstrativ_fjärran	de	jener	jener	1		1	1				
+demonstrativ_fjärran	de	jener	jener	1		4	2				
+demonstrativ_fjärran	de	jener	jener	1		8	2				
+demonstrativ_fjärran	de	jener	jener	2		8					
+demonstrativ_fjärran	de	jener	jenes	1		1	3				
+demonstrativ_fjärran	de	jener	jenes	1		2	3				
+demonstrativ_fjärran	de	jener	jenes	1		8	1				
+demonstrativ_fjärran	de	jener	jenes	1		8	3				
+demonstrativ_fjärran	sv	den där	de där	2							
+demonstrativ_fjärran	sv	den där	den där	1			1				
+demonstrativ_fjärran	sv	den där	det där	1			2				
+demonstrativ_nara	de	dieser	diese	1		1	2				
+demonstrativ_nara	de	dieser	diese	1		2	2				
+demonstrativ_nara	de	dieser	diese	2		1					
+demonstrativ_nara	de	dieser	diese	2		2					
+demonstrativ_nara	de	dieser	diesem	1		4	1				
+demonstrativ_nara	de	dieser	diesem	1		4	3				
+demonstrativ_nara	de	dieser	diesen	1		2	1				
+demonstrativ_nara	de	dieser	diesen	2		4					
+demonstrativ_nara	de	dieser	dieser	1		1	1				
+demonstrativ_nara	de	dieser	dieser	1		4	2				
+demonstrativ_nara	de	dieser	dieser	1		8	2				
+demonstrativ_nara	de	dieser	dieser	2		8					
+demonstrativ_nara	de	dieser	dieses	1		1	3				
+demonstrativ_nara	de	dieser	dieses	1		2	3				
+demonstrativ_nara	de	dieser	dieses	1		8	1				
+demonstrativ_nara	de	dieser	dieses	1		8	3				
+demonstrativ_nara	sv	den här	de här	2							
+demonstrativ_nara	sv	den här	den här	1			1				
+demonstrativ_nara	sv	den här	det här	1			2				
+demonstrativ_nara	sv	denna	denna	1			1				
+demonstrativ_nara	sv	denna	dessa	2							
+demonstrativ_nara	sv	denna	detta	1			2				
 djur_elefant	de	Elefant	Elefant	1		1					
 djur_elefant	de	Elefant	Elefanten	1		14					
 djur_elefant	de	Elefant	Elefanten	2		15					
@@ -26599,6 +26670,29 @@ häls_smärta	sv	smärta	smärtor	2	1	7
 häls_smärta	sv	smärta	smärtorna	2	2	7					
 häls_smärta	sv	smärta	smärtornas	2	2	8					
 häls_smärta	sv	smärta	smärtors	2	1	8					
+interr_det_hur_mycket	de	wie viel	wie viel								
+interr_det_hur_mycket	sv	hur mycket	hur mycket								
+interr_det_hur_många	de	wie viele	wie viele								
+interr_det_hur_många	sv	hur många	hur många								
+interr_det_vilken	de	welcher	welche	1		1	2				
+interr_det_vilken	de	welcher	welche	1		2	2				
+interr_det_vilken	de	welcher	welche	2		1					
+interr_det_vilken	de	welcher	welche	2		2					
+interr_det_vilken	de	welcher	welchem	1		4	1				
+interr_det_vilken	de	welcher	welchem	1		4	3				
+interr_det_vilken	de	welcher	welchen	1		2	1				
+interr_det_vilken	de	welcher	welchen	2		4					
+interr_det_vilken	de	welcher	welcher	1		1	1				
+interr_det_vilken	de	welcher	welcher	1		4	2				
+interr_det_vilken	de	welcher	welcher	1		8	2				
+interr_det_vilken	de	welcher	welcher	2		8					
+interr_det_vilken	de	welcher	welches	1		1	3				
+interr_det_vilken	de	welcher	welches	1		2	3				
+interr_det_vilken	de	welcher	welches	1		8	1				
+interr_det_vilken	de	welcher	welches	1		8	3				
+interr_det_vilken	sv	vilken	vilka	2							
+interr_det_vilken	sv	vilken	vilken	1			1				
+interr_det_vilken	sv	vilken	vilket	1			2				
 kläd_byxa	de	Hose	Hose	1		15					
 kläd_byxa	de	Hose	Hosen	2		15					
 kläd_byxa	en	trousers	trousers	2		7					
@@ -33767,6 +33861,48 @@ krop_öra	sv	öra	öron	2	1	7
 krop_öra	sv	öra	öronen	2	2	7					
 krop_öra	sv	öra	öronens	2	2	8					
 krop_öra	sv	öra	örons	2	1	8					
+kvant_alla	de	alle	alle	2		1					
+kvant_alla	de	alle	alle	2		2					
+kvant_alla	de	alle	allen	2		4					
+kvant_alla	de	alle	aller	2		8					
+kvant_alla	sv	alla	alla								
+kvant_båda	de	beide	beide	2		1					
+kvant_båda	de	beide	beide	2		2					
+kvant_båda	de	beide	beiden	2		4					
+kvant_båda	de	beide	beider	2		8					
+kvant_båda	sv	båda	båda								
+kvant_ingen	de	niemand	niemand			1					
+kvant_ingen	de	niemand	niemandem			4					
+kvant_ingen	de	niemand	niemanden			2					
+kvant_ingen	de	niemand	niemandes			8					
+kvant_ingen	sv	ingen	ingen								
+kvant_inget	de	nichts	nichts								
+kvant_inget	sv	inget	inget								
+kvant_någon	de	jemand	jemand			1					
+kvant_någon	de	jemand	jemandem			4					
+kvant_någon	de	jemand	jemanden			2					
+kvant_någon	de	jemand	jemandes			8					
+kvant_någon	sv	någon	någon								
+kvant_något	de	etwas	etwas								
+kvant_något	sv	något	något								
+kvant_några	de	einige	einige	2		1					
+kvant_några	de	einige	einige	2		2					
+kvant_några	de	einige	einigen	2		4					
+kvant_några	de	einige	einiger	2		8					
+kvant_några	sv	några	några								
+kvant_varje	de	jeder	jede	1		1	2				
+kvant_varje	de	jeder	jede	1		2	2				
+kvant_varje	de	jeder	jedem	1		4	1				
+kvant_varje	de	jeder	jedem	1		4	3				
+kvant_varje	de	jeder	jeden	1		2	1				
+kvant_varje	de	jeder	jeder	1		1	1				
+kvant_varje	de	jeder	jeder	1		4	2				
+kvant_varje	de	jeder	jeder	1		8	2				
+kvant_varje	de	jeder	jedes	1		1	3				
+kvant_varje	de	jeder	jedes	1		2	3				
+kvant_varje	de	jeder	jedes	1		8	1				
+kvant_varje	de	jeder	jedes	1		8	3				
+kvant_varje	sv	varje	varje								
 käns_fira	de	feiern	feiere	1				16		2	1
 käns_fira	de	feiern	feiere	1				1024		3	1
 käns_fira	de	feiern	feiere	1				1026		1	1
@@ -40431,6 +40567,40 @@ pronomen_reflexiv	it	si	si			6
 pronomen_reflexiv	it	si	sé			8					
 pronomen_reflexiv	ja	自分	自分								
 pronomen_reflexiv	sv	sig	sig			7					
+rel_person	de	der	das	1		1	3				
+rel_person	de	der	das	1		2	3				
+rel_person	de	der	dem	1		4	1				
+rel_person	de	der	dem	1		4	3				
+rel_person	de	der	den	1		2	1				
+rel_person	de	der	denen	2		4					
+rel_person	de	der	der	1		1	1				
+rel_person	de	der	der	1		4	2				
+rel_person	de	der	deren	1		8	2				
+rel_person	de	der	deren	2		8					
+rel_person	de	der	dessen	1		8	1				
+rel_person	de	der	dessen	1		8	3				
+rel_person	de	der	die	1		1	2				
+rel_person	de	der	die	1		2	2				
+rel_person	de	der	die	2		1					
+rel_person	de	der	die	2		2					
+rel_person	sv	som	som								
+rel_sak	de	das	das	1		1	3				
+rel_sak	de	das	das	1		2	3				
+rel_sak	de	das	dem	1		4	1				
+rel_sak	de	das	dem	1		4	3				
+rel_sak	de	das	den	1		2	1				
+rel_sak	de	das	denen	2		4					
+rel_sak	de	das	der	1		1	1				
+rel_sak	de	das	der	1		4	2				
+rel_sak	de	das	deren	1		8	2				
+rel_sak	de	das	deren	2		8					
+rel_sak	de	das	dessen	1		8	1				
+rel_sak	de	das	dessen	1		8	3				
+rel_sak	de	das	die	1		1	2				
+rel_sak	de	das	die	1		2	2				
+rel_sak	de	das	die	2		1					
+rel_sak	de	das	die	2		2					
+rel_sak	sv	som	som								
 räkn_0	sv	noll	noll								
 räkn_1	sv	en	en	1			1				
 räkn_1	sv	en	ett	1			2				

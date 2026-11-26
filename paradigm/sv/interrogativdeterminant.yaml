@@ -1,0 +1,18 @@
+---
+meta:
+  version: 1
+  språk: sv
+  ordklass: Interrogativdeterminant
+  beskrivning: >
+    vilken/vilket/vilka böjs; 'hur mycket' och 'hur många' är oböjliga och fyller bara inv.
+
+celler:
+  - id: inv
+  - id: utr_sg
+    genus: UtrMask
+    numerus: Sg
+  - id: neu_sg
+    genus: NeuFem
+    numerus: Sg
+  - id: pl
+    numerus: Pl

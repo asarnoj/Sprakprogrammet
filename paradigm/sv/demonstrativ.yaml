@@ -1,0 +1,17 @@
+---
+meta:
+  version: 1
+  språk: sv
+  ordklass: Demonstrativ
+  beskrivning: >
+    Svenska demonstrativer böjs efter genus och numerus: den här/det här/de här, denna/detta/dessa.
+
+celler:
+  - id: utr_sg
+    genus: UtrMask
+    numerus: Sg
+  - id: neu_sg
+    genus: NeuFem
+    numerus: Sg
+  - id: pl
+    numerus: Pl
