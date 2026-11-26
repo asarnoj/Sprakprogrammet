@@ -1,0 +1,50 @@
+{"lemma": "absender", "language": "de", "pos": "Noun", "translations": {"sv": "avsändare", "en": "sender", "de": null, "fr": "expéditeur", "es": "remitente", "it": "mittente", "ja": "送信者"}}
+{"lemma": "ander", "language": "de", "pos": "Adjective", "translations": {"sv": "annan", "en": "other", "de": null, "fr": "autre", "es": "otro", "it": "altro", "ja": "他の"}}
+{"lemma": "aus sein", "language": "de", "pos": "Verb", "translations": {"sv": null, "en": null, "de": null, "fr": null, "es": null, "it": null, "ja": null}}
+{"lemma": "automat", "language": "de", "pos": "Noun", "translations": {"sv": "automat", "en": "vending machine", "de": null, "fr": "automate", "es": "autómata", "it": "automa", "ja": "自動販売機"}}
+{"lemma": "bitt", "language": "de", "pos": "Noun", "translations": {"sv": "bita", "en": "bitt", "de": null, "fr": "bitte", "es": null, "it": "bite", "ja": null}}
+{"lemma": "bös", "language": "de", "pos": "Adjective", "translations": {"sv": "elak", "en": "evil", "de": null, "fr": "méchant", "es": "malo", "it": "cattivo", "ja": "悪い"}}
+{"lemma": "cm", "language": "de", "pos": "Noun", "translations": {"sv": "cm", "en": "cm", "de": null, "fr": "cm", "es": "cm", "it": "cm", "ja": "cm"}}
+{"lemma": "der kopf unter arm tragen", "language": "de", "pos": "Verb", "translations": {"sv": null, "en": null, "de": null, "fr": null, "es": null, "it": null, "ja": null}}
+{"lemma": "der kopf unter der arm tragen", "language": "de", "pos": "Verb", "translations": {"sv": null, "en": null, "de": null, "fr": null, "es": null, "it": null, "ja": null}}
+{"lemma": "dich", "language": "de", "pos": "Pronoun", "translations": {"sv": "dig", "en": "you", "de": null, "fr": "te", "es": "te", "it": "ti", "ja": "あなたを"}}
+{"lemma": "dir", "language": "de", "pos": "Pronoun", "translations": {"sv": "dig", "en": "you", "de": null, "fr": "te", "es": "te", "it": "ti", "ja": "あなたに"}}
+{"lemma": "doppelzimmer", "language": "de", "pos": "Noun", "translations": {"sv": "dubbelrum", "en": "double room", "de": null, "fr": "chambre double", "es": "habitación doble", "it": "camera doppia", "ja": "ダブルルーム"}}
+{"lemma": "draußen", "language": "de", "pos": "Adverb", "translations": {"sv": "ute", "en": "outside", "de": null, "fr": "dehors", "es": "afuera", "it": "fuori", "ja": "外に"}}
+{"lemma": "dreißig", "language": "de", "pos": "Numeral", "translations": {"sv": "trettio", "en": "thirty", "de": null, "fr": "trente", "es": "treinta", "it": "trenta", "ja": "三十"}}
+{"lemma": "durchsage", "language": "de", "pos": "Noun", "translations": {"sv": "meddelande", "en": "announcement", "de": null, "fr": "annonce", "es": "anuncio", "it": "annuncio", "ja": "放送"}}
+{"lemma": "duschen", "language": "de", "pos": "Verb", "translations": {"sv": "duscha", "en": "shower", "de": null, "fr": "doucher", "es": "duchar", "it": "docciare", "ja": "シャワーを浴びる"}}
+{"lemma": "einer", "language": "de", "pos": "Pronoun", "translations": {"sv": "en", "en": "one", "de": null, "fr": "un", "es": "uno", "it": "uno", "ja": "一つ"}}
+{"lemma": "einzelzimmer", "language": "de", "pos": "Noun", "translations": {"sv": "enkelrum", "en": "single room", "de": null, "fr": "chambre simple", "es": "habitación individual", "it": "camera singola", "ja": "シングルルーム"}}
+{"lemma": "familienstand", "language": "de", "pos": "Noun", "translations": {"sv": "civilstånd", "en": "marital status", "de": null, "fr": "situation de famille", "es": "estado civil", "it": "stato civile", "ja": "婚姻状態"}}
+{"lemma": "fax", "language": "de", "pos": "Noun", "translations": {"sv": "fax", "en": "fax", "de": null, "fr": "fax", "es": "fax", "it": "fax", "ja": "ファックス"}}
+{"lemma": "feierabend", "language": "de", "pos": "Noun", "translations": {"sv": "arbetsdagens slut", "en": "quitting time", "de": null, "fr": "fin de journée", "es": "fin de jornada", "it": "fine della giornata lavorativa", "ja": "勤務終了"}}
+{"lemma": "fuß", "language": "de", "pos": "Noun", "translations": {"sv": "fot", "en": "foot", "de": null, "fr": "pied", "es": "pie", "it": "piede", "ja": "足"}}
+{"lemma": "fußball", "language": "de", "pos": "Noun", "translations": {"sv": "fotboll", "en": "football", "de": null, "fr": "football", "es": "fútbol", "it": "calcio", "ja": "サッカー"}}
+{"lemma": "geburtsjahr", "language": "de", "pos": "Noun", "translations": {"sv": "födelseår", "en": "year of birth", "de": null, "fr": "année de naissance", "es": "año de nacimiento", "it": "anno di nascita", "ja": "生年"}}
+{"lemma": "glückwunsch", "language": "de", "pos": "Noun", "translations": {"sv": "gratulation", "en": "congratulation", "de": null, "fr": "félicitation", "es": "felicitación", "it": "congratulazione", "ja": "おめでとう"}}
+{"lemma": "gradeaus", "language": "de", "pos": "Adverb", "translations": {"sv": "rakt fram", "en": "straight ahead", "de": null, "fr": "tout droit", "es": "recto", "it": "dritto", "ja": "まっすぐ"}}
+{"lemma": "groß", "language": "de", "pos": "Adjective", "translations": {"sv": "stor", "en": "big", "de": null, "fr": "grand", "es": "grande", "it": "grande", "ja": "大きい"}}
+{"lemma": "großeltern", "language": "de", "pos": "Noun", "translations": {"sv": "morföräldrar", "en": "grandparents", "de": null, "fr": "grands-parents", "es": "abuelos", "it": "nonni", "ja": "祖父母"}}
+{"lemma": "großmutter", "language": "de", "pos": "Noun", "translations": {"sv": "mormor", "en": "grandmother", "de": null, "fr": "grand-mère", "es": "abuela", "it": "nonna", "ja": "祖母"}}
+{"lemma": "großvater", "language": "de", "pos": "Noun", "translations": {"sv": "morfar", "en": "grandfather", "de": null, "fr": "grand-père", "es": "abuelo", "it": "nonno", "ja": "祖父"}}
+{"lemma": "gruß", "language": "de", "pos": "Noun", "translations": {"sv": "hälsning", "en": "greeting", "de": null, "fr": "salutation", "es": "saludo", "it": "saluto", "ja": "挨拶"}}
+{"lemma": "größe", "language": "de", "pos": "Noun", "translations": {"sv": "storlek", "en": "size", "de": null, "fr": "taille", "es": "tamaño", "it": "taglia", "ja": "サイズ"}}
+{"lemma": "halbpension", "language": "de", "pos": "Noun", "translations": {"sv": "halvpension", "en": "half board", "de": null, "fr": "demi-pension", "es": "media pensión", "it": "mezza pensione", "ja": "ハーフボード"}}
+{"lemma": "hausmann", "language": "de", "pos": "Noun", "translations": {"sv": "husmor", "en": "houseman", "de": null, "fr": "homme au foyer", "es": "amo de casa", "it": "casalingo", "ja": "主夫"}}
+{"lemma": "heißen", "language": "de", "pos": "Verb", "translations": {"sv": "heta", "en": "be called", "de": null, "fr": "s'appeler", "es": "llamarse", "it": "chiamarsi", "ja": "呼ぶ"}}
+{"lemma": "heut", "language": "de", "pos": "Adverb", "translations": {"sv": "idag", "en": "today", "de": null, "fr": "aujourd'hui", "es": "hoy", "it": "oggi", "ja": "今日"}}
+{"lemma": "ihm", "language": "de", "pos": "Pronoun", "translations": {"sv": "honom", "en": "him", "de": null, "fr": "lui", "es": "le", "it": "gli", "ja": "彼に"}}
+{"lemma": "kg", "language": "de", "pos": "Noun", "translations": {"sv": "kg", "en": "kg", "de": null, "fr": "kg", "es": "kg", "it": "kg", "ja": "kg"}}
+{"lemma": "km", "language": "de", "pos": "Noun", "translations": {"sv": "km", "en": "km", "de": null, "fr": "km", "es": "km", "it": "km", "ja": "km"}}
+{"lemma": "postleitzahl", "language": "de", "pos": "Noun", "translations": {"sv": "postnummer", "en": "postal code", "de": null, "fr": "code postal", "es": "código postal", "it": "codice postale", "ja": "郵便番号"}}
+{"lemma": "qm", "language": "de", "pos": "Noun", "translations": {"sv": "kvm", "en": "sqm", "de": null, "fr": "m²", "es": "m²", "it": "m²", "ja": "㎡"}}
+{"lemma": "quadratmeter", "language": "de", "pos": "Noun", "translations": {"sv": "kvadratmeter", "en": "square meter", "de": null, "fr": "mètre carré", "es": "metro cuadrado", "it": "metro quadrato", "ja": "平方メートル"}}
+{"lemma": "reisebüro", "language": "de", "pos": "Noun", "translations": {"sv": "resekontor", "en": "travel agency", "de": null, "fr": "agence de voyage", "es": "agencia de viajes", "it": "agenzia di viaggio", "ja": "旅行代理店"}}
+{"lemma": "schließen", "language": "de", "pos": "Verb", "translations": {"sv": "stänga", "en": "close", "de": null, "fr": "fermer", "es": "cerrar", "it": "chiudere", "ja": "閉じる"}}
+{"lemma": "siebenzig", "language": "de", "pos": "Numeral", "translations": {"sv": "sjuttio", "en": "seventy", "de": null, "fr": "soixante-dix", "es": "setenta", "it": "settanta", "ja": "七十"}}
+{"lemma": "speisenkarte", "language": "de", "pos": "Noun", "translations": {"sv": "matsedel", "en": "menu", "de": null, "fr": "menu", "es": "menú", "it": "menu", "ja": "メニュー"}}
+{"lemma": "st", "language": "de", "pos": "Noun", "translations": {"sv": null, "en": null, "de": null, "fr": null, "es": null, "it": null, "ja": null}}
+{"lemma": "straße", "language": "de", "pos": "Noun", "translations": {"sv": "gata", "en": "street", "de": null, "fr": "rue", "es": "calle", "it": "strada", "ja": "通り"}}
+{"lemma": "straßenbahn", "language": "de", "pos": "Noun", "translations": {"sv": "spårvagn", "en": "tram", "de": null, "fr": "tramway", "es": "tranvía", "it": "tram", "ja": "路面電車"}}
+{"lemma": "vierter", "language": "de", "pos": "Adjective", "translations": {"sv": "fjärde", "en": "fourth", "de": null, "fr": "quatrième", "es": "cuarto", "it": "quarto", "ja": "四番目"}}

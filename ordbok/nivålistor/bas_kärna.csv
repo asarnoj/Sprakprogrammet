@@ -1,0 +1,1268 @@
+koncept,ordklass,nivå,språk,lemma
+# ── Personliga pronomen ───────────────────────────────────────────────────────
+# Reflexiva former (mig/dig/sig osv.) läggs i Former, inte som separata Koncept
+# Possessiva former (min/din/hans osv.) läggs i Former med kasus=GENITIV
+pronomen_1sg,Pronomen,A1,sv,jag
+pronomen_1sg,Pronomen,A1,en,I
+pronomen_1sg,Pronomen,A1,fr,je
+pronomen_1sg,Pronomen,A1,de,ich
+pronomen_1sg,Pronomen,A1,es,yo
+pronomen_1sg,Pronomen,A1,it,io
+pronomen_1sg,Pronomen,A1,ja,私
+pronomen_1sg,Pronomen,A1,ja,僕
+pronomen_2sg,Pronomen,A1,sv,du
+pronomen_2sg,Pronomen,A1,en,you
+pronomen_2sg,Pronomen,A1,fr,tu
+pronomen_2sg,Pronomen,A1,de,du
+pronomen_2sg,Pronomen,A1,es,tú
+pronomen_2sg,Pronomen,A1,it,tu
+pronomen_2sg,Pronomen,A1,ja,あなた
+pronomen_2sg,Pronomen,A1,ja,君
+# Artighetspronomen — grammatiskt separat i de/fr/es/it/ja
+pronomen_2sg_formal,Pronomen,A2,sv,ni
+pronomen_2sg_formal,Pronomen,A2,en,you
+pronomen_2sg_formal,Pronomen,A2,fr,vous
+pronomen_2sg_formal,Pronomen,A2,de,Sie
+pronomen_2sg_formal,Pronomen,A2,es,usted
+pronomen_2sg_formal,Pronomen,A2,it,Lei
+pronomen_3sg_mask,Pronomen,A1,sv,han
+pronomen_3sg_mask,Pronomen,A1,en,he
+pronomen_3sg_mask,Pronomen,A1,fr,il
+pronomen_3sg_mask,Pronomen,A1,de,er
+pronomen_3sg_mask,Pronomen,A1,es,él
+pronomen_3sg_mask,Pronomen,A1,it,lui
+pronomen_3sg_mask,Pronomen,A1,ja,彼
+pronomen_3sg_fem,Pronomen,A1,sv,hon
+pronomen_3sg_fem,Pronomen,A1,en,she
+pronomen_3sg_fem,Pronomen,A1,fr,elle
+pronomen_3sg_fem,Pronomen,A1,de,sie
+pronomen_3sg_fem,Pronomen,A1,es,ella
+pronomen_3sg_fem,Pronomen,A1,it,lei
+pronomen_3sg_fem,Pronomen,A1,ja,彼女
+# Neutrum 3sg — saknas i fr/es/it/ja
+pronomen_3sg_neutr,Pronomen,A1,sv,det
+pronomen_3sg_neutr,Pronomen,A1,en,it
+pronomen_3sg_neutr,Pronomen,A1,de,es
+pronomen_1pl,Pronomen,A1,sv,vi
+pronomen_1pl,Pronomen,A1,en,we
+pronomen_1pl,Pronomen,A1,fr,nous
+pronomen_1pl,Pronomen,A1,de,wir
+pronomen_1pl,Pronomen,A1,es,nosotros
+pronomen_1pl,Pronomen,A1,es,nosotras
+pronomen_1pl,Pronomen,A1,it,noi
+pronomen_1pl,Pronomen,A1,ja,私たち
+# 2pl: vosotros = Spanien (iberian), informell; ustedes = Latinamerika + formell standard
+pronomen_2pl,Pronomen,A1,sv,ni
+pronomen_2pl,Pronomen,A1,en,you
+pronomen_2pl,Pronomen,A1,fr,vous
+pronomen_2pl,Pronomen,A1,de,ihr
+pronomen_2pl,Pronomen,A1,es,vosotros
+pronomen_2pl,Pronomen,A1,es,ustedes
+pronomen_2pl,Pronomen,A1,it,voi
+pronomen_2pl,Pronomen,A1,ja,あなたたち
+pronomen_3pl,Pronomen,A1,sv,de
+pronomen_3pl,Pronomen,A1,en,they
+pronomen_3pl,Pronomen,A1,fr,ils
+pronomen_3pl,Pronomen,A1,fr,elles
+pronomen_3pl,Pronomen,A1,de,sie
+pronomen_3pl,Pronomen,A1,es,ellos
+pronomen_3pl,Pronomen,A1,es,ellas
+pronomen_3pl,Pronomen,A1,it,loro
+pronomen_3pl,Pronomen,A1,ja,彼ら
+# Reflexivt pronomen — sv/de/fr/es/it har eget reflexivt pronomen; en saknar fristående form
+pronomen_reflexiv,Pronomen,A1,sv,sig
+pronomen_reflexiv,Pronomen,A1,fr,se
+pronomen_reflexiv,Pronomen,A1,de,sich
+pronomen_reflexiv,Pronomen,A1,es,se
+pronomen_reflexiv,Pronomen,A1,it,si
+pronomen_reflexiv,Pronomen,A1,ja,自分
+# ── Demonstrativa ─────────────────────────────────────────────────────────────
+# AVSTÅNDSSYSTEM:
+# Västerländska: tvåpunkts (nära talaren | långt bort från talaren)
+# Japanska: trepunkts (nära talaren | nära lyssnaren | långt från båda)
+# Lösning: ja får två lexem under demonstrativ_fjärran för att representera sina två "fjärran"-typer
+# Genus/numerus-böjning hanteras i Former
+demonstrativ_nara,Demonstrativ,A1,sv,den här
+demonstrativ_nara,Demonstrativ,A1,sv,denna
+demonstrativ_nara,Demonstrativ,A1,en,this
+demonstrativ_nara,Demonstrativ,A1,fr,ce
+demonstrativ_nara,Demonstrativ,A1,de,dieser
+demonstrativ_nara,Demonstrativ,A1,es,este
+demonstrativ_nara,Demonstrativ,A1,it,questo
+demonstrativ_nara,Demonstrativ,A1,ja,この
+demonstrativ_fjärran,Demonstrativ,A1,sv,den där
+demonstrativ_fjärran,Demonstrativ,A1,en,that
+demonstrativ_fjärran,Demonstrativ,A1,fr,cela
+demonstrativ_fjärran,Demonstrativ,A1,de,jener
+demonstrativ_fjärran,Demonstrativ,A1,es,ese
+demonstrativ_fjärran,Demonstrativ,A1,it,quello
+demonstrativ_fjärran,Demonstrativ,A1,ja,その
+demonstrativ_fjärran,Demonstrativ,A1,ja,あの
+# ── Frågepronomen ─────────────────────────────────────────────────────────────
+frågepronomen_person,Frågepronomen,A1,sv,vem
+frågepronomen_person,Frågepronomen,A1,en,who
+frågepronomen_person,Frågepronomen,A1,fr,qui
+frågepronomen_person,Frågepronomen,A1,de,wer
+frågepronomen_person,Frågepronomen,A1,es,quién
+frågepronomen_person,Frågepronomen,A1,it,chi
+frågepronomen_person,Frågepronomen,A1,ja,誰
+frågepronomen_sak,Frågepronomen,A1,sv,vad
+frågepronomen_sak,Frågepronomen,A1,en,what
+frågepronomen_sak,Frågepronomen,A1,fr,quoi
+frågepronomen_sak,Frågepronomen,A1,de,was
+frågepronomen_sak,Frågepronomen,A1,es,qué
+frågepronomen_sak,Frågepronomen,A1,it,che
+frågepronomen_sak,Frågepronomen,A1,ja,何
+# ── Relativpronomen ───────────────────────────────────────────────────────────
+# Inleder relativa bisatser: "mannen som bor här", "the book that I read"
+# Sluten klass — varje språk har en finite uppsättning relativa pronomen
+# sv: "som" (subjekt/objekt); "vars" (genitiv) läggs i Former
+# en: "who" (person), "which" (sak), "that" (båda) — "who"/"which" täcker paradigmet
+# de: samma form som bestämd artikel men med relativfunktion (der/die/das)
+# ja: ingen relativpartikel — relativa bisatser bildas utan pronomen (verbet placeras före noun)
+rel_person,Relativpronomen,A2,sv,som
+rel_person,Relativpronomen,A2,en,who
+rel_person,Relativpronomen,A2,fr,qui
+rel_person,Relativpronomen,A2,de,der
+rel_person,Relativpronomen,A2,es,que
+rel_person,Relativpronomen,A2,it,che
+rel_sak,Relativpronomen,A2,sv,som
+rel_sak,Relativpronomen,A2,en,which
+rel_sak,Relativpronomen,A2,fr,que
+rel_sak,Relativpronomen,A2,de,das
+rel_sak,Relativpronomen,A2,es,que
+rel_sak,Relativpronomen,A2,it,che
+# ── Frågadverb ────────────────────────────────────────────────────────────────
+# ja: "nande" (なんで) mycket vanligare än "naze" för orsak i talad japanska (A1!)
+# ja: "dou yatte" (どう やって) naturligare än enbart "dou" för "how do you..." (A1!)
+frågadverb_plats,Frågadverb,A1,sv,var
+frågadverb_plats,Frågadverb,A1,en,where
+frågadverb_plats,Frågadverb,A1,fr,où
+frågadverb_plats,Frågadverb,A1,de,wo
+frågadverb_plats,Frågadverb,A1,es,dónde
+frågadverb_plats,Frågadverb,A1,it,dove
+frågadverb_plats,Frågadverb,A1,ja,どこ
+# sv/de/ja särskiljer riktning; fr/es/it använder samma ord
+frågadverb_riktning,Frågadverb,A1,sv,vart
+frågadverb_riktning,Frågadverb,A1,de,wohin
+frågadverb_riktning,Frågadverb,A1,ja,どこへ
+frågadverb_ursprung,Frågadverb,A1,sv,varifrån
+frågadverb_ursprung,Frågadverb,A1,en,where from
+frågadverb_ursprung,Frågadverb,A1,fr,d'où
+frågadverb_ursprung,Frågadverb,A1,de,woher
+frågadverb_ursprung,Frågadverb,A1,es,de dónde
+frågadverb_ursprung,Frågadverb,A1,it,da dove
+frågadverb_ursprung,Frågadverb,A1,ja,どこから
+frågadverb_tid,Frågadverb,A1,sv,när
+frågadverb_tid,Frågadverb,A1,en,when
+frågadverb_tid,Frågadverb,A1,fr,quand
+frågadverb_tid,Frågadverb,A1,de,wann
+frågadverb_tid,Frågadverb,A1,es,cuándo
+frågadverb_tid,Frågadverb,A1,it,quando
+frågadverb_tid,Frågadverb,A1,ja,いつ
+frågadverb_sätt,Frågadverb,A1,sv,hur
+frågadverb_sätt,Frågadverb,A1,en,how
+frågadverb_sätt,Frågadverb,A1,fr,comment
+frågadverb_sätt,Frågadverb,A1,de,wie
+frågadverb_sätt,Frågadverb,A1,es,cómo
+frågadverb_sätt,Frågadverb,A1,it,come
+frågadverb_sätt,Frågadverb,A1,ja,どう
+frågadverb_sätt,Frågadverb,A1,ja,どう やって
+frågadverb_orsak,Frågadverb,A1,sv,varför
+frågadverb_orsak,Frågadverb,A1,en,why
+frågadverb_orsak,Frågadverb,A1,fr,pourquoi
+frågadverb_orsak,Frågadverb,A1,de,warum
+frågadverb_orsak,Frågadverb,A1,es,por qué
+frågadverb_orsak,Frågadverb,A1,it,perché
+frågadverb_orsak,Frågadverb,A1,ja,なぜ
+frågadverb_orsak,Frågadverb,A1,ja,なんで
+# ── Interrogativdeterminant ───────────────────────────────────────────────────
+# es: "qué" är determinanten ("¿Qué libro?"); "cuál" är pronomen ("¿Cuál es?")
+# ja: Hur mycket/många är adverbial/pronomen i japanska, inte direkta determinanter
+#     Japanska använder räknare ("何冊" = how many books) eller andra strukturer
+interr_det_vilken,Interrogativdeterminant,A1,sv,vilken
+interr_det_vilken,Interrogativdeterminant,A1,en,which
+interr_det_vilken,Interrogativdeterminant,A1,fr,quel
+interr_det_vilken,Interrogativdeterminant,A1,de,welcher
+interr_det_vilken,Interrogativdeterminant,A1,es,qué
+interr_det_vilken,Interrogativdeterminant,A1,it,quale
+interr_det_vilken,Interrogativdeterminant,A1,ja,どの
+interr_det_hur_mycket,Interrogativdeterminant,A2,sv,hur mycket
+interr_det_hur_mycket,Interrogativdeterminant,A2,en,how much
+interr_det_hur_mycket,Interrogativdeterminant,A2,fr,combien de
+interr_det_hur_mycket,Interrogativdeterminant,A2,de,wie viel
+interr_det_hur_mycket,Interrogativdeterminant,A2,es,cuánto
+interr_det_hur_mycket,Interrogativdeterminant,A2,it,quanto
+interr_det_hur_mycket,Interrogativdeterminant,A2,ja,いくら
+interr_det_hur_många,Interrogativdeterminant,A2,sv,hur många
+interr_det_hur_många,Interrogativdeterminant,A2,en,how many
+interr_det_hur_många,Interrogativdeterminant,A2,fr,combien de
+interr_det_hur_många,Interrogativdeterminant,A2,de,wie viele
+interr_det_hur_många,Interrogativdeterminant,A2,es,cuántos
+interr_det_hur_många,Interrogativdeterminant,A2,it,quanti
+interr_det_hur_många,Interrogativdeterminant,A2,ja,いくつ
+# ── Artiklar ──────────────────────────────────────────────────────────────────
+# sv: obestämd "en/ett" finns som fristående ord; bestämd är suffix → ingen lexemrad
+# ja: inga artiklar
+# Genus/kasus-böjning hanteras i Former (de: ein/eine/einen/einem/eines etc.)
+artikel_obestamd,Artikel,A1,sv,en
+artikel_obestamd,Artikel,A1,en,a
+artikel_obestamd,Artikel,A1,fr,un
+artikel_obestamd,Artikel,A1,de,ein
+artikel_obestamd,Artikel,A1,es,un
+artikel_obestamd,Artikel,A1,it,un
+artikel_bestamd,Artikel,A1,en,the
+artikel_bestamd,Artikel,A1,fr,le
+artikel_bestamd,Artikel,A1,de,der
+artikel_bestamd,Artikel,A1,es,el
+artikel_bestamd,Artikel,A1,it,il
+# ── Konjunktioner ─────────────────────────────────────────────────────────────
+# MENINGSKOPPLING vs ORDKOPPLING:
+# Västerländska: ord/meningar binds ofta inom samma sats (och A B; men A B)
+# ja: meningskopplade konjunktioner (そして/または/でも) kopplar hela meningar/satser
+#     Ordkoppling använder partiklar (A と B för substantiv; -kedo för verbgrupper)
+konj_och,Konjunktion,A1,sv,och
+konj_och,Konjunktion,A1,en,and
+konj_och,Konjunktion,A1,fr,et
+konj_och,Konjunktion,A1,de,und
+konj_och,Konjunktion,A1,es,y
+konj_och,Konjunktion,A1,it,e
+konj_och,Konjunktion,A1,ja,そして
+konj_eller,Konjunktion,A1,sv,eller
+konj_eller,Konjunktion,A1,en,or
+konj_eller,Konjunktion,A1,fr,ou
+konj_eller,Konjunktion,A1,de,oder
+konj_eller,Konjunktion,A1,es,o
+konj_eller,Konjunktion,A1,it,o
+konj_eller,Konjunktion,A1,ja,または
+konj_men,Konjunktion,A1,sv,men
+konj_men,Konjunktion,A1,en,but
+konj_men,Konjunktion,A1,fr,mais
+konj_men,Konjunktion,A1,de,aber
+konj_men,Konjunktion,A1,es,pero
+konj_men,Konjunktion,A1,it,ma
+konj_men,Konjunktion,A1,ja,でも
+# "utan/sondern" — kontrast efter negation; semantiskt distinkt från "men/aber"
+# en: "but rather" är två-ord fras för kontrastiv användning efter negation
+#     Används när man motsäger något positivt efter negation: "inte A, utan B"
+# fr: "mais" är samma ord som konj_men (duplikat) — ingen perfekt motsvarighet på franska
+#     för denna distinktion; "mais" är det mest naturliga valet
+konj_utan,Konjunktion,A2,sv,utan
+konj_utan,Konjunktion,A2,en,but rather
+konj_utan,Konjunktion,A2,fr,mais
+konj_utan,Konjunktion,A2,de,sondern
+konj_utan,Konjunktion,A2,es,sino
+konj_utan,Konjunktion,A2,it,bensì
+konj_för,Konjunktion,A2,sv,för
+konj_för,Konjunktion,A2,en,for
+konj_för,Konjunktion,A2,fr,car
+konj_för,Konjunktion,A2,de,denn
+konj_för,Konjunktion,A2,es,pues
+konj_för,Konjunktion,A2,it,perché
+konj_så,Konjunktion,A1,sv,så
+konj_så,Konjunktion,A1,en,so
+konj_så,Konjunktion,A1,fr,donc
+# de: "daher" = konsekvens/följd ("Han var sjuk, daher stannade hemma" = therefore)
+konj_så,Konjunktion,A1,de,daher
+konj_så,Konjunktion,A1,es,así que
+konj_så,Konjunktion,A1,it,quindi
+konj_så,Konjunktion,A1,ja,だから
+# ── Subjunktioner ─────────────────────────────────────────────────────────────
+# STRUKTURELLA SKILLNADER:
+# ja: Många "subjunktioner" är postpositioner (前に/後で/時に) som kräver nominaliseringsformer
+# ja: Dessa fungerar typologiskt annorlunda än västerländska subjunktioner
+# fr/es/it: Vissa subjunktioner tvingar fram subjunktiv i efterföljande verb (bien que, para que, affinché)
+subj_att,Subjunktion,A1,sv,att
+subj_att,Subjunktion,A1,en,that
+subj_att,Subjunktion,A1,fr,que
+subj_att,Subjunktion,A1,de,dass
+subj_att,Subjunktion,A1,es,que
+subj_att,Subjunktion,A1,it,che
+subj_att,Subjunktion,A1,ja,ということ
+# om (konditionalis) — "if"
+subj_om_konditional,Subjunktion,A1,sv,om
+subj_om_konditional,Subjunktion,A1,en,if
+subj_om_konditional,Subjunktion,A1,fr,si
+subj_om_konditional,Subjunktion,A1,de,wenn
+subj_om_konditional,Subjunktion,A1,es,si
+subj_om_konditional,Subjunktion,A1,it,se
+subj_om_konditional,Subjunktion,A1,ja,もし
+# om (huruvida) — "whether" — distinkt i de (ob) och ja (かどうか)
+subj_om_huruvida,Subjunktion,A2,sv,om
+subj_om_huruvida,Subjunktion,A2,en,whether
+subj_om_huruvida,Subjunktion,A2,fr,si
+subj_om_huruvida,Subjunktion,A2,de,ob
+subj_om_huruvida,Subjunktion,A2,es,si
+subj_om_huruvida,Subjunktion,A2,it,se
+subj_om_huruvida,Subjunktion,A2,ja,かどうか
+subj_när,Subjunktion,A1,sv,när
+subj_när,Subjunktion,A1,en,when
+subj_när,Subjunktion,A1,fr,quand
+# de: "wenn" (framtid/upprepning/konditionalis) och "als" (dåtid, enstaka händelse)
+#     "Als ich ankam..." (When I arrived [past single event])
+subj_när,Subjunktion,A1,de,wenn
+subj_när,Subjunktion,A1,de,als
+subj_när,Subjunktion,A1,es,cuando
+subj_när,Subjunktion,A1,it,quando
+subj_när,Subjunktion,A1,ja,ときに
+subj_eftersom,Subjunktion,A1,sv,eftersom
+subj_eftersom,Subjunktion,A1,en,because
+subj_eftersom,Subjunktion,A1,fr,parce que
+subj_eftersom,Subjunktion,A1,de,weil
+subj_eftersom,Subjunktion,A1,es,porque
+subj_eftersom,Subjunktion,A1,it,perché
+subj_eftersom,Subjunktion,A1,ja,から
+subj_trots_att,Subjunktion,A2,sv,trots att
+subj_trots_att,Subjunktion,A2,en,although
+# fr/es/it: Tvingar fram subjunktiv i efterföljande verb
+#   "bien que tu sois..." / "aunque seas..." / "benché sia..."
+subj_trots_att,Subjunktion,A2,fr,bien que
+subj_trots_att,Subjunktion,A2,de,obwohl
+subj_trots_att,Subjunktion,A2,es,aunque
+subj_trots_att,Subjunktion,A2,it,benché
+subj_trots_att,Subjunktion,A2,ja,けれど
+subj_medan,Subjunktion,A2,sv,medan
+subj_medan,Subjunktion,A2,en,while
+subj_medan,Subjunktion,A2,fr,pendant que
+subj_medan,Subjunktion,A2,de,während
+subj_medan,Subjunktion,A2,es,mientras
+subj_medan,Subjunktion,A2,it,mentre
+subj_medan,Subjunktion,A2,ja,ながら
+subj_tills,Subjunktion,A2,sv,tills
+subj_tills,Subjunktion,A2,en,until
+subj_tills,Subjunktion,A2,fr,jusqu'à ce que
+subj_tills,Subjunktion,A2,de,bis
+subj_tills,Subjunktion,A2,es,hasta que
+subj_tills,Subjunktion,A2,it,finché
+subj_tills,Subjunktion,A2,ja,まで
+subj_innan,Subjunktion,A2,sv,innan
+subj_innan,Subjunktion,A2,en,before
+subj_innan,Subjunktion,A2,fr,avant que
+subj_innan,Subjunktion,A2,de,bevor
+subj_innan,Subjunktion,A2,es,antes de que
+subj_innan,Subjunktion,A2,it,prima che
+subj_innan,Subjunktion,A2,ja,前に
+subj_efter_att,Subjunktion,A2,sv,efter att
+subj_efter_att,Subjunktion,A2,en,after
+subj_efter_att,Subjunktion,A2,fr,après que
+subj_efter_att,Subjunktion,A2,de,nachdem
+subj_efter_att,Subjunktion,A2,es,después de que
+subj_efter_att,Subjunktion,A2,it,dopo che
+subj_efter_att,Subjunktion,A2,ja,後で
+subj_för_att,Subjunktion,A2,sv,för att
+# en: "so that" (sats-version, matchar pour que/para que/affinché) istf "in order to" (infinitiv)
+subj_för_att,Subjunktion,A2,en,so that
+# fr/es/it: Tvingar fram subjunktiv i efterföljande verb
+#   "pour que tu apprennes..." / "para que aprendas..." / "affinché impari..."
+subj_för_att,Subjunktion,A2,fr,pour que
+subj_för_att,Subjunktion,A2,de,damit
+subj_för_att,Subjunktion,A2,es,para que
+subj_för_att,Subjunktion,A2,it,affinché
+subj_för_att,Subjunktion,A2,ja,ために
+# it: "nel caso che" är tre ord — standardformen på italienska
+subj_ifall,Subjunktion,A2,sv,ifall
+subj_ifall,Subjunktion,A2,en,in case
+subj_ifall,Subjunktion,A2,fr,au cas où
+subj_ifall,Subjunktion,A2,de,falls
+subj_ifall,Subjunktion,A2,es,en caso de que
+subj_ifall,Subjunktion,A2,it,nel caso che
+subj_ifall,Subjunktion,A2,ja,場合に
+# ── Prepositioner ─────────────────────────────────────────────────────────────
+# POLYSEMI-NOTERING:
+# es: "en" täcker "i/på/vid" — prep_i och prep_vid delar lemma, vilket speglar spansk verklighet
+# fr/it: "sur/su" täcker "på" + "om" (ämnesmarkör) — prep_på och prep_om delar lemma
+# ja: "に" är allmän plats/destination; "の中に" är specifik inneslutning (se prep_innanför)
+# ja: postpositioner — partikeln följer substantivet
+# de: prep_mot använder "in Richtung" (ej "zu" som tillhör prep_till)
+prep_i,Preposition,A1,sv,i
+prep_i,Preposition,A1,en,in
+prep_i,Preposition,A1,fr,dans
+prep_i,Preposition,A1,de,in
+prep_i,Preposition,A1,es,en
+prep_i,Preposition,A1,it,in
+prep_i,Preposition,A1,ja,に
+prep_på,Preposition,A1,sv,på
+prep_på,Preposition,A1,en,on
+prep_på,Preposition,A1,fr,sur
+prep_på,Preposition,A1,de,auf
+prep_på,Preposition,A1,es,sobre
+prep_på,Preposition,A1,it,su
+prep_på,Preposition,A1,ja,の上に
+prep_till,Preposition,A1,sv,till
+prep_till,Preposition,A1,en,to
+prep_till,Preposition,A1,fr,à
+prep_till,Preposition,A1,de,zu
+prep_till,Preposition,A1,es,a
+prep_till,Preposition,A1,it,a
+prep_till,Preposition,A1,ja,へ
+prep_från,Preposition,A1,sv,från
+prep_från,Preposition,A1,en,from
+prep_från,Preposition,A1,fr,de
+prep_från,Preposition,A1,de,von
+prep_från,Preposition,A1,es,de
+prep_från,Preposition,A1,it,da
+prep_från,Preposition,A1,ja,から
+prep_med,Preposition,A1,sv,med
+prep_med,Preposition,A1,en,with
+prep_med,Preposition,A1,fr,avec
+prep_med,Preposition,A1,de,mit
+prep_med,Preposition,A1,es,con
+prep_med,Preposition,A1,it,con
+prep_med,Preposition,A1,ja,と
+prep_utan,Preposition,A1,sv,utan
+prep_utan,Preposition,A1,en,without
+prep_utan,Preposition,A1,fr,sans
+prep_utan,Preposition,A1,de,ohne
+prep_utan,Preposition,A1,es,sin
+prep_utan,Preposition,A1,it,senza
+prep_utan,Preposition,A1,ja,なしで
+prep_för,Preposition,A1,sv,för
+prep_för,Preposition,A1,en,for
+prep_för,Preposition,A1,fr,pour
+prep_för,Preposition,A1,de,für
+prep_för,Preposition,A1,es,para
+prep_för,Preposition,A1,it,per
+prep_för,Preposition,A1,ja,のために
+prep_av,Preposition,A1,sv,av
+prep_av,Preposition,A1,en,of
+prep_av,Preposition,A1,fr,de
+prep_av,Preposition,A1,de,von
+prep_av,Preposition,A1,es,de
+prep_av,Preposition,A1,it,di
+prep_av,Preposition,A1,ja,の
+prep_om,Preposition,A1,sv,om
+prep_om,Preposition,A1,en,about
+prep_om,Preposition,A1,fr,sur
+prep_om,Preposition,A1,de,über
+prep_om,Preposition,A1,es,sobre
+prep_om,Preposition,A1,it,su
+prep_om,Preposition,A1,ja,について
+prep_vid,Preposition,A1,sv,vid
+prep_vid,Preposition,A1,en,at
+prep_vid,Preposition,A1,fr,à
+prep_vid,Preposition,A1,de,bei
+prep_vid,Preposition,A1,es,en
+prep_vid,Preposition,A1,it,a
+prep_vid,Preposition,A1,ja,で
+prep_efter,Preposition,A1,sv,efter
+prep_efter,Preposition,A1,en,after
+prep_efter,Preposition,A1,fr,après
+prep_efter,Preposition,A1,de,nach
+prep_efter,Preposition,A1,es,después de
+prep_efter,Preposition,A1,it,dopo
+prep_efter,Preposition,A1,ja,の後に
+prep_före,Preposition,A1,sv,före
+prep_före,Preposition,A1,en,before
+prep_före,Preposition,A1,fr,avant
+prep_före,Preposition,A1,de,vor
+prep_före,Preposition,A1,es,antes de
+prep_före,Preposition,A1,it,prima di
+prep_före,Preposition,A1,ja,の前に
+prep_under,Preposition,A1,sv,under
+prep_under,Preposition,A1,en,under
+prep_under,Preposition,A1,fr,sous
+prep_under,Preposition,A1,de,unter
+prep_under,Preposition,A1,es,bajo
+prep_under,Preposition,A1,it,sotto
+prep_under,Preposition,A1,ja,の下に
+prep_över,Preposition,A1,sv,över
+prep_över,Preposition,A1,en,over
+prep_över,Preposition,A1,fr,au-dessus de
+prep_över,Preposition,A1,de,über
+prep_över,Preposition,A1,es,encima de
+prep_över,Preposition,A1,it,sopra
+prep_över,Preposition,A1,ja,の上に
+prep_genom,Preposition,A2,sv,genom
+prep_genom,Preposition,A2,en,through
+prep_genom,Preposition,A2,fr,à travers
+prep_genom,Preposition,A2,de,durch
+prep_genom,Preposition,A2,es,a través de
+prep_genom,Preposition,A2,it,attraverso
+prep_genom,Preposition,A2,ja,を通して
+prep_mot,Preposition,A1,sv,mot
+prep_mot,Preposition,A1,en,toward
+prep_mot,Preposition,A1,fr,vers
+# de: "in Richtung" (riktning mot) — ej "zu" vilket tillhör prep_till (destination)
+prep_mot,Preposition,A1,de,in Richtung
+prep_mot,Preposition,A1,es,hacia
+prep_mot,Preposition,A1,it,verso
+prep_mot,Preposition,A1,ja,に向かって
+prep_emot,Preposition,A2,sv,emot
+prep_emot,Preposition,A2,en,against
+prep_emot,Preposition,A2,fr,contre
+prep_emot,Preposition,A2,de,gegen
+prep_emot,Preposition,A2,es,contra
+prep_emot,Preposition,A2,it,contro
+prep_emot,Preposition,A2,ja,に対して
+prep_mellan,Preposition,A1,sv,mellan
+prep_mellan,Preposition,A1,en,between
+prep_mellan,Preposition,A1,fr,entre
+prep_mellan,Preposition,A1,de,zwischen
+prep_mellan,Preposition,A1,es,entre
+prep_mellan,Preposition,A1,it,tra
+prep_mellan,Preposition,A1,ja,の間に
+prep_bakom,Preposition,A1,sv,bakom
+prep_bakom,Preposition,A1,en,behind
+prep_bakom,Preposition,A1,fr,derrière
+prep_bakom,Preposition,A1,de,hinter
+prep_bakom,Preposition,A1,es,detrás de
+prep_bakom,Preposition,A1,it,dietro
+prep_bakom,Preposition,A1,ja,の後ろに
+prep_framför,Preposition,A1,sv,framför
+prep_framför,Preposition,A1,en,in front of
+prep_framför,Preposition,A1,fr,devant
+prep_framför,Preposition,A1,de,vor
+prep_framför,Preposition,A1,es,delante de
+prep_framför,Preposition,A1,it,davanti a
+prep_framför,Preposition,A1,ja,の前に
+prep_bredvid,Preposition,A1,sv,bredvid
+prep_bredvid,Preposition,A1,en,next to
+prep_bredvid,Preposition,A1,fr,à côté de
+prep_bredvid,Preposition,A1,de,neben
+prep_bredvid,Preposition,A1,es,al lado de
+prep_bredvid,Preposition,A1,it,accanto a
+prep_bredvid,Preposition,A1,ja,の隣に
+prep_utanför,Preposition,A2,sv,utanför
+prep_utanför,Preposition,A2,en,outside
+prep_utanför,Preposition,A2,fr,en dehors de
+prep_utanför,Preposition,A2,de,außerhalb
+prep_utanför,Preposition,A2,es,fuera de
+prep_utanför,Preposition,A2,it,fuori di
+prep_utanför,Preposition,A2,ja,の外に
+prep_innanför,Preposition,A2,sv,innanför
+prep_innanför,Preposition,A2,en,inside
+prep_innanför,Preposition,A2,fr,à l'intérieur de
+prep_innanför,Preposition,A2,de,innerhalb
+prep_innanför,Preposition,A2,es,dentro de
+prep_innanför,Preposition,A2,it,dentro di
+prep_innanför,Preposition,A2,ja,の中に
+prep_längs,Preposition,A2,sv,längs
+prep_längs,Preposition,A2,en,along
+prep_längs,Preposition,A2,fr,le long de
+prep_längs,Preposition,A2,de,entlang
+prep_längs,Preposition,A2,es,a lo largo de
+prep_längs,Preposition,A2,it,lungo
+prep_längs,Preposition,A2,ja,に沿って
+prep_bland,Preposition,A2,sv,bland
+prep_bland,Preposition,A2,en,among
+prep_bland,Preposition,A2,fr,parmi
+prep_bland,Preposition,A2,de,unter
+prep_bland,Preposition,A2,es,entre
+prep_bland,Preposition,A2,it,tra
+prep_bland,Preposition,A2,ja,の中で
+prep_trots,Preposition,A2,sv,trots
+prep_trots,Preposition,A2,en,despite
+prep_trots,Preposition,A2,fr,malgré
+prep_trots,Preposition,A2,de,trotz
+prep_trots,Preposition,A2,es,a pesar de
+prep_trots,Preposition,A2,it,nonostante
+prep_trots,Preposition,A2,ja,にもかかわらず
+# ── Negationsadverb ───────────────────────────────────────────────────────────
+# fr: "pas" är talspråksnormen; formell skrift kräver "ne...pas" — renderaren ansvarar för ne
+# ja: Japanska negationsadverb är INTE negationsskapare (som "nie/never")
+#     De är adverbiala markörer som KRÄVER att huvudverbet står i negativ form (～ない/～ません)
+# es/it: "tampoco" och "neanche" är fullvärdiga enordsalternativ (starkt lemma, ingen omskrivning)
+neg_inte,Negationsadverb,A1,sv,inte
+neg_inte,Negationsadverb,A1,en,not
+neg_inte,Negationsadverb,A1,fr,pas
+neg_inte,Negationsadverb,A1,de,nicht
+neg_inte,Negationsadverb,A1,es,no
+neg_inte,Negationsadverb,A1,it,non
+neg_inte,Negationsadverb,A1,ja,ない
+neg_aldrig,Negationsadverb,A1,sv,aldrig
+neg_aldrig,Negationsadverb,A1,en,never
+neg_aldrig,Negationsadverb,A1,fr,jamais
+neg_aldrig,Negationsadverb,A1,de,nie
+neg_aldrig,Negationsadverb,A1,es,nunca
+neg_aldrig,Negationsadverb,A1,it,mai
+# ja: 決して kräver obligatorisk negativ verbform — "決してしない" (never do), ej "決してする"
+neg_aldrig,Negationsadverb,A1,ja,決して
+neg_heller,Negationsadverb,A2,sv,inte heller
+neg_heller,Negationsadverb,A2,en,not either
+neg_heller,Negationsadverb,A2,fr,non plus
+neg_heller,Negationsadverb,A2,de,auch nicht
+neg_heller,Negationsadverb,A2,es,tampoco
+neg_heller,Negationsadverb,A2,it,neanche
+# ja: "も" är partikel + negativ verbform — "～" markerar platsen för verbstam
+neg_heller,Negationsadverb,A2,ja,も～ない
+neg_inte_längre,Negationsadverb,A2,sv,inte längre
+neg_inte_längre,Negationsadverb,A2,en,no longer
+neg_inte_längre,Negationsadverb,A2,fr,plus
+neg_inte_längre,Negationsadverb,A2,de,nicht mehr
+neg_inte_längre,Negationsadverb,A2,es,ya no
+neg_inte_längre,Negationsadverb,A2,it,non più
+# ja: "もう" (anymore) + negativ verbform — "～" markerar platsen för verbstam
+neg_inte_längre,Negationsadverb,A2,ja,もう～ない
+# ── Funktionsadverb ───────────────────────────────────────────────────────────
+# STRUKTURELLA NOTERINGAR:
+# ja: めったに (sällan) kräver negativ verbform — "めったに行かない" (ej "めったに行く")
+# ja: も (också) och だけ (bara) är postpositionella partiklar — placeras EFTER det de modifierar
+#     Renderaren ansvarar för korrekt placering; lemmat är det kanoniska ordet
+# fr: "encore" är polysem — täcker både "fortfarande" (adv_fortfarande) och "igen" (adv_igen)
+#     Renderaren måste välja korrekt fr-form baserat på semantik
+# de: adv_då har två tyska former — "dann" (sekventiellt) och "damals" (retrospektivt)
+adv_nu,Adverb,A1,sv,nu
+adv_nu,Adverb,A1,en,now
+adv_nu,Adverb,A1,fr,maintenant
+adv_nu,Adverb,A1,de,jetzt
+adv_nu,Adverb,A1,es,ahora
+adv_nu,Adverb,A1,it,adesso
+adv_nu,Adverb,A1,ja,今
+adv_då,Adverb,A1,sv,då
+adv_då,Adverb,A1,en,then
+adv_då,Adverb,A1,fr,alors
+# de: "dann" = sekventiellt/konditionalt ("Erst A, dann B")
+# de: "damals" = retrospektivt ("Det var bättre då" = "Damals war alles besser")
+adv_då,Adverb,A1,de,dann
+adv_då,Adverb,A1,de,damals
+adv_då,Adverb,A1,es,entonces
+adv_då,Adverb,A1,it,allora
+# ja: "その時" = retrospektivt/pekande; sekventiellt "då" = "それから/そしたら"
+adv_då,Adverb,A1,ja,その時
+adv_snart,Adverb,A1,sv,snart
+adv_snart,Adverb,A1,en,soon
+adv_snart,Adverb,A1,fr,bientôt
+adv_snart,Adverb,A1,de,bald
+adv_snart,Adverb,A1,es,pronto
+adv_snart,Adverb,A1,it,presto
+adv_snart,Adverb,A1,ja,もうすぐ
+adv_redan,Adverb,A1,sv,redan
+adv_redan,Adverb,A1,en,already
+adv_redan,Adverb,A1,fr,déjà
+adv_redan,Adverb,A1,de,schon
+adv_redan,Adverb,A1,es,ya
+adv_redan,Adverb,A1,it,già
+adv_redan,Adverb,A1,ja,もう
+adv_fortfarande,Adverb,A2,sv,fortfarande
+adv_fortfarande,Adverb,A2,en,still
+adv_fortfarande,Adverb,A2,fr,encore
+adv_fortfarande,Adverb,A2,de,noch
+adv_fortfarande,Adverb,A2,es,todavía
+adv_fortfarande,Adverb,A2,it,ancora
+adv_fortfarande,Adverb,A2,ja,まだ
+adv_igen,Adverb,A1,sv,igen
+adv_igen,Adverb,A1,en,again
+adv_igen,Adverb,A1,fr,encore
+adv_igen,Adverb,A1,de,wieder
+adv_igen,Adverb,A1,es,otra vez
+adv_igen,Adverb,A1,it,di nuovo
+adv_igen,Adverb,A1,ja,また
+adv_alltid,Adverb,A1,sv,alltid
+adv_alltid,Adverb,A1,en,always
+adv_alltid,Adverb,A1,fr,toujours
+adv_alltid,Adverb,A1,de,immer
+adv_alltid,Adverb,A1,es,siempre
+adv_alltid,Adverb,A1,it,sempre
+adv_alltid,Adverb,A1,ja,いつも
+adv_ibland,Adverb,A1,sv,ibland
+adv_ibland,Adverb,A1,en,sometimes
+adv_ibland,Adverb,A1,fr,parfois
+adv_ibland,Adverb,A1,de,manchmal
+adv_ibland,Adverb,A1,es,a veces
+adv_ibland,Adverb,A1,it,a volte
+adv_ibland,Adverb,A1,ja,時々
+adv_ofta,Adverb,A1,sv,ofta
+adv_ofta,Adverb,A1,en,often
+adv_ofta,Adverb,A1,fr,souvent
+adv_ofta,Adverb,A1,de,oft
+adv_ofta,Adverb,A1,es,a menudo
+adv_ofta,Adverb,A1,it,spesso
+adv_ofta,Adverb,A1,ja,よく
+adv_sällan,Adverb,A2,sv,sällan
+adv_sällan,Adverb,A2,en,rarely
+adv_sällan,Adverb,A2,fr,rarement
+adv_sällan,Adverb,A2,de,selten
+adv_sällan,Adverb,A2,es,raramente
+adv_sällan,Adverb,A2,it,raramente
+# ja: めったに kräver obligatorisk negativ verbform — "めったに来ない" (ej "めったに来る")
+adv_sällan,Adverb,A2,ja,めったに
+adv_här,Adverb,A1,sv,här
+adv_här,Adverb,A1,en,here
+adv_här,Adverb,A1,fr,ici
+adv_här,Adverb,A1,de,hier
+adv_här,Adverb,A1,es,aquí
+adv_här,Adverb,A1,it,qui
+adv_här,Adverb,A1,ja,ここ
+adv_där,Adverb,A1,sv,där
+adv_där,Adverb,A1,en,there
+adv_där,Adverb,A1,fr,là
+adv_där,Adverb,A1,de,dort
+adv_där,Adverb,A1,es,allí
+adv_där,Adverb,A1,it,là
+adv_där,Adverb,A1,ja,そこ
+adv_också,Adverb,A1,sv,också
+adv_också,Adverb,A1,en,also
+adv_också,Adverb,A1,fr,aussi
+adv_också,Adverb,A1,de,auch
+adv_också,Adverb,A1,es,también
+adv_också,Adverb,A1,it,anche
+# ja: "も" är postpositionell partikel — placeras EFTER det den modifierar ("私も" = jag också)
+adv_också,Adverb,A1,ja,も
+adv_bara,Adverb,A1,sv,bara
+adv_bara,Adverb,A1,en,only
+adv_bara,Adverb,A1,fr,seulement
+adv_bara,Adverb,A1,de,nur
+adv_bara,Adverb,A1,es,solo
+adv_bara,Adverb,A1,it,solo
+# ja: "だけ" är postpositionell partikel — placeras EFTER det den begränsar ("これだけ" = bara detta)
+adv_bara,Adverb,A1,ja,だけ
+adv_mycket,Adverb,A1,sv,mycket
+adv_mycket,Adverb,A1,en,very
+adv_mycket,Adverb,A1,fr,très
+adv_mycket,Adverb,A1,de,sehr
+adv_mycket,Adverb,A1,es,muy
+adv_mycket,Adverb,A1,it,molto
+adv_mycket,Adverb,A1,ja,とても
+# ── Kopulaverb ────────────────────────────────────────────────────────────────
+# es: "ser" = identitet/permanens; "estar" = tillstånd/läge (behandlas som separat lexem)
+# de: "werden" täcker BÅDE verb_bli (bli läkare) och modal_ska (futurum) — polysemi
+# ja: "です/だ" = kopula (artig/plain); "ある" = sakexistens; "いる" = personexistens
+verb_vara,Verb,A1,sv,vara
+verb_vara,Verb,A1,en,be
+verb_vara,Verb,A1,fr,être
+verb_vara,Verb,A1,de,sein
+verb_vara,Verb,A1,es,ser
+verb_vara,Verb,A1,es,estar
+verb_vara,Verb,A1,it,essere
+verb_vara,Verb,A1,ja,です
+verb_ha,Verb,A1,sv,ha
+verb_ha,Verb,A1,en,have
+verb_ha,Verb,A1,fr,avoir
+verb_ha,Verb,A1,de,haben
+# es: "tener" = innehav (ha en bok); "haber" = temporalt hjälpverb (ha gjort) — reserveras för perfekt
+verb_ha,Verb,A1,es,tener
+verb_ha,Verb,A1,it,avere
+verb_ha,Verb,A1,ja,ある
+verb_bli,Verb,A1,sv,bli
+verb_bli,Verb,A1,en,become
+verb_bli,Verb,A1,fr,devenir
+verb_bli,Verb,A1,de,werden
+verb_bli,Verb,A1,es,llegar a ser
+verb_bli,Verb,A1,it,diventare
+verb_bli,Verb,A1,ja,なる
+verb_finnas,Verb,A1,sv,finnas
+verb_finnas,Verb,A1,en,exist
+verb_finnas,Verb,A1,fr,exister
+verb_finnas,Verb,A1,de,existieren
+verb_finnas,Verb,A1,es,existir
+verb_finnas,Verb,A1,it,esistere
+verb_finnas,Verb,A1,ja,ある
+# ── Modala hjälpverb ──────────────────────────────────────────────────────────
+# fr: "devoir" täcker både måste/bör; "pouvoir" täcker kan/får — olika Koncept, samma lemma
+# ja: BUNDNA MORFEM — たい/べき/なければならない/してもいい är suffix/konstruktioner
+#     Renderaren måste foga dem till verbstammen, inte placera dem fristående
+# de: modal_ska använder "werden" (futurum); på A1 används ofta presens + tidsadverb
+#     "werden" är det korrekta strukturella lemmat trots detta
+# modal_brukar: syntaktisk blandning — soler/pflegen är verb, よく～する är adverbfras
+#     Renderaren behöver olika logik per språk
+modal_kan,Verb,A1,sv,kan
+modal_kan,Verb,A1,en,can
+modal_kan,Verb,A1,fr,pouvoir
+modal_kan,Verb,A1,de,können
+modal_kan,Verb,A1,es,poder
+modal_kan,Verb,A1,it,potere
+modal_kan,Verb,A1,ja,できる
+modal_ska,Verb,A1,sv,ska
+modal_ska,Verb,A1,en,will
+modal_ska,Verb,A1,fr,aller
+modal_ska,Verb,A1,de,werden
+modal_ska,Verb,A1,es,ir a
+modal_ska,Verb,A1,it,stare per
+modal_ska,Verb,A1,ja,つもり
+modal_måste,Verb,A1,sv,måste
+modal_måste,Verb,A1,en,must
+modal_måste,Verb,A1,fr,devoir
+modal_måste,Verb,A1,de,müssen
+modal_måste,Verb,A1,es,tener que
+modal_måste,Verb,A1,it,dovere
+modal_måste,Verb,A1,ja,なければならない
+modal_bör,Verb,A2,sv,bör
+modal_bör,Verb,A2,en,should
+modal_bör,Verb,A2,fr,devoir
+modal_bör,Verb,A2,de,sollen
+modal_bör,Verb,A2,es,deber
+modal_bör,Verb,A2,it,dovere
+modal_bör,Verb,A2,ja,べき
+modal_vill,Verb,A1,sv,vill
+modal_vill,Verb,A1,en,want
+modal_vill,Verb,A1,fr,vouloir
+modal_vill,Verb,A1,de,wollen
+modal_vill,Verb,A1,es,querer
+modal_vill,Verb,A1,it,volere
+modal_vill,Verb,A1,ja,たい
+modal_får,Verb,A1,sv,får
+modal_får,Verb,A1,en,may
+modal_får,Verb,A1,fr,pouvoir
+modal_får,Verb,A1,de,dürfen
+modal_får,Verb,A1,es,poder
+modal_får,Verb,A1,it,potere
+modal_får,Verb,A1,ja,してもいい
+# modal_brukar: syntaktisk blandning — några språk använder verb, andra adverbfras
+# de: "pflegen" är litterär/arkaisk på modern tyska; talspråket använder hellre adverb+verb
+# it: "solere" är arkaisk på modern italienska; förekommer huvudsakligen i litteratur
+modal_brukar,Verb,A2,sv,brukar
+modal_brukar,Verb,A2,en,tend to
+modal_brukar,Verb,A2,fr,avoir l'habitude de
+modal_brukar,Verb,A2,de,pflegen
+modal_brukar,Verb,A2,es,soler
+modal_brukar,Verb,A2,it,solere
+modal_brukar,Verb,A2,ja,よく～する
+# ── Räkneord ─────────────────────────────────────────────────────────────────
+# RENDERARENS ANSVAR:
+# sv/de/fr/es/it: räkn_1 (en/ein/un/uno) är OCKSÅ obestämd artikel — renderaren
+#   måste skilja på räkneordet och artikeln i rätt kontext
+# es: "cien" = exakt 100; "ciento" = sammansatta tal 101+ (renderaren byter form)
+# ja: siffrorna är abstrakta — i praktisk användning krävs räknare
+#   t.ex. 二人 (futari/ninin) för personer, 二枚 (nimai) för platta objekt
+#   Dessa siffror kan sällan stå ensamma som i europeiska språk
+# ja: ordningstal med 第 (dai-) prefix är den mest generella metoden (第一, 第二...)
+#
+# sv: räkneord 1 = "en" (utrum) / "ett" (neutrum) — "ett" läggs som form i Former
+# ja: standardform är kinesisk räkning (一、二、三...) med okurigana-läsning
+räkn_0,Räkneord,A1,sv,noll
+räkn_0,Räkneord,A1,en,zero
+räkn_0,Räkneord,A1,fr,zéro
+räkn_0,Räkneord,A1,de,null
+räkn_0,Räkneord,A1,es,cero
+räkn_0,Räkneord,A1,it,zero
+räkn_0,Räkneord,A1,ja,ゼロ
+räkn_1,Räkneord,A1,sv,en
+räkn_1,Räkneord,A1,en,one
+räkn_1,Räkneord,A1,fr,un
+räkn_1,Räkneord,A1,de,ein
+räkn_1,Räkneord,A1,es,uno
+räkn_1,Räkneord,A1,it,uno
+räkn_1,Räkneord,A1,ja,一
+räkn_2,Räkneord,A1,sv,två
+räkn_2,Räkneord,A1,en,two
+räkn_2,Räkneord,A1,fr,deux
+räkn_2,Räkneord,A1,de,zwei
+räkn_2,Räkneord,A1,es,dos
+räkn_2,Räkneord,A1,it,due
+räkn_2,Räkneord,A1,ja,二
+räkn_3,Räkneord,A1,sv,tre
+räkn_3,Räkneord,A1,en,three
+räkn_3,Räkneord,A1,fr,trois
+räkn_3,Räkneord,A1,de,drei
+räkn_3,Räkneord,A1,es,tres
+räkn_3,Räkneord,A1,it,tre
+räkn_3,Räkneord,A1,ja,三
+räkn_4,Räkneord,A1,sv,fyra
+räkn_4,Räkneord,A1,en,four
+räkn_4,Räkneord,A1,fr,quatre
+räkn_4,Räkneord,A1,de,vier
+räkn_4,Räkneord,A1,es,cuatro
+räkn_4,Räkneord,A1,it,quattro
+räkn_4,Räkneord,A1,ja,四
+räkn_5,Räkneord,A1,sv,fem
+räkn_5,Räkneord,A1,en,five
+räkn_5,Räkneord,A1,fr,cinq
+räkn_5,Räkneord,A1,de,fünf
+räkn_5,Räkneord,A1,es,cinco
+räkn_5,Räkneord,A1,it,cinque
+räkn_5,Räkneord,A1,ja,五
+räkn_6,Räkneord,A1,sv,sex
+räkn_6,Räkneord,A1,en,six
+räkn_6,Räkneord,A1,fr,six
+räkn_6,Räkneord,A1,de,sechs
+räkn_6,Räkneord,A1,es,seis
+räkn_6,Räkneord,A1,it,sei
+räkn_6,Räkneord,A1,ja,六
+räkn_7,Räkneord,A1,sv,sju
+räkn_7,Räkneord,A1,en,seven
+räkn_7,Räkneord,A1,fr,sept
+räkn_7,Räkneord,A1,de,sieben
+räkn_7,Räkneord,A1,es,siete
+räkn_7,Räkneord,A1,it,sette
+räkn_7,Räkneord,A1,ja,七
+räkn_8,Räkneord,A1,sv,åtta
+räkn_8,Räkneord,A1,en,eight
+räkn_8,Räkneord,A1,fr,huit
+räkn_8,Räkneord,A1,de,acht
+räkn_8,Räkneord,A1,es,ocho
+räkn_8,Räkneord,A1,it,otto
+räkn_8,Räkneord,A1,ja,八
+räkn_9,Räkneord,A1,sv,nio
+räkn_9,Räkneord,A1,en,nine
+räkn_9,Räkneord,A1,fr,neuf
+räkn_9,Räkneord,A1,de,neun
+räkn_9,Räkneord,A1,es,nueve
+räkn_9,Räkneord,A1,it,nove
+räkn_9,Räkneord,A1,ja,九
+räkn_10,Räkneord,A1,sv,tio
+räkn_10,Räkneord,A1,en,ten
+räkn_10,Räkneord,A1,fr,dix
+räkn_10,Räkneord,A1,de,zehn
+räkn_10,Räkneord,A1,es,diez
+räkn_10,Räkneord,A1,it,dieci
+räkn_10,Räkneord,A1,ja,十
+räkn_11,Räkneord,A1,sv,elva
+räkn_11,Räkneord,A1,en,eleven
+räkn_11,Räkneord,A1,fr,onze
+räkn_11,Räkneord,A1,de,elf
+räkn_11,Räkneord,A1,es,once
+räkn_11,Räkneord,A1,it,undici
+räkn_11,Räkneord,A1,ja,十一
+räkn_12,Räkneord,A1,sv,tolv
+räkn_12,Räkneord,A1,en,twelve
+räkn_12,Räkneord,A1,fr,douze
+räkn_12,Räkneord,A1,de,zwölf
+räkn_12,Räkneord,A1,es,doce
+räkn_12,Räkneord,A1,it,dodici
+räkn_12,Räkneord,A1,ja,十二
+räkn_13,Räkneord,A1,sv,tretton
+räkn_13,Räkneord,A1,en,thirteen
+räkn_13,Räkneord,A1,fr,treize
+räkn_13,Räkneord,A1,de,dreizehn
+räkn_13,Räkneord,A1,es,trece
+räkn_13,Räkneord,A1,it,tredici
+räkn_13,Räkneord,A1,ja,十三
+räkn_14,Räkneord,A1,sv,fjorton
+räkn_14,Räkneord,A1,en,fourteen
+räkn_14,Räkneord,A1,fr,quatorze
+räkn_14,Räkneord,A1,de,vierzehn
+räkn_14,Räkneord,A1,es,catorce
+räkn_14,Räkneord,A1,it,quattordici
+räkn_14,Räkneord,A1,ja,十四
+räkn_15,Räkneord,A1,sv,femton
+räkn_15,Räkneord,A1,en,fifteen
+räkn_15,Räkneord,A1,fr,quinze
+räkn_15,Räkneord,A1,de,fünfzehn
+räkn_15,Räkneord,A1,es,quince
+räkn_15,Räkneord,A1,it,quindici
+räkn_15,Räkneord,A1,ja,十五
+räkn_16,Räkneord,A1,sv,sexton
+räkn_16,Räkneord,A1,en,sixteen
+räkn_16,Räkneord,A1,fr,seize
+räkn_16,Räkneord,A1,de,sechzehn
+räkn_16,Räkneord,A1,es,dieciséis
+räkn_16,Räkneord,A1,it,sedici
+räkn_16,Räkneord,A1,ja,十六
+räkn_17,Räkneord,A1,sv,sjutton
+räkn_17,Räkneord,A1,en,seventeen
+räkn_17,Räkneord,A1,fr,dix-sept
+räkn_17,Räkneord,A1,de,siebzehn
+räkn_17,Räkneord,A1,es,diecisiete
+räkn_17,Räkneord,A1,it,diciassette
+räkn_17,Räkneord,A1,ja,十七
+räkn_18,Räkneord,A1,sv,arton
+räkn_18,Räkneord,A1,en,eighteen
+räkn_18,Räkneord,A1,fr,dix-huit
+räkn_18,Räkneord,A1,de,achtzehn
+räkn_18,Räkneord,A1,es,dieciocho
+räkn_18,Räkneord,A1,it,diciotto
+räkn_18,Räkneord,A1,ja,十八
+räkn_19,Räkneord,A1,sv,nitton
+räkn_19,Räkneord,A1,en,nineteen
+räkn_19,Räkneord,A1,fr,dix-neuf
+räkn_19,Räkneord,A1,de,neunzehn
+räkn_19,Räkneord,A1,es,diecinueve
+räkn_19,Räkneord,A1,it,diciannove
+räkn_19,Räkneord,A1,ja,十九
+räkn_20,Räkneord,A1,sv,tjugo
+räkn_20,Räkneord,A1,en,twenty
+räkn_20,Räkneord,A1,fr,vingt
+räkn_20,Räkneord,A1,de,zwanzig
+räkn_20,Räkneord,A1,es,veinte
+räkn_20,Räkneord,A1,it,venti
+räkn_20,Räkneord,A1,ja,二十
+räkn_30,Räkneord,A1,sv,trettio
+räkn_30,Räkneord,A1,en,thirty
+räkn_30,Räkneord,A1,fr,trente
+räkn_30,Räkneord,A1,de,dreißig
+räkn_30,Räkneord,A1,es,treinta
+räkn_30,Räkneord,A1,it,trenta
+räkn_30,Räkneord,A1,ja,三十
+räkn_40,Räkneord,A1,sv,fyrtio
+räkn_40,Räkneord,A1,en,forty
+räkn_40,Räkneord,A1,fr,quarante
+räkn_40,Räkneord,A1,de,vierzig
+räkn_40,Räkneord,A1,es,cuarenta
+räkn_40,Räkneord,A1,it,quaranta
+räkn_40,Räkneord,A1,ja,四十
+räkn_50,Räkneord,A1,sv,femtio
+räkn_50,Räkneord,A1,en,fifty
+räkn_50,Räkneord,A1,fr,cinquante
+räkn_50,Räkneord,A1,de,fünfzig
+räkn_50,Räkneord,A1,es,cincuenta
+räkn_50,Räkneord,A1,it,cinquanta
+räkn_50,Räkneord,A1,ja,五十
+räkn_60,Räkneord,A2,sv,sextio
+räkn_60,Räkneord,A2,en,sixty
+räkn_60,Räkneord,A2,fr,soixante
+räkn_60,Räkneord,A2,de,sechzig
+räkn_60,Räkneord,A2,es,sesenta
+räkn_60,Räkneord,A2,it,sessanta
+räkn_60,Räkneord,A2,ja,六十
+räkn_70,Räkneord,A2,sv,sjuttio
+räkn_70,Räkneord,A2,en,seventy
+räkn_70,Räkneord,A2,fr,soixante-dix
+räkn_70,Räkneord,A2,de,siebzig
+räkn_70,Räkneord,A2,es,setenta
+räkn_70,Räkneord,A2,it,settanta
+räkn_70,Räkneord,A2,ja,七十
+räkn_80,Räkneord,A2,sv,åttio
+räkn_80,Räkneord,A2,en,eighty
+räkn_80,Räkneord,A2,fr,quatre-vingts
+räkn_80,Räkneord,A2,de,achtzig
+räkn_80,Räkneord,A2,es,ochenta
+räkn_80,Räkneord,A2,it,ottanta
+räkn_80,Räkneord,A2,ja,八十
+räkn_90,Räkneord,A2,sv,nittio
+räkn_90,Räkneord,A2,en,ninety
+räkn_90,Räkneord,A2,fr,quatre-vingt-dix
+räkn_90,Räkneord,A2,de,neunzig
+räkn_90,Räkneord,A2,es,noventa
+räkn_90,Räkneord,A2,it,novanta
+räkn_90,Räkneord,A2,ja,九十
+räkn_100,Räkneord,A1,sv,hundra
+räkn_100,Räkneord,A1,en,hundred
+räkn_100,Räkneord,A1,fr,cent
+räkn_100,Räkneord,A1,de,hundert
+räkn_100,Räkneord,A1,es,cien
+räkn_100,Räkneord,A1,it,cento
+räkn_100,Räkneord,A1,ja,百
+räkn_1000,Räkneord,A1,sv,tusen
+räkn_1000,Räkneord,A1,en,thousand
+räkn_1000,Räkneord,A1,fr,mille
+räkn_1000,Räkneord,A1,de,tausend
+räkn_1000,Räkneord,A1,es,mil
+räkn_1000,Räkneord,A1,it,mille
+räkn_1000,Räkneord,A1,ja,千
+räkn_ord_1,Räkneord,A1,sv,första
+räkn_ord_1,Räkneord,A1,en,first
+räkn_ord_1,Räkneord,A1,fr,premier
+räkn_ord_1,Räkneord,A1,de,erste
+räkn_ord_1,Räkneord,A1,es,primero
+räkn_ord_1,Räkneord,A1,it,primo
+räkn_ord_1,Räkneord,A1,ja,第一
+räkn_ord_2,Räkneord,A1,sv,andra
+räkn_ord_2,Räkneord,A1,en,second
+räkn_ord_2,Räkneord,A1,fr,deuxième
+räkn_ord_2,Räkneord,A1,de,zweite
+räkn_ord_2,Räkneord,A1,es,segundo
+räkn_ord_2,Räkneord,A1,it,secondo
+räkn_ord_2,Räkneord,A1,ja,第二
+räkn_ord_3,Räkneord,A1,sv,tredje
+räkn_ord_3,Räkneord,A1,en,third
+räkn_ord_3,Räkneord,A1,fr,troisième
+räkn_ord_3,Räkneord,A1,de,dritte
+räkn_ord_3,Räkneord,A1,es,tercero
+räkn_ord_3,Räkneord,A1,it,terzo
+räkn_ord_3,Räkneord,A1,ja,第三
+räkn_ord_4,Räkneord,A2,sv,fjärde
+räkn_ord_4,Räkneord,A2,en,fourth
+räkn_ord_4,Räkneord,A2,fr,quatrième
+räkn_ord_4,Räkneord,A2,de,vierte
+räkn_ord_4,Räkneord,A2,es,cuarto
+räkn_ord_4,Räkneord,A2,it,quarto
+räkn_ord_4,Räkneord,A2,ja,第四
+räkn_ord_5,Räkneord,A2,sv,femte
+räkn_ord_5,Räkneord,A2,en,fifth
+räkn_ord_5,Räkneord,A2,fr,cinquième
+räkn_ord_5,Räkneord,A2,de,fünfte
+räkn_ord_5,Räkneord,A2,es,quinto
+räkn_ord_5,Räkneord,A2,it,quinto
+räkn_ord_5,Räkneord,A2,ja,第五
+
+# ── Kvantifikatorer ───────────────────────────────────────────────────────────
+# Ord som anger mängd/omfång utan att specificera ett exakt tal.
+# Universella kvantifikatorer (alla, varje) kongruerar med substantivet i
+# de flesta språk — böjning hanteras i Former.
+# Negativa kvantifikatorer (ingen, inget) kräver negativt satsschema på
+# japanska: 誰も/何も måste kombineras med negerad verbform (se negationsadverb).
+# Distinktion kvant_någon (person) vs kvant_något (sak): speglar sv ingen/inget.
+kvant_alla,Kvantifikator,A1,sv,alla
+kvant_alla,Kvantifikator,A1,en,all
+kvant_alla,Kvantifikator,A1,fr,tous
+kvant_alla,Kvantifikator,A1,de,alle
+kvant_alla,Kvantifikator,A1,es,todos
+kvant_alla,Kvantifikator,A1,it,tutti
+# ja: みんな (om personer/grupp); すべて (om saker/abstrakt)
+kvant_alla,Kvantifikator,A1,ja,みんな
+kvant_alla,Kvantifikator,A1,ja,すべて
+kvant_varje,Kvantifikator,A2,sv,varje
+kvant_varje,Kvantifikator,A2,en,each
+kvant_varje,Kvantifikator,A2,fr,chaque
+kvant_varje,Kvantifikator,A2,de,jeder
+kvant_varje,Kvantifikator,A2,es,cada
+kvant_varje,Kvantifikator,A2,it,ogni
+kvant_varje,Kvantifikator,A2,ja,それぞれ
+# kvant_någon: indefinit pronomen (person) — "someone/somebody"
+kvant_någon,Kvantifikator,A1,sv,någon
+kvant_någon,Kvantifikator,A1,en,someone
+kvant_någon,Kvantifikator,A1,fr,quelqu'un
+kvant_någon,Kvantifikator,A1,de,jemand
+kvant_någon,Kvantifikator,A1,es,alguien
+kvant_någon,Kvantifikator,A1,it,qualcuno
+kvant_någon,Kvantifikator,A1,ja,誰か
+# kvant_något: indefinit pronomen (sak/neutrum) — "something"
+kvant_något,Kvantifikator,A1,sv,något
+kvant_något,Kvantifikator,A1,en,something
+kvant_något,Kvantifikator,A1,fr,quelque chose
+kvant_något,Kvantifikator,A1,de,etwas
+kvant_något,Kvantifikator,A1,es,algo
+kvant_något,Kvantifikator,A1,it,qualcosa
+kvant_något,Kvantifikator,A1,ja,何か
+# kvant_några: partiell kvantifikator (plural) — "some/a few"
+kvant_några,Kvantifikator,A2,sv,några
+kvant_några,Kvantifikator,A2,en,some
+kvant_några,Kvantifikator,A2,fr,quelques
+kvant_några,Kvantifikator,A2,de,einige
+kvant_några,Kvantifikator,A2,es,algunos
+kvant_några,Kvantifikator,A2,it,alcuni
+kvant_några,Kvantifikator,A2,ja,いくつか
+# kvant_ingen: negativ kvantifikator (person) — "nobody/no one"
+# ja: 誰も kräver negerad verbform (誰も来ない, inte *誰も来る)
+kvant_ingen,Kvantifikator,A1,sv,ingen
+kvant_ingen,Kvantifikator,A1,en,nobody
+kvant_ingen,Kvantifikator,A1,fr,personne
+kvant_ingen,Kvantifikator,A1,de,niemand
+kvant_ingen,Kvantifikator,A1,es,nadie
+kvant_ingen,Kvantifikator,A1,it,nessuno
+kvant_ingen,Kvantifikator,A1,ja,誰も
+# kvant_inget: negativ kvantifikator (sak/neutrum) — "nothing"
+# ja: 何も kräver negerad verbform (何も分からない, inte *何も分かる)
+kvant_inget,Kvantifikator,A1,sv,inget
+kvant_inget,Kvantifikator,A1,en,nothing
+kvant_inget,Kvantifikator,A1,fr,rien
+kvant_inget,Kvantifikator,A1,de,nichts
+kvant_inget,Kvantifikator,A1,es,nada
+kvant_inget,Kvantifikator,A1,it,niente
+kvant_inget,Kvantifikator,A1,ja,何も
+# kvant_båda: dual kvantifikator — "both"
+kvant_båda,Kvantifikator,A2,sv,båda
+kvant_båda,Kvantifikator,A2,en,both
+kvant_båda,Kvantifikator,A2,fr,tous les deux
+kvant_båda,Kvantifikator,A2,de,beide
+kvant_båda,Kvantifikator,A2,es,ambos
+kvant_båda,Kvantifikator,A2,it,entrambi
+kvant_båda,Kvantifikator,A2,ja,両方
+
+# ── Interjektion ───────────────────────────────────────────────────────────────
+# Småord/uttryck för att uttrycka känslor, reaktioner, bekräftelse eller hälsningar.
+# Interjektion är en separat ordklass med begränsat antal element.
+interj_yes,Interjektion,A1,sv,ja
+interj_yes,Interjektion,A1,en,yes
+interj_yes,Interjektion,A1,fr,oui
+interj_yes,Interjektion,A1,de,ja
+interj_yes,Interjektion,A1,es,sí
+interj_yes,Interjektion,A1,it,sì
+interj_yes,Interjektion,A1,ja,はい
+interj_no,Interjektion,A1,sv,nej
+interj_no,Interjektion,A1,en,no
+interj_no,Interjektion,A1,fr,non
+interj_no,Interjektion,A1,de,nein
+interj_no,Interjektion,A1,es,no
+interj_no,Interjektion,A1,it,no
+interj_no,Interjektion,A1,ja,いいえ
+# interj_hello: initiell hälsning
+interj_hello,Interjektion,A1,sv,hej
+interj_hello,Interjektion,A1,en,hello
+interj_hello,Interjektion,A1,fr,bonjour
+interj_hello,Interjektion,A1,de,hallo
+interj_hello,Interjektion,A1,es,hola
+interj_hello,Interjektion,A1,it,ciao
+interj_hello,Interjektion,A1,ja,こんにちは
+# interj_goodbye: avslutande hälsning
+interj_goodbye,Interjektion,A1,sv,hej då
+interj_goodbye,Interjektion,A1,en,goodbye
+interj_goodbye,Interjektion,A1,fr,au revoir
+interj_goodbye,Interjektion,A1,de,auf wiedersehen
+interj_goodbye,Interjektion,A1,es,adiós
+interj_goodbye,Interjektion,A1,it,arrivederci
+interj_goodbye,Interjektion,A1,ja,さようなら
+# interj_thanks: tack/tacksamhet
+interj_thanks,Interjektion,A1,sv,tack
+interj_thanks,Interjektion,A1,en,thank you
+interj_thanks,Interjektion,A1,fr,merci
+interj_thanks,Interjektion,A1,de,danke
+interj_thanks,Interjektion,A1,es,gracias
+interj_thanks,Interjektion,A1,it,grazie
+interj_thanks,Interjektion,A1,ja,ありがとう
+# interj_please: höflighetsmarker / instruktionsmarkör
+interj_please,Interjektion,A1,sv,var god
+interj_please,Interjektion,A1,en,please
+interj_please,Interjektion,A1,fr,s'il vous plaît
+interj_please,Interjektion,A1,de,bitte
+interj_please,Interjektion,A1,es,por favor
+interj_please,Interjektion,A1,it,per favore
+interj_please,Interjektion,A1,ja,ください
+# interj_sorry: ursäkt/beklagan
+interj_sorry,Interjektion,A1,sv,ursäkt
+interj_sorry,Interjektion,A1,en,sorry
+interj_sorry,Interjektion,A1,fr,désolé
+interj_sorry,Interjektion,A1,de,entschuldigung
+interj_sorry,Interjektion,A1,es,perdón
+interj_sorry,Interjektion,A1,it,mi dispiace
+interj_sorry,Interjektion,A1,ja,すみません
+# interj_oh: utropande markör (undran, överraskning, insikt)
+interj_oh,Interjektion,A1,sv,åh
+interj_oh,Interjektion,A1,en,oh
+interj_oh,Interjektion,A1,fr,oh
+interj_oh,Interjektion,A1,de,oh
+interj_oh,Interjektion,A1,es,oh
+interj_oh,Interjektion,A1,it,oh
+interj_oh,Interjektion,A1,ja,あ
+
+# ── Jämförelseord ──────────────────────────────────────────────────────────────
+# Funktionsord som signalerar jämförelse i komparativ/superlativ.
+# Används tillsammans med adjektivböjning och nominalfraser.
+# komp_som: likhetsmarkör (as ... as construction)
+komp_som,Subjunktion,A1,sv,som
+komp_som,Subjunktion,A1,en,as
+komp_som,Subjunktion,A1,fr,comme
+komp_som,Subjunktion,A1,de,wie
+komp_som,Subjunktion,A1,es,como
+komp_som,Subjunktion,A1,it,come
+komp_som,Subjunktion,A1,ja,ほど
+# komp_än: komparativ-markör (than construction)
+komp_än,Subjunktion,A1,sv,än
+komp_än,Subjunktion,A1,en,than
+komp_än,Subjunktion,A1,fr,que
+komp_än,Subjunktion,A1,de,als
+komp_än,Subjunktion,A1,es,que
+komp_än,Subjunktion,A1,it,di
+komp_än,Subjunktion,A1,ja,より
+
+# ── Pronomen: Opersonlig/generisk ──────────────────────────────────────────────
+# pronomen_impersonal (man/one/on): generisk agent utan specifik referent.
+# Är tekniskt en indefinit form av pronomen, men semantiskt separerad.
+# Svenska: man (impersonal aktiv)
+# Engelska: one (formal), you (common), they (informal)
+# Franska: on (obligatorisk för generiskt)
+# Italienska/spanska: uno/uno + passive/impersonal
+pronomen_impersonal,Pronomen,A1,sv,man
+pronomen_impersonal,Pronomen,A1,en,one
+pronomen_impersonal,Pronomen,A1,fr,on
+pronomen_impersonal,Pronomen,A1,de,man
+pronomen_impersonal,Pronomen,A1,es,uno
+pronomen_impersonal,Pronomen,A1,it,uno
+# Japanska: generisk agent ofta uttryckt via passiv eller indefinit struktur
+# (誰か/人 är mer explicit "somebody", medan impersonal ofta är implicit)
+# Läggs in som saknad — japanska använder syntaktiska strukturer istället
+
+# ── Temporala adverb ────────────────────────────────────────────────────────────
+# Dagliga tidpunktsreferenser. Är tekniskt adverb men utgör en stabil, begränsad grupp.
+adv_idag,Adverb,A1,sv,idag
+adv_idag,Adverb,A1,en,today
+adv_idag,Adverb,A1,fr,aujourd'hui
+adv_idag,Adverb,A1,de,heute
+adv_idag,Adverb,A1,es,hoy
+adv_idag,Adverb,A1,it,oggi
+adv_idag,Adverb,A1,ja,今日
+adv_igår,Adverb,A1,sv,igår
+adv_igår,Adverb,A1,en,yesterday
+adv_igår,Adverb,A1,fr,hier
+adv_igår,Adverb,A1,de,gestern
+adv_igår,Adverb,A1,es,ayer
+adv_igår,Adverb,A1,it,ieri
+adv_igår,Adverb,A1,ja,昨日
+adv_imorgon,Adverb,A1,sv,imorgon
+adv_imorgon,Adverb,A1,en,tomorrow
+adv_imorgon,Adverb,A1,fr,demain
+adv_imorgon,Adverb,A1,de,morgen
+adv_imorgon,Adverb,A1,es,mañana
+adv_imorgon,Adverb,A1,it,domani
+adv_imorgon,Adverb,A1,ja,明日
+

@@ -1,0 +1,4445 @@
+koncept,ordklass,nivå,språk,lemma
+# ═══════════════════════════════════════════════════════════════════════════════
+# grundord.csv — Öppna ordklasser organiserade i semantiska kategorier
+# Format: koncept,ordklass,nivå,språk,lemma  (identiskt med bas_kärna.csv)
+# Ordklasser: Verb | Substantiv | Adjektiv | Adverb
+# Nivåer: A1 = absolut kärna | A2 = vanlig vardagsvokabulär | B1 = mer avancerat
+# Konventioner: se KONVENTIONER.md
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ───────────────────────────────────────────────────────────────────────────────
+# VERB
+# ───────────────────────────────────────────────────────────────────────────────
+
+# ── 1. Rörelseverb ────────────────────────────────────────────────────────────
+# Prefix: rör_
+# Verb som beskriver förflyttning i rummet
+# de=fahren täcker rör_åka och rör_köra (polysemi — hållbar förenkling)
+# ja=行く täcker rör_åka (generellt "gå/åka dit")
+rör_gå,Verb,A1,sv,gå
+rör_gå,Verb,A1,en,walk
+rör_gå,Verb,A1,fr,marcher
+rör_gå,Verb,A1,de,gehen
+rör_gå,Verb,A1,es,caminar
+rör_gå,Verb,A1,it,camminare
+rör_gå,Verb,A1,ja,歩く
+rör_springa,Verb,A1,sv,springa
+rör_springa,Verb,A1,en,run
+rör_springa,Verb,A1,fr,courir
+rör_springa,Verb,A1,de,laufen
+rör_springa,Verb,A1,es,correr
+rör_springa,Verb,A1,it,correre
+rör_springa,Verb,A1,ja,走る
+rör_komma,Verb,A1,sv,komma
+rör_komma,Verb,A1,en,come
+rör_komma,Verb,A1,fr,venir
+rör_komma,Verb,A1,de,kommen
+rör_komma,Verb,A1,es,venir
+rör_komma,Verb,A1,it,venire
+rör_komma,Verb,A1,ja,来る
+rör_åka,Verb,A1,sv,åka
+rör_åka,Verb,A1,en,go
+rör_åka,Verb,A1,fr,aller
+rör_åka,Verb,A1,de,fahren
+rör_åka,Verb,A1,es,ir
+rör_åka,Verb,A1,it,andare
+rör_åka,Verb,A1,ja,行く
+rör_köra,Verb,A1,sv,köra
+rör_köra,Verb,A1,en,drive
+rör_köra,Verb,A1,fr,conduire
+# de=fahren täcker rör_köra och rör_åka (polysemi)
+rör_köra,Verb,A1,de,fahren
+rör_köra,Verb,A1,es,conducir
+rör_köra,Verb,A1,it,guidare
+rör_köra,Verb,A1,ja,運転する
+rör_flyga,Verb,A2,sv,flyga
+rör_flyga,Verb,A2,en,fly
+rör_flyga,Verb,A2,fr,voler
+rör_flyga,Verb,A2,de,fliegen
+rör_flyga,Verb,A2,es,volar
+rör_flyga,Verb,A2,it,volare
+rör_flyga,Verb,A2,ja,飛ぶ
+rör_simma,Verb,A2,sv,simma
+rör_simma,Verb,A2,en,swim
+rör_simma,Verb,A2,fr,nager
+rör_simma,Verb,A2,de,schwimmen
+rör_simma,Verb,A2,es,nadar
+rör_simma,Verb,A2,it,nuotare
+rör_simma,Verb,A2,ja,泳ぐ
+rör_resa,Verb,A2,sv,resa
+rör_resa,Verb,A2,en,travel
+rör_resa,Verb,A2,fr,voyager
+rör_resa,Verb,A2,de,reisen
+rör_resa,Verb,A2,es,viajar
+rör_resa,Verb,A2,it,viaggiare
+rör_resa,Verb,A2,ja,旅行する
+rör_falla,Verb,A2,sv,falla
+rör_falla,Verb,A2,en,fall
+rör_falla,Verb,A2,fr,tomber
+rör_falla,Verb,A2,de,fallen
+rör_falla,Verb,A2,es,caer
+rör_falla,Verb,A2,it,cadere
+rör_falla,Verb,A2,ja,落ちる
+rör_stanna,Verb,A2,sv,stanna
+rör_stanna,Verb,A2,en,stop
+rör_stanna,Verb,A2,fr,s'arrêter
+rör_stanna,Verb,A2,de,stoppen
+rör_stanna,Verb,A2,es,parar
+rör_stanna,Verb,A2,it,fermarsi
+rör_stanna,Verb,A2,ja,止まる
+rör_hoppa,Verb,A2,sv,hoppa
+rör_hoppa,Verb,A2,en,jump
+rör_hoppa,Verb,A2,fr,sauter
+rör_hoppa,Verb,A2,de,springen
+rör_hoppa,Verb,A2,es,saltar
+rör_hoppa,Verb,A2,it,saltare
+rör_hoppa,Verb,A2,ja,跳ぶ
+rör_klättra,Verb,A2,sv,klättra
+rör_klättra,Verb,A2,en,climb
+rör_klättra,Verb,A2,fr,grimper
+rör_klättra,Verb,A2,de,klettern
+rör_klättra,Verb,A2,es,subir
+rör_klättra,Verb,A2,it,salire
+rör_klättra,Verb,A2,ja,登る
+rör_följa,Verb,A2,sv,följa
+rör_följa,Verb,A2,en,follow
+rör_följa,Verb,A2,fr,suivre
+rör_följa,Verb,A2,de,folgen
+rör_följa,Verb,A2,es,seguir
+rör_följa,Verb,A2,it,seguire
+rör_följa,Verb,A2,ja,ついていく
+rör_lämna,Verb,A2,sv,lämna
+rör_lämna,Verb,A2,en,leave
+rör_lämna,Verb,A2,fr,partir
+rör_lämna,Verb,A2,de,verlassen
+rör_lämna,Verb,A2,es,salir
+rör_lämna,Verb,A2,it,partire
+rör_lämna,Verb,A2,ja,出る
+rör_vända,Verb,B1,sv,vända
+rör_vända,Verb,B1,en,turn
+rör_vända,Verb,B1,fr,tourner
+rör_vända,Verb,B1,de,wenden
+rör_vända,Verb,B1,es,girar
+rör_vända,Verb,B1,it,girare
+rör_vända,Verb,B1,ja,曲がる
+rör_krypa,Verb,B1,sv,krypa
+rör_krypa,Verb,B1,en,crawl
+rör_krypa,Verb,B1,fr,ramper
+rör_krypa,Verb,B1,de,kriechen
+rör_krypa,Verb,B1,es,arrastrarse
+rör_krypa,Verb,B1,it,strisciare
+rör_krypa,Verb,B1,ja,這う
+
+# ── 2. Perceptionverb ─────────────────────────────────────────────────────────
+# Prefix: per_
+# Verb för sinnesintryck: se, höra, känna, lukta, smaka
+# ja=見る täcker per_se och per_titta (polysemi — hållbar förenkling)
+# ja=聞く täcker per_höra och per_lyssna (polysemi — hållbar förenkling)
+# fr=sentir täcker per_känna och per_lukta (polysemi)
+# it=sentire täcker per_höra och per_känna (polysemi)
+per_se,Verb,A1,sv,se
+per_se,Verb,A1,en,see
+per_se,Verb,A1,fr,voir
+per_se,Verb,A1,de,sehen
+per_se,Verb,A1,es,ver
+per_se,Verb,A1,it,vedere
+per_se,Verb,A1,ja,見る
+per_titta,Verb,A1,sv,titta
+per_titta,Verb,A1,en,look
+per_titta,Verb,A1,fr,regarder
+per_titta,Verb,A1,de,schauen
+per_titta,Verb,A1,es,mirar
+per_titta,Verb,A1,it,guardare
+per_titta,Verb,A1,ja,見る
+per_höra,Verb,A1,sv,höra
+per_höra,Verb,A1,en,hear
+per_höra,Verb,A1,fr,entendre
+per_höra,Verb,A1,de,hören
+per_höra,Verb,A1,es,oír
+per_höra,Verb,A1,it,sentire
+per_höra,Verb,A1,ja,聞く
+per_lyssna,Verb,A1,sv,lyssna
+per_lyssna,Verb,A1,en,listen
+per_lyssna,Verb,A1,fr,écouter
+per_lyssna,Verb,A1,de,zuhören
+per_lyssna,Verb,A1,es,escuchar
+per_lyssna,Verb,A1,it,ascoltare
+per_lyssna,Verb,A1,ja,聞く
+per_känna,Verb,A2,sv,känna
+per_känna,Verb,A2,en,feel
+per_känna,Verb,A2,fr,sentir
+per_känna,Verb,A2,de,fühlen
+per_känna,Verb,A2,es,sentir
+per_känna,Verb,A2,it,sentire
+per_känna,Verb,A2,ja,感じる
+per_lukta,Verb,A2,sv,lukta
+per_lukta,Verb,A2,en,smell
+per_lukta,Verb,A2,fr,sentir
+per_lukta,Verb,A2,de,riechen
+per_lukta,Verb,A2,es,oler
+per_lukta,Verb,A2,it,odorare
+per_lukta,Verb,A2,ja,嗅ぐ
+per_smaka,Verb,A2,sv,smaka
+per_smaka,Verb,A2,en,taste
+per_smaka,Verb,A2,fr,goûter
+per_smaka,Verb,A2,de,schmecken
+per_smaka,Verb,A2,es,probar
+per_smaka,Verb,A2,it,assaggiare
+per_smaka,Verb,A2,ja,味わう
+
+# ── 3. Kognitionsverb ─────────────────────────────────────────────────────────
+# Prefix: kog_
+# Mentala processer: tänka, veta, minnas, välja
+# OBS: modal_vill (want) finns redan i bas_kärna.csv
+# fr: savoir=veta (fakta); connaître=känna till (person/plats) — kog_veta=savoir
+# ja=夢を見る (drömma) är en fras men den enda naturliga formen på japanska
+kog_tänka,Verb,A1,sv,tänka
+kog_tänka,Verb,A1,en,think
+kog_tänka,Verb,A1,fr,penser
+kog_tänka,Verb,A1,de,denken
+kog_tänka,Verb,A1,es,pensar
+kog_tänka,Verb,A1,it,pensare
+kog_tänka,Verb,A1,ja,考える
+kog_veta,Verb,A1,sv,veta
+kog_veta,Verb,A1,en,know
+kog_veta,Verb,A1,fr,savoir
+kog_veta,Verb,A1,de,wissen
+kog_veta,Verb,A1,es,saber
+kog_veta,Verb,A1,it,sapere
+kog_veta,Verb,A1,ja,知る
+kog_förstå,Verb,A1,sv,förstå
+kog_förstå,Verb,A1,en,understand
+kog_förstå,Verb,A1,fr,comprendre
+kog_förstå,Verb,A1,de,verstehen
+kog_förstå,Verb,A1,es,entender
+kog_förstå,Verb,A1,it,capire
+kog_förstå,Verb,A1,ja,わかる
+kog_lära,Verb,A1,sv,lära
+kog_lära,Verb,A1,en,learn
+kog_lära,Verb,A1,fr,apprendre
+kog_lära,Verb,A1,de,lernen
+kog_lära,Verb,A1,es,aprender
+kog_lära,Verb,A1,it,imparare
+kog_lära,Verb,A1,ja,学ぶ
+kog_minnas,Verb,A2,sv,minnas
+kog_minnas,Verb,A2,en,remember
+kog_minnas,Verb,A2,fr,se souvenir
+kog_minnas,Verb,A2,de,sich erinnern
+kog_minnas,Verb,A2,es,recordar
+kog_minnas,Verb,A2,it,ricordare
+kog_minnas,Verb,A2,ja,覚える
+kog_glömma,Verb,A2,sv,glömma
+kog_glömma,Verb,A2,en,forget
+kog_glömma,Verb,A2,fr,oublier
+kog_glömma,Verb,A2,de,vergessen
+kog_glömma,Verb,A2,es,olvidar
+kog_glömma,Verb,A2,it,dimenticare
+kog_glömma,Verb,A2,ja,忘れる
+kog_tro,Verb,A2,sv,tro
+kog_tro,Verb,A2,en,believe
+kog_tro,Verb,A2,fr,croire
+kog_tro,Verb,A2,de,glauben
+kog_tro,Verb,A2,es,creer
+kog_tro,Verb,A2,it,credere
+kog_tro,Verb,A2,ja,信じる
+kog_välja,Verb,A2,sv,välja
+kog_välja,Verb,A2,en,choose
+kog_välja,Verb,A2,fr,choisir
+kog_välja,Verb,A2,de,wählen
+kog_välja,Verb,A2,es,elegir
+kog_välja,Verb,A2,it,scegliere
+kog_välja,Verb,A2,ja,選ぶ
+kog_bestämma,Verb,A2,sv,bestämma
+kog_bestämma,Verb,A2,en,decide
+kog_bestämma,Verb,A2,fr,décider
+kog_bestämma,Verb,A2,de,entscheiden
+kog_bestämma,Verb,A2,es,decidir
+kog_bestämma,Verb,A2,it,decidere
+kog_bestämma,Verb,A2,ja,決める
+kog_märka,Verb,A2,sv,märka
+kog_märka,Verb,A2,en,notice
+kog_märka,Verb,A2,fr,remarquer
+kog_märka,Verb,A2,de,bemerken
+kog_märka,Verb,A2,es,notar
+kog_märka,Verb,A2,it,notare
+kog_märka,Verb,A2,ja,気づく
+kog_drömma,Verb,A2,sv,drömma
+kog_drömma,Verb,A2,en,dream
+kog_drömma,Verb,A2,fr,rêver
+kog_drömma,Verb,A2,de,träumen
+kog_drömma,Verb,A2,es,soñar
+kog_drömma,Verb,A2,it,sognare
+kog_drömma,Verb,A2,ja,夢を見る
+kog_planera,Verb,A2,sv,planera
+kog_planera,Verb,A2,en,plan
+kog_planera,Verb,A2,fr,planifier
+kog_planera,Verb,A2,de,planen
+kog_planera,Verb,A2,es,planear
+kog_planera,Verb,A2,it,pianificare
+kog_planera,Verb,A2,ja,計画する
+
+# ── 4. Kommunikationsverb ─────────────────────────────────────────────────────
+# Prefix: kom_
+# Verb för språk och kommunikation: prata, fråga, läsa, skriva
+# ja=話す täcker kom_prata och kom_berätta (polysemi — hållbar förenkling)
+# ja=聞く täcker kom_fråga (polysemi med per_höra och per_lyssna)
+kom_prata,Verb,A1,sv,prata
+kom_prata,Verb,A1,en,talk
+kom_prata,Verb,A1,fr,parler
+kom_prata,Verb,A1,de,sprechen
+kom_prata,Verb,A1,es,hablar
+kom_prata,Verb,A1,it,parlare
+kom_prata,Verb,A1,ja,話す
+kom_fråga,Verb,A1,sv,fråga
+kom_fråga,Verb,A1,en,ask
+kom_fråga,Verb,A1,fr,demander
+kom_fråga,Verb,A1,de,fragen
+kom_fråga,Verb,A1,es,preguntar
+kom_fråga,Verb,A1,it,chiedere
+kom_fråga,Verb,A1,ja,聞く
+kom_svara,Verb,A1,sv,svara
+kom_svara,Verb,A1,en,answer
+kom_svara,Verb,A1,fr,répondre
+kom_svara,Verb,A1,de,antworten
+kom_svara,Verb,A1,es,contestar
+kom_svara,Verb,A1,it,rispondere
+kom_svara,Verb,A1,ja,答える
+kom_läsa,Verb,A1,sv,läsa
+kom_läsa,Verb,A1,en,read
+kom_läsa,Verb,A1,fr,lire
+kom_läsa,Verb,A1,de,lesen
+kom_läsa,Verb,A1,es,leer
+kom_läsa,Verb,A1,it,leggere
+kom_läsa,Verb,A1,ja,読む
+kom_skriva,Verb,A1,sv,skriva
+kom_skriva,Verb,A1,en,write
+kom_skriva,Verb,A1,fr,écrire
+kom_skriva,Verb,A1,de,schreiben
+kom_skriva,Verb,A1,es,escribir
+kom_skriva,Verb,A1,it,scrivere
+kom_skriva,Verb,A1,ja,書く
+kom_berätta,Verb,A2,sv,berätta
+kom_berätta,Verb,A2,en,tell
+kom_berätta,Verb,A2,fr,raconter
+kom_berätta,Verb,A2,de,erzählen
+kom_berätta,Verb,A2,es,contar
+kom_berätta,Verb,A2,it,raccontare
+kom_berätta,Verb,A2,ja,話す
+kom_ringa,Verb,A2,sv,ringa
+kom_ringa,Verb,A2,en,call
+kom_ringa,Verb,A2,fr,appeler
+kom_ringa,Verb,A2,de,anrufen
+kom_ringa,Verb,A2,es,llamar
+kom_ringa,Verb,A2,it,chiamare
+kom_ringa,Verb,A2,ja,電話する
+kom_sjunga,Verb,A2,sv,sjunga
+kom_sjunga,Verb,A2,en,sing
+kom_sjunga,Verb,A2,fr,chanter
+kom_sjunga,Verb,A2,de,singen
+kom_sjunga,Verb,A2,es,cantar
+kom_sjunga,Verb,A2,it,cantare
+kom_sjunga,Verb,A2,ja,歌う
+
+# ── 5. Känslo- och viljeverb ──────────────────────────────────────────────────
+# Prefix: käns_
+# Emotioner och affektiva tillstånd: älska, hata, hoppas, skratta
+# fr=aimer täcker käns_älska och käns_gilla (polysemi — kontext avgör styrka)
+# es=gustar och it=piacere: omvänd syntax ("det behagar mig") — renderarens ansvar
+# ja: 好む/嫌う/憎む är verbformer; 好き/嫌い är vanligare na-adj i vardagsspråk
+# käns_ogilla: fr/de/es/it saknar ren positiv verbform — negerad fras används som lemma
+# käns_oroa: reflexivt i sv/fr/de/es/it — hela den reflexiva infinitiven är lemmat
+käns_älska,Verb,A1,sv,älska
+käns_älska,Verb,A1,en,love
+käns_älska,Verb,A1,fr,aimer
+käns_älska,Verb,A1,de,lieben
+käns_älska,Verb,A1,es,amar
+käns_älska,Verb,A1,it,amare
+käns_älska,Verb,A1,ja,愛する
+käns_gilla,Verb,A1,sv,gilla
+käns_gilla,Verb,A1,en,like
+# fr=aimer täcker käns_gilla och käns_älska (polysemi)
+käns_gilla,Verb,A1,fr,aimer
+käns_gilla,Verb,A1,de,mögen
+# es=gustar och it=piacere: omvänd syntax — renderarens ansvar
+käns_gilla,Verb,A1,es,gustar
+käns_gilla,Verb,A1,it,piacere
+käns_gilla,Verb,A1,ja,好む
+käns_ogilla,Verb,A2,sv,ogilla
+käns_ogilla,Verb,A2,en,dislike
+# fr/de/es/it saknar ren positiv verbform för ogilla — negerad fras är lemmat
+käns_ogilla,Verb,A2,fr,ne pas aimer
+käns_ogilla,Verb,A2,de,nicht mögen
+käns_ogilla,Verb,A2,es,no gustar
+käns_ogilla,Verb,A2,it,non piacere
+käns_ogilla,Verb,A2,ja,嫌う
+käns_hata,Verb,A2,sv,hata
+käns_hata,Verb,A2,en,hate
+käns_hata,Verb,A2,fr,détester
+käns_hata,Verb,A2,de,hassen
+käns_hata,Verb,A2,es,odiar
+käns_hata,Verb,A2,it,odiare
+käns_hata,Verb,A2,ja,憎む
+käns_hoppas,Verb,A2,sv,hoppas
+käns_hoppas,Verb,A2,en,hope
+käns_hoppas,Verb,A2,fr,espérer
+käns_hoppas,Verb,A2,de,hoffen
+käns_hoppas,Verb,A2,es,esperar
+käns_hoppas,Verb,A2,it,sperare
+käns_hoppas,Verb,A2,ja,望む
+käns_skratta,Verb,A1,sv,skratta
+käns_skratta,Verb,A1,en,laugh
+käns_skratta,Verb,A1,fr,rire
+käns_skratta,Verb,A1,de,lachen
+käns_skratta,Verb,A1,es,reír
+käns_skratta,Verb,A1,it,ridere
+käns_skratta,Verb,A1,ja,笑う
+käns_gråta,Verb,A1,sv,gråta
+käns_gråta,Verb,A1,en,cry
+käns_gråta,Verb,A1,fr,pleurer
+käns_gråta,Verb,A1,de,weinen
+käns_gråta,Verb,A1,es,llorar
+käns_gråta,Verb,A1,it,piangere
+käns_gråta,Verb,A1,ja,泣く
+käns_oroa,Verb,A2,sv,oroa sig
+käns_oroa,Verb,A2,en,worry
+käns_oroa,Verb,A2,fr,s'inquiéter
+käns_oroa,Verb,A2,de,sich sorgen
+käns_oroa,Verb,A2,es,preocuparse
+käns_oroa,Verb,A2,it,preoccuparsi
+käns_oroa,Verb,A2,ja,心配する
+
+# ── 6. Fysiska handlingsverb ──────────────────────────────────────────────────
+# Prefix: fys_
+# Konkreta handlingar med händer och kroppen: ta, ge, öppna, bygga
+# ja=あげる (ge till annan) / くれる (ge till mig) — renderaren väljer form
+# ja=持つ täcker fys_hålla och fys_bära (polysemi — hållbar förenkling)
+# fr=tirer täcker fys_dra och "skjuta" (polysemi)
+fys_ta,Verb,A1,sv,ta
+fys_ta,Verb,A1,en,take
+fys_ta,Verb,A1,fr,prendre
+fys_ta,Verb,A1,de,nehmen
+fys_ta,Verb,A1,es,tomar
+fys_ta,Verb,A1,it,prendere
+fys_ta,Verb,A1,ja,取る
+fys_ge,Verb,A1,sv,ge
+fys_ge,Verb,A1,en,give
+fys_ge,Verb,A1,fr,donner
+fys_ge,Verb,A1,de,geben
+fys_ge,Verb,A1,es,dar
+fys_ge,Verb,A1,it,dare
+fys_ge,Verb,A1,ja,あげる
+fys_göra,Verb,A1,sv,göra
+fys_göra,Verb,A1,en,do
+fys_göra,Verb,A1,fr,faire
+fys_göra,Verb,A1,de,machen
+fys_göra,Verb,A1,es,hacer
+fys_göra,Verb,A1,it,fare
+fys_göra,Verb,A1,ja,する
+fys_använda,Verb,A1,sv,använda
+fys_använda,Verb,A1,en,use
+fys_använda,Verb,A1,fr,utiliser
+fys_använda,Verb,A1,de,benutzen
+fys_använda,Verb,A1,es,usar
+fys_använda,Verb,A1,it,usare
+fys_använda,Verb,A1,ja,使う
+fys_hålla,Verb,A1,sv,hålla
+fys_hålla,Verb,A1,en,hold
+fys_hålla,Verb,A1,fr,tenir
+fys_hålla,Verb,A1,de,halten
+fys_hålla,Verb,A1,es,sujetar
+fys_hålla,Verb,A1,it,tenere
+fys_hålla,Verb,A1,ja,持つ
+fys_hitta,Verb,A1,sv,hitta
+fys_hitta,Verb,A1,en,find
+fys_hitta,Verb,A1,fr,trouver
+fys_hitta,Verb,A1,de,finden
+fys_hitta,Verb,A1,es,encontrar
+fys_hitta,Verb,A1,it,trovare
+fys_hitta,Verb,A1,ja,見つける
+fys_visa,Verb,A1,sv,visa
+fys_visa,Verb,A1,en,show
+fys_visa,Verb,A1,fr,montrer
+fys_visa,Verb,A1,de,zeigen
+fys_visa,Verb,A1,es,mostrar
+fys_visa,Verb,A1,it,mostrare
+fys_visa,Verb,A1,ja,見せる
+fys_öppna,Verb,A1,sv,öppna
+fys_öppna,Verb,A1,en,open
+fys_öppna,Verb,A1,fr,ouvrir
+fys_öppna,Verb,A1,de,öffnen
+fys_öppna,Verb,A1,es,abrir
+fys_öppna,Verb,A1,it,aprire
+fys_öppna,Verb,A1,ja,開ける
+fys_stänga,Verb,A1,sv,stänga
+fys_stänga,Verb,A1,en,close
+fys_stänga,Verb,A1,fr,fermer
+fys_stänga,Verb,A1,de,schließen
+fys_stänga,Verb,A1,es,cerrar
+fys_stänga,Verb,A1,it,chiudere
+fys_stänga,Verb,A1,ja,閉める
+fys_köpa,Verb,A1,sv,köpa
+fys_köpa,Verb,A1,en,buy
+fys_köpa,Verb,A1,fr,acheter
+fys_köpa,Verb,A1,de,kaufen
+fys_köpa,Verb,A1,es,comprar
+fys_köpa,Verb,A1,it,comprare
+fys_köpa,Verb,A1,ja,買う
+fys_bära,Verb,A2,sv,bära
+fys_bära,Verb,A2,en,carry
+fys_bära,Verb,A2,fr,porter
+fys_bära,Verb,A2,de,tragen
+fys_bära,Verb,A2,es,llevar
+fys_bära,Verb,A2,it,portare
+fys_bära,Verb,A2,ja,持つ
+fys_bygga,Verb,A2,sv,bygga
+fys_bygga,Verb,A2,en,build
+fys_bygga,Verb,A2,fr,construire
+fys_bygga,Verb,A2,de,bauen
+fys_bygga,Verb,A2,es,construir
+fys_bygga,Verb,A2,it,costruire
+fys_bygga,Verb,A2,ja,建てる
+fys_tvätta,Verb,A2,sv,tvätta
+fys_tvätta,Verb,A2,en,wash
+fys_tvätta,Verb,A2,fr,laver
+fys_tvätta,Verb,A2,de,waschen
+fys_tvätta,Verb,A2,es,lavar
+fys_tvätta,Verb,A2,it,lavare
+fys_tvätta,Verb,A2,ja,洗う
+fys_skära,Verb,A2,sv,skära
+fys_skära,Verb,A2,en,cut
+fys_skära,Verb,A2,fr,couper
+fys_skära,Verb,A2,de,schneiden
+fys_skära,Verb,A2,es,cortar
+fys_skära,Verb,A2,it,tagliare
+fys_skära,Verb,A2,ja,切る
+fys_sälja,Verb,A2,sv,sälja
+fys_sälja,Verb,A2,en,sell
+fys_sälja,Verb,A2,fr,vendre
+fys_sälja,Verb,A2,de,verkaufen
+fys_sälja,Verb,A2,es,vender
+fys_sälja,Verb,A2,it,vendere
+fys_sälja,Verb,A2,ja,売る
+fys_kasta,Verb,A2,sv,kasta
+fys_kasta,Verb,A2,en,throw
+fys_kasta,Verb,A2,fr,lancer
+fys_kasta,Verb,A2,de,werfen
+fys_kasta,Verb,A2,es,lanzar
+fys_kasta,Verb,A2,it,lanciare
+fys_kasta,Verb,A2,ja,投げる
+fys_trycka,Verb,A2,sv,trycka
+fys_trycka,Verb,A2,en,push
+fys_trycka,Verb,A2,fr,pousser
+fys_trycka,Verb,A2,de,drücken
+fys_trycka,Verb,A2,es,empujar
+fys_trycka,Verb,A2,it,spingere
+fys_trycka,Verb,A2,ja,押す
+fys_dra,Verb,A2,sv,dra
+fys_dra,Verb,A2,en,pull
+fys_dra,Verb,A2,fr,tirer
+fys_dra,Verb,A2,de,ziehen
+fys_dra,Verb,A2,es,tirar
+fys_dra,Verb,A2,it,tirare
+fys_dra,Verb,A2,ja,引く
+
+# ── 7. Kroppsfunktionsverb ────────────────────────────────────────────────────
+# Prefix: krop_v_
+# Basala biologiska handlingar: äta, dricka, sova, andas
+# vila/se reposer/sich ausruhen/riposarsi: reflexivt på fr/de/it — hela infinitiven är lemmat
+# ja=咳をする (hosta): fast fras — den enda naturliga formen på japanska
+krop_v_äta,Verb,A1,sv,äta
+krop_v_äta,Verb,A1,en,eat
+krop_v_äta,Verb,A1,fr,manger
+krop_v_äta,Verb,A1,de,essen
+krop_v_äta,Verb,A1,es,comer
+krop_v_äta,Verb,A1,it,mangiare
+krop_v_äta,Verb,A1,ja,食べる
+krop_v_dricka,Verb,A1,sv,dricka
+krop_v_dricka,Verb,A1,en,drink
+krop_v_dricka,Verb,A1,fr,boire
+krop_v_dricka,Verb,A1,de,trinken
+krop_v_dricka,Verb,A1,es,beber
+krop_v_dricka,Verb,A1,it,bere
+krop_v_dricka,Verb,A1,ja,飲む
+krop_v_sova,Verb,A1,sv,sova
+krop_v_sova,Verb,A1,en,sleep
+krop_v_sova,Verb,A1,fr,dormir
+krop_v_sova,Verb,A1,de,schlafen
+krop_v_sova,Verb,A1,es,dormir
+krop_v_sova,Verb,A1,it,dormire
+krop_v_sova,Verb,A1,ja,寝る
+krop_v_vakna,Verb,A1,sv,vakna
+krop_v_vakna,Verb,A1,en,wake up
+krop_v_vakna,Verb,A1,fr,se réveiller
+krop_v_vakna,Verb,A1,de,aufwachen
+krop_v_vakna,Verb,A1,es,despertarse
+krop_v_vakna,Verb,A1,it,svegliarsi
+krop_v_vakna,Verb,A1,ja,起きる
+krop_v_andas,Verb,A2,sv,andas
+krop_v_andas,Verb,A2,en,breathe
+krop_v_andas,Verb,A2,fr,respirer
+krop_v_andas,Verb,A2,de,atmen
+krop_v_andas,Verb,A2,es,respirar
+krop_v_andas,Verb,A2,it,respirare
+krop_v_andas,Verb,A2,ja,呼吸する
+krop_v_vila,Verb,A2,sv,vila
+krop_v_vila,Verb,A2,en,rest
+krop_v_vila,Verb,A2,fr,se reposer
+krop_v_vila,Verb,A2,de,sich ausruhen
+krop_v_vila,Verb,A2,es,descansar
+krop_v_vila,Verb,A2,it,riposarsi
+krop_v_vila,Verb,A2,ja,休む
+krop_v_hosta,Verb,A2,sv,hosta
+krop_v_hosta,Verb,A2,en,cough
+krop_v_hosta,Verb,A2,fr,tousser
+krop_v_hosta,Verb,A2,de,husten
+krop_v_hosta,Verb,A2,es,toser
+krop_v_hosta,Verb,A2,it,tossire
+krop_v_hosta,Verb,A2,ja,咳をする
+
+# ── 8. Arbete och sysselsättning ──────────────────────────────────────────────
+# Prefix: arb_
+# Aktiviteter: arbeta, hjälpa, leka, laga mat, städa
+# fr=jouer och de=spielen täcker arb_leka och musikspelande (polysemi)
+# sv=laga mat är en fras — den naturliga formen på svenska
+arb_arbeta,Verb,A1,sv,arbeta
+arb_arbeta,Verb,A1,en,work
+arb_arbeta,Verb,A1,fr,travailler
+arb_arbeta,Verb,A1,de,arbeiten
+arb_arbeta,Verb,A1,es,trabajar
+arb_arbeta,Verb,A1,it,lavorare
+arb_arbeta,Verb,A1,ja,働く
+arb_hjälpa,Verb,A1,sv,hjälpa
+arb_hjälpa,Verb,A1,en,help
+arb_hjälpa,Verb,A1,fr,aider
+arb_hjälpa,Verb,A1,de,helfen
+arb_hjälpa,Verb,A1,es,ayudar
+arb_hjälpa,Verb,A1,it,aiutare
+arb_hjälpa,Verb,A1,ja,手伝う
+arb_leka,Verb,A1,sv,leka
+arb_leka,Verb,A1,en,play
+arb_leka,Verb,A1,fr,jouer
+arb_leka,Verb,A1,de,spielen
+arb_leka,Verb,A1,es,jugar
+arb_leka,Verb,A1,it,giocare
+arb_leka,Verb,A1,ja,遊ぶ
+arb_laga_mat,Verb,A2,sv,laga mat
+arb_laga_mat,Verb,A2,en,cook
+arb_laga_mat,Verb,A2,fr,cuisiner
+arb_laga_mat,Verb,A2,de,kochen
+arb_laga_mat,Verb,A2,es,cocinar
+arb_laga_mat,Verb,A2,it,cucinare
+arb_laga_mat,Verb,A2,ja,料理する
+arb_städa,Verb,A2,sv,städa
+arb_städa,Verb,A2,en,clean
+arb_städa,Verb,A2,fr,nettoyer
+arb_städa,Verb,A2,de,putzen
+arb_städa,Verb,A2,es,limpiar
+arb_städa,Verb,A2,it,pulire
+arb_städa,Verb,A2,ja,掃除する
+arb_betala,Verb,A2,sv,betala
+arb_betala,Verb,A2,en,pay
+arb_betala,Verb,A2,fr,payer
+arb_betala,Verb,A2,de,bezahlen
+arb_betala,Verb,A2,es,pagar
+arb_betala,Verb,A2,it,pagare
+arb_betala,Verb,A2,ja,払う
+
+# ── 9. Existens- och tillståndsverb ──────────────────────────────────────────
+# Prefix: ext_
+# Existens och livscykel: finnas, leva, dö, verka
+# ja=ある (icke-animat finnas); いる (animat finnas) — lemma: ある (generellt koncept)
+# ext_verka: fr=sembler / es=parecer / it=sembrare — alla betyder "verka/tyckas"
+ext_finnas,Verb,A1,sv,finnas
+ext_finnas,Verb,A1,en,exist
+ext_finnas,Verb,A1,fr,exister
+ext_finnas,Verb,A1,de,existieren
+ext_finnas,Verb,A1,es,existir
+ext_finnas,Verb,A1,it,esistere
+ext_finnas,Verb,A1,ja,ある
+ext_leva,Verb,A1,sv,leva
+ext_leva,Verb,A1,en,live
+ext_leva,Verb,A1,fr,vivre
+ext_leva,Verb,A1,de,leben
+ext_leva,Verb,A1,es,vivir
+ext_leva,Verb,A1,it,vivere
+ext_leva,Verb,A1,ja,生きる
+ext_dö,Verb,A2,sv,dö
+ext_dö,Verb,A2,en,die
+ext_dö,Verb,A2,fr,mourir
+ext_dö,Verb,A2,de,sterben
+ext_dö,Verb,A2,es,morir
+ext_dö,Verb,A2,it,morire
+ext_dö,Verb,A2,ja,死ぬ
+ext_verka,Verb,B1,sv,verka
+ext_verka,Verb,B1,en,seem
+ext_verka,Verb,B1,fr,sembler
+ext_verka,Verb,B1,de,scheinen
+ext_verka,Verb,B1,es,parecer
+ext_verka,Verb,B1,it,sembrare
+ext_verka,Verb,B1,ja,ように見える
+
+# ── 10. Aspektuella verb ──────────────────────────────────────────────────────
+# Prefix: asp_
+# Anger fas i en händelse: börja, sluta, fortsätta
+# sv=sluta = stop (activity); rör_stanna = stop (movement) — ej samma
+# de=anfangen (börja), aufhören (sluta)
+# es=dejar (sluta göra ngt) — dejar de + infinitiv är konstruktionen; lemma: dejar
+# ja=始める (börja ngt, transitiv), やめる (sluta/sluta med ngt), 続ける (fortsätta)
+asp_börja,Verb,A1,sv,börja
+asp_börja,Verb,A1,en,start
+asp_börja,Verb,A1,fr,commencer
+asp_börja,Verb,A1,de,anfangen
+asp_börja,Verb,A1,es,empezar
+asp_börja,Verb,A1,it,iniziare
+asp_börja,Verb,A1,ja,始める
+asp_sluta,Verb,A1,sv,sluta
+asp_sluta,Verb,A1,en,stop
+asp_sluta,Verb,A1,fr,arrêter
+asp_sluta,Verb,A1,de,aufhören
+asp_sluta,Verb,A1,es,dejar
+asp_sluta,Verb,A1,it,smettere
+asp_sluta,Verb,A1,ja,やめる
+asp_fortsätta,Verb,A2,sv,fortsätta
+asp_fortsätta,Verb,A2,en,continue
+asp_fortsätta,Verb,A2,fr,continuer
+asp_fortsätta,Verb,A2,de,weitermachen
+asp_fortsätta,Verb,A2,es,continuar
+asp_fortsätta,Verb,A2,it,continuare
+asp_fortsätta,Verb,A2,ja,続ける
+
+# ── 11. Sociala interaktionsverb ──────────────────────────────────────────────
+# Prefix: soc_
+# Sociala handlingar: vänta, träffa, tacka, hälsa, lova
+# es=esperar täcker soc_vänta och käns_hoppas (polysemi — hållbar förenkling)
+# soc_tacka: ja=感謝する (formellt/genuint tackande)
+# soc_hälsa: ja=挨拶する (hälsa/ta kontakt)
+# soc_lova: ja=約束する täcker "lova" och "bestämma tid/träff" (polysemi)
+soc_vänta,Verb,A1,sv,vänta
+soc_vänta,Verb,A1,en,wait
+soc_vänta,Verb,A1,fr,attendre
+soc_vänta,Verb,A1,de,warten
+soc_vänta,Verb,A1,es,esperar
+soc_vänta,Verb,A1,it,aspettare
+soc_vänta,Verb,A1,ja,待つ
+soc_träffa,Verb,A1,sv,träffa
+soc_träffa,Verb,A1,en,meet
+soc_träffa,Verb,A1,fr,rencontrer
+soc_träffa,Verb,A1,de,treffen
+soc_träffa,Verb,A1,es,encontrar
+soc_träffa,Verb,A1,it,incontrare
+soc_träffa,Verb,A1,ja,会う
+soc_tacka,Verb,A1,sv,tacka
+soc_tacka,Verb,A1,en,thank
+soc_tacka,Verb,A1,fr,remercier
+soc_tacka,Verb,A1,de,danken
+soc_tacka,Verb,A1,es,agradecer
+soc_tacka,Verb,A1,it,ringraziare
+soc_tacka,Verb,A1,ja,感謝する
+soc_hälsa,Verb,A1,sv,hälsa
+soc_hälsa,Verb,A1,en,greet
+soc_hälsa,Verb,A1,fr,saluer
+soc_hälsa,Verb,A1,de,grüßen
+soc_hälsa,Verb,A1,es,saludar
+soc_hälsa,Verb,A1,it,salutare
+soc_hälsa,Verb,A1,ja,挨拶する
+soc_lova,Verb,A2,sv,lova
+soc_lova,Verb,A2,en,promise
+soc_lova,Verb,A2,fr,promettre
+soc_lova,Verb,A2,de,versprechen
+soc_lova,Verb,A2,es,prometer
+soc_lova,Verb,A2,it,promettere
+soc_lova,Verb,A2,ja,約束する
+
+# ── 12. Generella handlingsverb ───────────────────────────────────────────────
+# Prefix: gen_
+# Vanliga verb som inte faller i annan kategori
+# gen_tycka: sv=tycka (personlig åsikt/känsla) — ej kog_tänka (kognitiv process)
+#   de=finden / fr=trouver / it=trovare: "hitta/finna att" = tycka om
+#   es=opinar (ha åsikt); pensar täcker kog_tänka
+# gen_mena: fr=vouloir dire / es=querer decir / it=voler dire — fraser som lemman
+# gen_söka: es=buscar täcker söka-processen; fys_hitta = resultatet (encontrar)
+# gen_spela: fr=jouer / de=spielen täcker gen_spela och arb_leka (polysemi)
+#   ja=する (sportar/spel); 弾く (instrument) — lemma: する (generellt)
+gen_försöka,Verb,A1,sv,försöka
+gen_försöka,Verb,A1,en,try
+gen_försöka,Verb,A1,fr,essayer
+gen_försöka,Verb,A1,de,versuchen
+gen_försöka,Verb,A1,es,intentar
+gen_försöka,Verb,A1,it,provare
+gen_försöka,Verb,A1,ja,試みる
+gen_spela,Verb,A1,sv,spela
+gen_spela,Verb,A1,en,play
+gen_spela,Verb,A1,fr,jouer
+gen_spela,Verb,A1,de,spielen
+gen_spela,Verb,A1,es,jugar
+gen_spela,Verb,A1,it,giocare
+gen_spela,Verb,A1,ja,する
+gen_tycka,Verb,A1,sv,tycka
+gen_tycka,Verb,A1,en,think
+gen_tycka,Verb,A1,fr,trouver
+gen_tycka,Verb,A1,de,finden
+gen_tycka,Verb,A1,es,opinar
+gen_tycka,Verb,A1,it,trovare
+gen_tycka,Verb,A1,ja,思う
+gen_mena,Verb,A2,sv,mena
+gen_mena,Verb,A2,en,mean
+gen_mena,Verb,A2,fr,vouloir dire
+gen_mena,Verb,A2,de,meinen
+gen_mena,Verb,A2,es,querer decir
+gen_mena,Verb,A2,it,voler dire
+gen_mena,Verb,A2,ja,意味する
+gen_ändra,Verb,A2,sv,ändra
+gen_ändra,Verb,A2,en,change
+gen_ändra,Verb,A2,fr,changer
+gen_ändra,Verb,A2,de,ändern
+gen_ändra,Verb,A2,es,cambiar
+gen_ändra,Verb,A2,it,cambiare
+gen_ändra,Verb,A2,ja,変える
+gen_söka,Verb,A2,sv,söka
+gen_söka,Verb,A2,en,search
+gen_söka,Verb,A2,fr,chercher
+gen_söka,Verb,A2,de,suchen
+gen_söka,Verb,A2,es,buscar
+gen_söka,Verb,A2,it,cercare
+gen_söka,Verb,A2,ja,探す
+gen_räkna,Verb,A2,sv,räkna
+gen_räkna,Verb,A2,en,count
+gen_räkna,Verb,A2,fr,compter
+gen_räkna,Verb,A2,de,zählen
+gen_räkna,Verb,A2,es,contar
+gen_räkna,Verb,A2,it,contare
+gen_räkna,Verb,A2,ja,数える
+
+# ── 13. Ekonomiverb ───────────────────────────────────────────────────────────
+# Prefix: eko_v_
+# Transaktioner och ägande: kosta, tjäna, låna, äga
+# fr=emprunter (låna från ngn); prêter (låna ut) — lemma: emprunter (låntagarperspektiv)
+# de=leihen täcker både låna och låna ut (polysemi — hållbar förenkling)
+# es=pedir prestado = fras; lemma är frasen
+# ja=持つ täcker eko_v_äga och fys_hålla / fys_bära (polysemi — dokumenterat)
+eko_v_kosta,Verb,A1,sv,kosta
+eko_v_kosta,Verb,A1,en,cost
+eko_v_kosta,Verb,A1,fr,coûter
+eko_v_kosta,Verb,A1,de,kosten
+eko_v_kosta,Verb,A1,es,costar
+eko_v_kosta,Verb,A1,it,costare
+eko_v_kosta,Verb,A1,ja,かかる
+eko_v_tjäna,Verb,A2,sv,tjäna
+eko_v_tjäna,Verb,A2,en,earn
+eko_v_tjäna,Verb,A2,fr,gagner
+eko_v_tjäna,Verb,A2,de,verdienen
+eko_v_tjäna,Verb,A2,es,ganar
+eko_v_tjäna,Verb,A2,it,guadagnare
+eko_v_tjäna,Verb,A2,ja,稼ぐ
+eko_v_låna,Verb,A2,sv,låna
+eko_v_låna,Verb,A2,en,borrow
+eko_v_låna,Verb,A2,fr,emprunter
+eko_v_låna,Verb,A2,de,leihen
+eko_v_låna,Verb,A2,es,pedir prestado
+eko_v_låna,Verb,A2,it,prendere in prestito
+eko_v_låna,Verb,A2,ja,借りる
+eko_v_äga,Verb,A2,sv,äga
+eko_v_äga,Verb,A2,en,own
+eko_v_äga,Verb,A2,fr,posséder
+eko_v_äga,Verb,A2,de,besitzen
+eko_v_äga,Verb,A2,es,poseer
+eko_v_äga,Verb,A2,it,possedere
+eko_v_äga,Verb,A2,ja,持つ
+
+# ── 14. Prestation och resultat ───────────────────────────────────────────────
+# Prefix: gen_ (fortsätter generella handlingsverb)
+# fr=gagner täcker gen_vinna och eko_v_tjäna (polysemi — hållbar förenkling)
+# gen_lyckas: de=schaffen (colloquialt "klara av"); es=tener éxito är fraser — lemma: lograrse
+#   es: "lo logré" = jag lyckades — lemma: lograr
+# gen_sakna: fr/it har inverterad syntax (manquer/mancare) — renderarens ansvar
+#   ja=恋しい är i-adj som används predikativt; lemma per konvention
+# gen_dela: täcker dela med sig (share) och dela upp (split) — polysemi, hållbar
+gen_vinna,Verb,A2,sv,vinna
+gen_vinna,Verb,A2,en,win
+# fr=gagner täcker gen_vinna och eko_v_tjäna (polysemi)
+gen_vinna,Verb,A2,fr,gagner
+gen_vinna,Verb,A2,de,gewinnen
+gen_vinna,Verb,A2,es,ganar
+gen_vinna,Verb,A2,it,vincere
+gen_vinna,Verb,A2,ja,勝つ
+gen_förlora,Verb,A2,sv,förlora
+gen_förlora,Verb,A2,en,lose
+gen_förlora,Verb,A2,fr,perdre
+gen_förlora,Verb,A2,de,verlieren
+gen_förlora,Verb,A2,es,perder
+gen_förlora,Verb,A2,it,perdere
+gen_förlora,Verb,A2,ja,負ける
+gen_lyckas,Verb,A2,sv,lyckas
+gen_lyckas,Verb,A2,en,succeed
+gen_lyckas,Verb,A2,fr,réussir
+gen_lyckas,Verb,A2,de,schaffen
+gen_lyckas,Verb,A2,es,lograr
+gen_lyckas,Verb,A2,it,riuscire
+gen_lyckas,Verb,A2,ja,成功する
+gen_dela,Verb,A2,sv,dela
+gen_dela,Verb,A2,en,share
+gen_dela,Verb,A2,fr,partager
+gen_dela,Verb,A2,de,teilen
+gen_dela,Verb,A2,es,compartir
+gen_dela,Verb,A2,it,condividere
+gen_dela,Verb,A2,ja,分ける
+gen_skapa,Verb,A2,sv,skapa
+gen_skapa,Verb,A2,en,create
+gen_skapa,Verb,A2,fr,créer
+gen_skapa,Verb,A2,de,erschaffen
+gen_skapa,Verb,A2,es,crear
+gen_skapa,Verb,A2,it,creare
+# ja=作る täcker gen_skapa och delar av fys_bygga (polysemi — hållbar förenkling)
+gen_skapa,Verb,A2,ja,作る
+gen_förklara,Verb,A2,sv,förklara
+gen_förklara,Verb,A2,en,explain
+gen_förklara,Verb,A2,fr,expliquer
+gen_förklara,Verb,A2,de,erklären
+gen_förklara,Verb,A2,es,explicar
+gen_förklara,Verb,A2,it,spiegare
+gen_förklara,Verb,A2,ja,説明する
+gen_sakna,Verb,A2,sv,sakna
+gen_sakna,Verb,A2,en,miss
+# fr=manquer / it=mancare: inverterad syntax ("tu me manques" = jag saknar dig)
+gen_sakna,Verb,A2,fr,manquer
+gen_sakna,Verb,A2,de,vermissen
+gen_sakna,Verb,A2,es,echar de menos
+gen_sakna,Verb,A2,it,mancare
+gen_sakna,Verb,A2,ja,恋しい
+soc_besöka,Verb,A2,sv,besöka
+soc_besöka,Verb,A2,en,visit
+# fr=visiter täcker besöka plats; rendre visite = besöka person — lemma: visiter (generellare)
+soc_besöka,Verb,A2,fr,visiter
+soc_besöka,Verb,A2,de,besuchen
+soc_besöka,Verb,A2,es,visitar
+soc_besöka,Verb,A2,it,visitare
+soc_besöka,Verb,A2,ja,訪ねる
+
+# ── 15. Fysisk interaktion ────────────────────────────────────────────────────
+# Prefix: fys_ (fortsättning)
+# fys_röra: sv=röra täcker touch och move (polysemi) — en=touch (primär kontext)
+# fys_bryta: de=zerbrechen (bryta sönder ett föremål); brechen = bryta mer generellt
+# ja=壊す (transitiv: bryta/förstöra ngt); 壊れる (intransitiv: gå sönder) — lemma: 壊す
+fys_röra,Verb,A2,sv,röra
+fys_röra,Verb,A2,en,touch
+fys_röra,Verb,A2,fr,toucher
+fys_röra,Verb,A2,de,berühren
+fys_röra,Verb,A2,es,tocar
+fys_röra,Verb,A2,it,toccare
+fys_röra,Verb,A2,ja,触る
+fys_bryta,Verb,A2,sv,bryta
+fys_bryta,Verb,A2,en,break
+fys_bryta,Verb,A2,fr,casser
+fys_bryta,Verb,A2,de,zerbrechen
+fys_bryta,Verb,A2,es,romper
+fys_bryta,Verb,A2,it,rompere
+fys_bryta,Verb,A2,ja,壊す
+fys_reparera,Verb,A2,sv,reparera
+fys_reparera,Verb,A2,en,fix
+fys_reparera,Verb,A2,fr,réparer
+fys_reparera,Verb,A2,de,reparieren
+fys_reparera,Verb,A2,es,reparar
+fys_reparera,Verb,A2,it,riparare
+fys_reparera,Verb,A2,ja,直す
+
+# ── 16. Kognitiva processer (forts.) ─────────────────────────────────────────
+# Prefix: kog_ (fortsättning)
+# kog_föreställa: sv=föreställa sig (reflexivt); fr=imaginer; de=sich vorstellen (reflexivt)
+kog_föreställa,Verb,B1,sv,föreställa sig
+kog_föreställa,Verb,B1,en,imagine
+kog_föreställa,Verb,B1,fr,imaginer
+kog_föreställa,Verb,B1,de,sich vorstellen
+kog_föreställa,Verb,B1,es,imaginar
+kog_föreställa,Verb,B1,it,immaginare
+kog_föreställa,Verb,B1,ja,想像する
+
+# ── 17. Kommunikation (forts.) ────────────────────────────────────────────────
+# Prefix: kom_ (fortsättning)
+# kom_beskriva: fr=décrire / de=beschreiben / es=describir / it=descrivere
+# kom_diskutera: de=diskutieren; es=discutir täcker diskutera och argumentera (polysemi)
+kom_beskriva,Verb,B1,sv,beskriva
+kom_beskriva,Verb,B1,en,describe
+kom_beskriva,Verb,B1,fr,décrire
+kom_beskriva,Verb,B1,de,beschreiben
+kom_beskriva,Verb,B1,es,describir
+kom_beskriva,Verb,B1,it,descrivere
+kom_beskriva,Verb,B1,ja,描写する
+kom_diskutera,Verb,B1,sv,diskutera
+kom_diskutera,Verb,B1,en,discuss
+kom_diskutera,Verb,B1,fr,discuter
+kom_diskutera,Verb,B1,de,diskutieren
+# es=discutir täcker diskutera och gräla (polysemi)
+kom_diskutera,Verb,B1,es,discutir
+kom_diskutera,Verb,B1,it,discutere
+kom_diskutera,Verb,B1,ja,話し合う
+
+# ── 18. Positionsverb ─────────────────────────────────────────────────────────
+# Prefix: pos_
+# Grundläggande kroppspositioner: sitta, stå, ligga
+# de=sitzen/stehen/liegen är rena positionsverb utan rörelsekomponent
+# ja=座る/立つ/横になる — 横になる är fras (lägga sig ner); lemma är frasen
+pos_sitta,Verb,A1,sv,sitta
+pos_sitta,Verb,A1,en,sit
+pos_sitta,Verb,A1,fr,s'asseoir
+pos_sitta,Verb,A1,de,sitzen
+pos_sitta,Verb,A1,es,sentarse
+pos_sitta,Verb,A1,it,sedersi
+pos_sitta,Verb,A1,ja,座る
+pos_stå,Verb,A1,sv,stå
+pos_stå,Verb,A1,en,stand
+pos_stå,Verb,A1,fr,se tenir debout
+pos_stå,Verb,A1,de,stehen
+pos_stå,Verb,A1,es,estar de pie
+pos_stå,Verb,A1,it,stare in piedi
+pos_stå,Verb,A1,ja,立つ
+pos_ligga,Verb,A1,sv,ligga
+pos_ligga,Verb,A1,en,lie down
+pos_ligga,Verb,A1,fr,s'allonger
+pos_ligga,Verb,A1,de,liegen
+pos_ligga,Verb,A1,es,tumbarse
+pos_ligga,Verb,A1,it,sdraiarsi
+pos_ligga,Verb,A1,ja,横になる
+
+# ── 19. Kommunikationsverb — säga ─────────────────────────────────────────────
+# kom_säga: ett av de mest frekventa verben i alla naturliga språk
+# fr=dire / de=sagen / es=decir / it=dire
+# ja=言う (iu/ゆ, u-verb) — det primära "säga"-verbet på japanska
+kom_säga,Verb,A1,sv,säga
+kom_säga,Verb,A1,en,say
+kom_säga,Verb,A1,fr,dire
+kom_säga,Verb,A1,de,sagen
+kom_säga,Verb,A1,es,decir
+kom_säga,Verb,A1,it,dire
+kom_säga,Verb,A1,ja,言う
+
+# ── 20. Händelseverb ──────────────────────────────────────────────────────────
+# Prefix: ext_ (fortsättning)
+# ext_hända: impersonellt i sv/fr/de/es/it — renderaren hanterar subjekt
+# fr=arriver (hända/ske) / se passer (ske/pågå) — arriver är vanligare för "hända"
+# de=passieren (hända); geschehen (mer formellt) — lemma: passieren
+# ja=起こる (transitiv: ngt händer) / 起きる (händer/sker, otr.) — lemma: 起こる
+ext_hända,Verb,A2,sv,hända
+ext_hända,Verb,A2,en,happen
+ext_hända,Verb,A2,fr,arriver
+ext_hända,Verb,A2,de,passieren
+ext_hända,Verb,A2,es,pasar
+ext_hända,Verb,A2,it,succedere
+ext_hända,Verb,A2,ja,起こる
+
+# ── 21. Fler A2-verb ──────────────────────────────────────────────────────────
+# bjuda: fr=inviter / de=einladen / es=invitar / it=invitare / ja=招待する
+# förlåta: fr=pardonner / de=vergeben / es=perdonar / it=perdonare / ja=許す
+# njuta: fr=profiter / de=genießen / es=disfrutar / it=godere / ja=楽しむ
+# lägga: täcker "lägga (på bord/säng)" — sv=lägga vs ställa vs sätta (placering+orientering)
+#   en=put (täcker lägga/ställa/sätta) — polysemi, hållbar förenkling
+# öva: fr=s'exercer / de=üben / es=practicar / it=praticare / ja=練習する
+# nå: fr=atteindre / de=erreichen / es=alcanzar / it=raggiungere / ja=届く
+soc_bjuda,Verb,A2,sv,bjuda
+soc_bjuda,Verb,A2,en,invite
+soc_bjuda,Verb,A2,fr,inviter
+soc_bjuda,Verb,A2,de,einladen
+soc_bjuda,Verb,A2,es,invitar
+soc_bjuda,Verb,A2,it,invitare
+soc_bjuda,Verb,A2,ja,招待する
+soc_förlåta,Verb,A2,sv,förlåta
+soc_förlåta,Verb,A2,en,forgive
+soc_förlåta,Verb,A2,fr,pardonner
+soc_förlåta,Verb,A2,de,vergeben
+soc_förlåta,Verb,A2,es,perdonar
+soc_förlåta,Verb,A2,it,perdonare
+soc_förlåta,Verb,A2,ja,許す
+käns_njuta,Verb,A2,sv,njuta
+käns_njuta,Verb,A2,en,enjoy
+käns_njuta,Verb,A2,fr,profiter
+käns_njuta,Verb,A2,de,genießen
+käns_njuta,Verb,A2,es,disfrutar
+käns_njuta,Verb,A2,it,godere
+käns_njuta,Verb,A2,ja,楽しむ
+fys_lägga,Verb,A2,sv,lägga
+fys_lägga,Verb,A2,en,put
+fys_lägga,Verb,A2,fr,poser
+fys_lägga,Verb,A2,de,legen
+fys_lägga,Verb,A2,es,poner
+fys_lägga,Verb,A2,it,mettere
+fys_lägga,Verb,A2,ja,置く
+fys_fylla,Verb,A2,sv,fylla
+fys_fylla,Verb,A2,en,fill
+fys_fylla,Verb,A2,fr,remplir
+fys_fylla,Verb,A2,de,füllen
+fys_fylla,Verb,A2,es,llenar
+fys_fylla,Verb,A2,it,riempire
+fys_fylla,Verb,A2,ja,満たす
+arb_öva,Verb,A2,sv,öva
+arb_öva,Verb,A2,en,practice
+arb_öva,Verb,A2,fr,s'exercer
+arb_öva,Verb,A2,de,üben
+arb_öva,Verb,A2,es,practicar
+arb_öva,Verb,A2,it,praticare
+arb_öva,Verb,A2,ja,練習する
+rör_nå,Verb,A2,sv,nå
+rör_nå,Verb,A2,en,reach
+rör_nå,Verb,A2,fr,atteindre
+rör_nå,Verb,A2,de,erreichen
+rör_nå,Verb,A2,es,alcanzar
+rör_nå,Verb,A2,it,raggiungere
+rör_nå,Verb,A2,ja,届く
+gen_lösa,Verb,A2,sv,lösa
+gen_lösa,Verb,A2,en,solve
+gen_lösa,Verb,A2,fr,résoudre
+gen_lösa,Verb,A2,de,lösen
+gen_lösa,Verb,A2,es,resolver
+gen_lösa,Verb,A2,it,risolvere
+gen_lösa,Verb,A2,ja,解決する
+gen_misslyckas,Verb,A2,sv,misslyckas
+gen_misslyckas,Verb,A2,en,fail
+gen_misslyckas,Verb,A2,fr,échouer
+gen_misslyckas,Verb,A2,de,scheitern
+gen_misslyckas,Verb,A2,es,fracasar
+gen_misslyckas,Verb,A2,it,fallire
+gen_misslyckas,Verb,A2,ja,失敗する
+gen_förbättra,Verb,A2,sv,förbättra
+gen_förbättra,Verb,A2,en,improve
+gen_förbättra,Verb,A2,fr,améliorer
+gen_förbättra,Verb,A2,de,verbessern
+gen_förbättra,Verb,A2,es,mejorar
+gen_förbättra,Verb,A2,it,migliorare
+gen_förbättra,Verb,A2,ja,改善する
+gen_undvika,Verb,A2,sv,undvika
+gen_undvika,Verb,A2,en,avoid
+gen_undvika,Verb,A2,fr,éviter
+gen_undvika,Verb,A2,de,vermeiden
+gen_undvika,Verb,A2,es,evitar
+gen_undvika,Verb,A2,it,evitare
+gen_undvika,Verb,A2,ja,避ける
+gen_växa,Verb,A2,sv,växa
+gen_växa,Verb,A2,en,grow
+gen_växa,Verb,A2,fr,grandir
+gen_växa,Verb,A2,de,wachsen
+gen_växa,Verb,A2,es,crecer
+gen_växa,Verb,A2,it,crescere
+gen_växa,Verb,A2,ja,育つ
+gen_förbereda,Verb,A2,sv,förbereda
+gen_förbereda,Verb,A2,en,prepare
+gen_förbereda,Verb,A2,fr,préparer
+gen_förbereda,Verb,A2,de,vorbereiten
+gen_förbereda,Verb,A2,es,preparar
+gen_förbereda,Verb,A2,it,preparare
+gen_förbereda,Verb,A2,ja,準備する
+gen_acceptera,Verb,A2,sv,acceptera
+gen_acceptera,Verb,A2,en,accept
+gen_acceptera,Verb,A2,fr,accepter
+gen_acceptera,Verb,A2,de,akzeptieren
+gen_acceptera,Verb,A2,es,aceptar
+gen_acceptera,Verb,A2,it,accettare
+gen_acceptera,Verb,A2,ja,受け入れる
+gen_erbjuda,Verb,A2,sv,erbjuda
+gen_erbjuda,Verb,A2,en,offer
+gen_erbjuda,Verb,A2,fr,offrir
+gen_erbjuda,Verb,A2,de,anbieten
+gen_erbjuda,Verb,A2,es,ofrecer
+gen_erbjuda,Verb,A2,it,offrire
+gen_erbjuda,Verb,A2,ja,提供する
+# gen_lita: sv=lita på / fr=faire confiance / es=confiar en / it=fidarsi di — fraser som lemman
+gen_lita,Verb,B1,sv,lita på
+gen_lita,Verb,B1,en,trust
+gen_lita,Verb,B1,fr,faire confiance
+gen_lita,Verb,B1,de,vertrauen
+gen_lita,Verb,B1,es,confiar
+gen_lita,Verb,B1,it,fidarsi
+gen_lita,Verb,B1,ja,信頼する
+fys_samla,Verb,A2,sv,samla
+fys_samla,Verb,A2,en,collect
+fys_samla,Verb,A2,fr,rassembler
+fys_samla,Verb,A2,de,sammeln
+fys_samla,Verb,A2,es,recoger
+fys_samla,Verb,A2,it,raccogliere
+fys_samla,Verb,A2,ja,集める
+# kog_undra: fr/de/es/it är reflexiva fraser — hela infinitiven är lemmat per KONVENTIONER.md
+kog_undra,Verb,A2,sv,undra
+kog_undra,Verb,A2,en,wonder
+kog_undra,Verb,A2,fr,se demander
+kog_undra,Verb,A2,de,sich fragen
+kog_undra,Verb,A2,es,preguntarse
+kog_undra,Verb,A2,it,chiedersi
+kog_undra,Verb,A2,ja,不思議に思う
+gen_önska,Verb,A2,sv,önska
+gen_önska,Verb,A2,en,wish
+gen_önska,Verb,A2,fr,souhaiter
+gen_önska,Verb,A2,de,wünschen
+gen_önska,Verb,A2,es,desear
+gen_önska,Verb,A2,it,desiderare
+gen_önska,Verb,A2,ja,望む
+soc_dansa,Verb,A1,sv,dansa
+soc_dansa,Verb,A1,en,dance
+soc_dansa,Verb,A1,fr,danser
+soc_dansa,Verb,A1,de,tanzen
+soc_dansa,Verb,A1,es,bailar
+soc_dansa,Verb,A1,it,ballare
+soc_dansa,Verb,A1,ja,踊る
+fys_slå,Verb,A2,sv,slå
+fys_slå,Verb,A2,en,hit
+fys_slå,Verb,A2,fr,frapper
+fys_slå,Verb,A2,de,schlagen
+fys_slå,Verb,A2,es,golpear
+fys_slå,Verb,A2,it,colpire
+fys_slå,Verb,A2,ja,打つ
+fys_blanda,Verb,A2,sv,blanda
+fys_blanda,Verb,A2,en,mix
+fys_blanda,Verb,A2,fr,mélanger
+fys_blanda,Verb,A2,de,mischen
+fys_blanda,Verb,A2,es,mezclar
+fys_blanda,Verb,A2,it,mescolare
+fys_blanda,Verb,A2,ja,混ぜる
+gen_rädda,Verb,A2,sv,rädda
+gen_rädda,Verb,A2,en,save
+gen_rädda,Verb,A2,fr,sauver
+gen_rädda,Verb,A2,de,retten
+gen_rädda,Verb,A2,es,salvar
+gen_rädda,Verb,A2,it,salvare
+gen_rädda,Verb,A2,ja,救う
+gen_döda,Verb,A2,sv,döda
+gen_döda,Verb,A2,en,kill
+gen_döda,Verb,A2,fr,tuer
+gen_döda,Verb,A2,de,töten
+gen_döda,Verb,A2,es,matar
+gen_döda,Verb,A2,it,uccidere
+gen_döda,Verb,A2,ja,殺す
+gen_skydda,Verb,A2,sv,skydda
+gen_skydda,Verb,A2,en,protect
+gen_skydda,Verb,A2,fr,protéger
+gen_skydda,Verb,A2,de,schützen
+gen_skydda,Verb,A2,es,proteger
+gen_skydda,Verb,A2,it,proteggere
+gen_skydda,Verb,A2,ja,守る
+gen_måla,Verb,A2,sv,måla
+gen_måla,Verb,A2,en,paint
+gen_måla,Verb,A2,fr,peindre
+gen_måla,Verb,A2,de,malen
+gen_måla,Verb,A2,es,pintar
+gen_måla,Verb,A2,it,dipingere
+gen_måla,Verb,A2,ja,描く
+# rör_byta: sv=byta (exchange/swap) — ej gen_ändra (make different); de=tauschen
+rör_byta,Verb,A2,sv,byta
+rör_byta,Verb,A2,en,swap
+rör_byta,Verb,A2,fr,échanger
+rör_byta,Verb,A2,de,tauschen
+rör_byta,Verb,A2,es,intercambiar
+rör_byta,Verb,A2,it,scambiare
+rör_byta,Verb,A2,ja,交換する
+# soc_gifta_sig: reflexivt i sv/fr/es/it; de=heiraten (icke-reflexivt) — dokumenterat
+soc_gifta_sig,Verb,A2,sv,gifta sig
+soc_gifta_sig,Verb,A2,en,get married
+soc_gifta_sig,Verb,A2,fr,se marier
+soc_gifta_sig,Verb,A2,de,heiraten
+soc_gifta_sig,Verb,A2,es,casarse
+soc_gifta_sig,Verb,A2,it,sposarsi
+soc_gifta_sig,Verb,A2,ja,結婚する
+# kom_hålla_med: sv=hålla med (agree with); fr=être d'accord / es=estar de acuerdo — fraser
+kom_hålla_med,Verb,A2,sv,hålla med
+kom_hålla_med,Verb,A2,en,agree
+kom_hålla_med,Verb,A2,fr,être d'accord
+kom_hålla_med,Verb,A2,de,zustimmen
+kom_hålla_med,Verb,A2,es,estar de acuerdo
+kom_hålla_med,Verb,A2,it,essere d'accordo
+kom_hålla_med,Verb,A2,ja,同意する
+gen_jämföra,Verb,B1,sv,jämföra
+gen_jämföra,Verb,B1,en,compare
+gen_jämföra,Verb,B1,fr,comparer
+gen_jämföra,Verb,B1,de,vergleichen
+gen_jämföra,Verb,B1,es,comparar
+gen_jämföra,Verb,B1,it,confrontare
+gen_jämföra,Verb,B1,ja,比べる
+# gen_passa: fr=convenir (passa/lämpa sig); es=quedar bien — fras som lemma
+gen_passa,Verb,A2,sv,passa
+gen_passa,Verb,A2,en,suit
+gen_passa,Verb,A2,fr,convenir
+gen_passa,Verb,A2,de,passen
+gen_passa,Verb,A2,es,quedar bien
+gen_passa,Verb,A2,it,andare bene
+gen_passa,Verb,A2,ja,似合う
+käns_fira,Verb,A2,sv,fira
+käns_fira,Verb,A2,en,celebrate
+käns_fira,Verb,A2,fr,fêter
+käns_fira,Verb,A2,de,feiern
+käns_fira,Verb,A2,es,celebrar
+käns_fira,Verb,A2,it,festeggiare
+käns_fira,Verb,A2,ja,お祝いする
+# soc_le: ja=ほほえむ (le mjukt); käns_skratta=笑う täcker skratta och brett le
+soc_le,Verb,A1,sv,le
+soc_le,Verb,A1,en,smile
+soc_le,Verb,A1,fr,sourire
+soc_le,Verb,A1,de,lächeln
+soc_le,Verb,A1,es,sonreír
+soc_le,Verb,A1,it,sorridere
+soc_le,Verb,A1,ja,ほほえむ
+# arb_spara: de=sparen täcker spara pengar och hushålla med resurser (polysemi)
+arb_spara,Verb,A2,sv,spara
+arb_spara,Verb,A2,en,save
+arb_spara,Verb,A2,fr,économiser
+arb_spara,Verb,A2,de,sparen
+arb_spara,Verb,A2,es,ahorrar
+arb_spara,Verb,A2,it,risparmiare
+arb_spara,Verb,A2,ja,貯める
+arb_studera,Verb,A2,sv,studera
+arb_studera,Verb,A2,en,study
+arb_studera,Verb,A2,fr,étudier
+arb_studera,Verb,A2,de,studieren
+arb_studera,Verb,A2,es,estudiar
+arb_studera,Verb,A2,it,studiare
+arb_studera,Verb,A2,ja,勉強する
+fys_lyfta,Verb,A2,sv,lyfta
+fys_lyfta,Verb,A2,en,lift
+fys_lyfta,Verb,A2,fr,soulever
+fys_lyfta,Verb,A2,de,heben
+fys_lyfta,Verb,A2,es,levantar
+fys_lyfta,Verb,A2,it,sollevare
+fys_lyfta,Verb,A2,ja,持ち上げる
+# rör_skynda: reflexivt i sv/fr/de/es/it — hela infinitiven är lemmat
+rör_skynda,Verb,A2,sv,skynda sig
+rör_skynda,Verb,A2,en,hurry
+rör_skynda,Verb,A2,fr,se dépêcher
+rör_skynda,Verb,A2,de,sich beeilen
+rör_skynda,Verb,A2,es,apurarse
+rör_skynda,Verb,A2,it,sbrigarsi
+rör_skynda,Verb,A2,ja,急ぐ
+# kom_meddela: fr=informer / de=benachrichtigen = meddela/underrätta
+kom_meddela,Verb,A2,sv,meddela
+kom_meddela,Verb,A2,en,notify
+kom_meddela,Verb,A2,fr,informer
+kom_meddela,Verb,A2,de,benachrichtigen
+kom_meddela,Verb,A2,es,avisar
+kom_meddela,Verb,A2,it,avvisare
+kom_meddela,Verb,A2,ja,知らせる
+# kog_koncentrera: reflexivt i sv/fr/de/es/it — hela infinitiven är lemmat
+kog_koncentrera,Verb,B1,sv,koncentrera sig
+kog_koncentrera,Verb,B1,en,concentrate
+kog_koncentrera,Verb,B1,fr,se concentrer
+kog_koncentrera,Verb,B1,de,sich konzentrieren
+kog_koncentrera,Verb,B1,es,concentrarse
+kog_koncentrera,Verb,B1,it,concentrarsi
+kog_koncentrera,Verb,B1,ja,集中する
+
+# ───────────────────────────────────────────────────────────────────────────────
+# SUBSTANTIV
+# ───────────────────────────────────────────────────────────────────────────────
+
+# ── 9. Familj och relationer ──────────────────────────────────────────────────
+# Prefix: fam_
+# Kärna: Swadesh-lista + CEFR A1 familjeord
+# ja: storebror/lillebror/storasyster/lillasyster = 兄/弟/姉/妹 (egna ord på japanska!)
+# ja: fam_bror/fam_syster (generisk) = 兄弟/姉妹 (kollektiv form)
+# eu-språk: storebror osv. = fraser (frère aîné, hermano mayor) — normalt som lemman
+# de=Mann=man/make (polysemi); de=Frau=kvinna/fru (polysemi) — dokumenterat
+fam_mamma,Substantiv,A1,sv,mamma
+fam_mamma,Substantiv,A1,en,mother
+fam_mamma,Substantiv,A1,fr,mère
+fam_mamma,Substantiv,A1,de,Mutter
+fam_mamma,Substantiv,A1,es,madre
+fam_mamma,Substantiv,A1,it,madre
+fam_mamma,Substantiv,A1,ja,お母さん
+fam_pappa,Substantiv,A1,sv,pappa
+fam_pappa,Substantiv,A1,en,father
+fam_pappa,Substantiv,A1,fr,père
+fam_pappa,Substantiv,A1,de,Vater
+fam_pappa,Substantiv,A1,es,padre
+fam_pappa,Substantiv,A1,it,padre
+fam_pappa,Substantiv,A1,ja,お父さん
+fam_barn,Substantiv,A1,sv,barn
+fam_barn,Substantiv,A1,en,child
+fam_barn,Substantiv,A1,fr,enfant
+fam_barn,Substantiv,A1,de,Kind
+fam_barn,Substantiv,A1,es,niño
+fam_barn,Substantiv,A1,it,bambino
+fam_barn,Substantiv,A1,ja,子供
+fam_familj,Substantiv,A1,sv,familj
+fam_familj,Substantiv,A1,en,family
+fam_familj,Substantiv,A1,fr,famille
+fam_familj,Substantiv,A1,de,Familie
+fam_familj,Substantiv,A1,es,familia
+fam_familj,Substantiv,A1,it,famiglia
+fam_familj,Substantiv,A1,ja,家族
+fam_bror,Substantiv,A1,sv,bror
+fam_bror,Substantiv,A1,en,brother
+fam_bror,Substantiv,A1,fr,frère
+fam_bror,Substantiv,A1,de,Bruder
+fam_bror,Substantiv,A1,es,hermano
+fam_bror,Substantiv,A1,it,fratello
+fam_bror,Substantiv,A1,ja,兄弟
+fam_storebror,Substantiv,A1,sv,storebror
+fam_storebror,Substantiv,A1,en,older brother
+fam_storebror,Substantiv,A1,fr,frère aîné
+fam_storebror,Substantiv,A1,de,älterer Bruder
+fam_storebror,Substantiv,A1,es,hermano mayor
+fam_storebror,Substantiv,A1,it,fratello maggiore
+fam_storebror,Substantiv,A1,ja,兄
+fam_lillebror,Substantiv,A1,sv,lillebror
+fam_lillebror,Substantiv,A1,en,younger brother
+fam_lillebror,Substantiv,A1,fr,frère cadet
+fam_lillebror,Substantiv,A1,de,jüngerer Bruder
+fam_lillebror,Substantiv,A1,es,hermano menor
+fam_lillebror,Substantiv,A1,it,fratello minore
+fam_lillebror,Substantiv,A1,ja,弟
+fam_syster,Substantiv,A1,sv,syster
+fam_syster,Substantiv,A1,en,sister
+fam_syster,Substantiv,A1,fr,sœur
+fam_syster,Substantiv,A1,de,Schwester
+fam_syster,Substantiv,A1,es,hermana
+fam_syster,Substantiv,A1,it,sorella
+fam_syster,Substantiv,A1,ja,姉妹
+fam_storasyster,Substantiv,A1,sv,storasyster
+fam_storasyster,Substantiv,A1,en,older sister
+fam_storasyster,Substantiv,A1,fr,sœur aînée
+fam_storasyster,Substantiv,A1,de,ältere Schwester
+fam_storasyster,Substantiv,A1,es,hermana mayor
+fam_storasyster,Substantiv,A1,it,sorella maggiore
+fam_storasyster,Substantiv,A1,ja,姉
+fam_lillasyster,Substantiv,A1,sv,lillasyster
+fam_lillasyster,Substantiv,A1,en,younger sister
+fam_lillasyster,Substantiv,A1,fr,sœur cadette
+fam_lillasyster,Substantiv,A1,de,jüngere Schwester
+fam_lillasyster,Substantiv,A1,es,hermana menor
+fam_lillasyster,Substantiv,A1,it,sorella minore
+fam_lillasyster,Substantiv,A1,ja,妹
+fam_vän,Substantiv,A1,sv,vän
+fam_vän,Substantiv,A1,en,friend
+fam_vän,Substantiv,A1,fr,ami
+fam_vän,Substantiv,A1,de,Freund
+fam_vän,Substantiv,A1,es,amigo
+fam_vän,Substantiv,A1,it,amico
+fam_vän,Substantiv,A1,ja,友達
+fam_son,Substantiv,A2,sv,son
+fam_son,Substantiv,A2,en,son
+fam_son,Substantiv,A2,fr,fils
+fam_son,Substantiv,A2,de,Sohn
+fam_son,Substantiv,A2,es,hijo
+fam_son,Substantiv,A2,it,figlio
+fam_son,Substantiv,A2,ja,息子
+fam_dotter,Substantiv,A2,sv,dotter
+fam_dotter,Substantiv,A2,en,daughter
+fam_dotter,Substantiv,A2,fr,fille
+fam_dotter,Substantiv,A2,de,Tochter
+fam_dotter,Substantiv,A2,es,hija
+fam_dotter,Substantiv,A2,it,figlia
+fam_dotter,Substantiv,A2,ja,娘
+fam_make,Substantiv,A2,sv,man
+fam_make,Substantiv,A2,en,husband
+fam_make,Substantiv,A2,fr,mari
+fam_make,Substantiv,A2,de,Mann
+fam_make,Substantiv,A2,es,esposo
+fam_make,Substantiv,A2,it,marito
+fam_make,Substantiv,A2,ja,夫
+fam_maka,Substantiv,A2,sv,fru
+fam_maka,Substantiv,A2,en,wife
+fam_maka,Substantiv,A2,fr,femme
+fam_maka,Substantiv,A2,de,Frau
+fam_maka,Substantiv,A2,es,esposa
+fam_maka,Substantiv,A2,it,moglie
+fam_maka,Substantiv,A2,ja,妻
+fam_kollega,Substantiv,A2,sv,kollega
+fam_kollega,Substantiv,A2,en,colleague
+fam_kollega,Substantiv,A2,fr,collègue
+fam_kollega,Substantiv,A2,de,Kollege
+fam_kollega,Substantiv,A2,es,colega
+fam_kollega,Substantiv,A2,it,collega
+fam_kollega,Substantiv,A2,ja,同僚
+fam_bekant,Substantiv,A2,sv,bekant
+fam_bekant,Substantiv,A2,en,acquaintance
+fam_bekant,Substantiv,A2,fr,connaissance
+fam_bekant,Substantiv,A2,de,Bekannte
+fam_bekant,Substantiv,A2,es,conocido
+fam_bekant,Substantiv,A2,it,conoscente
+fam_bekant,Substantiv,A2,ja,知り合い
+
+# ── 10. Kropp ─────────────────────────────────────────────────────────────────
+# Prefix: krop_
+# Swadesh-listeord: huvud, hand, öga, ben, hjärta
+# ja=足 täcker krop_fot och krop_ben (polysemi — hållbar förenkling)
+# fr=cheveu (singular per KONVENTIONER.md)
+krop_huvud,Substantiv,A1,sv,huvud
+krop_huvud,Substantiv,A1,en,head
+krop_huvud,Substantiv,A1,fr,tête
+krop_huvud,Substantiv,A1,de,Kopf
+krop_huvud,Substantiv,A1,es,cabeza
+krop_huvud,Substantiv,A1,it,testa
+krop_huvud,Substantiv,A1,ja,頭
+krop_öga,Substantiv,A1,sv,öga
+krop_öga,Substantiv,A1,en,eye
+krop_öga,Substantiv,A1,fr,œil
+krop_öga,Substantiv,A1,de,Auge
+krop_öga,Substantiv,A1,es,ojo
+krop_öga,Substantiv,A1,it,occhio
+krop_öga,Substantiv,A1,ja,目
+krop_öra,Substantiv,A1,sv,öra
+krop_öra,Substantiv,A1,en,ear
+krop_öra,Substantiv,A1,fr,oreille
+krop_öra,Substantiv,A1,de,Ohr
+krop_öra,Substantiv,A1,es,oreja
+krop_öra,Substantiv,A1,it,orecchio
+krop_öra,Substantiv,A1,ja,耳
+krop_näsa,Substantiv,A1,sv,näsa
+krop_näsa,Substantiv,A1,en,nose
+krop_näsa,Substantiv,A1,fr,nez
+krop_näsa,Substantiv,A1,de,Nase
+krop_näsa,Substantiv,A1,es,nariz
+krop_näsa,Substantiv,A1,it,naso
+krop_näsa,Substantiv,A1,ja,鼻
+krop_mun,Substantiv,A1,sv,mun
+krop_mun,Substantiv,A1,en,mouth
+krop_mun,Substantiv,A1,fr,bouche
+krop_mun,Substantiv,A1,de,Mund
+krop_mun,Substantiv,A1,es,boca
+krop_mun,Substantiv,A1,it,bocca
+krop_mun,Substantiv,A1,ja,口
+krop_hand,Substantiv,A1,sv,hand
+krop_hand,Substantiv,A1,en,hand
+krop_hand,Substantiv,A1,fr,main
+krop_hand,Substantiv,A1,de,Hand
+krop_hand,Substantiv,A1,es,mano
+krop_hand,Substantiv,A1,it,mano
+krop_hand,Substantiv,A1,ja,手
+krop_arm,Substantiv,A1,sv,arm
+krop_arm,Substantiv,A1,en,arm
+krop_arm,Substantiv,A1,fr,bras
+krop_arm,Substantiv,A1,de,Arm
+krop_arm,Substantiv,A1,es,brazo
+krop_arm,Substantiv,A1,it,braccio
+krop_arm,Substantiv,A1,ja,腕
+krop_fot,Substantiv,A1,sv,fot
+krop_fot,Substantiv,A1,en,foot
+krop_fot,Substantiv,A1,fr,pied
+krop_fot,Substantiv,A1,de,Fuß
+krop_fot,Substantiv,A1,es,pie
+krop_fot,Substantiv,A1,it,piede
+krop_fot,Substantiv,A1,ja,足
+krop_ben,Substantiv,A1,sv,ben
+krop_ben,Substantiv,A1,en,leg
+krop_ben,Substantiv,A1,fr,jambe
+krop_ben,Substantiv,A1,de,Bein
+krop_ben,Substantiv,A1,es,pierna
+krop_ben,Substantiv,A1,it,gamba
+krop_ben,Substantiv,A1,ja,足
+krop_hjärta,Substantiv,A1,sv,hjärta
+krop_hjärta,Substantiv,A1,en,heart
+krop_hjärta,Substantiv,A1,fr,cœur
+krop_hjärta,Substantiv,A1,de,Herz
+krop_hjärta,Substantiv,A1,es,corazón
+krop_hjärta,Substantiv,A1,it,cuore
+krop_hjärta,Substantiv,A1,ja,心臓
+krop_mage,Substantiv,A1,sv,mage
+krop_mage,Substantiv,A1,en,stomach
+krop_mage,Substantiv,A1,fr,ventre
+krop_mage,Substantiv,A1,de,Bauch
+krop_mage,Substantiv,A1,es,estómago
+krop_mage,Substantiv,A1,it,stomaco
+krop_mage,Substantiv,A1,ja,お腹
+krop_tand,Substantiv,A1,sv,tand
+krop_tand,Substantiv,A1,en,tooth
+krop_tand,Substantiv,A1,fr,dent
+krop_tand,Substantiv,A1,de,Zahn
+krop_tand,Substantiv,A1,es,diente
+krop_tand,Substantiv,A1,it,dente
+krop_tand,Substantiv,A1,ja,歯
+krop_hår,Substantiv,A1,sv,hår
+krop_hår,Substantiv,A1,en,hair
+krop_hår,Substantiv,A1,fr,cheveu
+krop_hår,Substantiv,A1,de,Haar
+krop_hår,Substantiv,A1,es,pelo
+krop_hår,Substantiv,A1,it,capello
+krop_hår,Substantiv,A1,ja,髪
+krop_rygg,Substantiv,A2,sv,rygg
+krop_rygg,Substantiv,A2,en,back
+krop_rygg,Substantiv,A2,fr,dos
+krop_rygg,Substantiv,A2,de,Rücken
+krop_rygg,Substantiv,A2,es,espalda
+krop_rygg,Substantiv,A2,it,schiena
+krop_rygg,Substantiv,A2,ja,背中
+krop_ansikte,Substantiv,A1,sv,ansikte
+krop_ansikte,Substantiv,A1,en,face
+krop_ansikte,Substantiv,A1,fr,visage
+krop_ansikte,Substantiv,A1,de,Gesicht
+krop_ansikte,Substantiv,A1,es,cara
+krop_ansikte,Substantiv,A1,it,viso
+krop_ansikte,Substantiv,A1,ja,顔
+krop_finger,Substantiv,A1,sv,finger
+krop_finger,Substantiv,A1,en,finger
+krop_finger,Substantiv,A1,fr,doigt
+krop_finger,Substantiv,A1,de,Finger
+krop_finger,Substantiv,A1,es,dedo
+krop_finger,Substantiv,A1,it,dito
+krop_finger,Substantiv,A1,ja,指
+krop_hals,Substantiv,A2,sv,hals
+krop_hals,Substantiv,A2,en,throat
+krop_hals,Substantiv,A2,fr,gorge
+krop_hals,Substantiv,A2,de,Hals
+krop_hals,Substantiv,A2,es,garganta
+krop_hals,Substantiv,A2,it,gola
+krop_hals,Substantiv,A2,ja,のど
+krop_axel,Substantiv,A2,sv,axel
+krop_axel,Substantiv,A2,en,shoulder
+krop_axel,Substantiv,A2,fr,épaule
+krop_axel,Substantiv,A2,de,Schulter
+krop_axel,Substantiv,A2,es,hombro
+krop_axel,Substantiv,A2,it,spalla
+krop_axel,Substantiv,A2,ja,肩
+krop_knä,Substantiv,A2,sv,knä
+krop_knä,Substantiv,A2,en,knee
+krop_knä,Substantiv,A2,fr,genou
+krop_knä,Substantiv,A2,de,Knie
+krop_knä,Substantiv,A2,es,rodilla
+krop_knä,Substantiv,A2,it,ginocchio
+krop_knä,Substantiv,A2,ja,膝
+krop_tunga,Substantiv,A2,sv,tunga
+krop_tunga,Substantiv,A2,en,tongue
+krop_tunga,Substantiv,A2,fr,langue
+krop_tunga,Substantiv,A2,de,Zunge
+krop_tunga,Substantiv,A2,es,lengua
+krop_tunga,Substantiv,A2,it,lingua
+krop_tunga,Substantiv,A2,ja,舌
+krop_bröst,Substantiv,A2,sv,bröst
+krop_bröst,Substantiv,A2,en,chest
+krop_bröst,Substantiv,A2,fr,poitrine
+krop_bröst,Substantiv,A2,de,Brust
+krop_bröst,Substantiv,A2,es,pecho
+krop_bröst,Substantiv,A2,it,petto
+krop_bröst,Substantiv,A2,ja,胸
+krop_blod,Substantiv,A2,sv,blod
+krop_blod,Substantiv,A2,en,blood
+krop_blod,Substantiv,A2,fr,sang
+krop_blod,Substantiv,A2,de,Blut
+krop_blod,Substantiv,A2,es,sangre
+krop_blod,Substantiv,A2,it,sangue
+krop_blod,Substantiv,A2,ja,血
+
+# ── 11. Mat och dryck ─────────────────────────────────────────────────────────
+# Prefix: mat_
+# Basala livsmedel; CEFR A1
+# ja=ご飯 (kokt ris/vardagsmål) — 米=råris läggs i Former
+# es=patata (Spanien); papa=Latinamerika — patata används som standard
+# de=Nudeln (traditionellt tyskt ord för pasta/nudlar)
+mat_mat,Substantiv,A1,sv,mat
+mat_mat,Substantiv,A1,en,food
+mat_mat,Substantiv,A1,fr,nourriture
+mat_mat,Substantiv,A1,de,Essen
+mat_mat,Substantiv,A1,es,comida
+mat_mat,Substantiv,A1,it,cibo
+mat_mat,Substantiv,A1,ja,食べ物
+mat_vatten,Substantiv,A1,sv,vatten
+mat_vatten,Substantiv,A1,en,water
+mat_vatten,Substantiv,A1,fr,eau
+mat_vatten,Substantiv,A1,de,Wasser
+mat_vatten,Substantiv,A1,es,agua
+mat_vatten,Substantiv,A1,it,acqua
+mat_vatten,Substantiv,A1,ja,水
+mat_bröd,Substantiv,A1,sv,bröd
+mat_bröd,Substantiv,A1,en,bread
+mat_bröd,Substantiv,A1,fr,pain
+mat_bröd,Substantiv,A1,de,Brot
+mat_bröd,Substantiv,A1,es,pan
+mat_bröd,Substantiv,A1,it,pane
+mat_bröd,Substantiv,A1,ja,パン
+mat_kött,Substantiv,A1,sv,kött
+mat_kött,Substantiv,A1,en,meat
+mat_kött,Substantiv,A1,fr,viande
+mat_kött,Substantiv,A1,de,Fleisch
+mat_kött,Substantiv,A1,es,carne
+mat_kött,Substantiv,A1,it,carne
+mat_kött,Substantiv,A1,ja,肉
+mat_fisk,Substantiv,A1,sv,fisk
+mat_fisk,Substantiv,A1,en,fish
+mat_fisk,Substantiv,A1,fr,poisson
+mat_fisk,Substantiv,A1,de,Fisch
+mat_fisk,Substantiv,A1,es,pescado
+mat_fisk,Substantiv,A1,it,pesce
+mat_fisk,Substantiv,A1,ja,魚
+mat_ägg,Substantiv,A1,sv,ägg
+mat_ägg,Substantiv,A1,en,egg
+mat_ägg,Substantiv,A1,fr,œuf
+mat_ägg,Substantiv,A1,de,Ei
+mat_ägg,Substantiv,A1,es,huevo
+mat_ägg,Substantiv,A1,it,uovo
+mat_ägg,Substantiv,A1,ja,卵
+mat_ris,Substantiv,A1,sv,ris
+mat_ris,Substantiv,A1,en,rice
+mat_ris,Substantiv,A1,fr,riz
+mat_ris,Substantiv,A1,de,Reis
+mat_ris,Substantiv,A1,es,arroz
+mat_ris,Substantiv,A1,it,riso
+mat_ris,Substantiv,A1,ja,ご飯
+mat_mjölk,Substantiv,A1,sv,mjölk
+mat_mjölk,Substantiv,A1,en,milk
+mat_mjölk,Substantiv,A1,fr,lait
+mat_mjölk,Substantiv,A1,de,Milch
+mat_mjölk,Substantiv,A1,es,leche
+mat_mjölk,Substantiv,A1,it,latte
+mat_mjölk,Substantiv,A1,ja,牛乳
+mat_frukt,Substantiv,A1,sv,frukt
+mat_frukt,Substantiv,A1,en,fruit
+mat_frukt,Substantiv,A1,fr,fruit
+mat_frukt,Substantiv,A1,de,Obst
+mat_frukt,Substantiv,A1,es,fruta
+mat_frukt,Substantiv,A1,it,frutto
+mat_frukt,Substantiv,A1,ja,果物
+mat_grönsak,Substantiv,A1,sv,grönsak
+mat_grönsak,Substantiv,A1,en,vegetable
+mat_grönsak,Substantiv,A1,fr,légume
+mat_grönsak,Substantiv,A1,de,Gemüse
+mat_grönsak,Substantiv,A1,es,verdura
+mat_grönsak,Substantiv,A1,it,verdura
+mat_grönsak,Substantiv,A1,ja,野菜
+mat_kaffe,Substantiv,A1,sv,kaffe
+mat_kaffe,Substantiv,A1,en,coffee
+mat_kaffe,Substantiv,A1,fr,café
+mat_kaffe,Substantiv,A1,de,Kaffee
+mat_kaffe,Substantiv,A1,es,café
+mat_kaffe,Substantiv,A1,it,caffè
+mat_kaffe,Substantiv,A1,ja,コーヒー
+mat_te,Substantiv,A1,sv,te
+mat_te,Substantiv,A1,en,tea
+mat_te,Substantiv,A1,fr,thé
+mat_te,Substantiv,A1,de,Tee
+mat_te,Substantiv,A1,es,té
+mat_te,Substantiv,A1,it,tè
+mat_te,Substantiv,A1,ja,お茶
+mat_potatis,Substantiv,A1,sv,potatis
+mat_potatis,Substantiv,A1,en,potato
+mat_potatis,Substantiv,A1,fr,pomme de terre
+mat_potatis,Substantiv,A1,de,Kartoffel
+mat_potatis,Substantiv,A1,es,patata
+mat_potatis,Substantiv,A1,it,patata
+mat_potatis,Substantiv,A1,ja,じゃがいも
+mat_pasta,Substantiv,A1,sv,pasta
+mat_pasta,Substantiv,A1,en,pasta
+mat_pasta,Substantiv,A1,fr,pâtes
+mat_pasta,Substantiv,A1,de,Nudeln
+mat_pasta,Substantiv,A1,es,pasta
+mat_pasta,Substantiv,A1,it,pasta
+mat_pasta,Substantiv,A1,ja,パスタ
+mat_salt,Substantiv,A1,sv,salt
+mat_salt,Substantiv,A1,en,salt
+mat_salt,Substantiv,A1,fr,sel
+mat_salt,Substantiv,A1,de,Salz
+mat_salt,Substantiv,A1,es,sal
+mat_salt,Substantiv,A1,it,sale
+mat_salt,Substantiv,A1,ja,塩
+mat_socker,Substantiv,A1,sv,socker
+mat_socker,Substantiv,A1,en,sugar
+mat_socker,Substantiv,A1,fr,sucre
+mat_socker,Substantiv,A1,de,Zucker
+mat_socker,Substantiv,A1,es,azúcar
+mat_socker,Substantiv,A1,it,zucchero
+mat_socker,Substantiv,A1,ja,砂糖
+mat_smör,Substantiv,A2,sv,smör
+mat_smör,Substantiv,A2,en,butter
+mat_smör,Substantiv,A2,fr,beurre
+mat_smör,Substantiv,A2,de,Butter
+mat_smör,Substantiv,A2,es,mantequilla
+mat_smör,Substantiv,A2,it,burro
+mat_smör,Substantiv,A2,ja,バター
+mat_olja,Substantiv,A2,sv,olja
+mat_olja,Substantiv,A2,en,oil
+mat_olja,Substantiv,A2,fr,huile
+mat_olja,Substantiv,A2,de,Öl
+mat_olja,Substantiv,A2,es,aceite
+mat_olja,Substantiv,A2,it,olio
+mat_olja,Substantiv,A2,ja,油
+mat_öl,Substantiv,A2,sv,öl
+mat_öl,Substantiv,A2,en,beer
+mat_öl,Substantiv,A2,fr,bière
+mat_öl,Substantiv,A2,de,Bier
+mat_öl,Substantiv,A2,es,cerveza
+mat_öl,Substantiv,A2,it,birra
+mat_öl,Substantiv,A2,ja,ビール
+mat_vin,Substantiv,A2,sv,vin
+mat_vin,Substantiv,A2,en,wine
+mat_vin,Substantiv,A2,fr,vin
+mat_vin,Substantiv,A2,de,Wein
+mat_vin,Substantiv,A2,es,vino
+mat_vin,Substantiv,A2,it,vino
+mat_vin,Substantiv,A2,ja,ワイン
+mat_kyckling,Substantiv,A2,sv,kyckling
+mat_kyckling,Substantiv,A2,en,chicken
+mat_kyckling,Substantiv,A2,fr,poulet
+mat_kyckling,Substantiv,A2,de,Hühnchen
+mat_kyckling,Substantiv,A2,es,pollo
+mat_kyckling,Substantiv,A2,it,pollo
+mat_kyckling,Substantiv,A2,ja,鶏肉
+mat_ost,Substantiv,A2,sv,ost
+mat_ost,Substantiv,A2,en,cheese
+mat_ost,Substantiv,A2,fr,fromage
+mat_ost,Substantiv,A2,de,Käse
+mat_ost,Substantiv,A2,es,queso
+mat_ost,Substantiv,A2,it,formaggio
+mat_ost,Substantiv,A2,ja,チーズ
+mat_soppa,Substantiv,A2,sv,soppa
+mat_soppa,Substantiv,A2,en,soup
+mat_soppa,Substantiv,A2,fr,soupe
+mat_soppa,Substantiv,A2,de,Suppe
+mat_soppa,Substantiv,A2,es,sopa
+mat_soppa,Substantiv,A2,it,zuppa
+mat_soppa,Substantiv,A2,ja,スープ
+mat_juice,Substantiv,A2,sv,juice
+mat_juice,Substantiv,A2,en,juice
+mat_juice,Substantiv,A2,fr,jus
+mat_juice,Substantiv,A2,de,Saft
+mat_juice,Substantiv,A2,es,zumo
+mat_juice,Substantiv,A2,it,succo
+mat_juice,Substantiv,A2,ja,ジュース
+
+# ── 12. Kläder ────────────────────────────────────────────────────────────────
+# Prefix: kläd_
+# sv=vantar=tumvantar specifikt; handskar=fingrar — en=mittens
+# ja=パンツ täcker kläd_kalsong och kläd_trosor (polysemi — hållbar förenkling)
+# de=Unterhose täcker kläd_kalsong och kläd_trosor (polysemi)
+# fr=lunettes de soleil / es=gafas de sol / it=occhiali da sole: fraser som lemman — OK
+kläd_kläder,Substantiv,A1,sv,kläder
+kläd_kläder,Substantiv,A1,en,clothes
+kläd_kläder,Substantiv,A1,fr,vêtement
+kläd_kläder,Substantiv,A1,de,Kleidung
+kläd_kläder,Substantiv,A1,es,ropa
+kläd_kläder,Substantiv,A1,it,vestito
+kläd_kläder,Substantiv,A1,ja,服
+kläd_tshirt,Substantiv,A1,sv,t-shirt
+kläd_tshirt,Substantiv,A1,en,t-shirt
+kläd_tshirt,Substantiv,A1,fr,t-shirt
+kläd_tshirt,Substantiv,A1,de,T-Shirt
+kläd_tshirt,Substantiv,A1,es,camiseta
+kläd_tshirt,Substantiv,A1,it,maglietta
+kläd_tshirt,Substantiv,A1,ja,Tシャツ
+kläd_skjorta,Substantiv,A1,sv,skjorta
+kläd_skjorta,Substantiv,A1,en,shirt
+kläd_skjorta,Substantiv,A1,fr,chemise
+kläd_skjorta,Substantiv,A1,de,Hemd
+kläd_skjorta,Substantiv,A1,es,camisa
+kläd_skjorta,Substantiv,A1,it,camicia
+kläd_skjorta,Substantiv,A1,ja,シャツ
+kläd_tröja,Substantiv,A1,sv,tröja
+kläd_tröja,Substantiv,A1,en,sweater
+kläd_tröja,Substantiv,A1,fr,pull
+kläd_tröja,Substantiv,A1,de,Pullover
+kläd_tröja,Substantiv,A1,es,jersey
+kläd_tröja,Substantiv,A1,it,maglione
+kläd_tröja,Substantiv,A1,ja,セーター
+kläd_byxa,Substantiv,A1,sv,byxa
+kläd_byxa,Substantiv,A1,en,trousers
+kläd_byxa,Substantiv,A1,fr,pantalon
+kläd_byxa,Substantiv,A1,de,Hose
+kläd_byxa,Substantiv,A1,es,pantalón
+kläd_byxa,Substantiv,A1,it,pantalone
+kläd_byxa,Substantiv,A1,ja,ズボン
+kläd_jeans,Substantiv,A1,sv,jeans
+kläd_jeans,Substantiv,A1,en,jeans
+kläd_jeans,Substantiv,A1,fr,jean
+kläd_jeans,Substantiv,A1,de,Jeans
+kläd_jeans,Substantiv,A1,es,jeans
+kläd_jeans,Substantiv,A1,it,jeans
+kläd_jeans,Substantiv,A1,ja,ジーンズ
+kläd_klänning,Substantiv,A1,sv,klänning
+kläd_klänning,Substantiv,A1,en,dress
+kläd_klänning,Substantiv,A1,fr,robe
+kläd_klänning,Substantiv,A1,de,Kleid
+kläd_klänning,Substantiv,A1,es,vestido
+kläd_klänning,Substantiv,A1,it,vestito
+kläd_klänning,Substantiv,A1,ja,ドレス
+kläd_jacka,Substantiv,A1,sv,jacka
+kläd_jacka,Substantiv,A1,en,jacket
+kläd_jacka,Substantiv,A1,fr,veste
+kläd_jacka,Substantiv,A1,de,Jacke
+kläd_jacka,Substantiv,A1,es,chaqueta
+kläd_jacka,Substantiv,A1,it,giacca
+kläd_jacka,Substantiv,A1,ja,ジャケット
+kläd_sko,Substantiv,A1,sv,sko
+kläd_sko,Substantiv,A1,en,shoe
+kläd_sko,Substantiv,A1,fr,chaussure
+kläd_sko,Substantiv,A1,de,Schuh
+kläd_sko,Substantiv,A1,es,zapato
+kläd_sko,Substantiv,A1,it,scarpa
+kläd_sko,Substantiv,A1,ja,靴
+kläd_strumpa,Substantiv,A1,sv,strumpa
+kläd_strumpa,Substantiv,A1,en,sock
+kläd_strumpa,Substantiv,A1,fr,chaussette
+kläd_strumpa,Substantiv,A1,de,Socke
+kläd_strumpa,Substantiv,A1,es,calcetín
+kläd_strumpa,Substantiv,A1,it,calzino
+kläd_strumpa,Substantiv,A1,ja,靴下
+kläd_hatt,Substantiv,A2,sv,hatt
+kläd_hatt,Substantiv,A2,en,hat
+kläd_hatt,Substantiv,A2,fr,chapeau
+kläd_hatt,Substantiv,A2,de,Hut
+kläd_hatt,Substantiv,A2,es,sombrero
+kläd_hatt,Substantiv,A2,it,cappello
+kläd_hatt,Substantiv,A2,ja,帽子
+kläd_mössa,Substantiv,A1,sv,mössa
+kläd_mössa,Substantiv,A1,en,beanie
+kläd_mössa,Substantiv,A1,fr,bonnet
+kläd_mössa,Substantiv,A1,de,Mütze
+kläd_mössa,Substantiv,A1,es,gorro
+kläd_mössa,Substantiv,A1,it,berretto
+kläd_mössa,Substantiv,A1,ja,ニット帽
+kläd_vantar,Substantiv,A1,sv,vantar
+kläd_vantar,Substantiv,A1,en,mittens
+kläd_vantar,Substantiv,A1,fr,moufles
+kläd_vantar,Substantiv,A1,de,Fäustlinge
+kläd_vantar,Substantiv,A1,es,manoplas
+kläd_vantar,Substantiv,A1,it,muffole
+kläd_vantar,Substantiv,A1,ja,ミトン
+kläd_halsduk,Substantiv,A1,sv,halsduk
+kläd_halsduk,Substantiv,A1,en,scarf
+kläd_halsduk,Substantiv,A1,fr,écharpe
+kläd_halsduk,Substantiv,A1,de,Schal
+kläd_halsduk,Substantiv,A1,es,bufanda
+kläd_halsduk,Substantiv,A1,it,sciarpa
+kläd_halsduk,Substantiv,A1,ja,マフラー
+kläd_glasögon,Substantiv,A2,sv,glasögon
+kläd_glasögon,Substantiv,A2,en,glasses
+kläd_glasögon,Substantiv,A2,fr,lunettes
+kläd_glasögon,Substantiv,A2,de,Brille
+kläd_glasögon,Substantiv,A2,es,gafas
+kläd_glasögon,Substantiv,A2,it,occhiali
+kläd_glasögon,Substantiv,A2,ja,眼鏡
+kläd_solglasögon,Substantiv,A2,sv,solglasögon
+kläd_solglasögon,Substantiv,A2,en,sunglasses
+kläd_solglasögon,Substantiv,A2,fr,lunettes de soleil
+kläd_solglasögon,Substantiv,A2,de,Sonnenbrille
+kläd_solglasögon,Substantiv,A2,es,gafas de sol
+kläd_solglasögon,Substantiv,A2,it,occhiali da sole
+kläd_solglasögon,Substantiv,A2,ja,サングラス
+kläd_underkläder,Substantiv,A2,sv,underkläder
+kläd_underkläder,Substantiv,A2,en,underwear
+kläd_underkläder,Substantiv,A2,fr,sous-vêtement
+kläd_underkläder,Substantiv,A2,de,Unterwäsche
+kläd_underkläder,Substantiv,A2,es,ropa interior
+kläd_underkläder,Substantiv,A2,it,biancheria intima
+kläd_underkläder,Substantiv,A2,ja,下着
+kläd_kalsong,Substantiv,A2,sv,kalsong
+kläd_kalsong,Substantiv,A2,en,underpants
+kläd_kalsong,Substantiv,A2,fr,caleçon
+kläd_kalsong,Substantiv,A2,de,Unterhose
+kläd_kalsong,Substantiv,A2,es,calzoncillos
+kläd_kalsong,Substantiv,A2,it,mutande
+kläd_kalsong,Substantiv,A2,ja,パンツ
+kläd_trosor,Substantiv,A2,sv,trosor
+kläd_trosor,Substantiv,A2,en,knickers
+kläd_trosor,Substantiv,A2,fr,culotte
+kläd_trosor,Substantiv,A2,de,Unterhose
+kläd_trosor,Substantiv,A2,es,bragas
+kläd_trosor,Substantiv,A2,it,mutandine
+kläd_trosor,Substantiv,A2,ja,パンツ
+kläd_kjol,Substantiv,A1,sv,kjol
+kläd_kjol,Substantiv,A1,en,skirt
+kläd_kjol,Substantiv,A1,fr,jupe
+kläd_kjol,Substantiv,A1,de,Rock
+kläd_kjol,Substantiv,A1,es,falda
+kläd_kjol,Substantiv,A1,it,gonna
+kläd_kjol,Substantiv,A1,ja,スカート
+
+# ── 13. Hus och hem ───────────────────────────────────────────────────────────
+# Prefix: hem_
+# sv=tak=tak inne (tak) och ute (tak/yttertak) — en=ceiling för interiör
+# fr=plafond=innertak; de=Decke=innertak; it=soffitto=innertak
+# it=casa täcker hem_hus och plats_hem (polysemi)
+hem_hus,Substantiv,A1,sv,hus
+hem_hus,Substantiv,A1,en,house
+hem_hus,Substantiv,A1,fr,maison
+hem_hus,Substantiv,A1,de,Haus
+hem_hus,Substantiv,A1,es,casa
+hem_hus,Substantiv,A1,it,casa
+hem_hus,Substantiv,A1,ja,家
+hem_lägenhet,Substantiv,A1,sv,lägenhet
+hem_lägenhet,Substantiv,A1,en,apartment
+hem_lägenhet,Substantiv,A1,fr,appartement
+hem_lägenhet,Substantiv,A1,de,Wohnung
+hem_lägenhet,Substantiv,A1,es,apartamento
+hem_lägenhet,Substantiv,A1,it,appartamento
+hem_lägenhet,Substantiv,A1,ja,アパート
+hem_rum,Substantiv,A1,sv,rum
+hem_rum,Substantiv,A1,en,room
+hem_rum,Substantiv,A1,fr,pièce
+hem_rum,Substantiv,A1,de,Zimmer
+hem_rum,Substantiv,A1,es,habitación
+hem_rum,Substantiv,A1,it,stanza
+hem_rum,Substantiv,A1,ja,部屋
+hem_kök,Substantiv,A1,sv,kök
+hem_kök,Substantiv,A1,en,kitchen
+hem_kök,Substantiv,A1,fr,cuisine
+hem_kök,Substantiv,A1,de,Küche
+hem_kök,Substantiv,A1,es,cocina
+hem_kök,Substantiv,A1,it,cucina
+hem_kök,Substantiv,A1,ja,台所
+hem_dörr,Substantiv,A1,sv,dörr
+hem_dörr,Substantiv,A1,en,door
+hem_dörr,Substantiv,A1,fr,porte
+hem_dörr,Substantiv,A1,de,Tür
+hem_dörr,Substantiv,A1,es,puerta
+hem_dörr,Substantiv,A1,it,porta
+hem_dörr,Substantiv,A1,ja,ドア
+hem_fönster,Substantiv,A1,sv,fönster
+hem_fönster,Substantiv,A1,en,window
+hem_fönster,Substantiv,A1,fr,fenêtre
+hem_fönster,Substantiv,A1,de,Fenster
+hem_fönster,Substantiv,A1,es,ventana
+hem_fönster,Substantiv,A1,it,finestra
+hem_fönster,Substantiv,A1,ja,窓
+hem_bord,Substantiv,A1,sv,bord
+hem_bord,Substantiv,A1,en,table
+hem_bord,Substantiv,A1,fr,table
+hem_bord,Substantiv,A1,de,Tisch
+hem_bord,Substantiv,A1,es,mesa
+hem_bord,Substantiv,A1,it,tavolo
+hem_bord,Substantiv,A1,ja,テーブル
+hem_stol,Substantiv,A1,sv,stol
+hem_stol,Substantiv,A1,en,chair
+hem_stol,Substantiv,A1,fr,chaise
+hem_stol,Substantiv,A1,de,Stuhl
+hem_stol,Substantiv,A1,es,silla
+hem_stol,Substantiv,A1,it,sedia
+hem_stol,Substantiv,A1,ja,椅子
+hem_säng,Substantiv,A1,sv,säng
+hem_säng,Substantiv,A1,en,bed
+hem_säng,Substantiv,A1,fr,lit
+hem_säng,Substantiv,A1,de,Bett
+hem_säng,Substantiv,A1,es,cama
+hem_säng,Substantiv,A1,it,letto
+hem_säng,Substantiv,A1,ja,ベッド
+hem_golv,Substantiv,A1,sv,golv
+hem_golv,Substantiv,A1,en,floor
+hem_golv,Substantiv,A1,fr,sol
+hem_golv,Substantiv,A1,de,Boden
+hem_golv,Substantiv,A1,es,suelo
+hem_golv,Substantiv,A1,it,pavimento
+hem_golv,Substantiv,A1,ja,床
+hem_vägg,Substantiv,A1,sv,vägg
+hem_vägg,Substantiv,A1,en,wall
+hem_vägg,Substantiv,A1,fr,mur
+hem_vägg,Substantiv,A1,de,Wand
+hem_vägg,Substantiv,A1,es,pared
+hem_vägg,Substantiv,A1,it,muro
+hem_vägg,Substantiv,A1,ja,壁
+hem_tak,Substantiv,A1,sv,tak
+hem_tak,Substantiv,A1,en,ceiling
+hem_tak,Substantiv,A1,fr,plafond
+hem_tak,Substantiv,A1,de,Decke
+hem_tak,Substantiv,A1,es,techo
+hem_tak,Substantiv,A1,it,soffitto
+hem_tak,Substantiv,A1,ja,天井
+hem_lampa,Substantiv,A1,sv,lampa
+hem_lampa,Substantiv,A1,en,lamp
+hem_lampa,Substantiv,A1,fr,lampe
+hem_lampa,Substantiv,A1,de,Lampe
+hem_lampa,Substantiv,A1,es,lámpara
+hem_lampa,Substantiv,A1,it,lampada
+hem_lampa,Substantiv,A1,ja,ランプ
+hem_kylskåp,Substantiv,A1,sv,kylskåp
+hem_kylskåp,Substantiv,A1,en,fridge
+hem_kylskåp,Substantiv,A1,fr,réfrigérateur
+hem_kylskåp,Substantiv,A1,de,Kühlschrank
+hem_kylskåp,Substantiv,A1,es,nevera
+hem_kylskåp,Substantiv,A1,it,frigorifero
+hem_kylskåp,Substantiv,A1,ja,冷蔵庫
+hem_frys,Substantiv,A2,sv,frys
+hem_frys,Substantiv,A2,en,freezer
+hem_frys,Substantiv,A2,fr,congélateur
+hem_frys,Substantiv,A2,de,Gefrierschrank
+hem_frys,Substantiv,A2,es,congelador
+hem_frys,Substantiv,A2,it,congelatore
+hem_frys,Substantiv,A2,ja,冷凍庫
+hem_ugn,Substantiv,A1,sv,ugn
+hem_ugn,Substantiv,A1,en,oven
+hem_ugn,Substantiv,A1,fr,four
+hem_ugn,Substantiv,A1,de,Ofen
+hem_ugn,Substantiv,A1,es,horno
+hem_ugn,Substantiv,A1,it,forno
+hem_ugn,Substantiv,A1,ja,オーブン
+hem_skafferi,Substantiv,A2,sv,skafferi
+hem_skafferi,Substantiv,A2,en,pantry
+hem_skafferi,Substantiv,A2,fr,garde-manger
+hem_skafferi,Substantiv,A2,de,Speisekammer
+hem_skafferi,Substantiv,A2,es,despensa
+hem_skafferi,Substantiv,A2,it,dispensa
+hem_skafferi,Substantiv,A2,ja,パントリー
+hem_byrå,Substantiv,A2,sv,byrå
+hem_byrå,Substantiv,A2,en,dresser
+hem_byrå,Substantiv,A2,fr,commode
+hem_byrå,Substantiv,A2,de,Kommode
+hem_byrå,Substantiv,A2,es,cómoda
+hem_byrå,Substantiv,A2,it,cassettiera
+hem_byrå,Substantiv,A2,ja,タンス
+hem_bokhylla,Substantiv,A2,sv,bokhylla
+hem_bokhylla,Substantiv,A2,en,bookshelf
+hem_bokhylla,Substantiv,A2,fr,étagère
+hem_bokhylla,Substantiv,A2,de,Bücherregal
+hem_bokhylla,Substantiv,A2,es,estantería
+hem_bokhylla,Substantiv,A2,it,scaffale
+hem_bokhylla,Substantiv,A2,ja,本棚
+hem_matta,Substantiv,A2,sv,matta
+hem_matta,Substantiv,A2,en,carpet
+hem_matta,Substantiv,A2,fr,tapis
+hem_matta,Substantiv,A2,de,Teppich
+hem_matta,Substantiv,A2,es,alfombra
+hem_matta,Substantiv,A2,it,tappeto
+hem_matta,Substantiv,A2,ja,カーペット
+# es=baño / it=bagno täcker hem_badrum och hem_toalett (polysemi — hållbar förenkling)
+# ja=お風呂場 (badrum); トイレ (toalett) — separata ord på japanska
+hem_badrum,Substantiv,A1,sv,badrum
+hem_badrum,Substantiv,A1,en,bathroom
+hem_badrum,Substantiv,A1,fr,salle de bain
+hem_badrum,Substantiv,A1,de,Badezimmer
+hem_badrum,Substantiv,A1,es,baño
+hem_badrum,Substantiv,A1,it,bagno
+hem_badrum,Substantiv,A1,ja,お風呂場
+hem_toalett,Substantiv,A1,sv,toalett
+hem_toalett,Substantiv,A1,en,toilet
+hem_toalett,Substantiv,A1,fr,toilettes
+hem_toalett,Substantiv,A1,de,Toilette
+hem_toalett,Substantiv,A1,es,baño
+hem_toalett,Substantiv,A1,it,bagno
+hem_toalett,Substantiv,A1,ja,トイレ
+hem_trappa,Substantiv,A2,sv,trappa
+hem_trappa,Substantiv,A2,en,stairs
+hem_trappa,Substantiv,A2,fr,escalier
+hem_trappa,Substantiv,A2,de,Treppe
+hem_trappa,Substantiv,A2,es,escalera
+hem_trappa,Substantiv,A2,it,scala
+hem_trappa,Substantiv,A2,ja,階段
+
+# ── 14. Natur ─────────────────────────────────────────────────────────────────
+# Prefix: nat_
+# Swadesh-listeord + vanliga natursubstantiv: träd, hav, berg, sten
+# fr=rivière (vardaglig); fleuve=flod som mynnar i hav (mer specifik)
+nat_träd,Substantiv,A1,sv,träd
+nat_träd,Substantiv,A1,en,tree
+nat_träd,Substantiv,A1,fr,arbre
+nat_träd,Substantiv,A1,de,Baum
+nat_träd,Substantiv,A1,es,árbol
+nat_träd,Substantiv,A1,it,albero
+nat_träd,Substantiv,A1,ja,木
+nat_blomma,Substantiv,A1,sv,blomma
+nat_blomma,Substantiv,A1,en,flower
+nat_blomma,Substantiv,A1,fr,fleur
+nat_blomma,Substantiv,A1,de,Blume
+nat_blomma,Substantiv,A1,es,flor
+nat_blomma,Substantiv,A1,it,fiore
+nat_blomma,Substantiv,A1,ja,花
+nat_hav,Substantiv,A1,sv,hav
+nat_hav,Substantiv,A1,en,sea
+nat_hav,Substantiv,A1,fr,mer
+nat_hav,Substantiv,A1,de,Meer
+nat_hav,Substantiv,A1,es,mar
+nat_hav,Substantiv,A1,it,mare
+nat_hav,Substantiv,A1,ja,海
+nat_berg,Substantiv,A1,sv,berg
+nat_berg,Substantiv,A1,en,mountain
+nat_berg,Substantiv,A1,fr,montagne
+nat_berg,Substantiv,A1,de,Berg
+nat_berg,Substantiv,A1,es,montaña
+nat_berg,Substantiv,A1,it,montagna
+nat_berg,Substantiv,A1,ja,山
+nat_flod,Substantiv,A1,sv,flod
+nat_flod,Substantiv,A1,en,river
+nat_flod,Substantiv,A1,fr,rivière
+nat_flod,Substantiv,A1,de,Fluss
+nat_flod,Substantiv,A1,es,río
+nat_flod,Substantiv,A1,it,fiume
+nat_flod,Substantiv,A1,ja,川
+nat_sjö,Substantiv,A1,sv,sjö
+nat_sjö,Substantiv,A1,en,lake
+nat_sjö,Substantiv,A1,fr,lac
+nat_sjö,Substantiv,A1,de,See
+nat_sjö,Substantiv,A1,es,lago
+nat_sjö,Substantiv,A1,it,lago
+nat_sjö,Substantiv,A1,ja,湖
+nat_skog,Substantiv,A1,sv,skog
+nat_skog,Substantiv,A1,en,forest
+nat_skog,Substantiv,A1,fr,forêt
+nat_skog,Substantiv,A1,de,Wald
+nat_skog,Substantiv,A1,es,bosque
+nat_skog,Substantiv,A1,it,foresta
+nat_skog,Substantiv,A1,ja,森
+nat_himmel,Substantiv,A1,sv,himmel
+nat_himmel,Substantiv,A1,en,sky
+nat_himmel,Substantiv,A1,fr,ciel
+nat_himmel,Substantiv,A1,de,Himmel
+nat_himmel,Substantiv,A1,es,cielo
+nat_himmel,Substantiv,A1,it,cielo
+nat_himmel,Substantiv,A1,ja,空
+nat_strand,Substantiv,A1,sv,strand
+nat_strand,Substantiv,A1,en,beach
+nat_strand,Substantiv,A1,fr,plage
+nat_strand,Substantiv,A1,de,Strand
+nat_strand,Substantiv,A1,es,playa
+nat_strand,Substantiv,A1,it,spiaggia
+nat_strand,Substantiv,A1,ja,浜辺
+nat_sten,Substantiv,A1,sv,sten
+nat_sten,Substantiv,A1,en,stone
+nat_sten,Substantiv,A1,fr,pierre
+nat_sten,Substantiv,A1,de,Stein
+nat_sten,Substantiv,A1,es,piedra
+nat_sten,Substantiv,A1,it,pietra
+nat_sten,Substantiv,A1,ja,石
+nat_jord,Substantiv,A1,sv,jord
+nat_jord,Substantiv,A1,en,earth
+nat_jord,Substantiv,A1,fr,terre
+nat_jord,Substantiv,A1,de,Erde
+nat_jord,Substantiv,A1,es,tierra
+nat_jord,Substantiv,A1,it,terra
+nat_jord,Substantiv,A1,ja,土
+nat_gräs,Substantiv,A2,sv,gräs
+nat_gräs,Substantiv,A2,en,grass
+nat_gräs,Substantiv,A2,fr,herbe
+nat_gräs,Substantiv,A2,de,Gras
+nat_gräs,Substantiv,A2,es,hierba
+nat_gräs,Substantiv,A2,it,erba
+nat_gräs,Substantiv,A2,ja,草
+nat_sand,Substantiv,A2,sv,sand
+nat_sand,Substantiv,A2,en,sand
+nat_sand,Substantiv,A2,fr,sable
+nat_sand,Substantiv,A2,de,Sand
+nat_sand,Substantiv,A2,es,arena
+nat_sand,Substantiv,A2,it,sabbia
+nat_sand,Substantiv,A2,ja,砂
+nat_is,Substantiv,A2,sv,is
+nat_is,Substantiv,A2,en,ice
+nat_is,Substantiv,A2,fr,glace
+nat_is,Substantiv,A2,de,Eis
+nat_is,Substantiv,A2,es,hielo
+nat_is,Substantiv,A2,it,ghiaccio
+nat_is,Substantiv,A2,ja,氷
+nat_eld,Substantiv,A1,sv,eld
+nat_eld,Substantiv,A1,en,fire
+nat_eld,Substantiv,A1,fr,feu
+nat_eld,Substantiv,A1,de,Feuer
+nat_eld,Substantiv,A1,es,fuego
+nat_eld,Substantiv,A1,it,fuoco
+nat_eld,Substantiv,A1,ja,火
+nat_luft,Substantiv,A1,sv,luft
+nat_luft,Substantiv,A1,en,air
+nat_luft,Substantiv,A1,fr,air
+nat_luft,Substantiv,A1,de,Luft
+nat_luft,Substantiv,A1,es,aire
+nat_luft,Substantiv,A1,it,aria
+nat_luft,Substantiv,A1,ja,空気
+nat_måne,Substantiv,A2,sv,måne
+nat_måne,Substantiv,A2,en,moon
+nat_måne,Substantiv,A2,fr,lune
+nat_måne,Substantiv,A2,de,Mond
+nat_måne,Substantiv,A2,es,luna
+nat_måne,Substantiv,A2,it,luna
+nat_måne,Substantiv,A2,ja,月
+nat_stjärna,Substantiv,A2,sv,stjärna
+nat_stjärna,Substantiv,A2,en,star
+nat_stjärna,Substantiv,A2,fr,étoile
+nat_stjärna,Substantiv,A2,de,Stern
+nat_stjärna,Substantiv,A2,es,estrella
+nat_stjärna,Substantiv,A2,it,stella
+nat_stjärna,Substantiv,A2,ja,星
+nat_rök,Substantiv,A2,sv,rök
+nat_rök,Substantiv,A2,en,smoke
+nat_rök,Substantiv,A2,fr,fumée
+nat_rök,Substantiv,A2,de,Rauch
+nat_rök,Substantiv,A2,es,humo
+nat_rök,Substantiv,A2,it,fumo
+nat_rök,Substantiv,A2,ja,煙
+nat_växt,Substantiv,A2,sv,växt
+nat_växt,Substantiv,A2,en,plant
+nat_växt,Substantiv,A2,fr,plante
+nat_växt,Substantiv,A2,de,Pflanze
+nat_växt,Substantiv,A2,es,planta
+nat_växt,Substantiv,A2,it,pianta
+nat_växt,Substantiv,A2,ja,植物
+
+# ── 15. Väder ─────────────────────────────────────────────────────────────────
+# Prefix: väd_
+# fr=temps / es=tiempo / it=tempo täcker väder OCH tid (polysemi — dokumenterat)
+väd_väder,Substantiv,A1,sv,väder
+väd_väder,Substantiv,A1,en,weather
+väd_väder,Substantiv,A1,fr,temps
+väd_väder,Substantiv,A1,de,Wetter
+väd_väder,Substantiv,A1,es,tiempo
+väd_väder,Substantiv,A1,it,tempo
+väd_väder,Substantiv,A1,ja,天気
+väd_sol,Substantiv,A1,sv,sol
+väd_sol,Substantiv,A1,en,sun
+väd_sol,Substantiv,A1,fr,soleil
+väd_sol,Substantiv,A1,de,Sonne
+väd_sol,Substantiv,A1,es,sol
+väd_sol,Substantiv,A1,it,sole
+väd_sol,Substantiv,A1,ja,太陽
+väd_regn,Substantiv,A1,sv,regn
+väd_regn,Substantiv,A1,en,rain
+väd_regn,Substantiv,A1,fr,pluie
+väd_regn,Substantiv,A1,de,Regen
+väd_regn,Substantiv,A1,es,lluvia
+väd_regn,Substantiv,A1,it,pioggia
+väd_regn,Substantiv,A1,ja,雨
+väd_vind,Substantiv,A1,sv,vind
+väd_vind,Substantiv,A1,en,wind
+väd_vind,Substantiv,A1,fr,vent
+väd_vind,Substantiv,A1,de,Wind
+väd_vind,Substantiv,A1,es,viento
+väd_vind,Substantiv,A1,it,vento
+väd_vind,Substantiv,A1,ja,風
+väd_snö,Substantiv,A1,sv,snö
+väd_snö,Substantiv,A1,en,snow
+väd_snö,Substantiv,A1,fr,neige
+väd_snö,Substantiv,A1,de,Schnee
+väd_snö,Substantiv,A1,es,nieve
+väd_snö,Substantiv,A1,it,neve
+väd_snö,Substantiv,A1,ja,雪
+väd_moln,Substantiv,A1,sv,moln
+väd_moln,Substantiv,A1,en,cloud
+väd_moln,Substantiv,A1,fr,nuage
+väd_moln,Substantiv,A1,de,Wolke
+väd_moln,Substantiv,A1,es,nube
+väd_moln,Substantiv,A1,it,nuvola
+väd_moln,Substantiv,A1,ja,雲
+väd_storm,Substantiv,A2,sv,storm
+väd_storm,Substantiv,A2,en,storm
+väd_storm,Substantiv,A2,fr,tempête
+väd_storm,Substantiv,A2,de,Sturm
+väd_storm,Substantiv,A2,es,tormenta
+väd_storm,Substantiv,A2,it,tempesta
+väd_storm,Substantiv,A2,ja,嵐
+väd_åska,Substantiv,A2,sv,åska
+väd_åska,Substantiv,A2,en,thunder
+väd_åska,Substantiv,A2,fr,tonnerre
+väd_åska,Substantiv,A2,de,Donner
+väd_åska,Substantiv,A2,es,trueno
+väd_åska,Substantiv,A2,it,tuono
+väd_åska,Substantiv,A2,ja,雷
+väd_dimma,Substantiv,A2,sv,dimma
+väd_dimma,Substantiv,A2,en,fog
+väd_dimma,Substantiv,A2,fr,brouillard
+väd_dimma,Substantiv,A2,de,Nebel
+väd_dimma,Substantiv,A2,es,niebla
+väd_dimma,Substantiv,A2,it,nebbia
+väd_dimma,Substantiv,A2,ja,霧
+väd_hagel,Substantiv,A2,sv,hagel
+väd_hagel,Substantiv,A2,en,hail
+väd_hagel,Substantiv,A2,fr,grêle
+väd_hagel,Substantiv,A2,de,Hagel
+väd_hagel,Substantiv,A2,es,granizo
+väd_hagel,Substantiv,A2,it,grandine
+väd_hagel,Substantiv,A2,ja,雹
+
+# ── 16. Tid ───────────────────────────────────────────────────────────────────
+# Prefix: tid_
+# fr=temps / es=tiempo / it=tempo täcker tid OCH väder (polysemi — se väd_väder)
+# es=mañana täcker morgon OCH imorgon (polysemi)
+# es=tarde täcker kväll OCH eftermiddag (polysemi)
+# sv=middag täcker noon OCH lunch/middag (polysemi)
+# ja=時間 täcker tid (tid_tid) och timme (tid_timme) — polysemi
+# ja=月 täcker månad OCH måne (polysemi)
+tid_tid,Substantiv,A1,sv,tid
+tid_tid,Substantiv,A1,en,time
+tid_tid,Substantiv,A1,fr,temps
+tid_tid,Substantiv,A1,de,Zeit
+tid_tid,Substantiv,A1,es,tiempo
+tid_tid,Substantiv,A1,it,tempo
+tid_tid,Substantiv,A1,ja,時間
+tid_dag,Substantiv,A1,sv,dag
+tid_dag,Substantiv,A1,en,day
+tid_dag,Substantiv,A1,fr,jour
+tid_dag,Substantiv,A1,de,Tag
+tid_dag,Substantiv,A1,es,día
+tid_dag,Substantiv,A1,it,giorno
+tid_dag,Substantiv,A1,ja,日
+tid_natt,Substantiv,A1,sv,natt
+tid_natt,Substantiv,A1,en,night
+tid_natt,Substantiv,A1,fr,nuit
+tid_natt,Substantiv,A1,de,Nacht
+tid_natt,Substantiv,A1,es,noche
+tid_natt,Substantiv,A1,it,notte
+tid_natt,Substantiv,A1,ja,夜
+tid_morgon,Substantiv,A1,sv,morgon
+tid_morgon,Substantiv,A1,en,morning
+tid_morgon,Substantiv,A1,fr,matin
+tid_morgon,Substantiv,A1,de,Morgen
+tid_morgon,Substantiv,A1,es,mañana
+tid_morgon,Substantiv,A1,it,mattina
+tid_morgon,Substantiv,A1,ja,朝
+tid_middag,Substantiv,A1,sv,middag
+tid_middag,Substantiv,A1,en,noon
+tid_middag,Substantiv,A1,fr,midi
+tid_middag,Substantiv,A1,de,Mittag
+tid_middag,Substantiv,A1,es,mediodía
+tid_middag,Substantiv,A1,it,mezzogiorno
+tid_middag,Substantiv,A1,ja,昼
+tid_eftermiddag,Substantiv,A1,sv,eftermiddag
+tid_eftermiddag,Substantiv,A1,en,afternoon
+tid_eftermiddag,Substantiv,A1,fr,après-midi
+tid_eftermiddag,Substantiv,A1,de,Nachmittag
+tid_eftermiddag,Substantiv,A1,es,tarde
+tid_eftermiddag,Substantiv,A1,it,pomeriggio
+tid_eftermiddag,Substantiv,A1,ja,午後
+tid_kväll,Substantiv,A1,sv,kväll
+tid_kväll,Substantiv,A1,en,evening
+tid_kväll,Substantiv,A1,fr,soir
+tid_kväll,Substantiv,A1,de,Abend
+tid_kväll,Substantiv,A1,es,tarde
+tid_kväll,Substantiv,A1,it,sera
+tid_kväll,Substantiv,A1,ja,夕方
+tid_vecka,Substantiv,A1,sv,vecka
+tid_vecka,Substantiv,A1,en,week
+tid_vecka,Substantiv,A1,fr,semaine
+tid_vecka,Substantiv,A1,de,Woche
+tid_vecka,Substantiv,A1,es,semana
+tid_vecka,Substantiv,A1,it,settimana
+tid_vecka,Substantiv,A1,ja,週
+tid_månad,Substantiv,A1,sv,månad
+tid_månad,Substantiv,A1,en,month
+tid_månad,Substantiv,A1,fr,mois
+tid_månad,Substantiv,A1,de,Monat
+tid_månad,Substantiv,A1,es,mes
+tid_månad,Substantiv,A1,it,mese
+tid_månad,Substantiv,A1,ja,月
+tid_år,Substantiv,A1,sv,år
+tid_år,Substantiv,A1,en,year
+tid_år,Substantiv,A1,fr,année
+tid_år,Substantiv,A1,de,Jahr
+tid_år,Substantiv,A1,es,año
+tid_år,Substantiv,A1,it,anno
+tid_år,Substantiv,A1,ja,年
+tid_timme,Substantiv,A1,sv,timme
+tid_timme,Substantiv,A1,en,hour
+tid_timme,Substantiv,A1,fr,heure
+tid_timme,Substantiv,A1,de,Stunde
+tid_timme,Substantiv,A1,es,hora
+tid_timme,Substantiv,A1,it,ora
+tid_timme,Substantiv,A1,ja,時間
+tid_minut,Substantiv,A1,sv,minut
+tid_minut,Substantiv,A1,en,minute
+tid_minut,Substantiv,A1,fr,minute
+tid_minut,Substantiv,A1,de,Minute
+tid_minut,Substantiv,A1,es,minuto
+tid_minut,Substantiv,A1,it,minuto
+tid_minut,Substantiv,A1,ja,分
+tid_sekund,Substantiv,A2,sv,sekund
+tid_sekund,Substantiv,A2,en,second
+tid_sekund,Substantiv,A2,fr,seconde
+tid_sekund,Substantiv,A2,de,Sekunde
+tid_sekund,Substantiv,A2,es,segundo
+tid_sekund,Substantiv,A2,it,secondo
+tid_sekund,Substantiv,A2,ja,秒
+
+# ── 17. Platser och samhälle ──────────────────────────────────────────────────
+# Prefix: plats_
+# it=paese täcker plats_by och plats_land (polysemi — hållbar förenkling)
+# fr/es/it: maison/casa täcker plats_hem och hem_hus — olika koncept, överlapp OK
+# reseplatser (flygplats, tågstation, busshållplats) tillhör trans_ (kat. 18)
+plats_stad,Substantiv,A1,sv,stad
+plats_stad,Substantiv,A1,en,city
+plats_stad,Substantiv,A1,fr,ville
+plats_stad,Substantiv,A1,de,Stadt
+plats_stad,Substantiv,A1,es,ciudad
+plats_stad,Substantiv,A1,it,città
+plats_stad,Substantiv,A1,ja,町
+plats_by,Substantiv,A1,sv,by
+plats_by,Substantiv,A1,en,village
+plats_by,Substantiv,A1,fr,village
+plats_by,Substantiv,A1,de,Dorf
+plats_by,Substantiv,A1,es,pueblo
+plats_by,Substantiv,A1,it,paese
+plats_by,Substantiv,A1,ja,村
+plats_land,Substantiv,A1,sv,land
+plats_land,Substantiv,A1,en,country
+plats_land,Substantiv,A1,fr,pays
+plats_land,Substantiv,A1,de,Land
+plats_land,Substantiv,A1,es,país
+# it=paese täcker plats_land och plats_by (polysemi)
+plats_land,Substantiv,A1,it,paese
+plats_land,Substantiv,A1,ja,国
+plats_skola,Substantiv,A1,sv,skola
+plats_skola,Substantiv,A1,en,school
+plats_skola,Substantiv,A1,fr,école
+plats_skola,Substantiv,A1,de,Schule
+plats_skola,Substantiv,A1,es,escuela
+plats_skola,Substantiv,A1,it,scuola
+plats_skola,Substantiv,A1,ja,学校
+plats_sjukhus,Substantiv,A1,sv,sjukhus
+plats_sjukhus,Substantiv,A1,en,hospital
+plats_sjukhus,Substantiv,A1,fr,hôpital
+plats_sjukhus,Substantiv,A1,de,Krankenhaus
+plats_sjukhus,Substantiv,A1,es,hospital
+plats_sjukhus,Substantiv,A1,it,ospedale
+plats_sjukhus,Substantiv,A1,ja,病院
+plats_affär,Substantiv,A1,sv,affär
+plats_affär,Substantiv,A1,en,shop
+plats_affär,Substantiv,A1,fr,magasin
+plats_affär,Substantiv,A1,de,Geschäft
+plats_affär,Substantiv,A1,es,tienda
+plats_affär,Substantiv,A1,it,negozio
+plats_affär,Substantiv,A1,ja,店
+plats_restaurang,Substantiv,A1,sv,restaurang
+plats_restaurang,Substantiv,A1,en,restaurant
+plats_restaurang,Substantiv,A1,fr,restaurant
+plats_restaurang,Substantiv,A1,de,Restaurant
+plats_restaurang,Substantiv,A1,es,restaurante
+plats_restaurang,Substantiv,A1,it,ristorante
+plats_restaurang,Substantiv,A1,ja,レストラン
+plats_café,Substantiv,A1,sv,café
+plats_café,Substantiv,A1,en,café
+plats_café,Substantiv,A1,fr,café
+plats_café,Substantiv,A1,de,Café
+plats_café,Substantiv,A1,es,café
+plats_café,Substantiv,A1,it,caffè
+plats_café,Substantiv,A1,ja,カフェ
+plats_bar,Substantiv,A1,sv,bar
+plats_bar,Substantiv,A1,en,bar
+plats_bar,Substantiv,A1,fr,bar
+plats_bar,Substantiv,A1,de,Bar
+plats_bar,Substantiv,A1,es,bar
+plats_bar,Substantiv,A1,it,bar
+plats_bar,Substantiv,A1,ja,バー
+plats_väg,Substantiv,A1,sv,väg
+plats_väg,Substantiv,A1,en,road
+plats_väg,Substantiv,A1,fr,rue
+plats_väg,Substantiv,A1,de,Straße
+plats_väg,Substantiv,A1,es,calle
+plats_väg,Substantiv,A1,it,strada
+plats_väg,Substantiv,A1,ja,道
+plats_park,Substantiv,A1,sv,park
+plats_park,Substantiv,A1,en,park
+plats_park,Substantiv,A1,fr,parc
+plats_park,Substantiv,A1,de,Park
+plats_park,Substantiv,A1,es,parque
+plats_park,Substantiv,A1,it,parco
+plats_park,Substantiv,A1,ja,公園
+plats_hem,Substantiv,A1,sv,hem
+plats_hem,Substantiv,A1,en,home
+plats_hem,Substantiv,A1,fr,maison
+plats_hem,Substantiv,A1,de,Zuhause
+plats_hem,Substantiv,A1,es,casa
+plats_hem,Substantiv,A1,it,casa
+plats_hem,Substantiv,A1,ja,家
+plats_kyrka,Substantiv,A2,sv,kyrka
+plats_kyrka,Substantiv,A2,en,church
+plats_kyrka,Substantiv,A2,fr,église
+plats_kyrka,Substantiv,A2,de,Kirche
+plats_kyrka,Substantiv,A2,es,iglesia
+plats_kyrka,Substantiv,A2,it,chiesa
+plats_kyrka,Substantiv,A2,ja,教会
+plats_bibliotek,Substantiv,A2,sv,bibliotek
+plats_bibliotek,Substantiv,A2,en,library
+plats_bibliotek,Substantiv,A2,fr,bibliothèque
+plats_bibliotek,Substantiv,A2,de,Bibliothek
+plats_bibliotek,Substantiv,A2,es,biblioteca
+plats_bibliotek,Substantiv,A2,it,biblioteca
+plats_bibliotek,Substantiv,A2,ja,図書館
+plats_universitet,Substantiv,A2,sv,universitet
+plats_universitet,Substantiv,A2,en,university
+plats_universitet,Substantiv,A2,fr,université
+plats_universitet,Substantiv,A2,de,Universität
+plats_universitet,Substantiv,A2,es,universidad
+plats_universitet,Substantiv,A2,it,università
+plats_universitet,Substantiv,A2,ja,大学
+plats_apotek,Substantiv,A1,sv,apotek
+plats_apotek,Substantiv,A1,en,pharmacy
+plats_apotek,Substantiv,A1,fr,pharmacie
+plats_apotek,Substantiv,A1,de,Apotheke
+plats_apotek,Substantiv,A1,es,farmacia
+plats_apotek,Substantiv,A1,it,farmacia
+plats_apotek,Substantiv,A1,ja,薬局
+plats_kontor,Substantiv,A2,sv,kontor
+plats_kontor,Substantiv,A2,en,office
+plats_kontor,Substantiv,A2,fr,bureau
+plats_kontor,Substantiv,A2,de,Büro
+plats_kontor,Substantiv,A2,es,oficina
+plats_kontor,Substantiv,A2,it,ufficio
+plats_kontor,Substantiv,A2,ja,オフィス
+plats_marknad,Substantiv,A2,sv,marknad
+plats_marknad,Substantiv,A2,en,market
+plats_marknad,Substantiv,A2,fr,marché
+plats_marknad,Substantiv,A2,de,Markt
+plats_marknad,Substantiv,A2,es,mercado
+plats_marknad,Substantiv,A2,it,mercato
+plats_marknad,Substantiv,A2,ja,市場
+
+# ── 18. Transport ─────────────────────────────────────────────────────────────
+# Prefix: trans_
+# Fordon + reseplatser samlade här
+# fr=gare / de=Bahnhof / es=estación / it=stazione: tågstation (ingen tunnelbaneversion)
+# trans_busshållplats: flerordslemman i fr/es/it — OK
+trans_bil,Substantiv,A1,sv,bil
+trans_bil,Substantiv,A1,en,car
+trans_bil,Substantiv,A1,fr,voiture
+trans_bil,Substantiv,A1,de,Auto
+trans_bil,Substantiv,A1,es,coche
+trans_bil,Substantiv,A1,it,macchina
+trans_bil,Substantiv,A1,ja,車
+trans_buss,Substantiv,A1,sv,buss
+trans_buss,Substantiv,A1,en,bus
+trans_buss,Substantiv,A1,fr,bus
+trans_buss,Substantiv,A1,de,Bus
+trans_buss,Substantiv,A1,es,autobús
+trans_buss,Substantiv,A1,it,autobus
+trans_buss,Substantiv,A1,ja,バス
+trans_tåg,Substantiv,A1,sv,tåg
+trans_tåg,Substantiv,A1,en,train
+trans_tåg,Substantiv,A1,fr,train
+trans_tåg,Substantiv,A1,de,Zug
+trans_tåg,Substantiv,A1,es,tren
+trans_tåg,Substantiv,A1,it,treno
+trans_tåg,Substantiv,A1,ja,電車
+trans_tunnelbana,Substantiv,A2,sv,tunnelbana
+trans_tunnelbana,Substantiv,A2,en,metro
+trans_tunnelbana,Substantiv,A2,fr,métro
+trans_tunnelbana,Substantiv,A2,de,U-Bahn
+trans_tunnelbana,Substantiv,A2,es,metro
+trans_tunnelbana,Substantiv,A2,it,metro
+trans_tunnelbana,Substantiv,A2,ja,地下鉄
+trans_cykel,Substantiv,A1,sv,cykel
+trans_cykel,Substantiv,A1,en,bicycle
+trans_cykel,Substantiv,A1,fr,vélo
+trans_cykel,Substantiv,A1,de,Fahrrad
+trans_cykel,Substantiv,A1,es,bicicleta
+trans_cykel,Substantiv,A1,it,bicicletta
+trans_cykel,Substantiv,A1,ja,自転車
+trans_flygplan,Substantiv,A1,sv,flygplan
+trans_flygplan,Substantiv,A1,en,plane
+trans_flygplan,Substantiv,A1,fr,avion
+trans_flygplan,Substantiv,A1,de,Flugzeug
+trans_flygplan,Substantiv,A1,es,avión
+trans_flygplan,Substantiv,A1,it,aereo
+trans_flygplan,Substantiv,A1,ja,飛行機
+trans_båt,Substantiv,A1,sv,båt
+trans_båt,Substantiv,A1,en,boat
+trans_båt,Substantiv,A1,fr,bateau
+trans_båt,Substantiv,A1,de,Boot
+trans_båt,Substantiv,A1,es,barco
+trans_båt,Substantiv,A1,it,barca
+trans_båt,Substantiv,A1,ja,船
+trans_taxi,Substantiv,A1,sv,taxi
+trans_taxi,Substantiv,A1,en,taxi
+trans_taxi,Substantiv,A1,fr,taxi
+trans_taxi,Substantiv,A1,de,Taxi
+trans_taxi,Substantiv,A1,es,taxi
+trans_taxi,Substantiv,A1,it,taxi
+trans_taxi,Substantiv,A1,ja,タクシー
+trans_flygplats,Substantiv,A1,sv,flygplats
+trans_flygplats,Substantiv,A1,en,airport
+trans_flygplats,Substantiv,A1,fr,aéroport
+trans_flygplats,Substantiv,A1,de,Flughafen
+trans_flygplats,Substantiv,A1,es,aeropuerto
+trans_flygplats,Substantiv,A1,it,aeroporto
+trans_flygplats,Substantiv,A1,ja,空港
+trans_tågstation,Substantiv,A1,sv,tågstation
+trans_tågstation,Substantiv,A1,en,train station
+trans_tågstation,Substantiv,A1,fr,gare
+trans_tågstation,Substantiv,A1,de,Bahnhof
+trans_tågstation,Substantiv,A1,es,estación
+trans_tågstation,Substantiv,A1,it,stazione
+trans_tågstation,Substantiv,A1,ja,駅
+trans_busshållplats,Substantiv,A1,sv,busshållplats
+trans_busshållplats,Substantiv,A1,en,bus stop
+trans_busshållplats,Substantiv,A1,fr,arrêt de bus
+trans_busshållplats,Substantiv,A1,de,Bushaltestelle
+trans_busshållplats,Substantiv,A1,es,parada de autobús
+trans_busshållplats,Substantiv,A1,it,fermata dell'autobus
+trans_busshållplats,Substantiv,A1,ja,バス停
+trans_biljett,Substantiv,A1,sv,biljett
+trans_biljett,Substantiv,A1,en,ticket
+trans_biljett,Substantiv,A1,fr,billet
+trans_biljett,Substantiv,A1,de,Ticket
+trans_biljett,Substantiv,A1,es,billete
+trans_biljett,Substantiv,A1,it,biglietto
+trans_biljett,Substantiv,A1,ja,切符
+
+# ── 19. Djur ──────────────────────────────────────────────────────────────────
+# Prefix: djur_
+# djur_fisk ≠ mat_fisk — samma lemma, olika kontext (levande djur vs mat)
+# es=pez (levande fisk) vs es=pescado (mat) — djur_fisk använder pez
+djur_hund,Substantiv,A1,sv,hund
+djur_hund,Substantiv,A1,en,dog
+djur_hund,Substantiv,A1,fr,chien
+djur_hund,Substantiv,A1,de,Hund
+djur_hund,Substantiv,A1,es,perro
+djur_hund,Substantiv,A1,it,cane
+djur_hund,Substantiv,A1,ja,犬
+djur_katt,Substantiv,A1,sv,katt
+djur_katt,Substantiv,A1,en,cat
+djur_katt,Substantiv,A1,fr,chat
+djur_katt,Substantiv,A1,de,Katze
+djur_katt,Substantiv,A1,es,gato
+djur_katt,Substantiv,A1,it,gatto
+djur_katt,Substantiv,A1,ja,猫
+djur_fågel,Substantiv,A1,sv,fågel
+djur_fågel,Substantiv,A1,en,bird
+djur_fågel,Substantiv,A1,fr,oiseau
+djur_fågel,Substantiv,A1,de,Vogel
+djur_fågel,Substantiv,A1,es,pájaro
+djur_fågel,Substantiv,A1,it,uccello
+djur_fågel,Substantiv,A1,ja,鳥
+djur_fisk,Substantiv,A1,sv,fisk
+djur_fisk,Substantiv,A1,en,fish
+djur_fisk,Substantiv,A1,fr,poisson
+djur_fisk,Substantiv,A1,de,Fisch
+djur_fisk,Substantiv,A1,es,pez
+djur_fisk,Substantiv,A1,it,pesce
+djur_fisk,Substantiv,A1,ja,魚
+djur_häst,Substantiv,A1,sv,häst
+djur_häst,Substantiv,A1,en,horse
+djur_häst,Substantiv,A1,fr,cheval
+djur_häst,Substantiv,A1,de,Pferd
+djur_häst,Substantiv,A1,es,caballo
+djur_häst,Substantiv,A1,it,cavallo
+djur_häst,Substantiv,A1,ja,馬
+djur_ko,Substantiv,A1,sv,ko
+djur_ko,Substantiv,A1,en,cow
+djur_ko,Substantiv,A1,fr,vache
+djur_ko,Substantiv,A1,de,Kuh
+djur_ko,Substantiv,A1,es,vaca
+djur_ko,Substantiv,A1,it,mucca
+djur_ko,Substantiv,A1,ja,牛
+djur_gris,Substantiv,A1,sv,gris
+djur_gris,Substantiv,A1,en,pig
+djur_gris,Substantiv,A1,fr,cochon
+djur_gris,Substantiv,A1,de,Schwein
+djur_gris,Substantiv,A1,es,cerdo
+djur_gris,Substantiv,A1,it,maiale
+djur_gris,Substantiv,A1,ja,豚
+djur_får,Substantiv,A1,sv,får
+djur_får,Substantiv,A1,en,sheep
+djur_får,Substantiv,A1,fr,mouton
+djur_får,Substantiv,A1,de,Schaf
+djur_får,Substantiv,A1,es,oveja
+djur_får,Substantiv,A1,it,pecora
+djur_får,Substantiv,A1,ja,羊
+djur_mus,Substantiv,A1,sv,mus
+djur_mus,Substantiv,A1,en,mouse
+djur_mus,Substantiv,A1,fr,souris
+djur_mus,Substantiv,A1,de,Maus
+djur_mus,Substantiv,A1,es,ratón
+djur_mus,Substantiv,A1,it,topo
+djur_mus,Substantiv,A1,ja,ネズミ
+djur_orm,Substantiv,A2,sv,orm
+djur_orm,Substantiv,A2,en,snake
+djur_orm,Substantiv,A2,fr,serpent
+djur_orm,Substantiv,A2,de,Schlange
+djur_orm,Substantiv,A2,es,serpiente
+djur_orm,Substantiv,A2,it,serpente
+djur_orm,Substantiv,A2,ja,蛇
+djur_lejon,Substantiv,A2,sv,lejon
+djur_lejon,Substantiv,A2,en,lion
+djur_lejon,Substantiv,A2,fr,lion
+djur_lejon,Substantiv,A2,de,Löwe
+djur_lejon,Substantiv,A2,es,león
+djur_lejon,Substantiv,A2,it,leone
+djur_lejon,Substantiv,A2,ja,ライオン
+djur_elefant,Substantiv,A2,sv,elefant
+djur_elefant,Substantiv,A2,en,elephant
+djur_elefant,Substantiv,A2,fr,éléphant
+djur_elefant,Substantiv,A2,de,Elefant
+djur_elefant,Substantiv,A2,es,elefante
+djur_elefant,Substantiv,A2,it,elefante
+djur_elefant,Substantiv,A2,ja,象
+
+# ── 20. Skola och vardagsföremål ──────────────────────────────────────────────
+# Prefix: skol_
+# fr=professeur täcker skol_lärare och skol_professor (polysemi)
+# es=profesor täcker skol_lärare och skol_professor (polysemi)
+# ja=先生 täcker skol_lärare och skol_professor (polysemi — 教授 är mer specifikt för uni)
+# skol_elev = grundskola/gymnasie; skol_student = universitets-/högskolenivå
+skol_bok,Substantiv,A1,sv,bok
+skol_bok,Substantiv,A1,en,book
+skol_bok,Substantiv,A1,fr,livre
+skol_bok,Substantiv,A1,de,Buch
+skol_bok,Substantiv,A1,es,libro
+skol_bok,Substantiv,A1,it,libro
+skol_bok,Substantiv,A1,ja,本
+skol_penna,Substantiv,A1,sv,penna
+skol_penna,Substantiv,A1,en,pen
+skol_penna,Substantiv,A1,fr,stylo
+skol_penna,Substantiv,A1,de,Stift
+skol_penna,Substantiv,A1,es,bolígrafo
+skol_penna,Substantiv,A1,it,penna
+skol_penna,Substantiv,A1,ja,ペン
+skol_papper,Substantiv,A1,sv,papper
+skol_papper,Substantiv,A1,en,paper
+skol_papper,Substantiv,A1,fr,papier
+skol_papper,Substantiv,A1,de,Papier
+skol_papper,Substantiv,A1,es,papel
+skol_papper,Substantiv,A1,it,carta
+skol_papper,Substantiv,A1,ja,紙
+skol_väska,Substantiv,A1,sv,väska
+skol_väska,Substantiv,A1,en,bag
+skol_väska,Substantiv,A1,fr,sac
+skol_väska,Substantiv,A1,de,Tasche
+skol_väska,Substantiv,A1,es,bolsa
+skol_väska,Substantiv,A1,it,borsa
+skol_väska,Substantiv,A1,ja,かばん
+skol_dator,Substantiv,A1,sv,dator
+skol_dator,Substantiv,A1,en,computer
+skol_dator,Substantiv,A1,fr,ordinateur
+skol_dator,Substantiv,A1,de,Computer
+skol_dator,Substantiv,A1,es,ordenador
+skol_dator,Substantiv,A1,it,computer
+skol_dator,Substantiv,A1,ja,パソコン
+skol_telefon,Substantiv,A1,sv,telefon
+skol_telefon,Substantiv,A1,en,phone
+skol_telefon,Substantiv,A1,fr,téléphone
+skol_telefon,Substantiv,A1,de,Telefon
+skol_telefon,Substantiv,A1,es,teléfono
+skol_telefon,Substantiv,A1,it,telefono
+skol_telefon,Substantiv,A1,ja,電話
+skol_klass,Substantiv,A1,sv,klass
+skol_klass,Substantiv,A1,en,class
+skol_klass,Substantiv,A1,fr,classe
+skol_klass,Substantiv,A1,de,Klasse
+skol_klass,Substantiv,A1,es,clase
+skol_klass,Substantiv,A1,it,classe
+skol_klass,Substantiv,A1,ja,クラス
+skol_lärare,Substantiv,A1,sv,lärare
+skol_lärare,Substantiv,A1,en,teacher
+skol_lärare,Substantiv,A1,fr,professeur
+skol_lärare,Substantiv,A1,de,Lehrer
+skol_lärare,Substantiv,A1,es,profesor
+skol_lärare,Substantiv,A1,it,insegnante
+skol_lärare,Substantiv,A1,ja,先生
+skol_elev,Substantiv,A1,sv,elev
+skol_elev,Substantiv,A1,en,pupil
+skol_elev,Substantiv,A1,fr,élève
+skol_elev,Substantiv,A1,de,Schüler
+skol_elev,Substantiv,A1,es,alumno
+skol_elev,Substantiv,A1,it,alunno
+skol_elev,Substantiv,A1,ja,生徒
+skol_student,Substantiv,A1,sv,student
+skol_student,Substantiv,A1,en,student
+skol_student,Substantiv,A1,fr,étudiant
+skol_student,Substantiv,A1,de,Student
+skol_student,Substantiv,A1,es,estudiante
+skol_student,Substantiv,A1,it,studente
+skol_student,Substantiv,A1,ja,学生
+skol_professor,Substantiv,A2,sv,professor
+skol_professor,Substantiv,A2,en,professor
+# fr=professeur täcker skol_lärare och skol_professor (polysemi)
+skol_professor,Substantiv,A2,fr,professeur
+skol_professor,Substantiv,A2,de,Professor
+# es=profesor täcker skol_lärare och skol_professor (polysemi)
+skol_professor,Substantiv,A2,es,profesor
+skol_professor,Substantiv,A2,it,professore
+# ja=先生 täcker skol_lärare och skol_professor; 教授 mer specifikt för uni
+skol_professor,Substantiv,A2,ja,教授
+skol_fråga,Substantiv,A1,sv,fråga
+skol_fråga,Substantiv,A1,en,question
+skol_fråga,Substantiv,A1,fr,question
+skol_fråga,Substantiv,A1,de,Frage
+skol_fråga,Substantiv,A1,es,pregunta
+skol_fråga,Substantiv,A1,it,domanda
+skol_fråga,Substantiv,A1,ja,質問
+skol_svar,Substantiv,A1,sv,svar
+skol_svar,Substantiv,A1,en,answer
+skol_svar,Substantiv,A1,fr,réponse
+skol_svar,Substantiv,A1,de,Antwort
+skol_svar,Substantiv,A1,es,respuesta
+skol_svar,Substantiv,A1,it,risposta
+skol_svar,Substantiv,A1,ja,答え
+skol_läxa,Substantiv,A2,sv,läxa
+skol_läxa,Substantiv,A2,en,homework
+skol_läxa,Substantiv,A2,fr,devoir
+skol_läxa,Substantiv,A2,de,Hausaufgabe
+skol_läxa,Substantiv,A2,es,tarea
+skol_läxa,Substantiv,A2,it,compito
+skol_läxa,Substantiv,A2,ja,宿題
+
+# ── 21. Yrken och roller ──────────────────────────────────────────────────────
+# Prefix: yrke_
+# lärare/professor/student hoppas över — sitter i skol_
+# fr=artiste / de=Künstler / es=artista / it=artista täcker yrke_konstnär och yrke_artist (polysemi)
+yrke_läkare,Substantiv,A1,sv,läkare
+yrke_läkare,Substantiv,A1,en,doctor
+yrke_läkare,Substantiv,A1,fr,médecin
+yrke_läkare,Substantiv,A1,de,Arzt
+yrke_läkare,Substantiv,A1,es,médico
+yrke_läkare,Substantiv,A1,it,medico
+yrke_läkare,Substantiv,A1,ja,医者
+yrke_sjuksköterska,Substantiv,A1,sv,sjuksköterska
+yrke_sjuksköterska,Substantiv,A1,en,nurse
+yrke_sjuksköterska,Substantiv,A1,fr,infirmier
+yrke_sjuksköterska,Substantiv,A1,de,Krankenpfleger
+yrke_sjuksköterska,Substantiv,A1,es,enfermero
+yrke_sjuksköterska,Substantiv,A1,it,infermiere
+yrke_sjuksköterska,Substantiv,A1,ja,看護師
+yrke_polis,Substantiv,A1,sv,polis
+yrke_polis,Substantiv,A1,en,police officer
+yrke_polis,Substantiv,A1,fr,policier
+yrke_polis,Substantiv,A1,de,Polizist
+yrke_polis,Substantiv,A1,es,policía
+yrke_polis,Substantiv,A1,it,poliziotto
+yrke_polis,Substantiv,A1,ja,警察官
+yrke_brandman,Substantiv,A1,sv,brandman
+yrke_brandman,Substantiv,A1,en,firefighter
+yrke_brandman,Substantiv,A1,fr,pompier
+yrke_brandman,Substantiv,A1,de,Feuerwehrmann
+yrke_brandman,Substantiv,A1,es,bombero
+yrke_brandman,Substantiv,A1,it,pompiere
+yrke_brandman,Substantiv,A1,ja,消防士
+yrke_chef,Substantiv,A2,sv,chef
+yrke_chef,Substantiv,A2,en,boss
+yrke_chef,Substantiv,A2,fr,chef
+yrke_chef,Substantiv,A2,de,Chef
+yrke_chef,Substantiv,A2,es,jefe
+yrke_chef,Substantiv,A2,it,capo
+yrke_chef,Substantiv,A2,ja,上司
+yrke_kollega,Substantiv,A2,sv,kollega
+yrke_kollega,Substantiv,A2,en,colleague
+yrke_kollega,Substantiv,A2,fr,collègue
+yrke_kollega,Substantiv,A2,de,Kollege
+yrke_kollega,Substantiv,A2,es,colega
+yrke_kollega,Substantiv,A2,it,collega
+yrke_kollega,Substantiv,A2,ja,同僚
+yrke_säljare,Substantiv,A2,sv,säljare
+yrke_säljare,Substantiv,A2,en,salesperson
+yrke_säljare,Substantiv,A2,fr,vendeur
+yrke_säljare,Substantiv,A2,de,Verkäufer
+yrke_säljare,Substantiv,A2,es,vendedor
+yrke_säljare,Substantiv,A2,it,venditore
+yrke_säljare,Substantiv,A2,ja,販売員
+yrke_bonde,Substantiv,A2,sv,bonde
+yrke_bonde,Substantiv,A2,en,farmer
+yrke_bonde,Substantiv,A2,fr,fermier
+yrke_bonde,Substantiv,A2,de,Bauer
+yrke_bonde,Substantiv,A2,es,agricultor
+yrke_bonde,Substantiv,A2,it,agricoltore
+yrke_bonde,Substantiv,A2,ja,農家
+yrke_kock,Substantiv,A2,sv,kock
+yrke_kock,Substantiv,A2,en,cook
+yrke_kock,Substantiv,A2,fr,cuisinier
+yrke_kock,Substantiv,A2,de,Koch
+yrke_kock,Substantiv,A2,es,cocinero
+yrke_kock,Substantiv,A2,it,cuoco
+yrke_kock,Substantiv,A2,ja,料理人
+yrke_ingenjör,Substantiv,A2,sv,ingenjör
+yrke_ingenjör,Substantiv,A2,en,engineer
+yrke_ingenjör,Substantiv,A2,fr,ingénieur
+yrke_ingenjör,Substantiv,A2,de,Ingenieur
+yrke_ingenjör,Substantiv,A2,es,ingeniero
+yrke_ingenjör,Substantiv,A2,it,ingegnere
+yrke_ingenjör,Substantiv,A2,ja,エンジニア
+yrke_konstnär,Substantiv,A2,sv,konstnär
+yrke_konstnär,Substantiv,A2,en,artist
+# fr=artiste täcker yrke_konstnär och yrke_artist (polysemi)
+yrke_konstnär,Substantiv,A2,fr,artiste
+# de=Künstler täcker yrke_konstnär och yrke_artist (polysemi)
+yrke_konstnär,Substantiv,A2,de,Künstler
+# es=artista täcker yrke_konstnär och yrke_artist (polysemi)
+yrke_konstnär,Substantiv,A2,es,artista
+# it=artista täcker yrke_konstnär och yrke_artist (polysemi)
+yrke_konstnär,Substantiv,A2,it,artista
+yrke_konstnär,Substantiv,A2,ja,芸術家
+yrke_författare,Substantiv,A2,sv,författare
+yrke_författare,Substantiv,A2,en,writer
+yrke_författare,Substantiv,A2,fr,écrivain
+yrke_författare,Substantiv,A2,de,Schriftsteller
+yrke_författare,Substantiv,A2,es,escritor
+yrke_författare,Substantiv,A2,it,scrittore
+yrke_författare,Substantiv,A2,ja,作家
+yrke_artist,Substantiv,A2,sv,artist
+yrke_artist,Substantiv,A2,en,performer
+yrke_artist,Substantiv,A2,fr,artiste
+yrke_artist,Substantiv,A2,de,Künstler
+yrke_artist,Substantiv,A2,es,artista
+yrke_artist,Substantiv,A2,it,artista
+yrke_artist,Substantiv,A2,ja,アーティスト
+yrke_advokat,Substantiv,A2,sv,advokat
+yrke_advokat,Substantiv,A2,en,lawyer
+yrke_advokat,Substantiv,A2,fr,avocat
+yrke_advokat,Substantiv,A2,de,Anwalt
+yrke_advokat,Substantiv,A2,es,abogado
+yrke_advokat,Substantiv,A2,it,avvocato
+yrke_advokat,Substantiv,A2,ja,弁護士
+
+# ── 22. Abstrakt och universell kärna ─────────────────────────────────────────
+# Prefix: abs_
+# Begrepp som är universellt frekventa men inte platser, yrken eller konkreta ting
+# es=baño täcker hem_badrum och hem_toalett (polysemi — dokumenterat i sektion 13)
+# ja=お金 (pengar, vardaglig form); 金 är mer formellt/litterärt
+# ja=命 (liv som i "livet man lever"); 生活 (vardagslivet) — lemma: 命 (universellare)
+abs_värld,Substantiv,A1,sv,värld
+abs_värld,Substantiv,A1,en,world
+abs_värld,Substantiv,A1,fr,monde
+abs_värld,Substantiv,A1,de,Welt
+abs_värld,Substantiv,A1,es,mundo
+abs_värld,Substantiv,A1,it,mondo
+abs_värld,Substantiv,A1,ja,世界
+abs_liv,Substantiv,A1,sv,liv
+abs_liv,Substantiv,A1,en,life
+abs_liv,Substantiv,A1,fr,vie
+abs_liv,Substantiv,A1,de,Leben
+abs_liv,Substantiv,A1,es,vida
+abs_liv,Substantiv,A1,it,vita
+abs_liv,Substantiv,A1,ja,命
+abs_kärlek,Substantiv,A1,sv,kärlek
+abs_kärlek,Substantiv,A1,en,love
+abs_kärlek,Substantiv,A1,fr,amour
+abs_kärlek,Substantiv,A1,de,Liebe
+abs_kärlek,Substantiv,A1,es,amor
+abs_kärlek,Substantiv,A1,it,amore
+abs_kärlek,Substantiv,A1,ja,愛
+eko_pengar,Substantiv,A1,sv,pengar
+eko_pengar,Substantiv,A1,en,money
+eko_pengar,Substantiv,A1,fr,argent
+eko_pengar,Substantiv,A1,de,Geld
+eko_pengar,Substantiv,A1,es,dinero
+eko_pengar,Substantiv,A1,it,soldi
+eko_pengar,Substantiv,A1,ja,お金
+eko_pris,Substantiv,A2,sv,pris
+eko_pris,Substantiv,A2,en,price
+eko_pris,Substantiv,A2,fr,prix
+eko_pris,Substantiv,A2,de,Preis
+eko_pris,Substantiv,A2,es,precio
+eko_pris,Substantiv,A2,it,prezzo
+eko_pris,Substantiv,A2,ja,値段
+abs_problem,Substantiv,A2,sv,problem
+abs_problem,Substantiv,A2,en,problem
+abs_problem,Substantiv,A2,fr,problème
+abs_problem,Substantiv,A2,de,Problem
+abs_problem,Substantiv,A2,es,problema
+abs_problem,Substantiv,A2,it,problema
+abs_problem,Substantiv,A2,ja,問題
+abs_hälsa,Substantiv,A2,sv,hälsa
+abs_hälsa,Substantiv,A2,en,health
+abs_hälsa,Substantiv,A2,fr,santé
+abs_hälsa,Substantiv,A2,de,Gesundheit
+abs_hälsa,Substantiv,A2,es,salud
+abs_hälsa,Substantiv,A2,it,salute
+abs_hälsa,Substantiv,A2,ja,健康
+abs_ord,Substantiv,A2,sv,ord
+abs_ord,Substantiv,A2,en,word
+abs_ord,Substantiv,A2,fr,mot
+abs_ord,Substantiv,A2,de,Wort
+abs_ord,Substantiv,A2,es,palabra
+abs_ord,Substantiv,A2,it,parola
+abs_ord,Substantiv,A2,ja,言葉
+abs_möjlighet,Substantiv,B1,sv,möjlighet
+abs_möjlighet,Substantiv,B1,en,opportunity
+abs_möjlighet,Substantiv,B1,fr,possibilité
+abs_möjlighet,Substantiv,B1,de,Möglichkeit
+abs_möjlighet,Substantiv,B1,es,posibilidad
+abs_möjlighet,Substantiv,B1,it,possibilità
+abs_möjlighet,Substantiv,B1,ja,可能性
+abs_idé,Substantiv,A2,sv,idé
+abs_idé,Substantiv,A2,en,idea
+abs_idé,Substantiv,A2,fr,idée
+abs_idé,Substantiv,A2,de,Idee
+abs_idé,Substantiv,A2,es,idea
+abs_idé,Substantiv,A2,it,idea
+abs_idé,Substantiv,A2,ja,アイデア
+abs_sätt,Substantiv,A2,sv,sätt
+abs_sätt,Substantiv,A2,en,way
+abs_sätt,Substantiv,A2,fr,façon
+abs_sätt,Substantiv,A2,de,Weise
+abs_sätt,Substantiv,A2,es,manera
+abs_sätt,Substantiv,A2,it,modo
+abs_sätt,Substantiv,A2,ja,方法
+abs_del,Substantiv,A2,sv,del
+abs_del,Substantiv,A2,en,part
+abs_del,Substantiv,A2,fr,partie
+abs_del,Substantiv,A2,de,Teil
+abs_del,Substantiv,A2,es,parte
+abs_del,Substantiv,A2,it,parte
+abs_del,Substantiv,A2,ja,部分
+abs_anledning,Substantiv,A2,sv,anledning
+abs_anledning,Substantiv,A2,en,reason
+abs_anledning,Substantiv,A2,fr,raison
+abs_anledning,Substantiv,A2,de,Grund
+abs_anledning,Substantiv,A2,es,razón
+abs_anledning,Substantiv,A2,it,motivo
+abs_anledning,Substantiv,A2,ja,理由
+abs_exempel,Substantiv,A2,sv,exempel
+abs_exempel,Substantiv,A2,en,example
+abs_exempel,Substantiv,A2,fr,exemple
+abs_exempel,Substantiv,A2,de,Beispiel
+abs_exempel,Substantiv,A2,es,ejemplo
+abs_exempel,Substantiv,A2,it,esempio
+abs_exempel,Substantiv,A2,ja,例
+abs_framtid,Substantiv,A2,sv,framtid
+abs_framtid,Substantiv,A2,en,future
+abs_framtid,Substantiv,A2,fr,avenir
+abs_framtid,Substantiv,A2,de,Zukunft
+abs_framtid,Substantiv,A2,es,futuro
+abs_framtid,Substantiv,A2,it,futuro
+abs_framtid,Substantiv,A2,ja,未来
+abs_nyhet,Substantiv,A2,sv,nyhet
+abs_nyhet,Substantiv,A2,en,news
+abs_nyhet,Substantiv,A2,fr,nouvelles
+abs_nyhet,Substantiv,A2,de,Nachricht
+abs_nyhet,Substantiv,A2,es,noticia
+abs_nyhet,Substantiv,A2,it,notizia
+abs_nyhet,Substantiv,A2,ja,ニュース
+abs_sanning,Substantiv,A2,sv,sanning
+abs_sanning,Substantiv,A2,en,truth
+abs_sanning,Substantiv,A2,fr,vérité
+abs_sanning,Substantiv,A2,de,Wahrheit
+abs_sanning,Substantiv,A2,es,verdad
+abs_sanning,Substantiv,A2,it,verità
+abs_sanning,Substantiv,A2,ja,真実
+abs_ljud,Substantiv,A2,sv,ljud
+abs_ljud,Substantiv,A2,en,sound
+abs_ljud,Substantiv,A2,fr,son
+abs_ljud,Substantiv,A2,de,Geräusch
+abs_ljud,Substantiv,A2,es,sonido
+abs_ljud,Substantiv,A2,it,suono
+abs_ljud,Substantiv,A2,ja,音
+abs_smak,Substantiv,A2,sv,smak
+abs_smak,Substantiv,A2,en,taste
+abs_smak,Substantiv,A2,fr,goût
+abs_smak,Substantiv,A2,de,Geschmack
+abs_smak,Substantiv,A2,es,sabor
+abs_smak,Substantiv,A2,it,sapore
+abs_smak,Substantiv,A2,ja,味
+abs_form,Substantiv,A2,sv,form
+abs_form,Substantiv,A2,en,shape
+abs_form,Substantiv,A2,fr,forme
+abs_form,Substantiv,A2,de,Form
+abs_form,Substantiv,A2,es,forma
+abs_form,Substantiv,A2,it,forma
+abs_form,Substantiv,A2,ja,形
+abs_situation,Substantiv,A2,sv,situation
+abs_situation,Substantiv,A2,en,situation
+abs_situation,Substantiv,A2,fr,situation
+abs_situation,Substantiv,A2,de,Situation
+abs_situation,Substantiv,A2,es,situación
+abs_situation,Substantiv,A2,it,situazione
+abs_situation,Substantiv,A2,ja,状況
+# abs_historia: sv/fr polysemi (historia/histoire = både "historia" och "berättelse") — hållbar förenkling
+abs_historia,Substantiv,A2,sv,historia
+abs_historia,Substantiv,A2,en,history
+abs_historia,Substantiv,A2,fr,histoire
+abs_historia,Substantiv,A2,de,Geschichte
+abs_historia,Substantiv,A2,es,historia
+abs_historia,Substantiv,A2,it,storia
+abs_historia,Substantiv,A2,ja,歴史
+# abs_kultur: centralt B1-begrepp för samhällskontext
+abs_kultur,Substantiv,B1,sv,kultur
+abs_kultur,Substantiv,B1,en,culture
+abs_kultur,Substantiv,B1,fr,culture
+abs_kultur,Substantiv,B1,de,Kultur
+abs_kultur,Substantiv,B1,es,cultura
+abs_kultur,Substantiv,B1,it,cultura
+abs_kultur,Substantiv,B1,ja,文化
+# abs_miljö: es=medio ambiente är tvåordsuttryck — lemma per KONVENTIONER.md
+abs_miljö,Substantiv,A2,sv,miljö
+abs_miljö,Substantiv,A2,en,environment
+abs_miljö,Substantiv,A2,fr,environnement
+abs_miljö,Substantiv,A2,de,Umwelt
+abs_miljö,Substantiv,A2,es,medio ambiente
+abs_miljö,Substantiv,A2,it,ambiente
+abs_miljö,Substantiv,A2,ja,環境
+# abs_makt: fr=pouvoir är också modalverb (polysemi olika ordklass — ej konflikt)
+abs_makt,Substantiv,A2,sv,makt
+abs_makt,Substantiv,A2,en,power
+abs_makt,Substantiv,A2,fr,pouvoir
+abs_makt,Substantiv,A2,de,Macht
+abs_makt,Substantiv,A2,es,poder
+abs_makt,Substantiv,A2,it,potere
+abs_makt,Substantiv,A2,ja,権力
+abs_upplevelse,Substantiv,A2,sv,upplevelse
+abs_upplevelse,Substantiv,A2,en,experience
+abs_upplevelse,Substantiv,A2,fr,expérience
+abs_upplevelse,Substantiv,A2,de,Erlebnis
+abs_upplevelse,Substantiv,A2,es,experiencia
+abs_upplevelse,Substantiv,A2,it,esperienza
+abs_upplevelse,Substantiv,A2,ja,経験
+abs_typ,Substantiv,A2,sv,typ
+abs_typ,Substantiv,A2,en,type
+abs_typ,Substantiv,A2,fr,type
+abs_typ,Substantiv,A2,de,Typ
+abs_typ,Substantiv,A2,es,tipo
+abs_typ,Substantiv,A2,it,tipo
+abs_typ,Substantiv,A2,ja,種類
+
+# ── 23. Människor ─────────────────────────────────────────────────────────────
+# Prefix: pers_
+# Grundläggande personbeskrivning: person, man, kvinna, pojke, flicka
+# de=Erwachsener (man, böjt som adj-substantiv) — lemma: Erwachsener (maskulinum form)
+# ja: 男性=man (formellt); 男の人=man (vardagligt) — lemma: 男性 (standardform)
+pers_person,Substantiv,A1,sv,person
+pers_person,Substantiv,A1,en,person
+pers_person,Substantiv,A1,fr,personne
+pers_person,Substantiv,A1,de,Person
+pers_person,Substantiv,A1,es,persona
+pers_person,Substantiv,A1,it,persona
+pers_person,Substantiv,A1,ja,人
+pers_man,Substantiv,A1,sv,man
+pers_man,Substantiv,A1,en,man
+pers_man,Substantiv,A1,fr,homme
+pers_man,Substantiv,A1,de,Mann
+pers_man,Substantiv,A1,es,hombre
+pers_man,Substantiv,A1,it,uomo
+pers_man,Substantiv,A1,ja,男性
+pers_kvinna,Substantiv,A1,sv,kvinna
+pers_kvinna,Substantiv,A1,en,woman
+pers_kvinna,Substantiv,A1,fr,femme
+pers_kvinna,Substantiv,A1,de,Frau
+pers_kvinna,Substantiv,A1,es,mujer
+pers_kvinna,Substantiv,A1,it,donna
+pers_kvinna,Substantiv,A1,ja,女性
+pers_pojke,Substantiv,A1,sv,pojke
+pers_pojke,Substantiv,A1,en,boy
+pers_pojke,Substantiv,A1,fr,garçon
+pers_pojke,Substantiv,A1,de,Junge
+pers_pojke,Substantiv,A1,es,chico
+pers_pojke,Substantiv,A1,it,ragazzo
+pers_pojke,Substantiv,A1,ja,男の子
+pers_flicka,Substantiv,A1,sv,flicka
+pers_flicka,Substantiv,A1,en,girl
+pers_flicka,Substantiv,A1,fr,fille
+pers_flicka,Substantiv,A1,de,Mädchen
+pers_flicka,Substantiv,A1,es,chica
+pers_flicka,Substantiv,A1,it,ragazza
+pers_flicka,Substantiv,A1,ja,女の子
+pers_vuxen,Substantiv,A2,sv,vuxen
+pers_vuxen,Substantiv,A2,en,adult
+pers_vuxen,Substantiv,A2,fr,adulte
+pers_vuxen,Substantiv,A2,de,Erwachsener
+pers_vuxen,Substantiv,A2,es,adulto
+pers_vuxen,Substantiv,A2,it,adulto
+pers_vuxen,Substantiv,A2,ja,大人
+pers_granne,Substantiv,A2,sv,granne
+pers_granne,Substantiv,A2,en,neighbor
+pers_granne,Substantiv,A2,fr,voisin
+pers_granne,Substantiv,A2,de,Nachbar
+pers_granne,Substantiv,A2,es,vecino
+pers_granne,Substantiv,A2,it,vicino
+pers_granne,Substantiv,A2,ja,隣人
+pers_gäst,Substantiv,A2,sv,gäst
+pers_gäst,Substantiv,A2,en,guest
+pers_gäst,Substantiv,A2,fr,invité
+pers_gäst,Substantiv,A2,de,Gast
+pers_gäst,Substantiv,A2,es,invitado
+pers_gäst,Substantiv,A2,it,ospite
+pers_gäst,Substantiv,A2,ja,客
+
+# ── 24. Hälsa ─────────────────────────────────────────────────────────────────
+# Prefix: häls_
+# Grundläggande medicinska begrepp
+# de=Verletzung (skada/blessure, noun); verletzen = skada (verb)
+häls_sjukdom,Substantiv,A2,sv,sjukdom
+häls_sjukdom,Substantiv,A2,en,illness
+häls_sjukdom,Substantiv,A2,fr,maladie
+häls_sjukdom,Substantiv,A2,de,Krankheit
+häls_sjukdom,Substantiv,A2,es,enfermedad
+häls_sjukdom,Substantiv,A2,it,malattia
+häls_sjukdom,Substantiv,A2,ja,病気
+häls_smärta,Substantiv,A2,sv,smärta
+häls_smärta,Substantiv,A2,en,pain
+häls_smärta,Substantiv,A2,fr,douleur
+häls_smärta,Substantiv,A2,de,Schmerz
+häls_smärta,Substantiv,A2,es,dolor
+häls_smärta,Substantiv,A2,it,dolore
+häls_smärta,Substantiv,A2,ja,痛み
+häls_medicin,Substantiv,A2,sv,medicin
+häls_medicin,Substantiv,A2,en,medicine
+häls_medicin,Substantiv,A2,fr,médicament
+häls_medicin,Substantiv,A2,de,Medikament
+häls_medicin,Substantiv,A2,es,medicina
+häls_medicin,Substantiv,A2,it,medicina
+häls_medicin,Substantiv,A2,ja,薬
+häls_skada,Substantiv,A2,sv,skada
+häls_skada,Substantiv,A2,en,injury
+häls_skada,Substantiv,A2,fr,blessure
+häls_skada,Substantiv,A2,de,Verletzung
+häls_skada,Substantiv,A2,es,herida
+häls_skada,Substantiv,A2,it,ferita
+häls_skada,Substantiv,A2,ja,怪我
+
+# ── 25. Samhälle ──────────────────────────────────────────────────────────────
+# Prefix: sam_
+# Krig och fred är universella och förekommer tidigt i autentisk input
+sam_krig,Substantiv,A2,sv,krig
+sam_krig,Substantiv,A2,en,war
+sam_krig,Substantiv,A2,fr,guerre
+sam_krig,Substantiv,A2,de,Krieg
+sam_krig,Substantiv,A2,es,guerra
+sam_krig,Substantiv,A2,it,guerra
+sam_krig,Substantiv,A2,ja,戦争
+sam_fred,Substantiv,A2,sv,fred
+sam_fred,Substantiv,A2,en,peace
+sam_fred,Substantiv,A2,fr,paix
+sam_fred,Substantiv,A2,de,Frieden
+sam_fred,Substantiv,A2,es,paz
+sam_fred,Substantiv,A2,it,pace
+sam_fred,Substantiv,A2,ja,平和
+
+# ───────────────────────────────────────────────────────────────────────────────
+# ADJEKTIV
+# ───────────────────────────────────────────────────────────────────────────────
+# Lemmaform: maskulinum singular (fr/es/it); grundform (de/sv)
+# ja い-adj: inkl. い i lemmat (stor=大きい); な-adj: stam utan な (viktig=大切)
+
+# ── 22. Storlek och form ──────────────────────────────────────────────────────
+# Prefix: adj_s_
+# Lemmaform: mask.sg (fr/es/it), grundform (de/sv), inkl. い (ja い-adj)
+# fr=large / it=largo = bred/vid (ej stor) — falskt vänskap med en=large/it=largo
+# ja=広い (bred/rymlig), 細い (smal/tunn för objekt), 太い (tjock/rund), 薄い (tunn/flat)
+adj_s_stor,Adjektiv,A1,sv,stor
+adj_s_stor,Adjektiv,A1,en,big
+adj_s_stor,Adjektiv,A1,fr,grand
+adj_s_stor,Adjektiv,A1,de,groß
+adj_s_stor,Adjektiv,A1,es,grande
+adj_s_stor,Adjektiv,A1,it,grande
+adj_s_stor,Adjektiv,A1,ja,大きい
+adj_s_liten,Adjektiv,A1,sv,liten
+adj_s_liten,Adjektiv,A1,en,small
+adj_s_liten,Adjektiv,A1,fr,petit
+adj_s_liten,Adjektiv,A1,de,klein
+adj_s_liten,Adjektiv,A1,es,pequeño
+adj_s_liten,Adjektiv,A1,it,piccolo
+adj_s_liten,Adjektiv,A1,ja,小さい
+adj_s_lång,Adjektiv,A1,sv,lång
+adj_s_lång,Adjektiv,A1,en,long
+adj_s_lång,Adjektiv,A1,fr,long
+adj_s_lång,Adjektiv,A1,de,lang
+adj_s_lång,Adjektiv,A1,es,largo
+adj_s_lång,Adjektiv,A1,it,lungo
+adj_s_lång,Adjektiv,A1,ja,長い
+adj_s_kort,Adjektiv,A1,sv,kort
+adj_s_kort,Adjektiv,A1,en,short
+adj_s_kort,Adjektiv,A1,fr,court
+adj_s_kort,Adjektiv,A1,de,kurz
+adj_s_kort,Adjektiv,A1,es,corto
+adj_s_kort,Adjektiv,A1,it,corto
+adj_s_kort,Adjektiv,A1,ja,短い
+adj_s_hög,Adjektiv,A1,sv,hög
+adj_s_hög,Adjektiv,A1,en,high
+adj_s_hög,Adjektiv,A1,fr,haut
+adj_s_hög,Adjektiv,A1,de,hoch
+adj_s_hög,Adjektiv,A1,es,alto
+adj_s_hög,Adjektiv,A1,it,alto
+adj_s_hög,Adjektiv,A1,ja,高い
+adj_s_bred,Adjektiv,A2,sv,bred
+adj_s_bred,Adjektiv,A2,en,wide
+adj_s_bred,Adjektiv,A2,fr,large
+adj_s_bred,Adjektiv,A2,de,breit
+adj_s_bred,Adjektiv,A2,es,ancho
+adj_s_bred,Adjektiv,A2,it,largo
+adj_s_bred,Adjektiv,A2,ja,広い
+adj_s_smal,Adjektiv,A2,sv,smal
+adj_s_smal,Adjektiv,A2,en,narrow
+adj_s_smal,Adjektiv,A2,fr,étroit
+adj_s_smal,Adjektiv,A2,de,schmal
+adj_s_smal,Adjektiv,A2,es,estrecho
+adj_s_smal,Adjektiv,A2,it,stretto
+adj_s_smal,Adjektiv,A2,ja,細い
+adj_s_tjock,Adjektiv,A2,sv,tjock
+adj_s_tjock,Adjektiv,A2,en,thick
+adj_s_tjock,Adjektiv,A2,fr,épais
+adj_s_tjock,Adjektiv,A2,de,dick
+adj_s_tjock,Adjektiv,A2,es,grueso
+adj_s_tjock,Adjektiv,A2,it,spesso
+adj_s_tjock,Adjektiv,A2,ja,太い
+adj_s_tunn,Adjektiv,A2,sv,tunn
+adj_s_tunn,Adjektiv,A2,en,thin
+adj_s_tunn,Adjektiv,A2,fr,mince
+adj_s_tunn,Adjektiv,A2,de,dünn
+adj_s_tunn,Adjektiv,A2,es,delgado
+adj_s_tunn,Adjektiv,A2,it,sottile
+adj_s_tunn,Adjektiv,A2,ja,薄い
+adj_s_djup,Adjektiv,A2,sv,djup
+adj_s_djup,Adjektiv,A2,en,deep
+adj_s_djup,Adjektiv,A2,fr,profond
+adj_s_djup,Adjektiv,A2,de,tief
+adj_s_djup,Adjektiv,A2,es,profundo
+adj_s_djup,Adjektiv,A2,it,profondo
+adj_s_djup,Adjektiv,A2,ja,深い
+
+# ── 23. Temperatur och fysisk kvalitet ────────────────────────────────────────
+# Prefix: adj_t_
+# fr=chaud / it=caldo täcker adj_t_varm och adj_t_het (polysemi — hållbar förenkling)
+# ja=冷たい = kall vid beröring; 寒い = kall luft/väder — 冷たい väljs som primär
+# adj_t_lätt = fysisk (lättviktig); lätt=enkel tillhör adj_k_
+adj_t_varm,Adjektiv,A1,sv,varm
+adj_t_varm,Adjektiv,A1,en,warm
+# fr=chaud täcker adj_t_varm och adj_t_het (polysemi)
+adj_t_varm,Adjektiv,A1,fr,chaud
+adj_t_varm,Adjektiv,A1,de,warm
+adj_t_varm,Adjektiv,A1,es,cálido
+# it=caldo täcker adj_t_varm och adj_t_het (polysemi)
+adj_t_varm,Adjektiv,A1,it,caldo
+adj_t_varm,Adjektiv,A1,ja,暖かい
+adj_t_het,Adjektiv,A1,sv,het
+adj_t_het,Adjektiv,A1,en,hot
+adj_t_het,Adjektiv,A1,fr,chaud
+adj_t_het,Adjektiv,A1,de,heiß
+adj_t_het,Adjektiv,A1,es,caliente
+adj_t_het,Adjektiv,A1,it,caldo
+adj_t_het,Adjektiv,A1,ja,熱い
+adj_t_kall,Adjektiv,A1,sv,kall
+adj_t_kall,Adjektiv,A1,en,cold
+adj_t_kall,Adjektiv,A1,fr,froid
+adj_t_kall,Adjektiv,A1,de,kalt
+adj_t_kall,Adjektiv,A1,es,frío
+adj_t_kall,Adjektiv,A1,it,freddo
+adj_t_kall,Adjektiv,A1,ja,冷たい
+adj_t_sval,Adjektiv,A2,sv,sval
+adj_t_sval,Adjektiv,A2,en,cool
+adj_t_sval,Adjektiv,A2,fr,frais
+adj_t_sval,Adjektiv,A2,de,kühl
+adj_t_sval,Adjektiv,A2,es,fresco
+adj_t_sval,Adjektiv,A2,it,fresco
+adj_t_sval,Adjektiv,A2,ja,涼しい
+adj_t_tung,Adjektiv,A1,sv,tung
+adj_t_tung,Adjektiv,A1,en,heavy
+adj_t_tung,Adjektiv,A1,fr,lourd
+adj_t_tung,Adjektiv,A1,de,schwer
+adj_t_tung,Adjektiv,A1,es,pesado
+adj_t_tung,Adjektiv,A1,it,pesante
+adj_t_tung,Adjektiv,A1,ja,重い
+adj_t_lätt,Adjektiv,A1,sv,lätt
+adj_t_lätt,Adjektiv,A1,en,light
+adj_t_lätt,Adjektiv,A1,fr,léger
+adj_t_lätt,Adjektiv,A1,de,leicht
+adj_t_lätt,Adjektiv,A1,es,ligero
+adj_t_lätt,Adjektiv,A1,it,leggero
+adj_t_lätt,Adjektiv,A1,ja,軽い
+adj_t_hård,Adjektiv,A2,sv,hård
+adj_t_hård,Adjektiv,A2,en,hard
+adj_t_hård,Adjektiv,A2,fr,dur
+adj_t_hård,Adjektiv,A2,de,hart
+adj_t_hård,Adjektiv,A2,es,duro
+adj_t_hård,Adjektiv,A2,it,duro
+adj_t_hård,Adjektiv,A2,ja,硬い
+adj_t_mjuk,Adjektiv,A2,sv,mjuk
+adj_t_mjuk,Adjektiv,A2,en,soft
+adj_t_mjuk,Adjektiv,A2,fr,doux
+adj_t_mjuk,Adjektiv,A2,de,weich
+adj_t_mjuk,Adjektiv,A2,es,suave
+adj_t_mjuk,Adjektiv,A2,it,morbido
+adj_t_mjuk,Adjektiv,A2,ja,柔らかい
+adj_t_torr,Adjektiv,A2,sv,torr
+adj_t_torr,Adjektiv,A2,en,dry
+adj_t_torr,Adjektiv,A2,fr,sec
+adj_t_torr,Adjektiv,A2,de,trocken
+adj_t_torr,Adjektiv,A2,es,seco
+adj_t_torr,Adjektiv,A2,it,secco
+adj_t_torr,Adjektiv,A2,ja,乾いた
+adj_t_våt,Adjektiv,A2,sv,våt
+adj_t_våt,Adjektiv,A2,en,wet
+adj_t_våt,Adjektiv,A2,fr,mouillé
+adj_t_våt,Adjektiv,A2,de,nass
+adj_t_våt,Adjektiv,A2,es,mojado
+adj_t_våt,Adjektiv,A2,it,bagnato
+adj_t_våt,Adjektiv,A2,ja,濡れた
+
+# ── 24. Kvalitet och skick ────────────────────────────────────────────────────
+# Prefix: adj_k_
+# ja=きれい (な-adj, lemma utan な) = ren och vacker — polysemi, hållbar förenkling
+# ja=古い = gammal för föremål; för personer används andra former
+# ja=いっぱい (な-adj) = full; 空っぽ (な-adj) = tom
+adj_k_bra,Adjektiv,A1,sv,bra
+adj_k_bra,Adjektiv,A1,en,good
+adj_k_bra,Adjektiv,A1,fr,bon
+adj_k_bra,Adjektiv,A1,de,gut
+adj_k_bra,Adjektiv,A1,es,bueno
+adj_k_bra,Adjektiv,A1,it,buono
+adj_k_bra,Adjektiv,A1,ja,いい
+adj_k_dålig,Adjektiv,A1,sv,dålig
+adj_k_dålig,Adjektiv,A1,en,bad
+adj_k_dålig,Adjektiv,A1,fr,mauvais
+adj_k_dålig,Adjektiv,A1,de,schlecht
+adj_k_dålig,Adjektiv,A1,es,malo
+adj_k_dålig,Adjektiv,A1,it,cattivo
+adj_k_dålig,Adjektiv,A1,ja,悪い
+adj_k_ny,Adjektiv,A1,sv,ny
+adj_k_ny,Adjektiv,A1,en,new
+adj_k_ny,Adjektiv,A1,fr,nouveau
+adj_k_ny,Adjektiv,A1,de,neu
+adj_k_ny,Adjektiv,A1,es,nuevo
+adj_k_ny,Adjektiv,A1,it,nuovo
+adj_k_ny,Adjektiv,A1,ja,新しい
+adj_k_gammal,Adjektiv,A1,sv,gammal
+adj_k_gammal,Adjektiv,A1,en,old
+adj_k_gammal,Adjektiv,A1,fr,vieux
+adj_k_gammal,Adjektiv,A1,de,alt
+adj_k_gammal,Adjektiv,A1,es,viejo
+adj_k_gammal,Adjektiv,A1,it,vecchio
+adj_k_gammal,Adjektiv,A1,ja,古い
+# ja=若い (ung om person); 新しい (ny om saker) — adj_k_ung=若い, adj_k_ny=新しい
+adj_k_ung,Adjektiv,A1,sv,ung
+adj_k_ung,Adjektiv,A1,en,young
+adj_k_ung,Adjektiv,A1,fr,jeune
+adj_k_ung,Adjektiv,A1,de,jung
+adj_k_ung,Adjektiv,A1,es,joven
+adj_k_ung,Adjektiv,A1,it,giovane
+adj_k_ung,Adjektiv,A1,ja,若い
+adj_k_ren,Adjektiv,A1,sv,ren
+adj_k_ren,Adjektiv,A1,en,clean
+adj_k_ren,Adjektiv,A1,fr,propre
+adj_k_ren,Adjektiv,A1,de,sauber
+adj_k_ren,Adjektiv,A1,es,limpio
+adj_k_ren,Adjektiv,A1,it,pulito
+# ja=きれい täcker adj_k_ren och käns_vacker (polysemi)
+adj_k_ren,Adjektiv,A1,ja,きれい
+adj_k_smutsig,Adjektiv,A1,sv,smutsig
+adj_k_smutsig,Adjektiv,A1,en,dirty
+adj_k_smutsig,Adjektiv,A1,fr,sale
+adj_k_smutsig,Adjektiv,A1,de,schmutzig
+adj_k_smutsig,Adjektiv,A1,es,sucio
+adj_k_smutsig,Adjektiv,A1,it,sporco
+adj_k_smutsig,Adjektiv,A1,ja,汚い
+adj_k_full,Adjektiv,A2,sv,full
+adj_k_full,Adjektiv,A2,en,full
+adj_k_full,Adjektiv,A2,fr,plein
+adj_k_full,Adjektiv,A2,de,voll
+adj_k_full,Adjektiv,A2,es,lleno
+adj_k_full,Adjektiv,A2,it,pieno
+adj_k_full,Adjektiv,A2,ja,いっぱい
+adj_k_tom,Adjektiv,A2,sv,tom
+adj_k_tom,Adjektiv,A2,en,empty
+adj_k_tom,Adjektiv,A2,fr,vide
+adj_k_tom,Adjektiv,A2,de,leer
+adj_k_tom,Adjektiv,A2,es,vacío
+adj_k_tom,Adjektiv,A2,it,vuoto
+adj_k_tom,Adjektiv,A2,ja,空っぽ
+adj_k_enkel,Adjektiv,A2,sv,enkel
+adj_k_enkel,Adjektiv,A2,en,easy
+adj_k_enkel,Adjektiv,A2,fr,facile
+adj_k_enkel,Adjektiv,A2,de,einfach
+adj_k_enkel,Adjektiv,A2,es,fácil
+adj_k_enkel,Adjektiv,A2,it,facile
+adj_k_enkel,Adjektiv,A2,ja,簡単
+adj_k_svår,Adjektiv,A2,sv,svår
+adj_k_svår,Adjektiv,A2,en,difficult
+adj_k_svår,Adjektiv,A2,fr,difficile
+adj_k_svår,Adjektiv,A2,de,schwierig
+adj_k_svår,Adjektiv,A2,es,difícil
+adj_k_svår,Adjektiv,A2,it,difficile
+adj_k_svår,Adjektiv,A2,ja,難しい
+adj_k_rätt,Adjektiv,A2,sv,rätt
+adj_k_rätt,Adjektiv,A2,en,correct
+adj_k_rätt,Adjektiv,A2,fr,correct
+adj_k_rätt,Adjektiv,A2,de,richtig
+adj_k_rätt,Adjektiv,A2,es,correcto
+adj_k_rätt,Adjektiv,A2,it,corretto
+adj_k_rätt,Adjektiv,A2,ja,正しい
+adj_k_fel,Adjektiv,A2,sv,fel
+adj_k_fel,Adjektiv,A2,en,wrong
+adj_k_fel,Adjektiv,A2,fr,faux
+adj_k_fel,Adjektiv,A2,de,falsch
+adj_k_fel,Adjektiv,A2,es,incorrecto
+adj_k_fel,Adjektiv,A2,it,sbagliato
+adj_k_fel,Adjektiv,A2,ja,間違った
+
+# ── 25. Känsla och sinnesstämning ─────────────────────────────────────────────
+# Prefix: adj_es_
+# fr=seul / es=solo / it=solo täcker adj_es_ensam (ensam) och ensam=alone — polysemi
+# ja=お腹が空いた / 喉が渇いた: fraser som lemman — ingen ren adjektivform på japanska
+# ja=怖い = skrämmande OCH rädd — polysemi, används predikativt för känslan
+adj_es_glad,Adjektiv,A1,sv,glad
+adj_es_glad,Adjektiv,A1,en,happy
+adj_es_glad,Adjektiv,A1,fr,heureux
+adj_es_glad,Adjektiv,A1,de,glücklich
+adj_es_glad,Adjektiv,A1,es,feliz
+adj_es_glad,Adjektiv,A1,it,felice
+adj_es_glad,Adjektiv,A1,ja,嬉しい
+adj_es_ledsen,Adjektiv,A1,sv,ledsen
+adj_es_ledsen,Adjektiv,A1,en,sad
+adj_es_ledsen,Adjektiv,A1,fr,triste
+adj_es_ledsen,Adjektiv,A1,de,traurig
+adj_es_ledsen,Adjektiv,A1,es,triste
+adj_es_ledsen,Adjektiv,A1,it,triste
+adj_es_ledsen,Adjektiv,A1,ja,悲しい
+adj_es_arg,Adjektiv,A1,sv,arg
+adj_es_arg,Adjektiv,A1,en,angry
+adj_es_arg,Adjektiv,A1,fr,en colère
+adj_es_arg,Adjektiv,A1,de,wütend
+adj_es_arg,Adjektiv,A1,es,enfadado
+adj_es_arg,Adjektiv,A1,it,arrabbiato
+adj_es_arg,Adjektiv,A1,ja,怒った
+adj_es_rädd,Adjektiv,A1,sv,rädd
+adj_es_rädd,Adjektiv,A1,en,scared
+adj_es_rädd,Adjektiv,A1,fr,effrayé
+adj_es_rädd,Adjektiv,A1,de,ängstlich
+adj_es_rädd,Adjektiv,A1,es,asustado
+adj_es_rädd,Adjektiv,A1,it,spaventato
+adj_es_rädd,Adjektiv,A1,ja,怖い
+adj_es_trött,Adjektiv,A1,sv,trött
+adj_es_trött,Adjektiv,A1,en,tired
+adj_es_trött,Adjektiv,A1,fr,fatigué
+adj_es_trött,Adjektiv,A1,de,müde
+adj_es_trött,Adjektiv,A1,es,cansado
+adj_es_trött,Adjektiv,A1,it,stanco
+adj_es_trött,Adjektiv,A1,ja,疲れた
+adj_es_hungrig,Adjektiv,A1,sv,hungrig
+adj_es_hungrig,Adjektiv,A1,en,hungry
+adj_es_hungrig,Adjektiv,A1,fr,affamé
+adj_es_hungrig,Adjektiv,A1,de,hungrig
+adj_es_hungrig,Adjektiv,A1,es,hambriento
+adj_es_hungrig,Adjektiv,A1,it,affamato
+adj_es_hungrig,Adjektiv,A1,ja,お腹が空いた
+adj_es_törstig,Adjektiv,A1,sv,törstig
+adj_es_törstig,Adjektiv,A1,en,thirsty
+adj_es_törstig,Adjektiv,A1,fr,assoiffé
+adj_es_törstig,Adjektiv,A1,de,durstig
+adj_es_törstig,Adjektiv,A1,es,sediento
+adj_es_törstig,Adjektiv,A1,it,assetato
+adj_es_törstig,Adjektiv,A1,ja,喉が渇いた
+adj_es_sjuk,Adjektiv,A1,sv,sjuk
+adj_es_sjuk,Adjektiv,A1,en,sick
+adj_es_sjuk,Adjektiv,A1,fr,malade
+adj_es_sjuk,Adjektiv,A1,de,krank
+adj_es_sjuk,Adjektiv,A1,es,enfermo
+adj_es_sjuk,Adjektiv,A1,it,malato
+adj_es_sjuk,Adjektiv,A1,ja,病気
+adj_es_frisk,Adjektiv,A1,sv,frisk
+adj_es_frisk,Adjektiv,A1,en,healthy
+adj_es_frisk,Adjektiv,A1,fr,en bonne santé
+adj_es_frisk,Adjektiv,A1,de,gesund
+adj_es_frisk,Adjektiv,A1,es,sano
+adj_es_frisk,Adjektiv,A1,it,sano
+adj_es_frisk,Adjektiv,A1,ja,健康
+adj_es_ensam,Adjektiv,A2,sv,ensam
+adj_es_ensam,Adjektiv,A2,en,lonely
+adj_es_ensam,Adjektiv,A2,fr,seul
+adj_es_ensam,Adjektiv,A2,de,einsam
+adj_es_ensam,Adjektiv,A2,es,solo
+adj_es_ensam,Adjektiv,A2,it,solo
+adj_es_ensam,Adjektiv,A2,ja,寂しい
+adj_es_stressad,Adjektiv,A2,sv,stressad
+adj_es_stressad,Adjektiv,A2,en,stressed
+adj_es_stressad,Adjektiv,A2,fr,stressé
+adj_es_stressad,Adjektiv,A2,de,gestresst
+adj_es_stressad,Adjektiv,A2,es,estresado
+adj_es_stressad,Adjektiv,A2,it,stressato
+adj_es_stressad,Adjektiv,A2,ja,ストレスを感じた
+adj_es_förvånad,Adjektiv,A2,sv,förvånad
+adj_es_förvånad,Adjektiv,A2,en,surprised
+adj_es_förvånad,Adjektiv,A2,fr,surpris
+adj_es_förvånad,Adjektiv,A2,de,überrascht
+adj_es_förvånad,Adjektiv,A2,es,sorprendido
+adj_es_förvånad,Adjektiv,A2,it,sorpreso
+adj_es_förvånad,Adjektiv,A2,ja,驚いた
+adj_es_nöjd,Adjektiv,A2,sv,nöjd
+adj_es_nöjd,Adjektiv,A2,en,satisfied
+adj_es_nöjd,Adjektiv,A2,fr,content
+adj_es_nöjd,Adjektiv,A2,de,zufrieden
+adj_es_nöjd,Adjektiv,A2,es,satisfecho
+adj_es_nöjd,Adjektiv,A2,it,soddisfatto
+adj_es_nöjd,Adjektiv,A2,ja,満足した
+adj_es_nervös,Adjektiv,A2,sv,nervös
+adj_es_nervös,Adjektiv,A2,en,nervous
+adj_es_nervös,Adjektiv,A2,fr,nerveux
+adj_es_nervös,Adjektiv,A2,de,nervös
+adj_es_nervös,Adjektiv,A2,es,nervioso
+adj_es_nervös,Adjektiv,A2,it,nervoso
+adj_es_nervös,Adjektiv,A2,ja,緊張した
+# adj_es_kär: ja=恋している (verbal form, predikativt som adjektiv)
+adj_es_kär,Adjektiv,A2,sv,kär
+adj_es_kär,Adjektiv,A2,en,in love
+adj_es_kär,Adjektiv,A2,fr,amoureux
+adj_es_kär,Adjektiv,A2,de,verliebt
+adj_es_kär,Adjektiv,A2,es,enamorado
+adj_es_kär,Adjektiv,A2,it,innamorato
+adj_es_kär,Adjektiv,A2,ja,恋している
+# Prefix: adj_es_
+# glad, ledsen, arg, trött, rädd, rolig, hungrig, vacker
+# [ TOM ]
+
+# ── 26. Evaluation och egenskaper ─────────────────────────────────────────────
+# Prefix: adj_ev_
+# es=malo / it=cattivo täcker adj_ev_elak och adj_k_dålig (polysemi)
+# ja=面白い täcker adj_ev_rolig och adj_ev_intressant (polysemi — hållbar förenkling)
+# ja=きれい (adj_k_ren) täcker även vacker — se kat. 24
+adj_ev_vacker,Adjektiv,A1,sv,vacker
+adj_ev_vacker,Adjektiv,A1,en,beautiful
+adj_ev_vacker,Adjektiv,A1,fr,beau
+adj_ev_vacker,Adjektiv,A1,de,schön
+adj_ev_vacker,Adjektiv,A1,es,hermoso
+adj_ev_vacker,Adjektiv,A1,it,bello
+adj_ev_vacker,Adjektiv,A1,ja,美しい
+adj_ev_ful,Adjektiv,A2,sv,ful
+adj_ev_ful,Adjektiv,A2,en,ugly
+adj_ev_ful,Adjektiv,A2,fr,laid
+adj_ev_ful,Adjektiv,A2,de,hässlich
+adj_ev_ful,Adjektiv,A2,es,feo
+adj_ev_ful,Adjektiv,A2,it,brutto
+adj_ev_ful,Adjektiv,A2,ja,醜い
+adj_ev_snäll,Adjektiv,A1,sv,snäll
+adj_ev_snäll,Adjektiv,A1,en,kind
+adj_ev_snäll,Adjektiv,A1,fr,gentil
+adj_ev_snäll,Adjektiv,A1,de,nett
+adj_ev_snäll,Adjektiv,A1,es,amable
+adj_ev_snäll,Adjektiv,A1,it,gentile
+adj_ev_snäll,Adjektiv,A1,ja,優しい
+adj_ev_elak,Adjektiv,A2,sv,elak
+adj_ev_elak,Adjektiv,A2,en,mean
+adj_ev_elak,Adjektiv,A2,fr,méchant
+adj_ev_elak,Adjektiv,A2,de,böse
+# es=malo täcker adj_ev_elak och adj_k_dålig (polysemi)
+adj_ev_elak,Adjektiv,A2,es,malo
+# it=cattivo täcker adj_ev_elak och adj_k_dålig (polysemi)
+adj_ev_elak,Adjektiv,A2,it,cattivo
+adj_ev_elak,Adjektiv,A2,ja,意地悪
+adj_ev_smart,Adjektiv,A2,sv,smart
+adj_ev_smart,Adjektiv,A2,en,smart
+adj_ev_smart,Adjektiv,A2,fr,intelligent
+adj_ev_smart,Adjektiv,A2,de,klug
+adj_ev_smart,Adjektiv,A2,es,inteligente
+adj_ev_smart,Adjektiv,A2,it,intelligente
+adj_ev_smart,Adjektiv,A2,ja,賢い
+adj_ev_rolig,Adjektiv,A1,sv,rolig
+adj_ev_rolig,Adjektiv,A1,en,funny
+adj_ev_rolig,Adjektiv,A1,fr,amusant
+adj_ev_rolig,Adjektiv,A1,de,lustig
+adj_ev_rolig,Adjektiv,A1,es,divertido
+adj_ev_rolig,Adjektiv,A1,it,divertente
+# ja=面白い täcker adj_ev_rolig och adj_ev_intressant (polysemi)
+adj_ev_rolig,Adjektiv,A1,ja,面白い
+adj_ev_tråkig,Adjektiv,A1,sv,tråkig
+adj_ev_tråkig,Adjektiv,A1,en,boring
+adj_ev_tråkig,Adjektiv,A1,fr,ennuyeux
+adj_ev_tråkig,Adjektiv,A1,de,langweilig
+adj_ev_tråkig,Adjektiv,A1,es,aburrido
+adj_ev_tråkig,Adjektiv,A1,it,noioso
+adj_ev_tråkig,Adjektiv,A1,ja,つまらない
+adj_ev_viktig,Adjektiv,A1,sv,viktig
+adj_ev_viktig,Adjektiv,A1,en,important
+adj_ev_viktig,Adjektiv,A1,fr,important
+adj_ev_viktig,Adjektiv,A1,de,wichtig
+adj_ev_viktig,Adjektiv,A1,es,importante
+adj_ev_viktig,Adjektiv,A1,it,importante
+adj_ev_viktig,Adjektiv,A1,ja,大切
+adj_ev_intressant,Adjektiv,A2,sv,intressant
+adj_ev_intressant,Adjektiv,A2,en,interesting
+adj_ev_intressant,Adjektiv,A2,fr,intéressant
+adj_ev_intressant,Adjektiv,A2,de,interessant
+adj_ev_intressant,Adjektiv,A2,es,interesante
+adj_ev_intressant,Adjektiv,A2,it,interessante
+adj_ev_intressant,Adjektiv,A2,ja,面白い
+adj_ev_populär,Adjektiv,A2,sv,populär
+adj_ev_populär,Adjektiv,A2,en,popular
+adj_ev_populär,Adjektiv,A2,fr,populaire
+adj_ev_populär,Adjektiv,A2,de,beliebt
+adj_ev_populär,Adjektiv,A2,es,popular
+adj_ev_populär,Adjektiv,A2,it,popolare
+adj_ev_populär,Adjektiv,A2,ja,人気
+# adj_ev_nyfiken: ja=好奇心旺盛 (na-adj, lemma utan な) = nyfiken/nyfiken om världen
+# adj_ev_besviken: ja=がっかりした (verbform som adjektiv)
+adj_ev_nyfiken,Adjektiv,A2,sv,nyfiken
+adj_ev_nyfiken,Adjektiv,A2,en,curious
+adj_ev_nyfiken,Adjektiv,A2,fr,curieux
+adj_ev_nyfiken,Adjektiv,A2,de,neugierig
+adj_ev_nyfiken,Adjektiv,A2,es,curioso
+adj_ev_nyfiken,Adjektiv,A2,it,curioso
+adj_ev_nyfiken,Adjektiv,A2,ja,好奇心旺盛
+adj_ev_stolt,Adjektiv,A2,sv,stolt
+adj_ev_stolt,Adjektiv,A2,en,proud
+adj_ev_stolt,Adjektiv,A2,fr,fier
+adj_ev_stolt,Adjektiv,A2,de,stolz
+adj_ev_stolt,Adjektiv,A2,es,orgulloso
+adj_ev_stolt,Adjektiv,A2,it,orgoglioso
+adj_ev_stolt,Adjektiv,A2,ja,誇らしい
+adj_ev_besviken,Adjektiv,A2,sv,besviken
+adj_ev_besviken,Adjektiv,A2,en,disappointed
+adj_ev_besviken,Adjektiv,A2,fr,déçu
+adj_ev_besviken,Adjektiv,A2,de,enttäuscht
+adj_ev_besviken,Adjektiv,A2,es,decepcionado
+adj_ev_besviken,Adjektiv,A2,it,deluso
+adj_ev_besviken,Adjektiv,A2,ja,がっかりした
+# adj_ev_lugn: ja=穏やか (na-adj, lemma utan な per KONVENTIONER.md)
+adj_ev_lugn,Adjektiv,A2,sv,lugn
+adj_ev_lugn,Adjektiv,A2,en,calm
+adj_ev_lugn,Adjektiv,A2,fr,calme
+adj_ev_lugn,Adjektiv,A2,de,ruhig
+adj_ev_lugn,Adjektiv,A2,es,tranquilo
+adj_ev_lugn,Adjektiv,A2,it,calmo
+adj_ev_lugn,Adjektiv,A2,ja,穏やか
+# adj_ev_dum: ja=ばか (na-adj; lemma utan な) = dum/fånig
+adj_ev_dum,Adjektiv,A2,sv,dum
+adj_ev_dum,Adjektiv,A2,en,stupid
+adj_ev_dum,Adjektiv,A2,fr,stupide
+adj_ev_dum,Adjektiv,A2,de,dumm
+adj_ev_dum,Adjektiv,A2,es,tonto
+adj_ev_dum,Adjektiv,A2,it,stupido
+adj_ev_dum,Adjektiv,A2,ja,ばか
+adj_ev_lat,Adjektiv,A2,sv,lat
+adj_ev_lat,Adjektiv,A2,en,lazy
+adj_ev_lat,Adjektiv,A2,fr,paresseux
+adj_ev_lat,Adjektiv,A2,de,faul
+adj_ev_lat,Adjektiv,A2,es,perezoso
+adj_ev_lat,Adjektiv,A2,it,pigro
+adj_ev_lat,Adjektiv,A2,ja,怠惰
+adj_ev_ärlig,Adjektiv,A2,sv,ärlig
+adj_ev_ärlig,Adjektiv,A2,en,honest
+adj_ev_ärlig,Adjektiv,A2,fr,honnête
+adj_ev_ärlig,Adjektiv,A2,de,ehrlich
+adj_ev_ärlig,Adjektiv,A2,es,honesto
+adj_ev_ärlig,Adjektiv,A2,it,onesto
+adj_ev_ärlig,Adjektiv,A2,ja,正直
+# adj_ev_intresserad: sv=intresserad (om person) vs adj_ev_intressant (om sak)
+# ja=興味ある (är intresserad) — kortform av 興味がある, används attributivt
+adj_ev_intresserad,Adjektiv,A2,sv,intresserad
+adj_ev_intresserad,Adjektiv,A2,en,interested
+adj_ev_intresserad,Adjektiv,A2,fr,intéressé
+adj_ev_intresserad,Adjektiv,A2,de,interessiert
+adj_ev_intresserad,Adjektiv,A2,es,interesado
+adj_ev_intresserad,Adjektiv,A2,it,interessato
+adj_ev_intresserad,Adjektiv,A2,ja,興味ある
+adj_ev_modig,Adjektiv,A2,sv,modig
+adj_ev_modig,Adjektiv,A2,en,brave
+adj_ev_modig,Adjektiv,A2,fr,courageux
+adj_ev_modig,Adjektiv,A2,de,mutig
+adj_ev_modig,Adjektiv,A2,es,valiente
+adj_ev_modig,Adjektiv,A2,it,coraggioso
+adj_ev_modig,Adjektiv,A2,ja,勇敢
+adj_ev_flitig,Adjektiv,A2,sv,flitig
+adj_ev_flitig,Adjektiv,A2,en,hardworking
+adj_ev_flitig,Adjektiv,A2,fr,travailleur
+adj_ev_flitig,Adjektiv,A2,de,fleißig
+adj_ev_flitig,Adjektiv,A2,es,trabajador
+adj_ev_flitig,Adjektiv,A2,it,laborioso
+adj_ev_flitig,Adjektiv,A2,ja,勤勉
+
+# ── 27. Färger ────────────────────────────────────────────────────────────────
+# Prefix: färg_
+# ja: 赤い/青い/白い/黒い/黄色い/茶色い = い-adj; 緑/灰色/オレンジ/ピンク/紫 = substantivform
+# fr=marron för brun (föremål); brun används för hår/hud
+färg_röd,Adjektiv,A1,sv,röd
+färg_röd,Adjektiv,A1,en,red
+färg_röd,Adjektiv,A1,fr,rouge
+färg_röd,Adjektiv,A1,de,rot
+färg_röd,Adjektiv,A1,es,rojo
+färg_röd,Adjektiv,A1,it,rosso
+färg_röd,Adjektiv,A1,ja,赤い
+färg_blå,Adjektiv,A1,sv,blå
+färg_blå,Adjektiv,A1,en,blue
+färg_blå,Adjektiv,A1,fr,bleu
+färg_blå,Adjektiv,A1,de,blau
+färg_blå,Adjektiv,A1,es,azul
+färg_blå,Adjektiv,A1,it,blu
+färg_blå,Adjektiv,A1,ja,青い
+färg_grön,Adjektiv,A1,sv,grön
+färg_grön,Adjektiv,A1,en,green
+färg_grön,Adjektiv,A1,fr,vert
+färg_grön,Adjektiv,A1,de,grün
+färg_grön,Adjektiv,A1,es,verde
+färg_grön,Adjektiv,A1,it,verde
+färg_grön,Adjektiv,A1,ja,緑
+färg_gul,Adjektiv,A1,sv,gul
+färg_gul,Adjektiv,A1,en,yellow
+färg_gul,Adjektiv,A1,fr,jaune
+färg_gul,Adjektiv,A1,de,gelb
+färg_gul,Adjektiv,A1,es,amarillo
+färg_gul,Adjektiv,A1,it,giallo
+färg_gul,Adjektiv,A1,ja,黄色い
+färg_svart,Adjektiv,A1,sv,svart
+färg_svart,Adjektiv,A1,en,black
+färg_svart,Adjektiv,A1,fr,noir
+färg_svart,Adjektiv,A1,de,schwarz
+färg_svart,Adjektiv,A1,es,negro
+färg_svart,Adjektiv,A1,it,nero
+färg_svart,Adjektiv,A1,ja,黒い
+färg_vit,Adjektiv,A1,sv,vit
+färg_vit,Adjektiv,A1,en,white
+färg_vit,Adjektiv,A1,fr,blanc
+färg_vit,Adjektiv,A1,de,weiß
+färg_vit,Adjektiv,A1,es,blanco
+färg_vit,Adjektiv,A1,it,bianco
+färg_vit,Adjektiv,A1,ja,白い
+färg_grå,Adjektiv,A1,sv,grå
+färg_grå,Adjektiv,A1,en,grey
+färg_grå,Adjektiv,A1,fr,gris
+färg_grå,Adjektiv,A1,de,grau
+färg_grå,Adjektiv,A1,es,gris
+färg_grå,Adjektiv,A1,it,grigio
+färg_grå,Adjektiv,A1,ja,灰色
+färg_brun,Adjektiv,A1,sv,brun
+färg_brun,Adjektiv,A1,en,brown
+färg_brun,Adjektiv,A1,fr,marron
+färg_brun,Adjektiv,A1,de,braun
+färg_brun,Adjektiv,A1,es,marrón
+färg_brun,Adjektiv,A1,it,marrone
+färg_brun,Adjektiv,A1,ja,茶色い
+färg_orange,Adjektiv,A2,sv,orange
+färg_orange,Adjektiv,A2,en,orange
+färg_orange,Adjektiv,A2,fr,orange
+färg_orange,Adjektiv,A2,de,orange
+färg_orange,Adjektiv,A2,es,naranja
+färg_orange,Adjektiv,A2,it,arancione
+färg_orange,Adjektiv,A2,ja,オレンジ
+färg_rosa,Adjektiv,A2,sv,rosa
+färg_rosa,Adjektiv,A2,en,pink
+färg_rosa,Adjektiv,A2,fr,rose
+färg_rosa,Adjektiv,A2,de,rosa
+färg_rosa,Adjektiv,A2,es,rosa
+färg_rosa,Adjektiv,A2,it,rosa
+färg_rosa,Adjektiv,A2,ja,ピンク
+färg_lila,Adjektiv,A2,sv,lila
+färg_lila,Adjektiv,A2,en,purple
+färg_lila,Adjektiv,A2,fr,violet
+färg_lila,Adjektiv,A2,de,lila
+färg_lila,Adjektiv,A2,es,morado
+färg_lila,Adjektiv,A2,it,viola
+färg_lila,Adjektiv,A2,ja,紫
+
+# ── 31. Hastighet och kraft ───────────────────────────────────────────────────
+# Prefix: adj_s_ (fortsätter Storlek och form — fysiska egenskaper)
+# ja=速い (snabb) / 遅い (långsam) är i-adj
+adj_s_snabb,Adjektiv,A2,sv,snabb
+adj_s_snabb,Adjektiv,A2,en,fast
+adj_s_snabb,Adjektiv,A2,fr,rapide
+adj_s_snabb,Adjektiv,A2,de,schnell
+adj_s_snabb,Adjektiv,A2,es,rápido
+adj_s_snabb,Adjektiv,A2,it,veloce
+adj_s_snabb,Adjektiv,A2,ja,速い
+adj_s_långsam,Adjektiv,A2,sv,långsam
+adj_s_långsam,Adjektiv,A2,en,slow
+adj_s_långsam,Adjektiv,A2,fr,lent
+adj_s_långsam,Adjektiv,A2,de,langsam
+adj_s_långsam,Adjektiv,A2,es,lento
+adj_s_långsam,Adjektiv,A2,it,lento
+adj_s_långsam,Adjektiv,A2,ja,遅い
+adj_k_stark,Adjektiv,A2,sv,stark
+adj_k_stark,Adjektiv,A2,en,strong
+adj_k_stark,Adjektiv,A2,fr,fort
+adj_k_stark,Adjektiv,A2,de,stark
+adj_k_stark,Adjektiv,A2,es,fuerte
+adj_k_stark,Adjektiv,A2,it,forte
+adj_k_stark,Adjektiv,A2,ja,強い
+adj_k_svag,Adjektiv,A2,sv,svag
+adj_k_svag,Adjektiv,A2,en,weak
+adj_k_svag,Adjektiv,A2,fr,faible
+adj_k_svag,Adjektiv,A2,de,schwach
+adj_k_svag,Adjektiv,A2,es,débil
+adj_k_svag,Adjektiv,A2,it,debole
+adj_k_svag,Adjektiv,A2,ja,弱い
+
+# ── 32. Pris och tillgänglighet ───────────────────────────────────────────────
+# Prefix: adj_eko_
+# fr=bon marché (billig) — fraser används som lemma
+# de=kostenlos = gratis; billig = billig
+adj_eko_billig,Adjektiv,A2,sv,billig
+adj_eko_billig,Adjektiv,A2,en,cheap
+adj_eko_billig,Adjektiv,A2,fr,bon marché
+adj_eko_billig,Adjektiv,A2,de,billig
+adj_eko_billig,Adjektiv,A2,es,barato
+adj_eko_billig,Adjektiv,A2,it,economico
+adj_eko_billig,Adjektiv,A2,ja,安い
+adj_eko_dyr,Adjektiv,A2,sv,dyr
+adj_eko_dyr,Adjektiv,A2,en,expensive
+adj_eko_dyr,Adjektiv,A2,fr,cher
+adj_eko_dyr,Adjektiv,A2,de,teuer
+adj_eko_dyr,Adjektiv,A2,es,caro
+adj_eko_dyr,Adjektiv,A2,it,caro
+adj_eko_dyr,Adjektiv,A2,ja,高い
+adj_eko_fri,Adjektiv,A2,sv,gratis
+adj_eko_fri,Adjektiv,A2,en,free
+adj_eko_fri,Adjektiv,A2,fr,gratuit
+adj_eko_fri,Adjektiv,A2,de,kostenlos
+adj_eko_fri,Adjektiv,A2,es,gratis
+adj_eko_fri,Adjektiv,A2,it,gratuito
+adj_eko_fri,Adjektiv,A2,ja,無料
+
+# ── 33. Situation och möjlighet ───────────────────────────────────────────────
+# Prefix: adj_m_
+# adj_m_klar: sv=klar = done/ready/clear — polysemi; en=ready (vanligaste inlärnarkontexten)
+# adj_m_säker: sv=säker täcker safe och certain — en=safe
+# ja=危ない täcker adj_m_farlig och "osäker" (polysemi — hållbar förenkling)
+adj_m_möjlig,Adjektiv,A2,sv,möjlig
+adj_m_möjlig,Adjektiv,A2,en,possible
+adj_m_möjlig,Adjektiv,A2,fr,possible
+adj_m_möjlig,Adjektiv,A2,de,möglich
+adj_m_möjlig,Adjektiv,A2,es,posible
+adj_m_möjlig,Adjektiv,A2,it,possibile
+adj_m_möjlig,Adjektiv,A2,ja,可能
+adj_m_vanlig,Adjektiv,A2,sv,vanlig
+adj_m_vanlig,Adjektiv,A2,en,common
+adj_m_vanlig,Adjektiv,A2,fr,courant
+adj_m_vanlig,Adjektiv,A2,de,gewöhnlich
+adj_m_vanlig,Adjektiv,A2,es,común
+adj_m_vanlig,Adjektiv,A2,it,comune
+adj_m_vanlig,Adjektiv,A2,ja,普通
+adj_m_farlig,Adjektiv,A2,sv,farlig
+adj_m_farlig,Adjektiv,A2,en,dangerous
+adj_m_farlig,Adjektiv,A2,fr,dangereux
+adj_m_farlig,Adjektiv,A2,de,gefährlich
+adj_m_farlig,Adjektiv,A2,es,peligroso
+adj_m_farlig,Adjektiv,A2,it,pericoloso
+adj_m_farlig,Adjektiv,A2,ja,危ない
+adj_m_säker,Adjektiv,A2,sv,säker
+adj_m_säker,Adjektiv,A2,en,safe
+adj_m_säker,Adjektiv,A2,fr,sûr
+adj_m_säker,Adjektiv,A2,de,sicher
+adj_m_säker,Adjektiv,A2,es,seguro
+adj_m_säker,Adjektiv,A2,it,sicuro
+adj_m_säker,Adjektiv,A2,ja,安全
+adj_m_klar,Adjektiv,A2,sv,klar
+adj_m_klar,Adjektiv,A2,en,ready
+adj_m_klar,Adjektiv,A2,fr,prêt
+adj_m_klar,Adjektiv,A2,de,fertig
+adj_m_klar,Adjektiv,A2,es,listo
+adj_m_klar,Adjektiv,A2,it,pronto
+adj_m_klar,Adjektiv,A2,ja,準備できた
+# ja=生きている / 死んでいる / 開いている / 閉まっている: verbformer som fungerar som adjektiv
+# predikativt (i-form för na-adj stil) — renderaren hanterar attributiv form
+adj_k_levande,Adjektiv,A2,sv,levande
+adj_k_levande,Adjektiv,A2,en,alive
+adj_k_levande,Adjektiv,A2,fr,vivant
+adj_k_levande,Adjektiv,A2,de,lebendig
+adj_k_levande,Adjektiv,A2,es,vivo
+adj_k_levande,Adjektiv,A2,it,vivo
+adj_k_levande,Adjektiv,A2,ja,生きている
+adj_k_död,Adjektiv,A2,sv,död
+adj_k_död,Adjektiv,A2,en,dead
+adj_k_död,Adjektiv,A2,fr,mort
+adj_k_död,Adjektiv,A2,de,tot
+adj_k_död,Adjektiv,A2,es,muerto
+adj_k_död,Adjektiv,A2,it,morto
+adj_k_död,Adjektiv,A2,ja,死んでいる
+adj_k_öppen,Adjektiv,A2,sv,öppen
+adj_k_öppen,Adjektiv,A2,en,open
+adj_k_öppen,Adjektiv,A2,fr,ouvert
+adj_k_öppen,Adjektiv,A2,de,offen
+adj_k_öppen,Adjektiv,A2,es,abierto
+adj_k_öppen,Adjektiv,A2,it,aperto
+adj_k_öppen,Adjektiv,A2,ja,開いている
+adj_k_stängd,Adjektiv,A2,sv,stängd
+adj_k_stängd,Adjektiv,A2,en,closed
+adj_k_stängd,Adjektiv,A2,fr,fermé
+adj_k_stängd,Adjektiv,A2,de,geschlossen
+adj_k_stängd,Adjektiv,A2,es,cerrado
+adj_k_stängd,Adjektiv,A2,it,chiuso
+adj_k_stängd,Adjektiv,A2,ja,閉まっている
+adj_k_hel,Adjektiv,A2,sv,hel
+adj_k_hel,Adjektiv,A2,en,whole
+adj_k_hel,Adjektiv,A2,fr,entier
+adj_k_hel,Adjektiv,A2,de,ganz
+adj_k_hel,Adjektiv,A2,es,entero
+adj_k_hel,Adjektiv,A2,it,intero
+adj_k_hel,Adjektiv,A2,ja,全体
+adj_k_halv,Adjektiv,A2,sv,halv
+adj_k_halv,Adjektiv,A2,en,half
+adj_k_halv,Adjektiv,A2,fr,demi
+adj_k_halv,Adjektiv,A2,de,halb
+adj_k_halv,Adjektiv,A2,es,medio
+adj_k_halv,Adjektiv,A2,it,mezzo
+adj_k_halv,Adjektiv,A2,ja,半分
+# adj_m_lik: sv=lik (similar); motsats till adj_m_olik — en=similar
+adj_m_lik,Adjektiv,A2,sv,lik
+adj_m_lik,Adjektiv,A2,en,similar
+adj_m_lik,Adjektiv,A2,fr,similaire
+adj_m_lik,Adjektiv,A2,de,ähnlich
+adj_m_lik,Adjektiv,A2,es,similar
+adj_m_lik,Adjektiv,A2,it,simile
+adj_m_lik,Adjektiv,A2,ja,似ている
+# adj_k_trasig: de=kaputt (colloquialt, mest frekvent i talspråk)
+adj_k_trasig,Adjektiv,A2,sv,trasig
+adj_k_trasig,Adjektiv,A2,en,broken
+adj_k_trasig,Adjektiv,A2,fr,cassé
+adj_k_trasig,Adjektiv,A2,de,kaputt
+adj_k_trasig,Adjektiv,A2,es,roto
+adj_k_trasig,Adjektiv,A2,it,rotto
+adj_k_trasig,Adjektiv,A2,ja,壊れた
+adj_s_rund,Adjektiv,A2,sv,rund
+adj_s_rund,Adjektiv,A2,en,round
+adj_s_rund,Adjektiv,A2,fr,rond
+adj_s_rund,Adjektiv,A2,de,rund
+adj_s_rund,Adjektiv,A2,es,redondo
+adj_s_rund,Adjektiv,A2,it,rotondo
+adj_s_rund,Adjektiv,A2,ja,丸い
+# adj_t_skarp: de=scharf täcker skarp (sharp) och stark smak (spicy) — polysemi
+adj_t_skarp,Adjektiv,A2,sv,skarp
+adj_t_skarp,Adjektiv,A2,en,sharp
+adj_t_skarp,Adjektiv,A2,fr,tranchant
+adj_t_skarp,Adjektiv,A2,de,scharf
+adj_t_skarp,Adjektiv,A2,es,afilado
+adj_t_skarp,Adjektiv,A2,it,affilato
+adj_t_skarp,Adjektiv,A2,ja,鋭い
+# adj_m_privat/adj_m_offentlig: viktiga för att skilja kontexter i meningsbyggnad
+adj_m_privat,Adjektiv,B1,sv,privat
+adj_m_privat,Adjektiv,B1,en,private
+adj_m_privat,Adjektiv,B1,fr,privé
+adj_m_privat,Adjektiv,B1,de,privat
+adj_m_privat,Adjektiv,B1,es,privado
+adj_m_privat,Adjektiv,B1,it,privato
+adj_m_privat,Adjektiv,B1,ja,プライベート
+adj_m_offentlig,Adjektiv,B1,sv,offentlig
+adj_m_offentlig,Adjektiv,B1,en,public
+adj_m_offentlig,Adjektiv,B1,fr,public
+adj_m_offentlig,Adjektiv,B1,de,öffentlich
+adj_m_offentlig,Adjektiv,B1,es,público
+adj_m_offentlig,Adjektiv,B1,it,pubblico
+adj_m_offentlig,Adjektiv,B1,ja,公共
+# adj_m_omöjlig: ja=不可能 (na-adj, lemma utan な) — direkt motsats till adj_m_möjlig
+adj_m_omöjlig,Adjektiv,A2,sv,omöjlig
+adj_m_omöjlig,Adjektiv,A2,en,impossible
+adj_m_omöjlig,Adjektiv,A2,fr,impossible
+adj_m_omöjlig,Adjektiv,A2,de,unmöglich
+adj_m_omöjlig,Adjektiv,A2,es,imposible
+adj_m_omöjlig,Adjektiv,A2,it,impossibile
+adj_m_omöjlig,Adjektiv,A2,ja,不可能
+# adj_k_normal: ja=普通 täcker adj_k_normal och adj_m_vanlig (polysemi — hållbar förenkling)
+adj_k_normal,Adjektiv,A2,sv,normal
+adj_k_normal,Adjektiv,A2,en,normal
+adj_k_normal,Adjektiv,A2,fr,normal
+adj_k_normal,Adjektiv,A2,de,normal
+adj_k_normal,Adjektiv,A2,es,normal
+adj_k_normal,Adjektiv,A2,it,normale
+adj_k_normal,Adjektiv,A2,ja,普通
+# adj_es_skamsen: ja=恥ずかしい täcker skamsen och generad (social/existentiell skam — polysemi)
+adj_es_skamsen,Adjektiv,A2,sv,skamsen
+adj_es_skamsen,Adjektiv,A2,en,ashamed
+adj_es_skamsen,Adjektiv,A2,fr,honteux
+adj_es_skamsen,Adjektiv,A2,de,beschämt
+adj_es_skamsen,Adjektiv,A2,es,avergonzado
+adj_es_skamsen,Adjektiv,A2,it,vergognoso
+adj_es_skamsen,Adjektiv,A2,ja,恥ずかしい
+# adj_ev_oväntad: ja=予想外 (na-adj, lemma utan な)
+adj_ev_oväntad,Adjektiv,A2,sv,oväntad
+adj_ev_oväntad,Adjektiv,A2,en,unexpected
+adj_ev_oväntad,Adjektiv,A2,fr,inattendu
+adj_ev_oväntad,Adjektiv,A2,de,unerwartet
+adj_ev_oväntad,Adjektiv,A2,es,inesperado
+adj_ev_oväntad,Adjektiv,A2,it,inaspettato
+adj_ev_oväntad,Adjektiv,A2,ja,予想外
+# adj_m_speciell: ja=特別 (na-adj, lemma utan な)
+adj_m_speciell,Adjektiv,A2,sv,speciell
+adj_m_speciell,Adjektiv,A2,en,special
+adj_m_speciell,Adjektiv,A2,fr,spécial
+adj_m_speciell,Adjektiv,A2,de,besonders
+adj_m_speciell,Adjektiv,A2,es,especial
+adj_m_speciell,Adjektiv,A2,it,speciale
+adj_m_speciell,Adjektiv,A2,ja,特別
+# adj_m_officiell: ja=公式 (na-adj, lemma utan な)
+adj_m_officiell,Adjektiv,B1,sv,officiell
+adj_m_officiell,Adjektiv,B1,en,official
+adj_m_officiell,Adjektiv,B1,fr,officiel
+adj_m_officiell,Adjektiv,B1,de,offiziell
+adj_m_officiell,Adjektiv,B1,es,oficial
+adj_m_officiell,Adjektiv,B1,it,ufficiale
+adj_m_officiell,Adjektiv,B1,ja,公式
+# adj_m_nödvändig: ja=必要 (na-adj, lemma utan な, per KONVENTIONER.md)
+# adj_m_olik: ja=違う är predikativt verb ("är annorlunda/skiljer sig")
+adj_m_nödvändig,Adjektiv,A2,sv,nödvändig
+adj_m_nödvändig,Adjektiv,A2,en,necessary
+adj_m_nödvändig,Adjektiv,A2,fr,nécessaire
+adj_m_nödvändig,Adjektiv,A2,de,nötig
+adj_m_nödvändig,Adjektiv,A2,es,necesario
+adj_m_nödvändig,Adjektiv,A2,it,necessario
+adj_m_nödvändig,Adjektiv,A2,ja,必要
+adj_m_olik,Adjektiv,A2,sv,olik
+adj_m_olik,Adjektiv,A2,en,different
+adj_m_olik,Adjektiv,A2,fr,différent
+adj_m_olik,Adjektiv,A2,de,verschieden
+adj_m_olik,Adjektiv,A2,es,diferente
+adj_m_olik,Adjektiv,A2,it,diverso
+adj_m_olik,Adjektiv,A2,ja,違う
+
+# ───────────────────────────────────────────────────────────────────────────────
+# ADVERB — ord borttagna från bas_kärna.csv (öppna klassen)
+# ───────────────────────────────────────────────────────────────────────────────
+
+# ── 28. Intensitets- och gradadverb ───────────────────────────────────────────
+# Prefix: adv2_
+# Adverb som modifierar grad eller intensitet
+# inte ingår här fastän det är i bas_kärna — hoppas över (dubblett)
+adv2_väldigt,Adverb,A1,sv,väldigt
+adv2_väldigt,Adverb,A1,en,very
+adv2_väldigt,Adverb,A1,fr,très
+adv2_väldigt,Adverb,A1,de,sehr
+adv2_väldigt,Adverb,A1,es,muy
+adv2_väldigt,Adverb,A1,it,molto
+adv2_väldigt,Adverb,A1,ja,とても
+adv2_ganska,Adverb,A1,sv,ganska
+adv2_ganska,Adverb,A1,en,quite
+adv2_ganska,Adverb,A1,fr,assez
+adv2_ganska,Adverb,A1,de,ziemlich
+adv2_ganska,Adverb,A1,es,bastante
+adv2_ganska,Adverb,A1,it,abbastanza
+adv2_ganska,Adverb,A1,ja,けっこう
+adv2_lite,Adverb,A1,sv,lite
+adv2_lite,Adverb,A1,en,a little
+adv2_lite,Adverb,A1,fr,un peu
+adv2_lite,Adverb,A1,de,ein bisschen
+adv2_lite,Adverb,A1,es,un poco
+adv2_lite,Adverb,A1,it,un po'
+adv2_lite,Adverb,A1,ja,少し
+adv2_för,Adverb,A1,sv,för
+adv2_för,Adverb,A1,en,too
+adv2_för,Adverb,A1,fr,trop
+adv2_för,Adverb,A1,de,zu
+adv2_för,Adverb,A1,es,demasiado
+adv2_för,Adverb,A1,it,troppo
+adv2_för,Adverb,A1,ja,すぎる
+adv2_också,Adverb,A1,sv,också
+adv2_också,Adverb,A1,en,also
+adv2_också,Adverb,A1,fr,aussi
+adv2_också,Adverb,A1,de,auch
+adv2_också,Adverb,A1,es,también
+adv2_också,Adverb,A1,it,anche
+adv2_också,Adverb,A1,ja,も
+adv2_bara,Adverb,A1,sv,bara
+adv2_bara,Adverb,A1,en,just
+adv2_bara,Adverb,A1,fr,juste
+adv2_bara,Adverb,A1,de,nur
+adv2_bara,Adverb,A1,es,solo
+adv2_bara,Adverb,A1,it,solo
+adv2_bara,Adverb,A1,ja,だけ
+adv2_redan,Adverb,A2,sv,redan
+adv2_redan,Adverb,A2,en,already
+adv2_redan,Adverb,A2,fr,déjà
+adv2_redan,Adverb,A2,de,schon
+adv2_redan,Adverb,A2,es,ya
+adv2_redan,Adverb,A2,it,già
+adv2_redan,Adverb,A2,ja,もう
+adv2_ännu,Adverb,A2,sv,ännu
+adv2_ännu,Adverb,A2,en,still
+adv2_ännu,Adverb,A2,fr,encore
+adv2_ännu,Adverb,A2,de,noch
+adv2_ännu,Adverb,A2,es,todavía
+adv2_ännu,Adverb,A2,it,ancora
+adv2_ännu,Adverb,A2,ja,まだ
+adv2_ungefär,Adverb,A2,sv,ungefär
+adv2_ungefär,Adverb,A2,en,about
+adv2_ungefär,Adverb,A2,fr,environ
+adv2_ungefär,Adverb,A2,de,ungefähr
+adv2_ungefär,Adverb,A2,es,aproximadamente
+adv2_ungefär,Adverb,A2,it,circa
+adv2_ungefär,Adverb,A2,ja,だいたい
+
+# ── 29. Sällskaplig och modal ─────────────────────────────────────────────────
+# Prefix: adv2_
+# Frekvens- och modaladverb för vardaglig kommunikation
+adv2_alltid,Adverb,A1,sv,alltid
+adv2_alltid,Adverb,A1,en,always
+adv2_alltid,Adverb,A1,fr,toujours
+adv2_alltid,Adverb,A1,de,immer
+adv2_alltid,Adverb,A1,es,siempre
+adv2_alltid,Adverb,A1,it,sempre
+adv2_alltid,Adverb,A1,ja,いつも
+adv2_aldrig,Adverb,A1,sv,aldrig
+adv2_aldrig,Adverb,A1,en,never
+adv2_aldrig,Adverb,A1,fr,jamais
+adv2_aldrig,Adverb,A1,de,nie
+adv2_aldrig,Adverb,A1,es,nunca
+adv2_aldrig,Adverb,A1,it,mai
+adv2_aldrig,Adverb,A1,ja,決して
+adv2_ofta,Adverb,A1,sv,ofta
+adv2_ofta,Adverb,A1,en,often
+adv2_ofta,Adverb,A1,fr,souvent
+adv2_ofta,Adverb,A1,de,oft
+adv2_ofta,Adverb,A1,es,a menudo
+adv2_ofta,Adverb,A1,it,spesso
+adv2_ofta,Adverb,A1,ja,よく
+adv2_ibland,Adverb,A1,sv,ibland
+adv2_ibland,Adverb,A1,en,sometimes
+adv2_ibland,Adverb,A1,fr,parfois
+adv2_ibland,Adverb,A1,de,manchmal
+adv2_ibland,Adverb,A1,es,a veces
+adv2_ibland,Adverb,A1,it,a volte
+adv2_ibland,Adverb,A1,ja,ときどき
+adv2_snart,Adverb,A1,sv,snart
+adv2_snart,Adverb,A1,en,soon
+adv2_snart,Adverb,A1,fr,bientôt
+adv2_snart,Adverb,A1,de,bald
+adv2_snart,Adverb,A1,es,pronto
+adv2_snart,Adverb,A1,it,presto
+adv2_snart,Adverb,A1,ja,もうすぐ
+adv2_kanske,Adverb,A1,sv,kanske
+adv2_kanske,Adverb,A1,en,maybe
+adv2_kanske,Adverb,A1,fr,peut-être
+adv2_kanske,Adverb,A1,de,vielleicht
+adv2_kanske,Adverb,A1,es,quizás
+adv2_kanske,Adverb,A1,it,forse
+adv2_kanske,Adverb,A1,ja,たぶん
+adv2_säkert,Adverb,A2,sv,säkert
+adv2_säkert,Adverb,A2,en,certainly
+adv2_säkert,Adverb,A2,fr,certainement
+adv2_säkert,Adverb,A2,de,sicher
+adv2_säkert,Adverb,A2,es,seguramente
+adv2_säkert,Adverb,A2,it,certamente
+adv2_säkert,Adverb,A2,ja,きっと
+adv2_troligen,Adverb,A2,sv,troligen
+adv2_troligen,Adverb,A2,en,probably
+adv2_troligen,Adverb,A2,fr,probablement
+adv2_troligen,Adverb,A2,de,wahrscheinlich
+adv2_troligen,Adverb,A2,es,probablemente
+adv2_troligen,Adverb,A2,it,probabilmente
+adv2_troligen,Adverb,A2,ja,おそらく
+
+# ── 30. Diskursmarkörer ───────────────────────────────────────────────────────
+# Prefix: adv2_
+# ja/nej/hej/tack/ursäkt/varsågod finns i bas_kärna.csv (Interjektion) — hoppas över
+# Denna kat. täcker reaktioner och samtalsadverb som saknas i bas_kärna
+adv2_okej,Adverb,A1,sv,okej
+adv2_okej,Adverb,A1,en,okay
+adv2_okej,Adverb,A1,fr,d'accord
+adv2_okej,Adverb,A1,de,okay
+adv2_okej,Adverb,A1,es,de acuerdo
+adv2_okej,Adverb,A1,it,va bene
+adv2_okej,Adverb,A1,ja,わかった
+adv2_faktiskt,Adverb,A2,sv,faktiskt
+adv2_faktiskt,Adverb,A2,en,actually
+adv2_faktiskt,Adverb,A2,fr,en fait
+adv2_faktiskt,Adverb,A2,de,eigentlich
+adv2_faktiskt,Adverb,A2,es,en realidad
+adv2_faktiskt,Adverb,A2,it,in realtà
+adv2_faktiskt,Adverb,A2,ja,実は
+adv2_naturligtvis,Adverb,A2,sv,naturligtvis
+adv2_naturligtvis,Adverb,A2,en,of course
+adv2_naturligtvis,Adverb,A2,fr,bien sûr
+adv2_naturligtvis,Adverb,A2,de,natürlich
+adv2_naturligtvis,Adverb,A2,es,por supuesto
+adv2_naturligtvis,Adverb,A2,it,certo
+adv2_naturligtvis,Adverb,A2,ja,もちろん
+adv2_annars,Adverb,A2,sv,annars
+adv2_annars,Adverb,A2,en,otherwise
+adv2_annars,Adverb,A2,fr,sinon
+adv2_annars,Adverb,A2,de,sonst
+adv2_annars,Adverb,A2,es,si no
+adv2_annars,Adverb,A2,it,altrimenti
+adv2_annars,Adverb,A2,ja,そうじゃないと
+adv2_dessutom,Adverb,A2,sv,dessutom
+adv2_dessutom,Adverb,A2,en,besides
+adv2_dessutom,Adverb,A2,fr,de plus
+adv2_dessutom,Adverb,A2,de,außerdem
+adv2_dessutom,Adverb,A2,es,además
+adv2_dessutom,Adverb,A2,it,inoltre
+adv2_dessutom,Adverb,A2,ja,それに
+adv2_alltså,Adverb,A2,sv,alltså
+adv2_alltså,Adverb,A2,en,so
+adv2_alltså,Adverb,A2,fr,donc
+adv2_alltså,Adverb,A2,de,also
+adv2_alltså,Adverb,A2,es,entonces
+adv2_alltså,Adverb,A2,it,quindi
+adv2_alltså,Adverb,A2,ja,つまり
+adv2_tillsammans,Adverb,A2,sv,tillsammans
+adv2_tillsammans,Adverb,A2,en,together
+adv2_tillsammans,Adverb,A2,fr,ensemble
+adv2_tillsammans,Adverb,A2,de,zusammen
+adv2_tillsammans,Adverb,A2,es,juntos
+adv2_tillsammans,Adverb,A2,it,insieme
+adv2_tillsammans,Adverb,A2,ja,一緒に
+adv2_nästan,Adverb,A2,sv,nästan
+adv2_nästan,Adverb,A2,en,almost
+adv2_nästan,Adverb,A2,fr,presque
+# de=fast (nästan) — INTE fast=snabb; separat ord med annan etymologi
+adv2_nästan,Adverb,A2,de,fast
+adv2_nästan,Adverb,A2,es,casi
+adv2_nästan,Adverb,A2,it,quasi
+adv2_nästan,Adverb,A2,ja,ほとんど
+adv2_plötsligt,Adverb,A2,sv,plötsligt
+adv2_plötsligt,Adverb,A2,en,suddenly
+adv2_plötsligt,Adverb,A2,fr,soudainement
+adv2_plötsligt,Adverb,A2,de,plötzlich
+adv2_plötsligt,Adverb,A2,es,de repente
+adv2_plötsligt,Adverb,A2,it,all'improvviso
+adv2_plötsligt,Adverb,A2,ja,突然
+adv2_precis,Adverb,A2,sv,precis
+adv2_precis,Adverb,A2,en,exactly
+adv2_precis,Adverb,A2,fr,exactement
+adv2_precis,Adverb,A2,de,genau
+adv2_precis,Adverb,A2,es,exactamente
+adv2_precis,Adverb,A2,it,esattamente
+adv2_precis,Adverb,A2,ja,ちょうど
+adv2_länge,Adverb,A2,sv,länge
+adv2_länge,Adverb,A2,en,long
+adv2_länge,Adverb,A2,fr,longtemps
+adv2_länge,Adverb,A2,de,lange
+adv2_länge,Adverb,A2,es,mucho tiempo
+adv2_länge,Adverb,A2,it,a lungo
+adv2_länge,Adverb,A2,ja,長い間
+adv2_bort,Adverb,A2,sv,bort
+adv2_bort,Adverb,A2,en,away
+adv2_bort,Adverb,A2,fr,loin
+adv2_bort,Adverb,A2,de,weg
+adv2_bort,Adverb,A2,es,lejos
+adv2_bort,Adverb,A2,it,via
+adv2_bort,Adverb,A2,ja,遠くへ
+adv2_upp,Adverb,A2,sv,upp
+adv2_upp,Adverb,A2,en,up
+adv2_upp,Adverb,A2,fr,en haut
+adv2_upp,Adverb,A2,de,hinauf
+adv2_upp,Adverb,A2,es,arriba
+adv2_upp,Adverb,A2,it,su
+adv2_upp,Adverb,A2,ja,上に
+adv2_ner,Adverb,A2,sv,ner
+adv2_ner,Adverb,A2,en,down
+adv2_ner,Adverb,A2,fr,en bas
+adv2_ner,Adverb,A2,de,hinunter
+adv2_ner,Adverb,A2,es,abajo
+adv2_ner,Adverb,A2,it,giù
+adv2_ner,Adverb,A2,ja,下に
+adv2_fram,Adverb,A2,sv,fram
+adv2_fram,Adverb,A2,en,forward
+adv2_fram,Adverb,A2,fr,en avant
+adv2_fram,Adverb,A2,de,vorwärts
+adv2_fram,Adverb,A2,es,adelante
+adv2_fram,Adverb,A2,it,avanti
+adv2_fram,Adverb,A2,ja,前に
+adv2_tillbaka,Adverb,A2,sv,tillbaka
+adv2_tillbaka,Adverb,A2,en,back
+adv2_tillbaka,Adverb,A2,fr,en retour
+adv2_tillbaka,Adverb,A2,de,zurück
+adv2_tillbaka,Adverb,A2,es,de vuelta
+adv2_tillbaka,Adverb,A2,it,indietro
+adv2_tillbaka,Adverb,A2,ja,戻って
+adv2_ute,Adverb,A2,sv,ute
+adv2_ute,Adverb,A2,en,outside
+adv2_ute,Adverb,A2,fr,dehors
+adv2_ute,Adverb,A2,de,draußen
+adv2_ute,Adverb,A2,es,afuera
+adv2_ute,Adverb,A2,it,fuori
+adv2_ute,Adverb,A2,ja,外に
+adv2_inne,Adverb,A2,sv,inne
+adv2_inne,Adverb,A2,en,inside
+adv2_inne,Adverb,A2,fr,dedans
+adv2_inne,Adverb,A2,de,drinnen
+adv2_inne,Adverb,A2,es,adentro
+adv2_inne,Adverb,A2,it,dentro
+adv2_inne,Adverb,A2,ja,中に
+adv2_istället,Adverb,A2,sv,istället
+adv2_istället,Adverb,A2,en,instead
+adv2_istället,Adverb,A2,fr,plutôt
+adv2_istället,Adverb,A2,de,stattdessen
+adv2_istället,Adverb,A2,es,en cambio
+adv2_istället,Adverb,A2,it,invece
+adv2_istället,Adverb,A2,ja,代わりに
+adv2_ändå,Adverb,A2,sv,ändå
+adv2_ändå,Adverb,A2,en,anyway
+adv2_ändå,Adverb,A2,fr,quand même
+adv2_ändå,Adverb,A2,de,trotzdem
+adv2_ändå,Adverb,A2,es,de todas formas
+adv2_ändå,Adverb,A2,it,comunque
+adv2_ändå,Adverb,A2,ja,とにかく
+adv2_tyvärr,Adverb,A2,sv,tyvärr
+adv2_tyvärr,Adverb,A2,en,unfortunately
+adv2_tyvärr,Adverb,A2,fr,malheureusement
+adv2_tyvärr,Adverb,A2,de,leider
+adv2_tyvärr,Adverb,A2,es,desafortunadamente
+adv2_tyvärr,Adverb,A2,it,purtroppo
+adv2_tyvärr,Adverb,A2,ja,残念ながら
+adv2_verkligen,Adverb,A2,sv,verkligen
+adv2_verkligen,Adverb,A2,en,really
+adv2_verkligen,Adverb,A2,fr,vraiment
+adv2_verkligen,Adverb,A2,de,wirklich
+adv2_verkligen,Adverb,A2,es,realmente
+adv2_verkligen,Adverb,A2,it,davvero
+adv2_verkligen,Adverb,A2,ja,本当に
+adv2_gärna,Adverb,A2,sv,gärna
+adv2_gärna,Adverb,A2,en,gladly
+adv2_gärna,Adverb,A2,fr,volontiers
+adv2_gärna,Adverb,A2,de,gern
+adv2_gärna,Adverb,A2,es,con gusto
+adv2_gärna,Adverb,A2,it,volentieri
+adv2_gärna,Adverb,A2,ja,喜んで
+adv2_direkt,Adverb,A2,sv,direkt
+adv2_direkt,Adverb,A2,en,directly
+adv2_direkt,Adverb,A2,fr,directement
+adv2_direkt,Adverb,A2,de,direkt
+adv2_direkt,Adverb,A2,es,directamente
+adv2_direkt,Adverb,A2,it,direttamente
+adv2_direkt,Adverb,A2,ja,直接
+adv2_mest,Adverb,A2,sv,mest
+adv2_mest,Adverb,A2,en,mostly
+adv2_mest,Adverb,A2,fr,surtout
+adv2_mest,Adverb,A2,de,meistens
+adv2_mest,Adverb,A2,es,principalmente
+adv2_mest,Adverb,A2,it,principalmente
+adv2_mest,Adverb,A2,ja,主に
+adv2_åtminstone,Adverb,B1,sv,åtminstone
+adv2_åtminstone,Adverb,B1,en,at least
+adv2_åtminstone,Adverb,B1,fr,au moins
+adv2_åtminstone,Adverb,B1,de,wenigstens
+adv2_åtminstone,Adverb,B1,es,al menos
+adv2_åtminstone,Adverb,B1,it,almeno
+adv2_åtminstone,Adverb,B1,ja,少なくとも

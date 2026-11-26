@@ -1,0 +1,66 @@
+"""CLI-router för ordbok-kommandot.
+
+Användning:
+    ordbok import <csv> [<csv> ...]
+    ordbok lista [--språk sv]
+    ordbok visa <koncept>
+    ordbok lägg-till
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="ordbok",
+        description="Ordbokshantering för språkprogrammet.",
+    )
+    sub = parser.add_subparsers(dest="kommando", required=True)
+
+    # ── import ───────────────────────────────────────────────────────────
+    p_import = sub.add_parser("import", help="Importera CSV-filer till sprak.db")
+    p_import.add_argument("filer", nargs="+", help="CSV-filer att importera")
+    p_import.add_argument(
+        "--återinitiera",
+        action="store_true",
+        help="Radera och återskapa databasen innan import",
+    )
+
+    # ── lista ────────────────────────────────────────────────────────────
+    p_lista = sub.add_parser("lista", help="Översikt av alla koncept")
+    p_lista.add_argument("--språk", default="sv", help="Vilket språks lemma att visa")
+    p_lista.add_argument("--källa", help="Filtrera på källa (t.ex. bas_kärna)")
+    p_lista.add_argument("--ordklass", help="Filtrera på ordklass")
+
+    # ── visa ─────────────────────────────────────────────────────────────
+    p_visa = sub.add_parser("visa", help="Drill-down för ett koncept")
+    p_visa.add_argument("koncept", help="Koncept-nyckel, t.ex. rör_gå")
+
+    # ── lägg-till ────────────────────────────────────────────────────────
+    sub.add_parser("lägg-till", help="Interaktivt lägga till nytt koncept")
+
+    args = parser.parse_args(argv)
+
+    # Lazy import för snabb startup på enskilda kommandon
+    if args.kommando == "import":
+        from .importera import kör as kör_import
+        return kör_import(args)
+    if args.kommando == "lista":
+        from .lista import kör as kör_lista
+        return kör_lista(args)
+    if args.kommando == "visa":
+        from .visa import kör as kör_visa
+        return kör_visa(args)
+    if args.kommando == "lägg-till":
+        from .lägg_till import kör as kör_lägg_till
+        return kör_lägg_till(args)
+
+    parser.error(f"okänt kommando: {args.kommando}")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
