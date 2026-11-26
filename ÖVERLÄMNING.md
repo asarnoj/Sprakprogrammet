@@ -1,4 +1,4 @@
-# Överlämning — Språkprogrammet, 2026-08-12
+# Överlämning — Språkprogrammet, 2026-08-14
 
 Klistra in det här i en ny chatt.
 
@@ -21,153 +21,204 @@ som styr vilka ord som får kombineras.
 
 ## Var vi står
 
-**Böjnings- och taggningslagret är klart.**
+**Datalagret, renderaren och restriktionerna är klara. Meningsformen är
+utbyggd genom arton nivåer. Generatorn är inte byggd.**
 
 ```
-Koncept        733        Mönster        197   (174 universella
-Lexem        5 130        MönsterKrav    329    + 23 språkspecifika)
-Former      49 619        genus        1 295/1 295
-                          prenominal     777/777
-                          gradbarhet     111/111
-                          räknebar       259/259
-                          semantik       323
-                          hjälpverb    522/522
-                          variant        42/42
-                          determinerare 117/117
-                          lexem m. former 5 094/5 130
+Koncept        736        Mönster        271   (universella
+Lexem        5 149        MönsterKrav    390    + språkspecifika)
+Former      50 026        Attributkrav    73
 ```
 
-De 36 lexem som saknar former är japanska adjektiv av typ `no` och
-`verbfras` — de renderas med の eller som verbfraser och har ett eget
-dokumenterat skäl att sakna böjning.
+Tre lager fungerar:
 
-**Alla 1 043 fel granskningen hittade är åtgärdade.** `ordbok
-tillämpa-granskning --torkörning` ger noll satser att köra. Alla sju språk är
-granskade av en starkare modell.
+1. **Böjning och taggning.** Alla 1 043 fel granskningen hittade är
+   åtgärdade; `ordbok tillämpa-granskning --torkörning` ger noll satser.
+   Alla sju språk är granskade av en starkare modell.
+2. **Renderaren.** Sju språk, en klass per språk, `RomanskRenderare` som
+   gemensam bas för fr/es/it. `ordbok rendera --exempel --språk <xx>`.
+3. **Semantiska restriktioner.** `Koncept.semantik` × `MönsterKrav.tagg`,
+   matchat i disjunktiv normalform: bitar inom en rad är OCH, flera rader
+   är ELLER. Validatorn arbetar på **specen**, inte på den renderade
+   strängen — alltså en gång för alla sju språk. 68 % av slumpmässiga
+   ord­kombinationer avvisas (28 % när mätningen började).
 
-**Renderaren är klar.** Alla sju språk bygger meningen ur samma
-språkoberoende specifikation, identiskt med de meningar `RENDERARE_KRAV.md`
-renderade för hand. `ordbok rendera --exempel --språk <xx>`.
-
-**Nästa fas är semantiska restriktioner** — se
-[`paradigm/RESTRIKTIONER.md`](paradigm/RESTRIKTIONER.md).
+**Nästa steg är meningsgeneratorn** — se
+[`paradigm/GENERATOR.md`](paradigm/GENERATOR.md). Den var blockerad av
+uttrycksförmågan. Det är den inte längre; se nåbarhetsmätningen nedan.
 
 ---
 
-## Vad som gjordes sist (2026-08-12)
+## Vad som gjordes sist (2026-08-13 — 08-14)
 
-De 59 rader som förra överlämningen lämnade öppna är inskrivna. De krävde
-inte 59 bedömningar — de krävde tre operationer som `tillämpa-granskning`
-saknade. Kommandot gör nu fyra saker i stället för en: skriver om, **lägger
-till** (cellen var tom, alltså INSERT och inte UPDATE), **delar** (en rad
-täckte flera celler som visade sig behöva olika former) och **tar bort**.
+Åtta konstruktioner byggdes, en i taget, var och en i alla sju språk innan
+nästa påbörjades. Ordningen togs inte på känsla utan **härleddes ur
+`MönsterKrav.slot` × `MönsterKrav.frastyp`** — en kolumn som legat ifylld
+sedan mönstertaggningen utan att någon läst den. Metoden flyttade
+predikativ och modalverb från sist till först, och avslöjade att stegen har
+fyra dimensioner och inte en. Se GENERATOR.md, avsnittet med samma namn.
 
-27 celler fick form, 11 tömdes, 21 bytte form. Ingen annan cell rördes —
-kontrollerat genom att jämföra cell-för-cell-bilder före och efter, inte
-genom att lita på statistikraderna.
-
-**Två fel i granskningen själv, som nu står i `ordbok/beslut.tsv`:**
-
-| Fall | Granskningen sa | Rätt |
+| Nivå | Konstruktion | Fältet i `Mening` |
 |---|---|---|
-| `de/sie` dativ (3pl) | `ihr` | `ihnen` — den trodde två identiska sie-paradigm angivits, men lexemen är åtskilda och båda var redan rätt |
-| `de/blau superl_bland_pl_gen` | `blauester` | `blauesten` — blandad deklination tar svaga ändelser i hela pluralen |
+| 10 | genitiv | `Nominalfras.ägare` |
+| 11 | predikativ | `predikativ` |
+| 12 | negation | `negerad` |
+| 13 | infinitivkomplement | `komplement` |
+| 14 | perfekt | `Aspekt.PERFEKT` |
+| 15 | prepositionsfras | `Prepositionsfras` i `adverbial` |
+| 16 | ja/nej-fråga | `fråga` |
+| 17 | passiv | `Diates`, båda svenska passiverna |
+| 18 | komparation | `Grad`, `jämförelse` |
 
-`beslut.tsv` går före `granskning.tsv`. Granskningen är en stark modells
-förslag, inte facit; när den har fel skrivs svaret in där med motivering,
-i stället för att granskningsrapporten ändras. Rapporten ska förbli vad
-modellen faktiskt sa.
+Renderarna växte med det: `kein` i tyskan, do-support i engelskan,
+klitikaordning och sandhi i de romanska, ukemi-passiv och より-jämförelse i
+japanskan, Satzklammer och kasusrektion i tyskan.
 
-### Ett fel som satt i tillämpningen, inte i datan
+**Varje utökning drog fram datahål som granskningen inte kunde se**, därför
+att hålen inte är felaktiga former utan *saknade* eller *felavgränsade*:
 
-`tillämpa-granskning` slog upp lexem på `lemma + språk` och lät
-granskningens `koncept`-kolumn ligga oanvänd. 177 lemman är flera lexem
-inom samma språk. Rättelsen hamnade då på det lexem vars rad råkade komma
-först: `giocherebbero` skrevs till `arb_leka` medan `gen_spela`, som
-granskningen gällde, blev kvar med fel form. Samma sak för `de/finden`.
-Statistiken räknade båda som lyckade rättelser.
+- 47 tyska substantivformer hade artikeln inbakad (`Schwester` →
+  `"der Schwester"`). Syntes som "in der der Schule". Granskningen missade
+  dem för att de är rätt böjda, fel avgränsade.
+- Engelskans `be` saknade am/are/were. "The girls be happy" gick att bygga
+  långt innan passiven fanns.
+- `verb_ha` es var `tener`; spanskan bildar perfekt med `haber`. Tillagt som
+  ett andra lexem under samma koncept med `variant='hjälpverb'`.
+- Pronomenen saknade `genus` i fem språk → "elle est heureux".
+- Tyskan saknade predikativa adjektivformer (111) och predikativ
+  komparativ/superlativ (218). Adjektivparadigmets 144 celler är alla
+  attributiva.
+- `komp_mer`/`komp_mest` fanns inte. `adv2_mest` en betyder "mestadels".
 
-Uppslaget är nu nycklat på koncept. De felplacerade rättelserna är rättade.
+Det generella mönstret: **det som inte händer syns aldrig i en räknare.**
+Sex tysta icke-matchande strängersättningar hittades bara genom att läsa
+utdata ord för ord, och två egna bitmask-buggar (`& 65535` och `& 1048575`
+som båda skar av semantikbitar) syntes bara som "en dyr sol" respektive
+som att 29 av 77 ord fick sin klass.
 
 ---
 
-## Vad som återstår i stort
+## Nåbarhet: hur mycket av beståndet specen når
 
-Fullständig lista i [`paradigm/RENDERARE_KRAV.md`](paradigm/RENDERARE_KRAV.md),
-framtagen genom att rendera meningen *"flickan gav sin bror en röd bok igår"*
-för hand till alla sju språk. Varje avsnitt där har en statusrad överst.
+Nytt verktyg: [`ordbok/verktyg/nåbarhet.py`](ordbok/verktyg/nåbarhet.py).
+Det instrumenterar `Uppslag.form`, sveper hela korsprodukten av det
+`Mening` kan uttrycka, och räknar unionen av begärda celler mot lexikonet.
 
-Det som förra överlämningen kallade **"det enda verkliga schemahålet"** —
-kasusrektion — var inget hål alls. `Mönster.språk` fanns redan och är
-nullbar just för det: ett mönster med `språk='de'` skuggar det universella
-och bär bara det som skiljer. Se `ordbok/migrationer/rektion.sql`.
+```
+sv  3 526 / 4 988   71 %      fr  5 088 /  9 070   56 %
+en  1 645 / 2 293   72 %      it  5 097 / 10 246   50 %
+                              es  4 637 / 10 596   44 %
+ja    770 / 2 498   31 %      de  7 839 / 23 493   33 %
+```
 
-**Datalagret är slut, och renderaren är byggd.** Samtliga elva brister i
-`RENDERARE_KRAV.md` är åtgärdade. Det som återstår är nästa lager:
+Svenskan: 37 % → 45 % (genitiv) → **71 %** (de åtta utökningarna).
 
-1. **Semantiska restriktioner.** Renderaren bygger vilken spec den än får,
-   så `flickan gav en näsa` och `Flickan ger en bok igår` är båda felfria.
-   Eftersom meningarna ska genereras ur repetitionskön och inte författas
-   är det bärande. Plan och mätningar i `paradigm/RESTRIKTIONER.md`.
-2. **Meningskomplexitet.** `Mening` uttrycker en huvudsats med subjekt,
-   objekt, io och adverbial. Negation, frågor, bisatser, komparation och
-   modalverb finns som ord i databasen men inte som fält i specen.
-3. **Meningsgeneratorn** — den som löser fram en mening ur repetitionskön.
-   Kortmodellen är utredd och nedskriven i
-   [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
-   som bärare, attribution via renderarens beroendekarta.
+**Siffran mäter svepet lika mycket som specen.** Två artefakter hittades och
+rättades under mätningen: subjektet var alltid tredje person, vilket fick
+hela personböjningen att se onåbar ut, och attributet satt bara i objektet,
+vilket bara mätte ackusativ. Tyskan gick 13 % → 20 % → 33 % på de två
+rättelserna ensamma. Lägg till dimensionen i svepet innan du drar slutsatsen
+att specen inte når en cell.
 
-   **Men den blockeras av punkt 2.** Bara 40 % av de svenska formerna går
-   att nå med dagens `Mening` — genitiv, perfekt, imperativ och komparation
-   saknar plats i specen. Meningskomplexiteten kommer först.
-4. **Appen.** Desktop först, mobil senare.
+Vad som faktiskt är onått, efter de rättelserna:
 
-Datalagret har inga öppna poster kvar. Sista passet drog ut en princip
-som borde ha dragits ut tidigare: om FSRS spårar per ordform måste **varje**
-lexem ha minst en Former-rad, annars kan det inte övas. Det gällde inte bara
-adverben och räkneorden utan alla oböjda ordklasser — preposition,
-konjunktion, subjunktion, interjektion, frågadverb, negationsadverb. 1 014
-lexem fick en `inv`-cell med lemmat. Där det faktiskt finns böjning fångas
-den: sv/en adverbkomparation (ofta/oftare/oftast, long/longer/longest),
-kardinaltalet 1 efter genus i de/fr/es/it, romanska ordinaltal.
+| Språk | Block | Vad som krävs |
+|---|---|---|
+| de | 96 av 147 adjektivceller — attributiv komparation | `Nominalfras.attribut` bär ingen grad |
+| fr/es/it | konjunktiv + konditionalis | bisatser respektive villkorssatser |
+| alla | imperativ | satsmodus |
+| de | stark deklination m/n sg — "roter Wein" | `Bestämdhet` saknar artikellös fras |
+| ja | jisho/ta/nai | register, utanför scope |
 
-Håll FSRS, ljuduppläsning och appen utanför tills en mening renderas korrekt.
+**Tyskans 33 % beror på en enda sak.** 16 121 av 23 493 tyska former är
+adjektivformer, och två tredjedelar av det paradigmet är komparativ och
+superlativ i attributiv ställning. `Grad` finns på `Mening` men styr bara
+predikativet. Att flytta graden in i `Nominalfras.attribut` är den enskilt
+största utökningen som återstår — värd omkring 10 500 tyska former, mer än
+alla åtta gjorda utökningar tillsammans på det språket.
+
+---
+
+## Öppna fel
+
+**Passiv i futurum och perfekt renderas som presens i fem språk.** Hittat av
+nåbarhetssvepet, inte av regressionssvepen — de sveper inte
+diates × tempus × aspekt.
+
+```
+              nutid            förfluten          framtid
+sv   passiv   Boken läses.     Boken lästes.      Boken ska läsas.      ✅
+sv   bli      Boken blir läst. Boken blev läst.   ✋ KeyError
+de            wird gelesen     wurde gelesen      wird gelesen          ✗
+en            is read          was read           is read               ✗
+fr/es/it      est lu           était lu           est lu                ✗
+ja            読まれます        読まれました        読まれます             ✅ (inget futurum)
+```
+
+Perfekt + passiv har samma brist: `sv` ger rätt "Boken har lästs" (s-passiven
+är egna celler), de fem andra ger presens. **Aktiv futurum fungerar överallt**
+— det är passivgrenen som returnerar innan tempus- och aspektlogiken.
+
+Kombinationen `PASSIV_HÄNDELSE` + `FRAMTID` kastar `KeyError` i `sv.py:259`:
+`TEMPUSCELL` har ingen futurumnyckel, och bli-grenen går inte via
+`modal_ska`-vägen som aktivgrenen gör.
+
+Inte lagat. Det är ett verkligt hål och ska gås igenom metodiskt, inte
+lappas.
 
 **Kända täckningsgränser** (inga fel, men bra att veta):
+
 - Mönster finns bara på verb. Schemat tillåter adjektiv och prepositioner
   som styrande ord (`rädd för`, `intresserad av`) — inte taggat.
 - Ett mönster per verb. `äta` har ett transitivt mönster, men "hon äter"
   utan objekt är också korrekt. Additivt att lägga till.
-- ~~Determinerarna har inga slot-filer.~~ **Åtgärdat 2026-08-12.** Beslutet
-  blev att lägga dem i `Former`, tvärtemot PARAMETER_AUDIT §3, eftersom FSRS
-  spårar per ordform och en hårdkodad artikel inte kan övas.
+- Sammansatt perfektiv passiv i fr/it ("a été lu", "è stato letto") kräver
+  tre verbdelar; renderaren bygger två.
+- Japanskan saknar infinitivkomplement (modaliteten är suffixal) och skiljer
+  inte perfekt från preteritum (た täcker båda).
+- Tyska Wechselpräpositionen defaultar till dativ. Riktning kräver en
+  målroll som specen inte har.
 - `mappa-kaikki` (validering mot Wiktionary-dumpar) är bara implementerad
   för svenska.
 - **Granskningens kvittofil skiljer inte på homonymer — men luckan är
-  liten.** `granskning.tsv.klara` har en rad per `(språk, lemma)`, och
-  kontrollen `if (språk, lemma) in redan: continue` ligger inne i loopen
-  över EN ordklass. Ett lemma som granskats som substantiv blockerar alltså
-  granskningen av samma lemma som adverb.
-
-  Första uppskattningen var "upp till ~140 ogranskade lexem". Den var för
-  hög. Av 177 homonymgrupper har **126 identiska paradigm** — de är samma
-  ord i två betydelser (de/finden = hitta/tycka), så en granskning av det
-  ena täcker det andra morfologiskt. Kvar: 51 grupper där formerna faktiskt
-  skiljer sig, och de flesta är korsordklassiga med bara en form på ena
-  sidan (en `back` = rygg/tillbaka, en `open` = öppna/öppen). Verkligt
-  granskningsbehov finns i en handfull: de/sein, de/sicher, es/poder,
-  de/ihr. de/finden är redan rättat.
-
-  Fixen är densamma som `tillämpa-granskning` fick: nyckla kvittot på
-  koncept i stället för lemma.
+  liten.** `granskning.tsv.klara` har en rad per `(språk, lemma)`. Av 177
+  homonymgrupper har 126 identiska paradigm (de/finden = hitta/tycka), så en
+  granskning av det ena täcker det andra morfologiskt. Kvar: 51 grupper där
+  formerna skiljer sig, de flesta korsordklassiga med bara en form på ena
+  sidan (en `back`, en `open`). Verkligt behov i en handfull: de/sein,
+  de/sicher, es/poder, de/ihr. Fixen är densamma som `tillämpa-granskning`
+  fick: nyckla kvittot på koncept i stället för lemma. **Kräver
+  `granska-former`, som inte får köras från Claude Code.**
 - **`paradigm/it/frågepronomen.yaml` har två celler med identiska
   koordinater.** `chi` och `cosa` är båda `kasus: [Nom, Ack, Dat]` och inget
   annat. Former lagrar axlar, inte cell-id, så en rad som täcker den ena
-  täcker med nödvändighet den andra. Granskningen rapporterar därför den
-  främmande cellen som fel hos båda lemmana. Ofarligt för renderaren, som
-  väljer lemma på koncept och sedan axlar — men det går inte att åtgärda i
-  datan, bara i slot-filen. Beslutet att låta det vara står i `beslut.tsv`.
-  Det är det enda sådana fallet i alla slot-filer (kontrollerat).
+  täcker med nödvändighet den andra. Ofarligt för renderaren. Går inte att
+  åtgärda i datan, bara i slot-filen. Beslutet att låta det vara står i
+  `beslut.tsv`. Det enda sådana fallet i alla slot-filer (kontrollerat).
+
+---
+
+## Vad som återstår
+
+1. **Meningsgeneratorn.** Kortmodellen är utredd och nedskriven i
+   [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
+   som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
+   förfluten tid. **Den var blockerad av meningskomplexiteten och är det
+   inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
+   nu mogen — med 71 % nåbart avgörs det som övas av strategin, inte av
+   uttrycksförmågan.
+2. **Tre konstruktioner kvar på stegen:** imperativ (satsmodus, 161 svenska
+   former, `imp`-celler finns i alla sju språk), bisatser (`Mening` måste
+   kunna innehålla en `Mening` — 22 verb har Bisatsfras-slots) och
+   wh-frågor (de 76 frågeorden har former; specen saknar sätt att markera
+   vilken slot som efterfrågas). Bisatserna är strukturellt tyngst och låser
+   dessutom upp de romanska konjunktiverna.
+3. **Attributiv komparation** — se nåbarhetsavsnittet. Störst avkastning av
+   allt som återstår, och billig: graden finns redan som `Grad`.
+4. **Appen.** Desktop först, mobil senare.
+
+Håll FSRS, ljuduppläsning och appen utanför tills generatorn löser fram
+meningar.
 
 ---
 
@@ -181,36 +232,52 @@ Alla fyra vägrar med ett tydligt besked.
 databasen från CSV och tappar all taggning. Kör alltid
 `for m in ordbok/migrationer/*.sql; do sqlite3 sprak.db < "$m"; done`
 efteråt, sedan `ordbok importera-former ordbok/former.tsv --ersätt`.
+Migrationerna ska vara idempotenta. `semantik_utökad.sql` var det inte:
+den satte bitar som dess egen villkorsjämförelse sedan läste, så andra
+körningen gav ett annat resultat än första.
 
-**`ordbok/granskningsrattelser.sql` är en LOGG, ingen migration.** Den låg
-i `ordbok/migrationer/` men är flyttad ut, just för att loopen ovan skulle
-ha spelat upp den. Satserna är knutna till `Former.id`, och DELETE/INSERT
-flyttar id:n — mot en ombyggd databas träffar de fel rader. Rättelserna
-bevaras i stället i `former.tsv`, som exporteras om direkt efter körningen.
+**`ordbok/granskningsrattelser.sql` och `ordbok/artikellackage.sql` är
+LOGGAR, inga migrationer.** De ligger utanför `migrationer/` just för att
+loopen ovan skulle ha spelat upp dem. Satserna är knutna till `Former.id`,
+och DELETE/INSERT flyttar id:n — mot en ombyggd databas träffar de fel
+rader. Rättelserna bevaras i stället i `former.tsv`, som exporteras om
+direkt efter körningen.
 
 **`sprak.db` ligger i `.gitignore`.** Sanningen är `ordbok/former.tsv` plus
 migrationerna. Skicka aldrig databasfilen.
 
-**Lita inte på statistikrader.** Fyra buggar hittills har rapporterat
+**Lita inte på statistikrader.** Sex buggar hittills har rapporterat
 "0 saknade, 0 tomma" och sett ut som lyckade körningar: duplicerade cell-ID:n
 som tyst tappade hela svenska s-passiven, lemma-nycklat uppslag som gav 96
 homonymer noll former, en cellmatchning som läste fel form och gav 588 falska
-fel, och ett lemma-nycklat uppslag i `tillämpa-granskning` som skrev
-rättelser till fel homonym och räknade dem som lyckade. Jämför alltid antal
-producerade rader mot antal celler — och för rättelser: ta en
-cell-för-cell-bild före och efter och diffa den:
+fel, ett lemma-nycklat uppslag i `tillämpa-granskning` som skrev rättelser
+till fel homonym och räknade dem som lyckade, och två bitmaskjämförelser som
+skar av semantikbitar. Jämför alltid antal producerade rader mot antal
+celler — och för rättelser: ta en cell-för-cell-bild före och efter:
 
 ```bash
 python ordbok/verktyg/ögonblicksbild.py före.json   # kör rättelsen   # sedan:
 python ordbok/verktyg/ögonblicksbild.py efter.json && diff före.json efter.json
 ```
 
+**Läs den renderade meningen ord för ord.** Sex strängersättningar i
+renderarna matchade inte och gjorde alltså ingenting, utan att något
+felmeddelande uppstod. De hittades bara genom genomläsning. Ett svep som
+räknar krascher hittar dem aldrig.
+
 **`bash -n` räcker inte** för att validera ett skript. `FÖRSÖK="${FÖRSÖK:-4}"`
 passerade syntaxkontrollen men kraschar — bash tillåter inte å/ä/ö i
 variabelnamn. Kör skriptet med stubbade LLM-anrop i stället.
 
-**Granskningsprocessen:** presentera observationer och alternativ, Julius
-beslutar. Ändringar genomförs separat, aldrig direkt.
+**Julius kan svensk och engelsk grammatik, inte de övriga fem.**
+Språkfrågor avgörs av assistenten, som redovisar grunden. Granskningar och
+förslag är förslag; Julius beslutar. Fattade beslut skrivs in i
+`ordbok/beslut.tsv` med motivering — `beslut.tsv` går före `granskning.tsv`,
+och granskningsrapporten ändras aldrig i efterhand. Den ska förbli vad
+modellen faktiskt sa.
+
+**Inga quick fixes.** Är det ett verkligt problem som systemet inte kan
+hantera, gås det igenom metodiskt — det lappas inte.
 
 ---
 
@@ -220,16 +287,23 @@ beslutar. Ändringar genomförs separat, aldrig direkt.
 |---|---|
 | `paradigm/SCHEMA.md` | slot-filernas format; §4 om unika cell-ID, §5 om bitmask-kollaps |
 | `paradigm/PARAMETER_AUDIT.md` | revision av inflektionsrummen; §1b possessivhålet |
-| `paradigm/RENDERARE_KRAV.md` | vad renderaren behöver — den vertikala skivan |
+| `paradigm/RENDERARE_KRAV.md` | vad renderaren behöver — den vertikala skivan; statusrad per avsnitt |
 | `paradigm/_legend.yaml` | axelkodningen, auktoritativ |
 | `docs/BITMASK.md` | alla numeriska koder; §11 semantikbitarna |
 | `ordbok/nivålistor/KONVENTIONER.md` | lemmaformat, förenklingsfilosofi §5, beslutsprocess §9 |
 | `RUNBOOK.md` | operativ referens för genereringskörningen |
 | `START_HÄR.md` | kort körinstruktion för den som genererar |
 | `paradigm/RESTRIKTIONER.md` | semantiska restriktioner; scope-beslutet står där |
-| `paradigm/GENERATOR.md` | kortmodellen och generatorn — alla beslut, med motiveringar |
+| `paradigm/GENERATOR.md` | kortmodellen, komplexitetsstegen, nåbarheten — alla beslut med motiveringar |
 | `ordbok/beslut.tsv` | fattade beslut som går före granskningen, med motivering |
+| `src/sprakprog/rendering/spec.py` | meningsspecifikationen — enda källan till vad som går att uttrycka |
 | `src/sprakprog/generering/rattelse.py` | modulhuvudet förklarar de fyra operationerna och koncept-nyckeln |
+
+**Scope-beslutet, ordagrant:** *"Flickan köpte en dörr."* är helt okej trots
+att det är osannolikt. Osannolikt men välformat är godkänt. Konsekvensen är
+att klassbaserade restriktioner räcker — ingen LLM-validering av rimlighet
+behövs, och inga klasser behöver bli finare än vad som krävs för att stoppa
+*kategorifel*.
 
 ---
 
@@ -244,6 +318,15 @@ ordbok granska-former --alla-språk --fortsätt --rapport <fil.tsv>
 ordbok tillämpa-granskning                # skriv in granskningens förslag
 ordbok tagga-koncept | tagga-lexem | tagga-monster
 ordbok visa <koncept>                     # drill-down
+ordbok rendera --exempel --språk <xx>     # rendera exempelmeningen
+```
+
+Mätverktygen körs med venvens python:
+
+```bash
+.venv/bin/python ordbok/verktyg/nåbarhet.py          # alla sju språk
+.venv/bin/python ordbok/verktyg/nåbarhet.py de -v    # per ordklass
+.venv/bin/python ordbok/verktyg/rendera_prov.py --språk sv
 ```
 
 Efter `tillämpa-granskning`: kör alltid `ordbok exportera-former
@@ -251,6 +334,6 @@ ordbok/former.tsv`. Annars ligger rättelserna bara i `sprak.db`, som inte
 versionshanteras.
 
 Nattkörningarna gjordes med `kör_natt.sh` och `kör_natt2.sh` på en väns
-maskin och kontot. Båda är idempotenta, väntar ut kvoten själva och kan
+maskin och konto. Båda är idempotenta, väntar ut kvoten själva och kan
 avbrytas med Ctrl-C. De behövs inte längre — inget som återstår kräver
 LLM-anrop.
