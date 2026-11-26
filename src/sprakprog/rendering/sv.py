@@ -18,7 +18,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, Prepositionsfras,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, Prepositionsfras,
     RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
@@ -204,6 +204,8 @@ class SvenskRenderare:
 
     def predikativ(self, m: Mening) -> list[str]:
         if isinstance(m.predikativ, str):
+            if m.grad is not Grad.POSITIV:
+                return self._komparation(m)
             huvud = self.u.lexem(m.subjekt.koncept)
             genus = huvud["genus"] or UTRUM
             return [self.u.form_för(
@@ -212,6 +214,30 @@ class SvenskRenderare:
         return [self.u.form(
             self.u.lexem(m.predikativ.koncept),
             SUBSTANTIVCELL[(Bestämdhet.OBESTÄMD, m.predikativ.numerus)])]
+
+    def _komparation(self, m: Mening) -> list[str]:
+        """Syntetisk komparation om formen finns, annars perifrastisk.
+
+        "större" men "mer intressant" — svenskan avgör per ord, och datan
+        vet vilket: adjektiv som saknar komp-cell kompareras analytiskt.
+        Predikativ superlativ tar den OBESTÄMDA formen: "boken är störst",
+        inte "störste".
+        """
+        cell = "komp" if m.grad is Grad.KOMPARATIV else "obest_superl"
+        adjektiv = self.u.lexem(m.predikativ)
+        form = self.u._celler(adjektiv).get(cell)
+        if form:
+            ut = [form]
+        else:
+            markör = "komp_mer" if m.grad is Grad.KOMPARATIV else "komp_mest"
+            huvud = self.u.lexem(m.subjekt.koncept)
+            ut = [self.u.form_för(markör, "pos"),
+                  self.u.form_för(m.predikativ, _predikativcell(
+                      m.subjekt.numerus, huvud["genus"] or UTRUM))]
+        if m.jämförelse is not None:
+            ut.append(self.u.form_för("komp_än", "inv"))
+            ut += self.nominalfras(m.jämförelse)
+        return ut
 
     def verbfras(self, m: Mening) -> list[str]:
         """Verbet, som ett eller flera ord.

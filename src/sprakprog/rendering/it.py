@@ -26,7 +26,11 @@ def _kräver_lo(ord: str) -> bool:
     elision ovanpå.
     """
     o = ord.lower()
-    if o.startswith(LO_INLEDNING) or o[:1] in VOKALER:
+    if not o:
+        # "" in "aeiou" är SANT i Python — utan den här raden valde en tom
+        # sträng lo i stället för il.
+        return False
+    if o.startswith(LO_INLEDNING) or o[0] in VOKALER:
         return True
     # s + konsonant ("studente", "sbaglio") — men inte s + vokal ("sole").
     return len(o) > 1 and o[0] == "s" and o[1] not in VOKALER

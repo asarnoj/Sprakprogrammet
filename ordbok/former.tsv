@@ -539,6 +539,7 @@ abs_värld	sv	värld	världars	2	1	8
 abs_värld	sv	värld	världen	1	2	7					
 abs_värld	sv	värld	världens	1	2	8					
 abs_värld	sv	värld	världs	1	1	8					
+adj_eko_billig	de	billig	am billigsten						3		
 adj_eko_billig	de	billig	billig						1		
 adj_eko_billig	de	billig	billige	1	1	3	2		1		
 adj_eko_billig	de	billig	billige	1	2	1	1		1		
@@ -559,6 +560,7 @@ adj_eko_billig	de	billig	billigen	1	3	14	1		1
 adj_eko_billig	de	billig	billigen	2	1	4			1		
 adj_eko_billig	de	billig	billigen	2	2	15			1		
 adj_eko_billig	de	billig	billigen	2	3	15			1		
+adj_eko_billig	de	billig	billiger						2		
 adj_eko_billig	de	billig	billiger	1	1	1	1		1		
 adj_eko_billig	de	billig	billiger	1	1	12	2		1		
 adj_eko_billig	de	billig	billiger	1	3	1	1		1		
@@ -651,6 +653,7 @@ adj_eko_billig	sv	billig	billigare						2
 adj_eko_billig	sv	billig	billigast						3		
 adj_eko_billig	sv	billig	billigaste		2				3		
 adj_eko_billig	sv	billig	billigt	1	1		2		1		
+adj_eko_dyr	de	teuer	am teuersten						3		
 adj_eko_dyr	de	teuer	teuer						1		
 adj_eko_dyr	de	teuer	teuerste	1	1	3	2		3		
 adj_eko_dyr	de	teuer	teuerste	1	2	1	1		3		
@@ -696,6 +699,7 @@ adj_eko_dyr	de	teuer	teuren	1	3	14	1		1
 adj_eko_dyr	de	teuer	teuren	2	1	4			1		
 adj_eko_dyr	de	teuer	teuren	2	2	15			1		
 adj_eko_dyr	de	teuer	teuren	2	3	15			1		
+adj_eko_dyr	de	teuer	teurer						2		
 adj_eko_dyr	de	teuer	teurer	1	1	1	1		1		
 adj_eko_dyr	de	teuer	teurer	1	1	12	2		1		
 adj_eko_dyr	de	teuer	teurer	1	3	1	1		1		
@@ -753,6 +757,7 @@ adj_eko_dyr	sv	dyr	dyrare						2
 adj_eko_dyr	sv	dyr	dyrast						3		
 adj_eko_dyr	sv	dyr	dyraste		2				3		
 adj_eko_dyr	sv	dyr	dyrt	1	1		2		1		
+adj_eko_fri	de	kostenlos	am kostenlosesten						3		
 adj_eko_fri	de	kostenlos	kostenlos						1		
 adj_eko_fri	de	kostenlos	kostenlose	1	1	3	2		1		
 adj_eko_fri	de	kostenlos	kostenlose	1	2	1	1		1		
@@ -773,6 +778,7 @@ adj_eko_fri	de	kostenlos	kostenlosen	1	3	14	1		1
 adj_eko_fri	de	kostenlos	kostenlosen	2	1	4			1		
 adj_eko_fri	de	kostenlos	kostenlosen	2	2	15			1		
 adj_eko_fri	de	kostenlos	kostenlosen	2	3	15			1		
+adj_eko_fri	de	kostenlos	kostenloser						2		
 adj_eko_fri	de	kostenlos	kostenloser	1	1	1	1		1		
 adj_eko_fri	de	kostenlos	kostenloser	1	1	12	2		1		
 adj_eko_fri	de	kostenlos	kostenloser	1	3	1	1		1		
@@ -852,6 +858,7 @@ adj_eko_fri	sv	gratis	gratis	1	1		2		1
 adj_eko_fri	sv	gratis	gratis	1	2		3		1		
 adj_eko_fri	sv	gratis	gratis	2	1		3		1		
 adj_eko_fri	sv	gratis	gratis	2	2		3		1		
+adj_es_arg	de	wütend	am wütendsten						3		
 adj_es_arg	de	wütend	wütend						1		
 adj_es_arg	de	wütend	wütende	1	1	3	2		1		
 adj_es_arg	de	wütend	wütende	1	2	1	1		1		
@@ -872,6 +879,7 @@ adj_es_arg	de	wütend	wütenden	1	3	14	1		1
 adj_es_arg	de	wütend	wütenden	2	1	4			1		
 adj_es_arg	de	wütend	wütenden	2	2	15			1		
 adj_es_arg	de	wütend	wütenden	2	3	15			1		
+adj_es_arg	de	wütend	wütender						2		
 adj_es_arg	de	wütend	wütender	1	1	1	1		1		
 adj_es_arg	de	wütend	wütender	1	1	12	2		1		
 adj_es_arg	de	wütend	wütender	1	3	1	1		1		
@@ -951,6 +959,7 @@ adj_es_arg	sv	arg	argare						2
 adj_es_arg	sv	arg	argast						3		
 adj_es_arg	sv	arg	argaste		2				3		
 adj_es_arg	sv	arg	argt	1	1		2		1		
+adj_es_ensam	de	einsam	am einsamsten						3		
 adj_es_ensam	de	einsam	einsam						1		
 adj_es_ensam	de	einsam	einsame	1	1	3	2		1		
 adj_es_ensam	de	einsam	einsame	1	2	1	1		1		
@@ -971,6 +980,7 @@ adj_es_ensam	de	einsam	einsamen	1	3	14	1		1
 adj_es_ensam	de	einsam	einsamen	2	1	4			1		
 adj_es_ensam	de	einsam	einsamen	2	2	15			1		
 adj_es_ensam	de	einsam	einsamen	2	3	15			1		
+adj_es_ensam	de	einsam	einsamer						2		
 adj_es_ensam	de	einsam	einsamer	1	1	1	1		1		
 adj_es_ensam	de	einsam	einsamer	1	1	12	2		1		
 adj_es_ensam	de	einsam	einsamer	1	3	1	1		1		
@@ -1055,6 +1065,7 @@ adj_es_ensam	sv	ensam	ensammare						2
 adj_es_ensam	sv	ensam	ensammast						3		
 adj_es_ensam	sv	ensam	ensammaste		2				3		
 adj_es_ensam	sv	ensam	ensamt	1	1		2		1		
+adj_es_frisk	de	gesund	am gesündesten						3		
 adj_es_frisk	de	gesund	gesund						1		
 adj_es_frisk	de	gesund	gesunde	1	1	3	2		1		
 adj_es_frisk	de	gesund	gesunde	1	2	1	1		1		
@@ -1081,6 +1092,7 @@ adj_es_frisk	de	gesund	gesunder	1	3	1	1		1
 adj_es_frisk	de	gesund	gesunder	2	1	8			1		
 adj_es_frisk	de	gesund	gesundes	1	1	3	3		1		
 adj_es_frisk	de	gesund	gesundes	1	3	3	3		1		
+adj_es_frisk	de	gesund	gesünder						2		
 adj_es_frisk	de	gesund	gesündere	1	1	3	2		2		
 adj_es_frisk	de	gesund	gesündere	1	2	1	1		2		
 adj_es_frisk	de	gesund	gesündere	1	2	3	2		2		
@@ -1159,6 +1171,7 @@ adj_es_frisk	sv	frisk	friskare						2
 adj_es_frisk	sv	frisk	friskast						3		
 adj_es_frisk	sv	frisk	friskaste		2				3		
 adj_es_frisk	sv	frisk	friskt	1	1		2		1		
+adj_es_förvånad	de	überrascht	am überraschtesten						3		
 adj_es_förvånad	de	überrascht	überrascht						1		
 adj_es_förvånad	de	überrascht	überraschte	1	1	3	2		1		
 adj_es_förvånad	de	überrascht	überraschte	1	2	1	1		1		
@@ -1179,6 +1192,7 @@ adj_es_förvånad	de	überrascht	überraschten	1	3	14	1		1
 adj_es_förvånad	de	überrascht	überraschten	2	1	4			1		
 adj_es_förvånad	de	überrascht	überraschten	2	2	15			1		
 adj_es_förvånad	de	überrascht	überraschten	2	3	15			1		
+adj_es_förvånad	de	überrascht	überraschter						2		
 adj_es_förvånad	de	überrascht	überraschter	1	1	1	1		1		
 adj_es_förvånad	de	überrascht	überraschter	1	1	12	2		1		
 adj_es_förvånad	de	überrascht	überraschter	1	3	1	1		1		
@@ -1253,6 +1267,7 @@ adj_es_förvånad	sv	förvånad	förvånade	1	2		3		1
 adj_es_förvånad	sv	förvånad	förvånade	2	1		3		1		
 adj_es_förvånad	sv	förvånad	förvånade	2	2		3		1		
 adj_es_förvånad	sv	förvånad	förvånat	1	1		2		1		
+adj_es_glad	de	glücklich	am glücklichsten						3		
 adj_es_glad	de	glücklich	glücklich						1		
 adj_es_glad	de	glücklich	glückliche	1	1	3	2		1		
 adj_es_glad	de	glücklich	glückliche	1	2	1	1		1		
@@ -1273,6 +1288,7 @@ adj_es_glad	de	glücklich	glücklichen	1	3	14	1		1
 adj_es_glad	de	glücklich	glücklichen	2	1	4			1		
 adj_es_glad	de	glücklich	glücklichen	2	2	15			1		
 adj_es_glad	de	glücklich	glücklichen	2	3	15			1		
+adj_es_glad	de	glücklich	glücklicher						2		
 adj_es_glad	de	glücklich	glücklicher	1	1	1	1		1		
 adj_es_glad	de	glücklich	glücklicher	1	1	12	2		1		
 adj_es_glad	de	glücklich	glücklicher	1	3	1	1		1		
@@ -1357,6 +1373,7 @@ adj_es_glad	sv	glad	gladare						2
 adj_es_glad	sv	glad	gladast						3		
 adj_es_glad	sv	glad	gladaste		2				3		
 adj_es_glad	sv	glad	glatt	1	1		2		1		
+adj_es_hungrig	de	hungrig	am hungrigsten						3		
 adj_es_hungrig	de	hungrig	hungrig						1		
 adj_es_hungrig	de	hungrig	hungrige	1	1	3	2		1		
 adj_es_hungrig	de	hungrig	hungrige	1	2	1	1		1		
@@ -1377,6 +1394,7 @@ adj_es_hungrig	de	hungrig	hungrigen	1	3	14	1		1
 adj_es_hungrig	de	hungrig	hungrigen	2	1	4			1		
 adj_es_hungrig	de	hungrig	hungrigen	2	2	15			1		
 adj_es_hungrig	de	hungrig	hungrigen	2	3	15			1		
+adj_es_hungrig	de	hungrig	hungriger						2		
 adj_es_hungrig	de	hungrig	hungriger	1	1	1	1		1		
 adj_es_hungrig	de	hungrig	hungriger	1	1	12	2		1		
 adj_es_hungrig	de	hungrig	hungriger	1	3	1	1		1		
@@ -1456,6 +1474,7 @@ adj_es_hungrig	sv	hungrig	hungrigare						2
 adj_es_hungrig	sv	hungrig	hungrigast						3		
 adj_es_hungrig	sv	hungrig	hungrigaste		2				3		
 adj_es_hungrig	sv	hungrig	hungrigt	1	1		2		1		
+adj_es_kär	de	verliebt	am verliebtesten						3		
 adj_es_kär	de	verliebt	verliebt						1		
 adj_es_kär	de	verliebt	verliebte	1	1	3	2		1		
 adj_es_kär	de	verliebt	verliebte	1	2	1	1		1		
@@ -1476,6 +1495,7 @@ adj_es_kär	de	verliebt	verliebten	1	3	14	1		1
 adj_es_kär	de	verliebt	verliebten	2	1	4			1		
 adj_es_kär	de	verliebt	verliebten	2	2	15			1		
 adj_es_kär	de	verliebt	verliebten	2	3	15			1		
+adj_es_kär	de	verliebt	verliebter						2		
 adj_es_kär	de	verliebt	verliebter	1	1	1	1		1		
 adj_es_kär	de	verliebt	verliebter	1	1	12	2		1		
 adj_es_kär	de	verliebt	verliebter	1	3	1	1		1		
@@ -1553,6 +1573,7 @@ adj_es_kär	sv	kär	kärare						2
 adj_es_kär	sv	kär	kärast						3		
 adj_es_kär	sv	kär	käraste		2				3		
 adj_es_kär	sv	kär	kärt	1	1		2		1		
+adj_es_ledsen	de	traurig	am traurigsten						3		
 adj_es_ledsen	de	traurig	traurig						1		
 adj_es_ledsen	de	traurig	traurige	1	1	3	2		1		
 adj_es_ledsen	de	traurig	traurige	1	2	1	1		1		
@@ -1573,6 +1594,7 @@ adj_es_ledsen	de	traurig	traurigen	1	3	14	1		1
 adj_es_ledsen	de	traurig	traurigen	2	1	4			1		
 adj_es_ledsen	de	traurig	traurigen	2	2	15			1		
 adj_es_ledsen	de	traurig	traurigen	2	3	15			1		
+adj_es_ledsen	de	traurig	trauriger						2		
 adj_es_ledsen	de	traurig	trauriger	1	1	1	1		1		
 adj_es_ledsen	de	traurig	trauriger	1	1	12	2		1		
 adj_es_ledsen	de	traurig	trauriger	1	3	1	1		1		
@@ -1657,6 +1679,7 @@ adj_es_ledsen	sv	ledsen	ledsna	2	2		3		1
 adj_es_ledsen	sv	ledsen	ledsnare						2		
 adj_es_ledsen	sv	ledsen	ledsnast						3		
 adj_es_ledsen	sv	ledsen	ledsnaste		2				3		
+adj_es_nervös	de	nervös	am nervösesten						3		
 adj_es_nervös	de	nervös	nervös						1		
 adj_es_nervös	de	nervös	nervöse	1	1	3	2		1		
 adj_es_nervös	de	nervös	nervöse	1	2	1	1		1		
@@ -1677,6 +1700,7 @@ adj_es_nervös	de	nervös	nervösen	1	3	14	1		1
 adj_es_nervös	de	nervös	nervösen	2	1	4			1		
 adj_es_nervös	de	nervös	nervösen	2	2	15			1		
 adj_es_nervös	de	nervös	nervösen	2	3	15			1		
+adj_es_nervös	de	nervös	nervöser						2		
 adj_es_nervös	de	nervös	nervöser	1	1	1	1		1		
 adj_es_nervös	de	nervös	nervöser	1	1	12	2		1		
 adj_es_nervös	de	nervös	nervöser	1	3	1	1		1		
@@ -1754,6 +1778,7 @@ adj_es_nervös	sv	nervös	nervösare						2
 adj_es_nervös	sv	nervös	nervösast						3		
 adj_es_nervös	sv	nervös	nervösaste		2				3		
 adj_es_nervös	sv	nervös	nervöst	1	1		2		1		
+adj_es_nöjd	de	zufrieden	am zufriedensten						3		
 adj_es_nöjd	de	zufrieden	zufrieden						1		
 adj_es_nöjd	de	zufrieden	zufriedene	1	1	3	2		1		
 adj_es_nöjd	de	zufrieden	zufriedene	1	2	1	1		1		
@@ -1774,6 +1799,7 @@ adj_es_nöjd	de	zufrieden	zufriedenen	1	3	14	1		1
 adj_es_nöjd	de	zufrieden	zufriedenen	2	1	4			1		
 adj_es_nöjd	de	zufrieden	zufriedenen	2	2	15			1		
 adj_es_nöjd	de	zufrieden	zufriedenen	2	3	15			1		
+adj_es_nöjd	de	zufrieden	zufriedener						2		
 adj_es_nöjd	de	zufrieden	zufriedener	1	1	1	1		1		
 adj_es_nöjd	de	zufrieden	zufriedener	1	1	12	2		1		
 adj_es_nöjd	de	zufrieden	zufriedener	1	3	1	1		1		
@@ -1851,6 +1877,7 @@ adj_es_nöjd	sv	nöjd	nöjdare						2
 adj_es_nöjd	sv	nöjd	nöjdast						3		
 adj_es_nöjd	sv	nöjd	nöjdaste		2				3		
 adj_es_nöjd	sv	nöjd	nöjt	1	1		2		1		
+adj_es_rädd	de	ängstlich	am ängstlichsten						3		
 adj_es_rädd	de	ängstlich	ängstlich						1		
 adj_es_rädd	de	ängstlich	ängstliche	1	1	3	2		1		
 adj_es_rädd	de	ängstlich	ängstliche	1	2	1	1		1		
@@ -1871,6 +1898,7 @@ adj_es_rädd	de	ängstlich	ängstlichen	1	3	14	1		1
 adj_es_rädd	de	ängstlich	ängstlichen	2	1	4			1		
 adj_es_rädd	de	ängstlich	ängstlichen	2	2	15			1		
 adj_es_rädd	de	ängstlich	ängstlichen	2	3	15			1		
+adj_es_rädd	de	ängstlich	ängstlicher						2		
 adj_es_rädd	de	ängstlich	ängstlicher	1	1	1	1		1		
 adj_es_rädd	de	ängstlich	ängstlicher	1	1	12	2		1		
 adj_es_rädd	de	ängstlich	ängstlicher	1	3	1	1		1		
@@ -1953,6 +1981,7 @@ adj_es_rädd	sv	rädd	räddare						2
 adj_es_rädd	sv	rädd	räddast						3		
 adj_es_rädd	sv	rädd	räddaste		2				3		
 adj_es_rädd	sv	rädd	rätt	1	1		2		1		
+adj_es_sjuk	de	krank	am kränksten						3		
 adj_es_sjuk	de	krank	krank						1		
 adj_es_sjuk	de	krank	kranke	1	1	3	2		1		
 adj_es_sjuk	de	krank	kranke	1	2	1	1		1		
@@ -1979,6 +2008,7 @@ adj_es_sjuk	de	krank	kranker	1	3	1	1		1
 adj_es_sjuk	de	krank	kranker	2	1	8			1		
 adj_es_sjuk	de	krank	krankes	1	1	3	3		1		
 adj_es_sjuk	de	krank	krankes	1	3	3	3		1		
+adj_es_sjuk	de	krank	kränker						2		
 adj_es_sjuk	de	krank	kränkere	1	1	3	2		2		
 adj_es_sjuk	de	krank	kränkere	1	2	1	1		2		
 adj_es_sjuk	de	krank	kränkere	1	2	3	2		2		
@@ -2052,6 +2082,7 @@ adj_es_sjuk	sv	sjuk	sjukare						2
 adj_es_sjuk	sv	sjuk	sjukast						3		
 adj_es_sjuk	sv	sjuk	sjukaste		2				3		
 adj_es_sjuk	sv	sjuk	sjukt	1	1		2		1		
+adj_es_skamsen	de	beschämt	am beschämtesten						3		
 adj_es_skamsen	de	beschämt	beschämt						1		
 adj_es_skamsen	de	beschämt	beschämte	1	1	3	2		1		
 adj_es_skamsen	de	beschämt	beschämte	1	2	1	1		1		
@@ -2072,6 +2103,7 @@ adj_es_skamsen	de	beschämt	beschämten	1	3	14	1		1
 adj_es_skamsen	de	beschämt	beschämten	2	1	4			1		
 adj_es_skamsen	de	beschämt	beschämten	2	2	15			1		
 adj_es_skamsen	de	beschämt	beschämten	2	3	15			1		
+adj_es_skamsen	de	beschämt	beschämter						2		
 adj_es_skamsen	de	beschämt	beschämter	1	1	1	1		1		
 adj_es_skamsen	de	beschämt	beschämter	1	1	12	2		1		
 adj_es_skamsen	de	beschämt	beschämter	1	3	1	1		1		
@@ -2154,6 +2186,7 @@ adj_es_skamsen	sv	skamsen	skamsna	2	2		3		1
 adj_es_skamsen	sv	skamsen	skamsnare						2		
 adj_es_skamsen	sv	skamsen	skamsnast						3		
 adj_es_skamsen	sv	skamsen	skamsnaste		2				3		
+adj_es_stressad	de	gestresst	am gestresstesten						3		
 adj_es_stressad	de	gestresst	gestresst						1		
 adj_es_stressad	de	gestresst	gestresste	1	1	3	2		1		
 adj_es_stressad	de	gestresst	gestresste	1	2	1	1		1		
@@ -2174,6 +2207,7 @@ adj_es_stressad	de	gestresst	gestressten	1	3	14	1		1
 adj_es_stressad	de	gestresst	gestressten	2	1	4			1		
 adj_es_stressad	de	gestresst	gestressten	2	2	15			1		
 adj_es_stressad	de	gestresst	gestressten	2	3	15			1		
+adj_es_stressad	de	gestresst	gestresster						2		
 adj_es_stressad	de	gestresst	gestresster	1	1	1	1		1		
 adj_es_stressad	de	gestresst	gestresster	1	1	12	2		1		
 adj_es_stressad	de	gestresst	gestresster	1	3	1	1		1		
@@ -2248,6 +2282,7 @@ adj_es_stressad	sv	stressad	stressade	1	2		3		1
 adj_es_stressad	sv	stressad	stressade	2	1		3		1		
 adj_es_stressad	sv	stressad	stressade	2	2		3		1		
 adj_es_stressad	sv	stressad	stressat	1	1		2		1		
+adj_es_trött	de	müde	am müdesten						3		
 adj_es_trött	de	müde	müde						1		
 adj_es_trött	de	müde	müde	1	1	3	2		1		
 adj_es_trött	de	müde	müde	1	2	1	1		1		
@@ -2268,6 +2303,7 @@ adj_es_trött	de	müde	müden	1	3	14	1		1
 adj_es_trött	de	müde	müden	2	1	4			1		
 adj_es_trött	de	müde	müden	2	2	15			1		
 adj_es_trött	de	müde	müden	2	3	15			1		
+adj_es_trött	de	müde	müder						2		
 adj_es_trött	de	müde	müder	1	1	1	1		1		
 adj_es_trött	de	müde	müder	1	1	12	2		1		
 adj_es_trött	de	müde	müder	1	3	1	1		1		
@@ -2345,6 +2381,7 @@ adj_es_trött	sv	trött	trötta	2	2		3		1
 adj_es_trött	sv	trött	tröttare						2		
 adj_es_trött	sv	trött	tröttast						3		
 adj_es_trött	sv	trött	tröttaste		2				3		
+adj_es_törstig	de	durstig	am durstigsten						3		
 adj_es_törstig	de	durstig	durstig						1		
 adj_es_törstig	de	durstig	durstige	1	1	3	2		1		
 adj_es_törstig	de	durstig	durstige	1	2	1	1		1		
@@ -2365,6 +2402,7 @@ adj_es_törstig	de	durstig	durstigen	1	3	14	1		1
 adj_es_törstig	de	durstig	durstigen	2	1	4			1		
 adj_es_törstig	de	durstig	durstigen	2	2	15			1		
 adj_es_törstig	de	durstig	durstigen	2	3	15			1		
+adj_es_törstig	de	durstig	durstiger						2		
 adj_es_törstig	de	durstig	durstiger	1	1	1	1		1		
 adj_es_törstig	de	durstig	durstiger	1	1	12	2		1		
 adj_es_törstig	de	durstig	durstiger	1	3	1	1		1		
@@ -2444,6 +2482,7 @@ adj_es_törstig	sv	törstig	törstigare						2
 adj_es_törstig	sv	törstig	törstigast						3		
 adj_es_törstig	sv	törstig	törstigaste		2				3		
 adj_es_törstig	sv	törstig	törstigt	1	1		2		1		
+adj_ev_besviken	de	enttäuscht	am enttäuschtesten						3		
 adj_ev_besviken	de	enttäuscht	enttäuscht						1		
 adj_ev_besviken	de	enttäuscht	enttäuschte	1	1	3	2		1		
 adj_ev_besviken	de	enttäuscht	enttäuschte	1	2	1	1		1		
@@ -2464,6 +2503,7 @@ adj_ev_besviken	de	enttäuscht	enttäuschten	1	3	14	1		1
 adj_ev_besviken	de	enttäuscht	enttäuschten	2	1	4			1		
 adj_ev_besviken	de	enttäuscht	enttäuschten	2	2	15			1		
 adj_ev_besviken	de	enttäuscht	enttäuschten	2	3	15			1		
+adj_ev_besviken	de	enttäuscht	enttäuschter						2		
 adj_ev_besviken	de	enttäuscht	enttäuschter	1	1	1	1		1		
 adj_ev_besviken	de	enttäuscht	enttäuschter	1	1	12	2		1		
 adj_ev_besviken	de	enttäuscht	enttäuschter	1	3	1	1		1		
@@ -2538,6 +2578,7 @@ adj_ev_besviken	sv	besviken	besviket	1	1		2		1
 adj_ev_besviken	sv	besviken	besvikna	1	2		3		1		
 adj_ev_besviken	sv	besviken	besvikna	2	1		3		1		
 adj_ev_besviken	sv	besviken	besvikna	2	2		3		1		
+adj_ev_dum	de	dumm	am dümmsten						3		
 adj_ev_dum	de	dumm	dumm						1		
 adj_ev_dum	de	dumm	dumme	1	1	3	2		1		
 adj_ev_dum	de	dumm	dumme	1	2	1	1		1		
@@ -2564,6 +2605,7 @@ adj_ev_dum	de	dumm	dummer	1	3	1	1		1
 adj_ev_dum	de	dumm	dummer	2	1	8			1		
 adj_ev_dum	de	dumm	dummes	1	1	3	3		1		
 adj_ev_dum	de	dumm	dummes	1	3	3	3		1		
+adj_ev_dum	de	dumm	dümmer						2		
 adj_ev_dum	de	dumm	dümmere	1	1	3	2		2		
 adj_ev_dum	de	dumm	dümmere	1	2	1	1		2		
 adj_ev_dum	de	dumm	dümmere	1	2	3	2		2		
@@ -2640,6 +2682,7 @@ adj_ev_dum	sv	dum	dummare						2
 adj_ev_dum	sv	dum	dummast						3		
 adj_ev_dum	sv	dum	dummaste		2				3		
 adj_ev_dum	sv	dum	dumt	1	1		2		1		
+adj_ev_elak	de	gemein	am gemeinsten						3		
 adj_ev_elak	de	gemein	gemein						1		
 adj_ev_elak	de	gemein	gemeine	1	1	3	2		1		
 adj_ev_elak	de	gemein	gemeine	1	2	1	1		1		
@@ -2660,6 +2703,7 @@ adj_ev_elak	de	gemein	gemeinen	1	3	14	1		1
 adj_ev_elak	de	gemein	gemeinen	2	1	4			1		
 adj_ev_elak	de	gemein	gemeinen	2	2	15			1		
 adj_ev_elak	de	gemein	gemeinen	2	3	15			1		
+adj_ev_elak	de	gemein	gemeiner						2		
 adj_ev_elak	de	gemein	gemeiner	1	1	1	1		1		
 adj_ev_elak	de	gemein	gemeiner	1	1	12	2		1		
 adj_ev_elak	de	gemein	gemeiner	1	3	1	1		1		
@@ -2756,6 +2800,7 @@ adj_ev_elak	sv	elak	elakare						2
 adj_ev_elak	sv	elak	elakast						3		
 adj_ev_elak	sv	elak	elakaste		2				3		
 adj_ev_elak	sv	elak	elakt	1	1		2		1		
+adj_ev_flitig	de	fleißig	am fleißigsten						3		
 adj_ev_flitig	de	fleißig	fleißig						1		
 adj_ev_flitig	de	fleißig	fleißige	1	1	3	2		1		
 adj_ev_flitig	de	fleißig	fleißige	1	2	1	1		1		
@@ -2776,6 +2821,7 @@ adj_ev_flitig	de	fleißig	fleißigen	1	3	14	1		1
 adj_ev_flitig	de	fleißig	fleißigen	2	1	4			1		
 adj_ev_flitig	de	fleißig	fleißigen	2	2	15			1		
 adj_ev_flitig	de	fleißig	fleißigen	2	3	15			1		
+adj_ev_flitig	de	fleißig	fleißiger						2		
 adj_ev_flitig	de	fleißig	fleißiger	1	1	1	1		1		
 adj_ev_flitig	de	fleißig	fleißiger	1	1	12	2		1		
 adj_ev_flitig	de	fleißig	fleißiger	1	3	1	1		1		
@@ -2858,6 +2904,7 @@ adj_ev_flitig	sv	flitig	flitigare						2
 adj_ev_flitig	sv	flitig	flitigast						3		
 adj_ev_flitig	sv	flitig	flitigaste		2				3		
 adj_ev_flitig	sv	flitig	flitigt	1	1		2		1		
+adj_ev_ful	de	hässlich	am hässlichsten						3		
 adj_ev_ful	de	hässlich	hässlich						1		
 adj_ev_ful	de	hässlich	hässliche	1	1	3	2		1		
 adj_ev_ful	de	hässlich	hässliche	1	2	1	1		1		
@@ -2878,6 +2925,7 @@ adj_ev_ful	de	hässlich	hässlichen	1	3	14	1		1
 adj_ev_ful	de	hässlich	hässlichen	2	1	4			1		
 adj_ev_ful	de	hässlich	hässlichen	2	2	15			1		
 adj_ev_ful	de	hässlich	hässlichen	2	3	15			1		
+adj_ev_ful	de	hässlich	hässlicher						2		
 adj_ev_ful	de	hässlich	hässlicher	1	1	1	1		1		
 adj_ev_ful	de	hässlich	hässlicher	1	1	12	2		1		
 adj_ev_ful	de	hässlich	hässlicher	1	3	1	1		1		
@@ -2962,6 +3010,7 @@ adj_ev_ful	sv	ful	fulare						2
 adj_ev_ful	sv	ful	fulast						3		
 adj_ev_ful	sv	ful	fulaste		2				3		
 adj_ev_ful	sv	ful	fult	1	1		2		1		
+adj_ev_intressant	de	interessant	am interessantesten						3		
 adj_ev_intressant	de	interessant	interessant						1		
 adj_ev_intressant	de	interessant	interessante	1	1	3	2		1		
 adj_ev_intressant	de	interessant	interessante	1	2	1	1		1		
@@ -2982,6 +3031,7 @@ adj_ev_intressant	de	interessant	interessanten	1	3	14	1		1
 adj_ev_intressant	de	interessant	interessanten	2	1	4			1		
 adj_ev_intressant	de	interessant	interessanten	2	2	15			1		
 adj_ev_intressant	de	interessant	interessanten	2	3	15			1		
+adj_ev_intressant	de	interessant	interessanter						2		
 adj_ev_intressant	de	interessant	interessanter	1	1	1	1		1		
 adj_ev_intressant	de	interessant	interessanter	1	1	12	2		1		
 adj_ev_intressant	de	interessant	interessanter	1	3	1	1		1		
@@ -3064,6 +3114,7 @@ adj_ev_intressant	sv	intressant	intressanta	2	2		3		1
 adj_ev_intressant	sv	intressant	intressantare						2		
 adj_ev_intressant	sv	intressant	intressantast						3		
 adj_ev_intressant	sv	intressant	intressantaste		2				3		
+adj_ev_intresserad	de	interessiert	am interessiertesten						3		
 adj_ev_intresserad	de	interessiert	interessiert						1		
 adj_ev_intresserad	de	interessiert	interessierte	1	1	3	2		1		
 adj_ev_intresserad	de	interessiert	interessierte	1	2	1	1		1		
@@ -3084,6 +3135,7 @@ adj_ev_intresserad	de	interessiert	interessierten	1	3	14	1		1
 adj_ev_intresserad	de	interessiert	interessierten	2	1	4			1		
 adj_ev_intresserad	de	interessiert	interessierten	2	2	15			1		
 adj_ev_intresserad	de	interessiert	interessierten	2	3	15			1		
+adj_ev_intresserad	de	interessiert	interessierter						2		
 adj_ev_intresserad	de	interessiert	interessierter	1	1	1	1		1		
 adj_ev_intresserad	de	interessiert	interessierter	1	1	12	2		1		
 adj_ev_intresserad	de	interessiert	interessierter	1	3	1	1		1		
@@ -3158,6 +3210,7 @@ adj_ev_intresserad	sv	intresserad	intresserade	1	2		3		1
 adj_ev_intresserad	sv	intresserad	intresserade	2	1		3		1		
 adj_ev_intresserad	sv	intresserad	intresserade	2	2		3		1		
 adj_ev_intresserad	sv	intresserad	intresserat	1	1		2		1		
+adj_ev_lat	de	faul	am faulsten						3		
 adj_ev_lat	de	faul	faul						1		
 adj_ev_lat	de	faul	faule	1	1	3	2		1		
 adj_ev_lat	de	faul	faule	1	2	1	1		1		
@@ -3178,6 +3231,7 @@ adj_ev_lat	de	faul	faulen	1	3	14	1		1
 adj_ev_lat	de	faul	faulen	2	1	4			1		
 adj_ev_lat	de	faul	faulen	2	2	15			1		
 adj_ev_lat	de	faul	faulen	2	3	15			1		
+adj_ev_lat	de	faul	fauler						2		
 adj_ev_lat	de	faul	fauler	1	1	1	1		1		
 adj_ev_lat	de	faul	fauler	1	1	12	2		1		
 adj_ev_lat	de	faul	fauler	1	3	1	1		1		
@@ -3262,6 +3316,7 @@ adj_ev_lat	sv	lat	lata	2	2		3		1
 adj_ev_lat	sv	lat	latare						2		
 adj_ev_lat	sv	lat	latast						3		
 adj_ev_lat	sv	lat	lataste		2				3		
+adj_ev_lugn	de	ruhig	am ruhigsten						3		
 adj_ev_lugn	de	ruhig	ruhig						1		
 adj_ev_lugn	de	ruhig	ruhige	1	1	3	2		1		
 adj_ev_lugn	de	ruhig	ruhige	1	2	1	1		1		
@@ -3282,6 +3337,7 @@ adj_ev_lugn	de	ruhig	ruhigen	1	3	14	1		1
 adj_ev_lugn	de	ruhig	ruhigen	2	1	4			1		
 adj_ev_lugn	de	ruhig	ruhigen	2	2	15			1		
 adj_ev_lugn	de	ruhig	ruhigen	2	3	15			1		
+adj_ev_lugn	de	ruhig	ruhiger						2		
 adj_ev_lugn	de	ruhig	ruhiger	1	1	1	1		1		
 adj_ev_lugn	de	ruhig	ruhiger	1	1	12	2		1		
 adj_ev_lugn	de	ruhig	ruhiger	1	3	1	1		1		
@@ -3366,6 +3422,7 @@ adj_ev_lugn	sv	lugn	lugnare						2
 adj_ev_lugn	sv	lugn	lugnast						3		
 adj_ev_lugn	sv	lugn	lugnaste		2				3		
 adj_ev_lugn	sv	lugn	lugnt	1	1		2		1		
+adj_ev_modig	de	mutig	am mutigsten						3		
 adj_ev_modig	de	mutig	mutig						1		
 adj_ev_modig	de	mutig	mutige	1	1	3	2		1		
 adj_ev_modig	de	mutig	mutige	1	2	1	1		1		
@@ -3386,6 +3443,7 @@ adj_ev_modig	de	mutig	mutigen	1	3	14	1		1
 adj_ev_modig	de	mutig	mutigen	2	1	4			1		
 adj_ev_modig	de	mutig	mutigen	2	2	15			1		
 adj_ev_modig	de	mutig	mutigen	2	3	15			1		
+adj_ev_modig	de	mutig	mutiger						2		
 adj_ev_modig	de	mutig	mutiger	1	1	1	1		1		
 adj_ev_modig	de	mutig	mutiger	1	1	12	2		1		
 adj_ev_modig	de	mutig	mutiger	1	3	1	1		1		
@@ -3470,6 +3528,7 @@ adj_ev_modig	sv	modig	modigare						2
 adj_ev_modig	sv	modig	modigast						3		
 adj_ev_modig	sv	modig	modigaste		2				3		
 adj_ev_modig	sv	modig	modigt	1	1		2		1		
+adj_ev_nyfiken	de	neugierig	am neugierigsten						3		
 adj_ev_nyfiken	de	neugierig	neugierig						1		
 adj_ev_nyfiken	de	neugierig	neugierige	1	1	3	2		1		
 adj_ev_nyfiken	de	neugierig	neugierige	1	2	1	1		1		
@@ -3490,6 +3549,7 @@ adj_ev_nyfiken	de	neugierig	neugierigen	1	3	14	1		1
 adj_ev_nyfiken	de	neugierig	neugierigen	2	1	4			1		
 adj_ev_nyfiken	de	neugierig	neugierigen	2	2	15			1		
 adj_ev_nyfiken	de	neugierig	neugierigen	2	3	15			1		
+adj_ev_nyfiken	de	neugierig	neugieriger						2		
 adj_ev_nyfiken	de	neugierig	neugieriger	1	1	1	1		1		
 adj_ev_nyfiken	de	neugierig	neugieriger	1	1	12	2		1		
 adj_ev_nyfiken	de	neugierig	neugieriger	1	3	1	1		1		
@@ -3572,6 +3632,7 @@ adj_ev_nyfiken	sv	nyfiken	nyfiket	1	1		2		1
 adj_ev_nyfiken	sv	nyfiken	nyfikna	1	2		3		1		
 adj_ev_nyfiken	sv	nyfiken	nyfikna	2	1		3		1		
 adj_ev_nyfiken	sv	nyfiken	nyfikna	2	2		3		1		
+adj_ev_oväntad	de	unerwartet	am unerwartetsten						3		
 adj_ev_oväntad	de	unerwartet	unerwartet						1		
 adj_ev_oväntad	de	unerwartet	unerwartete	1	1	3	2		1		
 adj_ev_oväntad	de	unerwartet	unerwartete	1	2	1	1		1		
@@ -3592,6 +3653,7 @@ adj_ev_oväntad	de	unerwartet	unerwarteten	1	3	14	1		1
 adj_ev_oväntad	de	unerwartet	unerwarteten	2	1	4			1		
 adj_ev_oväntad	de	unerwartet	unerwarteten	2	2	15			1		
 adj_ev_oväntad	de	unerwartet	unerwarteten	2	3	15			1		
+adj_ev_oväntad	de	unerwartet	unerwarteter						2		
 adj_ev_oväntad	de	unerwartet	unerwarteter	1	1	1	1		1		
 adj_ev_oväntad	de	unerwartet	unerwarteter	1	1	12	2		1		
 adj_ev_oväntad	de	unerwartet	unerwarteter	1	3	1	1		1		
@@ -3671,6 +3733,7 @@ adj_ev_oväntad	sv	oväntad	oväntade	1	2		3		1
 adj_ev_oväntad	sv	oväntad	oväntade	2	1		3		1		
 adj_ev_oväntad	sv	oväntad	oväntade	2	2		3		1		
 adj_ev_oväntad	sv	oväntad	oväntat	1	1		2		1		
+adj_ev_populär	de	beliebt	am beliebtesten						3		
 adj_ev_populär	de	beliebt	beliebt						1		
 adj_ev_populär	de	beliebt	beliebte	1	1	3	2		1		
 adj_ev_populär	de	beliebt	beliebte	1	2	1	1		1		
@@ -3691,6 +3754,7 @@ adj_ev_populär	de	beliebt	beliebten	1	3	14	1		1
 adj_ev_populär	de	beliebt	beliebten	2	1	4			1		
 adj_ev_populär	de	beliebt	beliebten	2	2	15			1		
 adj_ev_populär	de	beliebt	beliebten	2	3	15			1		
+adj_ev_populär	de	beliebt	beliebter						2		
 adj_ev_populär	de	beliebt	beliebter	1	1	1	1		1		
 adj_ev_populär	de	beliebt	beliebter	1	1	12	2		1		
 adj_ev_populär	de	beliebt	beliebter	1	3	1	1		1		
@@ -3768,6 +3832,7 @@ adj_ev_populär	sv	populär	populärare						2
 adj_ev_populär	sv	populär	populärast						3		
 adj_ev_populär	sv	populär	populäraste		2				3		
 adj_ev_populär	sv	populär	populärt	1	1		2		1		
+adj_ev_rolig	de	lustig	am lustigsten						3		
 adj_ev_rolig	de	lustig	lustig						1		
 adj_ev_rolig	de	lustig	lustige	1	1	3	2		1		
 adj_ev_rolig	de	lustig	lustige	1	2	1	1		1		
@@ -3788,6 +3853,7 @@ adj_ev_rolig	de	lustig	lustigen	1	3	14	1		1
 adj_ev_rolig	de	lustig	lustigen	2	1	4			1		
 adj_ev_rolig	de	lustig	lustigen	2	2	15			1		
 adj_ev_rolig	de	lustig	lustigen	2	3	15			1		
+adj_ev_rolig	de	lustig	lustiger						2		
 adj_ev_rolig	de	lustig	lustiger	1	1	1	1		1		
 adj_ev_rolig	de	lustig	lustiger	1	1	12	2		1		
 adj_ev_rolig	de	lustig	lustiger	1	3	1	1		1		
@@ -3872,6 +3938,7 @@ adj_ev_rolig	sv	rolig	roligare						2
 adj_ev_rolig	sv	rolig	roligast						3		
 adj_ev_rolig	sv	rolig	roligaste		2				3		
 adj_ev_rolig	sv	rolig	roligt	1	1		2		1		
+adj_ev_smart	de	klug	am klügsten						3		
 adj_ev_smart	de	klug	klug						1		
 adj_ev_smart	de	klug	kluge	1	1	3	2		1		
 adj_ev_smart	de	klug	kluge	1	2	1	1		1		
@@ -3898,6 +3965,7 @@ adj_ev_smart	de	klug	kluger	1	3	1	1		1
 adj_ev_smart	de	klug	kluger	2	1	8			1		
 adj_ev_smart	de	klug	kluges	1	1	3	3		1		
 adj_ev_smart	de	klug	kluges	1	3	3	3		1		
+adj_ev_smart	de	klug	klüger						2		
 adj_ev_smart	de	klug	klügere	1	1	3	2		2		
 adj_ev_smart	de	klug	klügere	1	2	1	1		2		
 adj_ev_smart	de	klug	klügere	1	2	3	2		2		
@@ -3976,6 +4044,7 @@ adj_ev_smart	sv	smart	smarta	2	2		3		1
 adj_ev_smart	sv	smart	smartare						2		
 adj_ev_smart	sv	smart	smartast						3		
 adj_ev_smart	sv	smart	smartaste		2				3		
+adj_ev_snäll	de	nett	am nettesten						3		
 adj_ev_snäll	de	nett	nett						1		
 adj_ev_snäll	de	nett	nette	1	1	3	2		1		
 adj_ev_snäll	de	nett	nette	1	2	1	1		1		
@@ -3996,6 +4065,7 @@ adj_ev_snäll	de	nett	netten	1	3	14	1		1
 adj_ev_snäll	de	nett	netten	2	1	4			1		
 adj_ev_snäll	de	nett	netten	2	2	15			1		
 adj_ev_snäll	de	nett	netten	2	3	15			1		
+adj_ev_snäll	de	nett	netter						2		
 adj_ev_snäll	de	nett	netter	1	1	1	1		1		
 adj_ev_snäll	de	nett	netter	1	1	12	2		1		
 adj_ev_snäll	de	nett	netter	1	3	1	1		1		
@@ -4080,6 +4150,7 @@ adj_ev_snäll	sv	snäll	snällare						2
 adj_ev_snäll	sv	snäll	snällast						3		
 adj_ev_snäll	sv	snäll	snällaste		2				3		
 adj_ev_snäll	sv	snäll	snällt	1	1		2		1		
+adj_ev_stolt	de	stolz	am stolzesten						3		
 adj_ev_stolt	de	stolz	stolz						1		
 adj_ev_stolt	de	stolz	stolze	1	1	3	2		1		
 adj_ev_stolt	de	stolz	stolze	1	2	1	1		1		
@@ -4100,6 +4171,7 @@ adj_ev_stolt	de	stolz	stolzen	1	3	14	1		1
 adj_ev_stolt	de	stolz	stolzen	2	1	4			1		
 adj_ev_stolt	de	stolz	stolzen	2	2	15			1		
 adj_ev_stolt	de	stolz	stolzen	2	3	15			1		
+adj_ev_stolt	de	stolz	stolzer						2		
 adj_ev_stolt	de	stolz	stolzer	1	1	1	1		1		
 adj_ev_stolt	de	stolz	stolzer	1	1	12	2		1		
 adj_ev_stolt	de	stolz	stolzer	1	3	1	1		1		
@@ -4184,6 +4256,7 @@ adj_ev_stolt	sv	stolt	stolta	2	2		3		1
 adj_ev_stolt	sv	stolt	stoltare						2		
 adj_ev_stolt	sv	stolt	stoltast						3		
 adj_ev_stolt	sv	stolt	stoltaste		2				3		
+adj_ev_tråkig	de	langweilig	am langweiligsten						3		
 adj_ev_tråkig	de	langweilig	langweilig						1		
 adj_ev_tråkig	de	langweilig	langweilige	1	1	3	2		1		
 adj_ev_tråkig	de	langweilig	langweilige	1	2	1	1		1		
@@ -4204,6 +4277,7 @@ adj_ev_tråkig	de	langweilig	langweiligen	1	3	14	1		1
 adj_ev_tråkig	de	langweilig	langweiligen	2	1	4			1		
 adj_ev_tråkig	de	langweilig	langweiligen	2	2	15			1		
 adj_ev_tråkig	de	langweilig	langweiligen	2	3	15			1		
+adj_ev_tråkig	de	langweilig	langweiliger						2		
 adj_ev_tråkig	de	langweilig	langweiliger	1	1	1	1		1		
 adj_ev_tråkig	de	langweilig	langweiliger	1	1	12	2		1		
 adj_ev_tråkig	de	langweilig	langweiliger	1	3	1	1		1		
@@ -4286,6 +4360,7 @@ adj_ev_tråkig	sv	tråkig	tråkigare						2
 adj_ev_tråkig	sv	tråkig	tråkigast						3		
 adj_ev_tråkig	sv	tråkig	tråkigaste		2				3		
 adj_ev_tråkig	sv	tråkig	tråkigt	1	1		2		1		
+adj_ev_vacker	de	schön	am schönsten						3		
 adj_ev_vacker	de	schön	schön						1		
 adj_ev_vacker	de	schön	schöne	1	1	3	2		1		
 adj_ev_vacker	de	schön	schöne	1	2	1	1		1		
@@ -4306,6 +4381,7 @@ adj_ev_vacker	de	schön	schönen	1	3	14	1		1
 adj_ev_vacker	de	schön	schönen	2	1	4			1		
 adj_ev_vacker	de	schön	schönen	2	2	15			1		
 adj_ev_vacker	de	schön	schönen	2	3	15			1		
+adj_ev_vacker	de	schön	schöner						2		
 adj_ev_vacker	de	schön	schöner	1	1	1	1		1		
 adj_ev_vacker	de	schön	schöner	1	1	12	2		1		
 adj_ev_vacker	de	schön	schöner	1	3	1	1		1		
@@ -4388,6 +4464,7 @@ adj_ev_vacker	sv	vacker	vackra	2	2		3		1
 adj_ev_vacker	sv	vacker	vackrare						2		
 adj_ev_vacker	sv	vacker	vackrast						3		
 adj_ev_vacker	sv	vacker	vackraste		2				3		
+adj_ev_viktig	de	wichtig	am wichtigsten						3		
 adj_ev_viktig	de	wichtig	wichtig						1		
 adj_ev_viktig	de	wichtig	wichtige	1	1	3	2		1		
 adj_ev_viktig	de	wichtig	wichtige	1	2	1	1		1		
@@ -4408,6 +4485,7 @@ adj_ev_viktig	de	wichtig	wichtigen	1	3	14	1		1
 adj_ev_viktig	de	wichtig	wichtigen	2	1	4			1		
 adj_ev_viktig	de	wichtig	wichtigen	2	2	15			1		
 adj_ev_viktig	de	wichtig	wichtigen	2	3	15			1		
+adj_ev_viktig	de	wichtig	wichtiger						2		
 adj_ev_viktig	de	wichtig	wichtiger	1	1	1	1		1		
 adj_ev_viktig	de	wichtig	wichtiger	1	1	12	2		1		
 adj_ev_viktig	de	wichtig	wichtiger	1	3	1	1		1		
@@ -4490,6 +4568,7 @@ adj_ev_viktig	sv	viktig	viktigare						2
 adj_ev_viktig	sv	viktig	viktigast						3		
 adj_ev_viktig	sv	viktig	viktigaste		2				3		
 adj_ev_viktig	sv	viktig	viktigt	1	1		2		1		
+adj_ev_ärlig	de	ehrlich	am ehrlichsten						3		
 adj_ev_ärlig	de	ehrlich	ehrlich						1		
 adj_ev_ärlig	de	ehrlich	ehrliche	1	1	3	2		1		
 adj_ev_ärlig	de	ehrlich	ehrliche	1	2	1	1		1		
@@ -4510,6 +4589,7 @@ adj_ev_ärlig	de	ehrlich	ehrlichen	1	3	14	1		1
 adj_ev_ärlig	de	ehrlich	ehrlichen	2	1	4			1		
 adj_ev_ärlig	de	ehrlich	ehrlichen	2	2	15			1		
 adj_ev_ärlig	de	ehrlich	ehrlichen	2	3	15			1		
+adj_ev_ärlig	de	ehrlich	ehrlicher						2		
 adj_ev_ärlig	de	ehrlich	ehrlicher	1	1	1	1		1		
 adj_ev_ärlig	de	ehrlich	ehrlicher	1	1	12	2		1		
 adj_ev_ärlig	de	ehrlich	ehrlicher	1	3	1	1		1		
@@ -4592,6 +4672,8 @@ adj_ev_ärlig	sv	ärlig	ärligare						2
 adj_ev_ärlig	sv	ärlig	ärligast						3		
 adj_ev_ärlig	sv	ärlig	ärligaste		2				3		
 adj_ev_ärlig	sv	ärlig	ärligt	1	1		2		1		
+adj_k_bra	de	gut	am besten						3		
+adj_k_bra	de	gut	besser						2		
 adj_k_bra	de	gut	bessere	1	1	3	2		2		
 adj_k_bra	de	gut	bessere	1	2	1	1		2		
 adj_k_bra	de	gut	bessere	1	2	3	2		2		
@@ -4716,6 +4798,7 @@ adj_k_bra	sv	bra	bra	2	2		3		1
 adj_k_bra	sv	bra	bäst						3		
 adj_k_bra	sv	bra	bästa		2				3		
 adj_k_bra	sv	bra	bättre						2		
+adj_k_dålig	de	schlecht	am schlechtesten						3		
 adj_k_dålig	de	schlecht	schlecht						1		
 adj_k_dålig	de	schlecht	schlechte	1	1	3	2		1		
 adj_k_dålig	de	schlecht	schlechte	1	2	1	1		1		
@@ -4736,6 +4819,7 @@ adj_k_dålig	de	schlecht	schlechten	1	3	14	1		1
 adj_k_dålig	de	schlecht	schlechten	2	1	4			1		
 adj_k_dålig	de	schlecht	schlechten	2	2	15			1		
 adj_k_dålig	de	schlecht	schlechten	2	3	15			1		
+adj_k_dålig	de	schlecht	schlechter						2		
 adj_k_dålig	de	schlecht	schlechter	1	1	1	1		1		
 adj_k_dålig	de	schlecht	schlechter	1	1	12	2		1		
 adj_k_dålig	de	schlecht	schlechter	1	3	1	1		1		
@@ -4840,6 +4924,7 @@ adj_k_dålig	sv	dålig	dåligt	1	1		2		1
 adj_k_dålig	sv	dålig	sämre						2		
 adj_k_dålig	sv	dålig	sämst						3		
 adj_k_dålig	sv	dålig	sämsta		2				3		
+adj_k_död	de	tot	am totesten						3		
 adj_k_död	de	tot	tot						1		
 adj_k_död	de	tot	tote	1	1	3	2		1		
 adj_k_död	de	tot	tote	1	2	1	1		1		
@@ -4860,6 +4945,7 @@ adj_k_död	de	tot	toten	1	3	14	1		1
 adj_k_död	de	tot	toten	2	1	4			1		
 adj_k_död	de	tot	toten	2	2	15			1		
 adj_k_död	de	tot	toten	2	3	15			1		
+adj_k_död	de	tot	toter						2		
 adj_k_död	de	tot	toter	1	1	1	1		1		
 adj_k_död	de	tot	toter	1	1	12	2		1		
 adj_k_död	de	tot	toter	1	3	1	1		1		
@@ -4936,6 +5022,7 @@ adj_k_död	sv	död	döda	1	2		3		1
 adj_k_död	sv	död	döda	2	1		3		1		
 adj_k_död	sv	död	döda	2	2		3		1		
 adj_k_död	sv	död	dött	1	1		2		1		
+adj_k_enkel	de	einfach	am einfachsten						3		
 adj_k_enkel	de	einfach	einfach						1		
 adj_k_enkel	de	einfach	einfache	1	1	3	2		1		
 adj_k_enkel	de	einfach	einfache	1	2	1	1		1		
@@ -4956,6 +5043,7 @@ adj_k_enkel	de	einfach	einfachen	1	3	14	1		1
 adj_k_enkel	de	einfach	einfachen	2	1	4			1		
 adj_k_enkel	de	einfach	einfachen	2	2	15			1		
 adj_k_enkel	de	einfach	einfachen	2	3	15			1		
+adj_k_enkel	de	einfach	einfacher						2		
 adj_k_enkel	de	einfach	einfacher	1	1	1	1		1		
 adj_k_enkel	de	einfach	einfacher	1	1	12	2		1		
 adj_k_enkel	de	einfach	einfacher	1	3	1	1		1		
@@ -5040,6 +5128,7 @@ adj_k_enkel	sv	enkel	enkla	2	2		3		1
 adj_k_enkel	sv	enkel	enklare						2		
 adj_k_enkel	sv	enkel	enklast						3		
 adj_k_enkel	sv	enkel	enklaste		2				3		
+adj_k_fel	de	falsch	am falschesten						3		
 adj_k_fel	de	falsch	falsch						1		
 adj_k_fel	de	falsch	falsche	1	1	3	2		1		
 adj_k_fel	de	falsch	falsche	1	2	1	1		1		
@@ -5060,6 +5149,7 @@ adj_k_fel	de	falsch	falschen	1	3	14	1		1
 adj_k_fel	de	falsch	falschen	2	1	4			1		
 adj_k_fel	de	falsch	falschen	2	2	15			1		
 adj_k_fel	de	falsch	falschen	2	3	15			1		
+adj_k_fel	de	falsch	falscher						2		
 adj_k_fel	de	falsch	falscher	1	1	1	1		1		
 adj_k_fel	de	falsch	falscher	1	1	12	2		1		
 adj_k_fel	de	falsch	falscher	1	3	1	1		1		
@@ -5134,6 +5224,7 @@ adj_k_fel	sv	fel	fel	1	1		2		1
 adj_k_fel	sv	fel	fel	1	2		3		1		
 adj_k_fel	sv	fel	fel	2	1		3		1		
 adj_k_fel	sv	fel	fel	2	2		3		1		
+adj_k_full	de	voll	am vollsten						3		
 adj_k_full	de	voll	voll						1		
 adj_k_full	de	voll	volle	1	1	3	2		1		
 adj_k_full	de	voll	volle	1	2	1	1		1		
@@ -5154,6 +5245,7 @@ adj_k_full	de	voll	vollen	1	3	14	1		1
 adj_k_full	de	voll	vollen	2	1	4			1		
 adj_k_full	de	voll	vollen	2	2	15			1		
 adj_k_full	de	voll	vollen	2	3	15			1		
+adj_k_full	de	voll	voller						2		
 adj_k_full	de	voll	voller	1	1	1	1		1		
 adj_k_full	de	voll	voller	1	1	12	2		1		
 adj_k_full	de	voll	voller	1	3	1	1		1		
@@ -5259,6 +5351,8 @@ adj_k_gammal	de	alt	alter	1	3	1	1		1
 adj_k_gammal	de	alt	alter	2	1	8			1		
 adj_k_gammal	de	alt	altes	1	1	3	3		1		
 adj_k_gammal	de	alt	altes	1	3	3	3		1		
+adj_k_gammal	de	alt	am ältesten						3		
+adj_k_gammal	de	alt	älter						2		
 adj_k_gammal	de	alt	ältere	1	1	3	2		2		
 adj_k_gammal	de	alt	ältere	1	2	1	1		2		
 adj_k_gammal	de	alt	ältere	1	2	3	2		2		
@@ -5337,6 +5431,7 @@ adj_k_gammal	sv	gammal	gammalt	1	1		2		1
 adj_k_gammal	sv	gammal	äldre						2		
 adj_k_gammal	sv	gammal	äldst						3		
 adj_k_gammal	sv	gammal	äldsta		2				3		
+adj_k_halv	de	halb	am halbsten						3		
 adj_k_halv	de	halb	halb						1		
 adj_k_halv	de	halb	halbe	1	1	3	2		1		
 adj_k_halv	de	halb	halbe	1	2	1	1		1		
@@ -5357,6 +5452,7 @@ adj_k_halv	de	halb	halben	1	3	14	1		1
 adj_k_halv	de	halb	halben	2	1	4			1		
 adj_k_halv	de	halb	halben	2	2	15			1		
 adj_k_halv	de	halb	halben	2	3	15			1		
+adj_k_halv	de	halb	halber						2		
 adj_k_halv	de	halb	halber	1	1	1	1		1		
 adj_k_halv	de	halb	halber	1	1	12	2		1		
 adj_k_halv	de	halb	halber	1	3	1	1		1		
@@ -5473,6 +5569,7 @@ adj_k_hel	sv	hel	hela	1	2		3		1
 adj_k_hel	sv	hel	hela	2	1		3		1		
 adj_k_hel	sv	hel	hela	2	2		3		1		
 adj_k_hel	sv	hel	helt	1	1		2		1		
+adj_k_levande	de	lebendig	am lebendigsten						3		
 adj_k_levande	de	lebendig	lebendig						1		
 adj_k_levande	de	lebendig	lebendige	1	1	3	2		1		
 adj_k_levande	de	lebendig	lebendige	1	2	1	1		1		
@@ -5493,6 +5590,7 @@ adj_k_levande	de	lebendig	lebendigen	1	3	14	1		1
 adj_k_levande	de	lebendig	lebendigen	2	1	4			1		
 adj_k_levande	de	lebendig	lebendigen	2	2	15			1		
 adj_k_levande	de	lebendig	lebendigen	2	3	15			1		
+adj_k_levande	de	lebendig	lebendiger						2		
 adj_k_levande	de	lebendig	lebendiger	1	1	1	1		1		
 adj_k_levande	de	lebendig	lebendiger	1	1	12	2		1		
 adj_k_levande	de	lebendig	lebendiger	1	3	1	1		1		
@@ -5567,6 +5665,7 @@ adj_k_levande	sv	levande	levande	1	1		2		1
 adj_k_levande	sv	levande	levande	1	2		3		1		
 adj_k_levande	sv	levande	levande	2	1		3		1		
 adj_k_levande	sv	levande	levande	2	2		3		1		
+adj_k_normal	de	normal	am normalsten						3		
 adj_k_normal	de	normal	normal						1		
 adj_k_normal	de	normal	normale	1	1	3	2		1		
 adj_k_normal	de	normal	normale	1	2	1	1		1		
@@ -5587,6 +5686,7 @@ adj_k_normal	de	normal	normalen	1	3	14	1		1
 adj_k_normal	de	normal	normalen	2	1	4			1		
 adj_k_normal	de	normal	normalen	2	2	15			1		
 adj_k_normal	de	normal	normalen	2	3	15			1		
+adj_k_normal	de	normal	normaler						2		
 adj_k_normal	de	normal	normaler	1	1	1	1		1		
 adj_k_normal	de	normal	normaler	1	1	12	2		1		
 adj_k_normal	de	normal	normaler	1	3	1	1		1		
@@ -5669,6 +5769,7 @@ adj_k_normal	sv	normal	normalare						2
 adj_k_normal	sv	normal	normalast						3		
 adj_k_normal	sv	normal	normalaste		2				3		
 adj_k_normal	sv	normal	normalt	1	1		2		1		
+adj_k_ny	de	neu	am neuesten						3		
 adj_k_ny	de	neu	neu						1		
 adj_k_ny	de	neu	neue	1	1	3	2		1		
 adj_k_ny	de	neu	neue	1	2	1	1		1		
@@ -5689,6 +5790,7 @@ adj_k_ny	de	neu	neuen	1	3	14	1		1
 adj_k_ny	de	neu	neuen	2	1	4			1		
 adj_k_ny	de	neu	neuen	2	2	15			1		
 adj_k_ny	de	neu	neuen	2	3	15			1		
+adj_k_ny	de	neu	neuer						2		
 adj_k_ny	de	neu	neuer	1	1	1	1		1		
 adj_k_ny	de	neu	neuer	1	1	12	2		1		
 adj_k_ny	de	neu	neuer	1	3	1	1		1		
@@ -5773,6 +5875,7 @@ adj_k_ny	sv	ny	nyare						2
 adj_k_ny	sv	ny	nyast						3		
 adj_k_ny	sv	ny	nyaste		2				3		
 adj_k_ny	sv	ny	nytt	1	1		2		1		
+adj_k_ren	de	sauber	am saubersten						3		
 adj_k_ren	de	sauber	sauber						1		
 adj_k_ren	de	sauber	saubere	1	1	3	2		1		
 adj_k_ren	de	sauber	saubere	1	2	1	1		1		
@@ -5793,6 +5896,7 @@ adj_k_ren	de	sauber	sauberen	1	3	14	1		1
 adj_k_ren	de	sauber	sauberen	2	1	4			1		
 adj_k_ren	de	sauber	sauberen	2	2	15			1		
 adj_k_ren	de	sauber	sauberen	2	3	15			1		
+adj_k_ren	de	sauber	sauberer						2		
 adj_k_ren	de	sauber	sauberer	1	1	1	1		1		
 adj_k_ren	de	sauber	sauberer	1	1	12	2		1		
 adj_k_ren	de	sauber	sauberer	1	3	1	1		1		
@@ -5877,6 +5981,7 @@ adj_k_ren	sv	ren	renare						2
 adj_k_ren	sv	ren	renast						3		
 adj_k_ren	sv	ren	renaste		2				3		
 adj_k_ren	sv	ren	rent	1	1		2		1		
+adj_k_rätt	de	richtig	am richtigsten						3		
 adj_k_rätt	de	richtig	richtig						1		
 adj_k_rätt	de	richtig	richtige	1	1	3	2		1		
 adj_k_rätt	de	richtig	richtige	1	2	1	1		1		
@@ -5897,6 +6002,7 @@ adj_k_rätt	de	richtig	richtigen	1	3	14	1		1
 adj_k_rätt	de	richtig	richtigen	2	1	4			1		
 adj_k_rätt	de	richtig	richtigen	2	2	15			1		
 adj_k_rätt	de	richtig	richtigen	2	3	15			1		
+adj_k_rätt	de	richtig	richtiger						2		
 adj_k_rätt	de	richtig	richtiger	1	1	1	1		1		
 adj_k_rätt	de	richtig	richtiger	1	1	12	2		1		
 adj_k_rätt	de	richtig	richtiger	1	3	1	1		1		
@@ -5979,6 +6085,7 @@ adj_k_rätt	sv	rätt	rätta	2	2		3		1
 adj_k_rätt	sv	rätt	rättare						2		
 adj_k_rätt	sv	rätt	rättast						3		
 adj_k_rätt	sv	rätt	rättaste		2				3		
+adj_k_smutsig	de	schmutzig	am schmutzigsten						3		
 adj_k_smutsig	de	schmutzig	schmutzig						1		
 adj_k_smutsig	de	schmutzig	schmutzige	1	1	3	2		1		
 adj_k_smutsig	de	schmutzig	schmutzige	1	2	1	1		1		
@@ -5999,6 +6106,7 @@ adj_k_smutsig	de	schmutzig	schmutzigen	1	3	14	1		1
 adj_k_smutsig	de	schmutzig	schmutzigen	2	1	4			1		
 adj_k_smutsig	de	schmutzig	schmutzigen	2	2	15			1		
 adj_k_smutsig	de	schmutzig	schmutzigen	2	3	15			1		
+adj_k_smutsig	de	schmutzig	schmutziger						2		
 adj_k_smutsig	de	schmutzig	schmutziger	1	1	1	1		1		
 adj_k_smutsig	de	schmutzig	schmutziger	1	1	12	2		1		
 adj_k_smutsig	de	schmutzig	schmutziger	1	3	1	1		1		
@@ -6083,6 +6191,7 @@ adj_k_smutsig	sv	smutsig	smutsigare						2
 adj_k_smutsig	sv	smutsig	smutsigast						3		
 adj_k_smutsig	sv	smutsig	smutsigaste		2				3		
 adj_k_smutsig	sv	smutsig	smutsigt	1	1		2		1		
+adj_k_stark	de	stark	am stärksten						3		
 adj_k_stark	de	stark	stark						1		
 adj_k_stark	de	stark	starke	1	1	3	2		1		
 adj_k_stark	de	stark	starke	1	2	1	1		1		
@@ -6109,6 +6218,7 @@ adj_k_stark	de	stark	starker	1	3	1	1		1
 adj_k_stark	de	stark	starker	2	1	8			1		
 adj_k_stark	de	stark	starkes	1	1	3	3		1		
 adj_k_stark	de	stark	starkes	1	3	3	3		1		
+adj_k_stark	de	stark	stärker						2		
 adj_k_stark	de	stark	stärkere	1	1	3	2		2		
 adj_k_stark	de	stark	stärkere	1	2	1	1		2		
 adj_k_stark	de	stark	stärkere	1	2	3	2		2		
@@ -6187,6 +6297,7 @@ adj_k_stark	sv	stark	starkare						2
 adj_k_stark	sv	stark	starkast						3		
 adj_k_stark	sv	stark	starkaste		2				3		
 adj_k_stark	sv	stark	starkt	1	1		2		1		
+adj_k_stängd	de	geschlossen	am geschlossensten						3		
 adj_k_stängd	de	geschlossen	geschlossen						1		
 adj_k_stängd	de	geschlossen	geschlossene	1	1	3	2		1		
 adj_k_stängd	de	geschlossen	geschlossene	1	2	1	1		1		
@@ -6207,6 +6318,7 @@ adj_k_stängd	de	geschlossen	geschlossenen	1	3	14	1		1
 adj_k_stängd	de	geschlossen	geschlossenen	2	1	4			1		
 adj_k_stängd	de	geschlossen	geschlossenen	2	2	15			1		
 adj_k_stängd	de	geschlossen	geschlossenen	2	3	15			1		
+adj_k_stängd	de	geschlossen	geschlossener						2		
 adj_k_stängd	de	geschlossen	geschlossener	1	1	1	1		1		
 adj_k_stängd	de	geschlossen	geschlossener	1	1	12	2		1		
 adj_k_stängd	de	geschlossen	geschlossener	1	3	1	1		1		
@@ -6281,6 +6393,7 @@ adj_k_stängd	sv	stängd	stängda	1	2		3		1
 adj_k_stängd	sv	stängd	stängda	2	1		3		1		
 adj_k_stängd	sv	stängd	stängda	2	2		3		1		
 adj_k_stängd	sv	stängd	stängt	1	1		2		1		
+adj_k_svag	de	schwach	am schwächsten						3		
 adj_k_svag	de	schwach	schwach						1		
 adj_k_svag	de	schwach	schwache	1	1	3	2		1		
 adj_k_svag	de	schwach	schwache	1	2	1	1		1		
@@ -6307,6 +6420,7 @@ adj_k_svag	de	schwach	schwacher	1	3	1	1		1
 adj_k_svag	de	schwach	schwacher	2	1	8			1		
 adj_k_svag	de	schwach	schwaches	1	1	3	3		1		
 adj_k_svag	de	schwach	schwaches	1	3	3	3		1		
+adj_k_svag	de	schwach	schwächer						2		
 adj_k_svag	de	schwach	schwächere	1	1	3	2		2		
 adj_k_svag	de	schwach	schwächere	1	2	1	1		2		
 adj_k_svag	de	schwach	schwächere	1	2	3	2		2		
@@ -6385,6 +6499,7 @@ adj_k_svag	sv	svag	svagare						2
 adj_k_svag	sv	svag	svagast						3		
 adj_k_svag	sv	svag	svagaste		2				3		
 adj_k_svag	sv	svag	svagt	1	1		2		1		
+adj_k_svår	de	schwierig	am schwierigsten						3		
 adj_k_svår	de	schwierig	schwierig						1		
 adj_k_svår	de	schwierig	schwierige	1	1	3	2		1		
 adj_k_svår	de	schwierig	schwierige	1	2	1	1		1		
@@ -6405,6 +6520,7 @@ adj_k_svår	de	schwierig	schwierigen	1	3	14	1		1
 adj_k_svår	de	schwierig	schwierigen	2	1	4			1		
 adj_k_svår	de	schwierig	schwierigen	2	2	15			1		
 adj_k_svår	de	schwierig	schwierigen	2	3	15			1		
+adj_k_svår	de	schwierig	schwieriger						2		
 adj_k_svår	de	schwierig	schwieriger	1	1	1	1		1		
 adj_k_svår	de	schwierig	schwieriger	1	1	12	2		1		
 adj_k_svår	de	schwierig	schwieriger	1	3	1	1		1		
@@ -6487,6 +6603,7 @@ adj_k_svår	sv	svår	svårare						2
 adj_k_svår	sv	svår	svårast						3		
 adj_k_svår	sv	svår	svåraste		2				3		
 adj_k_svår	sv	svår	svårt	1	1		2		1		
+adj_k_tom	de	leer	am leersten						3		
 adj_k_tom	de	leer	leer						1		
 adj_k_tom	de	leer	leere	1	1	3	2		1		
 adj_k_tom	de	leer	leere	1	2	1	1		1		
@@ -6507,6 +6624,7 @@ adj_k_tom	de	leer	leeren	1	3	14	1		1
 adj_k_tom	de	leer	leeren	2	1	4			1		
 adj_k_tom	de	leer	leeren	2	2	15			1		
 adj_k_tom	de	leer	leeren	2	3	15			1		
+adj_k_tom	de	leer	leerer						2		
 adj_k_tom	de	leer	leerer	1	1	1	1		1		
 adj_k_tom	de	leer	leerer	1	1	12	2		1		
 adj_k_tom	de	leer	leerer	1	3	1	1		1		
@@ -6586,6 +6704,7 @@ adj_k_tom	sv	tom	tommare						2
 adj_k_tom	sv	tom	tommast						3		
 adj_k_tom	sv	tom	tommaste		2				3		
 adj_k_tom	sv	tom	tomt	1	1		2		1		
+adj_k_trasig	de	kaputt	am kaputtesten						3		
 adj_k_trasig	de	kaputt	kaputt						1		
 adj_k_trasig	de	kaputt	kaputte	1	1	3	2		1		
 adj_k_trasig	de	kaputt	kaputte	1	2	1	1		1		
@@ -6606,6 +6725,7 @@ adj_k_trasig	de	kaputt	kaputten	1	3	14	1		1
 adj_k_trasig	de	kaputt	kaputten	2	1	4			1		
 adj_k_trasig	de	kaputt	kaputten	2	2	15			1		
 adj_k_trasig	de	kaputt	kaputten	2	3	15			1		
+adj_k_trasig	de	kaputt	kaputter						2		
 adj_k_trasig	de	kaputt	kaputter	1	1	1	1		1		
 adj_k_trasig	de	kaputt	kaputter	1	1	12	2		1		
 adj_k_trasig	de	kaputt	kaputter	1	3	1	1		1		
@@ -6683,6 +6803,7 @@ adj_k_trasig	sv	trasig	trasigare						2
 adj_k_trasig	sv	trasig	trasigast						3		
 adj_k_trasig	sv	trasig	trasigaste		2				3		
 adj_k_trasig	sv	trasig	trasigt	1	1		2		1		
+adj_k_ung	de	jung	am jüngsten						3		
 adj_k_ung	de	jung	jung						1		
 adj_k_ung	de	jung	junge	1	1	3	2		1		
 adj_k_ung	de	jung	junge	1	2	1	1		1		
@@ -6709,6 +6830,7 @@ adj_k_ung	de	jung	junger	1	3	1	1		1
 adj_k_ung	de	jung	junger	2	1	8			1		
 adj_k_ung	de	jung	junges	1	1	3	3		1		
 adj_k_ung	de	jung	junges	1	3	3	3		1		
+adj_k_ung	de	jung	jünger						2		
 adj_k_ung	de	jung	jüngere	1	1	3	2		2		
 adj_k_ung	de	jung	jüngere	1	2	1	1		2		
 adj_k_ung	de	jung	jüngere	1	2	3	2		2		
@@ -6787,6 +6909,7 @@ adj_k_ung	sv	ung	ungt	1	1		2		1
 adj_k_ung	sv	ung	yngre						2		
 adj_k_ung	sv	ung	yngst						3		
 adj_k_ung	sv	ung	yngsta		2				3		
+adj_k_öppen	de	offen	am offensten						3		
 adj_k_öppen	de	offen	offen						1		
 adj_k_öppen	de	offen	offene	1	1	3	2		1		
 adj_k_öppen	de	offen	offene	1	2	1	1		1		
@@ -6807,6 +6930,7 @@ adj_k_öppen	de	offen	offenen	1	3	14	1		1
 adj_k_öppen	de	offen	offenen	2	1	4			1		
 adj_k_öppen	de	offen	offenen	2	2	15			1		
 adj_k_öppen	de	offen	offenen	2	3	15			1		
+adj_k_öppen	de	offen	offener						2		
 adj_k_öppen	de	offen	offener	1	1	1	1		1		
 adj_k_öppen	de	offen	offener	1	1	12	2		1		
 adj_k_öppen	de	offen	offener	1	3	1	1		1		
@@ -6884,6 +7008,7 @@ adj_k_öppen	sv	öppen	öppna	2	2		3		1
 adj_k_öppen	sv	öppen	öppnare						2		
 adj_k_öppen	sv	öppen	öppnast						3		
 adj_k_öppen	sv	öppen	öppnaste		2				3		
+adj_m_farlig	de	gefährlich	am gefährlichsten						3		
 adj_m_farlig	de	gefährlich	gefährlich						1		
 adj_m_farlig	de	gefährlich	gefährliche	1	1	3	2		1		
 adj_m_farlig	de	gefährlich	gefährliche	1	2	1	1		1		
@@ -6904,6 +7029,7 @@ adj_m_farlig	de	gefährlich	gefährlichen	1	3	14	1		1
 adj_m_farlig	de	gefährlich	gefährlichen	2	1	4			1		
 adj_m_farlig	de	gefährlich	gefährlichen	2	2	15			1		
 adj_m_farlig	de	gefährlich	gefährlichen	2	3	15			1		
+adj_m_farlig	de	gefährlich	gefährlicher						2		
 adj_m_farlig	de	gefährlich	gefährlicher	1	1	1	1		1		
 adj_m_farlig	de	gefährlich	gefährlicher	1	1	12	2		1		
 adj_m_farlig	de	gefährlich	gefährlicher	1	3	1	1		1		
@@ -6986,6 +7112,7 @@ adj_m_farlig	sv	farlig	farligare						2
 adj_m_farlig	sv	farlig	farligast						3		
 adj_m_farlig	sv	farlig	farligaste		2				3		
 adj_m_farlig	sv	farlig	farligt	1	1		2		1		
+adj_m_klar	de	fertig	am fertigsten						3		
 adj_m_klar	de	fertig	fertig						1		
 adj_m_klar	de	fertig	fertige	1	1	3	2		1		
 adj_m_klar	de	fertig	fertige	1	2	1	1		1		
@@ -7006,6 +7133,7 @@ adj_m_klar	de	fertig	fertigen	1	3	14	1		1
 adj_m_klar	de	fertig	fertigen	2	1	4			1		
 adj_m_klar	de	fertig	fertigen	2	2	15			1		
 adj_m_klar	de	fertig	fertigen	2	3	15			1		
+adj_m_klar	de	fertig	fertiger						2		
 adj_m_klar	de	fertig	fertiger	1	1	1	1		1		
 adj_m_klar	de	fertig	fertiger	1	1	12	2		1		
 adj_m_klar	de	fertig	fertiger	1	3	1	1		1		
@@ -7085,6 +7213,7 @@ adj_m_klar	sv	klar	klarare						2
 adj_m_klar	sv	klar	klarast						3		
 adj_m_klar	sv	klar	klaraste		2				3		
 adj_m_klar	sv	klar	klart	1	1		2		1		
+adj_m_lik	de	ähnlich	am ähnlichsten						3		
 adj_m_lik	de	ähnlich	ähnlich						1		
 adj_m_lik	de	ähnlich	ähnliche	1	1	3	2		1		
 adj_m_lik	de	ähnlich	ähnliche	1	2	1	1		1		
@@ -7105,6 +7234,7 @@ adj_m_lik	de	ähnlich	ähnlichen	1	3	14	1		1
 adj_m_lik	de	ähnlich	ähnlichen	2	1	4			1		
 adj_m_lik	de	ähnlich	ähnlichen	2	2	15			1		
 adj_m_lik	de	ähnlich	ähnlichen	2	3	15			1		
+adj_m_lik	de	ähnlich	ähnlicher						2		
 adj_m_lik	de	ähnlich	ähnlicher	1	1	1	1		1		
 adj_m_lik	de	ähnlich	ähnlicher	1	1	12	2		1		
 adj_m_lik	de	ähnlich	ähnlicher	1	3	1	1		1		
@@ -7179,6 +7309,7 @@ adj_m_lik	sv	lik	lika	1	2		3		1
 adj_m_lik	sv	lik	lika	2	1		3		1		
 adj_m_lik	sv	lik	lika	2	2		3		1		
 adj_m_lik	sv	lik	likt	1	1		2		1		
+adj_m_möjlig	de	möglich	am möglichsten						3		
 adj_m_möjlig	de	möglich	möglich						1		
 adj_m_möjlig	de	möglich	mögliche	1	1	3	2		1		
 adj_m_möjlig	de	möglich	mögliche	1	2	1	1		1		
@@ -7199,6 +7330,7 @@ adj_m_möjlig	de	möglich	möglichen	1	3	14	1		1
 adj_m_möjlig	de	möglich	möglichen	2	1	4			1		
 adj_m_möjlig	de	möglich	möglichen	2	2	15			1		
 adj_m_möjlig	de	möglich	möglichen	2	3	15			1		
+adj_m_möjlig	de	möglich	möglicher						2		
 adj_m_möjlig	de	möglich	möglicher	1	1	1	1		1		
 adj_m_möjlig	de	möglich	möglicher	1	1	12	2		1		
 adj_m_möjlig	de	möglich	möglicher	1	3	1	1		1		
@@ -7281,6 +7413,7 @@ adj_m_möjlig	sv	möjlig	möjligare						2
 adj_m_möjlig	sv	möjlig	möjligast						3		
 adj_m_möjlig	sv	möjlig	möjligaste		2				3		
 adj_m_möjlig	sv	möjlig	möjligt	1	1		2		1		
+adj_m_nödvändig	de	nötig	am nötigsten						3		
 adj_m_nödvändig	de	nötig	nötig						1		
 adj_m_nödvändig	de	nötig	nötige	1	1	3	2		1		
 adj_m_nödvändig	de	nötig	nötige	1	2	1	1		1		
@@ -7301,6 +7434,7 @@ adj_m_nödvändig	de	nötig	nötigen	1	3	14	1		1
 adj_m_nödvändig	de	nötig	nötigen	2	1	4			1		
 adj_m_nödvändig	de	nötig	nötigen	2	2	15			1		
 adj_m_nödvändig	de	nötig	nötigen	2	3	15			1		
+adj_m_nödvändig	de	nötig	nötiger						2		
 adj_m_nödvändig	de	nötig	nötiger	1	1	1	1		1		
 adj_m_nödvändig	de	nötig	nötiger	1	1	12	2		1		
 adj_m_nödvändig	de	nötig	nötiger	1	3	1	1		1		
@@ -7383,6 +7517,7 @@ adj_m_nödvändig	sv	nödvändig	nödvändigare						2
 adj_m_nödvändig	sv	nödvändig	nödvändigast						3		
 adj_m_nödvändig	sv	nödvändig	nödvändigaste		2				3		
 adj_m_nödvändig	sv	nödvändig	nödvändigt	1	1		2		1		
+adj_m_offentlig	de	öffentlich	am öffentlichsten						3		
 adj_m_offentlig	de	öffentlich	öffentlich						1		
 adj_m_offentlig	de	öffentlich	öffentliche	1	1	3	2		1		
 adj_m_offentlig	de	öffentlich	öffentliche	1	2	1	1		1		
@@ -7403,6 +7538,7 @@ adj_m_offentlig	de	öffentlich	öffentlichen	1	3	14	1		1
 adj_m_offentlig	de	öffentlich	öffentlichen	2	1	4			1		
 adj_m_offentlig	de	öffentlich	öffentlichen	2	2	15			1		
 adj_m_offentlig	de	öffentlich	öffentlichen	2	3	15			1		
+adj_m_offentlig	de	öffentlich	öffentlicher						2		
 adj_m_offentlig	de	öffentlich	öffentlicher	1	1	1	1		1		
 adj_m_offentlig	de	öffentlich	öffentlicher	1	1	12	2		1		
 adj_m_offentlig	de	öffentlich	öffentlicher	1	3	1	1		1		
@@ -7480,6 +7616,7 @@ adj_m_offentlig	sv	offentlig	offentligare						2
 adj_m_offentlig	sv	offentlig	offentligast						3		
 adj_m_offentlig	sv	offentlig	offentligaste		2				3		
 adj_m_offentlig	sv	offentlig	offentligt	1	1		2		1		
+adj_m_officiell	de	offiziell	am offiziellsten						3		
 adj_m_officiell	de	offiziell	offiziell						1		
 adj_m_officiell	de	offiziell	offizielle	1	1	3	2		1		
 adj_m_officiell	de	offiziell	offizielle	1	2	1	1		1		
@@ -7500,6 +7637,7 @@ adj_m_officiell	de	offiziell	offiziellen	1	3	14	1		1
 adj_m_officiell	de	offiziell	offiziellen	2	1	4			1		
 adj_m_officiell	de	offiziell	offiziellen	2	2	15			1		
 adj_m_officiell	de	offiziell	offiziellen	2	3	15			1		
+adj_m_officiell	de	offiziell	offizieller						2		
 adj_m_officiell	de	offiziell	offizieller	1	1	1	1		1		
 adj_m_officiell	de	offiziell	offizieller	1	1	12	2		1		
 adj_m_officiell	de	offiziell	offizieller	1	3	1	1		1		
@@ -7574,6 +7712,7 @@ adj_m_officiell	sv	officiell	officiella	1	2		3		1
 adj_m_officiell	sv	officiell	officiella	2	1		3		1		
 adj_m_officiell	sv	officiell	officiella	2	2		3		1		
 adj_m_officiell	sv	officiell	officiellt	1	1		2		1		
+adj_m_olik	de	verschieden	am verschiedensten						3		
 adj_m_olik	de	verschieden	verschieden						1		
 adj_m_olik	de	verschieden	verschiedene	1	1	3	2		1		
 adj_m_olik	de	verschieden	verschiedene	1	2	1	1		1		
@@ -7594,6 +7733,7 @@ adj_m_olik	de	verschieden	verschiedenen	1	3	14	1		1
 adj_m_olik	de	verschieden	verschiedenen	2	1	4			1		
 adj_m_olik	de	verschieden	verschiedenen	2	2	15			1		
 adj_m_olik	de	verschieden	verschiedenen	2	3	15			1		
+adj_m_olik	de	verschieden	verschiedener						2		
 adj_m_olik	de	verschieden	verschiedener	1	1	1	1		1		
 adj_m_olik	de	verschieden	verschiedener	1	1	12	2		1		
 adj_m_olik	de	verschieden	verschiedener	1	3	1	1		1		
@@ -7671,6 +7811,7 @@ adj_m_olik	sv	olik	olikare						2
 adj_m_olik	sv	olik	olikast						3		
 adj_m_olik	sv	olik	olikaste		2				3		
 adj_m_olik	sv	olik	olikt	1	1		2		1		
+adj_m_omöjlig	de	unmöglich	am unmöglichsten						3		
 adj_m_omöjlig	de	unmöglich	unmöglich						1		
 adj_m_omöjlig	de	unmöglich	unmögliche	1	1	3	2		1		
 adj_m_omöjlig	de	unmöglich	unmögliche	1	2	1	1		1		
@@ -7691,6 +7832,7 @@ adj_m_omöjlig	de	unmöglich	unmöglichen	1	3	14	1		1
 adj_m_omöjlig	de	unmöglich	unmöglichen	2	1	4			1		
 adj_m_omöjlig	de	unmöglich	unmöglichen	2	2	15			1		
 adj_m_omöjlig	de	unmöglich	unmöglichen	2	3	15			1		
+adj_m_omöjlig	de	unmöglich	unmöglicher						2		
 adj_m_omöjlig	de	unmöglich	unmöglicher	1	1	1	1		1		
 adj_m_omöjlig	de	unmöglich	unmöglicher	1	1	12	2		1		
 adj_m_omöjlig	de	unmöglich	unmöglicher	1	3	1	1		1		
@@ -7773,6 +7915,7 @@ adj_m_omöjlig	sv	omöjlig	omöjligare						2
 adj_m_omöjlig	sv	omöjlig	omöjligast						3		
 adj_m_omöjlig	sv	omöjlig	omöjligaste		2				3		
 adj_m_omöjlig	sv	omöjlig	omöjligt	1	1		2		1		
+adj_m_privat	de	privat	am privatesten						3		
 adj_m_privat	de	privat	privat						1		
 adj_m_privat	de	privat	private	1	1	3	2		1		
 adj_m_privat	de	privat	private	1	2	1	1		1		
@@ -7793,6 +7936,7 @@ adj_m_privat	de	privat	privaten	1	3	14	1		1
 adj_m_privat	de	privat	privaten	2	1	4			1		
 adj_m_privat	de	privat	privaten	2	2	15			1		
 adj_m_privat	de	privat	privaten	2	3	15			1		
+adj_m_privat	de	privat	privater						2		
 adj_m_privat	de	privat	privater	1	1	1	1		1		
 adj_m_privat	de	privat	privater	1	1	12	2		1		
 adj_m_privat	de	privat	privater	1	3	1	1		1		
@@ -7924,6 +8068,7 @@ adj_m_speciell	sv	speciell	speciella	1	2		3		1
 adj_m_speciell	sv	speciell	speciella	2	1		3		1		
 adj_m_speciell	sv	speciell	speciella	2	2		3		1		
 adj_m_speciell	sv	speciell	speciellt	1	1		2		1		
+adj_m_säker	de	sicher	am sichersten						3		
 adj_m_säker	de	sicher	sicher						1		
 adj_m_säker	de	sicher	sichere	1	1	3	2		1		
 adj_m_säker	de	sicher	sichere	1	2	1	1		1		
@@ -7944,6 +8089,7 @@ adj_m_säker	de	sicher	sicheren	1	3	14	1		1
 adj_m_säker	de	sicher	sicheren	2	1	4			1		
 adj_m_säker	de	sicher	sicheren	2	2	15			1		
 adj_m_säker	de	sicher	sicheren	2	3	15			1		
+adj_m_säker	de	sicher	sicherer						2		
 adj_m_säker	de	sicher	sicherer	1	1	1	1		1		
 adj_m_säker	de	sicher	sicherer	1	1	12	2		1		
 adj_m_säker	de	sicher	sicherer	1	3	1	1		1		
@@ -8028,6 +8174,7 @@ adj_m_säker	sv	säker	säkra	2	2		3		1
 adj_m_säker	sv	säker	säkrare						2		
 adj_m_säker	sv	säker	säkrast						3		
 adj_m_säker	sv	säker	säkraste		2				3		
+adj_m_vanlig	de	gewöhnlich	am gewöhnlichsten						3		
 adj_m_vanlig	de	gewöhnlich	gewöhnlich						1		
 adj_m_vanlig	de	gewöhnlich	gewöhnliche	1	1	3	2		1		
 adj_m_vanlig	de	gewöhnlich	gewöhnliche	1	2	1	1		1		
@@ -8048,6 +8195,7 @@ adj_m_vanlig	de	gewöhnlich	gewöhnlichen	1	3	14	1		1
 adj_m_vanlig	de	gewöhnlich	gewöhnlichen	2	1	4			1		
 adj_m_vanlig	de	gewöhnlich	gewöhnlichen	2	2	15			1		
 adj_m_vanlig	de	gewöhnlich	gewöhnlichen	2	3	15			1		
+adj_m_vanlig	de	gewöhnlich	gewöhnlicher						2		
 adj_m_vanlig	de	gewöhnlich	gewöhnlicher	1	1	1	1		1		
 adj_m_vanlig	de	gewöhnlich	gewöhnlicher	1	1	12	2		1		
 adj_m_vanlig	de	gewöhnlich	gewöhnlicher	1	3	1	1		1		
@@ -8130,6 +8278,7 @@ adj_m_vanlig	sv	vanlig	vanligare						2
 adj_m_vanlig	sv	vanlig	vanligast						3		
 adj_m_vanlig	sv	vanlig	vanligaste		2				3		
 adj_m_vanlig	sv	vanlig	vanligt	1	1		2		1		
+adj_s_bred	de	breit	am breitesten						3		
 adj_s_bred	de	breit	breit						1		
 adj_s_bred	de	breit	breite	1	1	3	2		1		
 adj_s_bred	de	breit	breite	1	2	1	1		1		
@@ -8150,6 +8299,7 @@ adj_s_bred	de	breit	breiten	1	3	14	1		1
 adj_s_bred	de	breit	breiten	2	1	4			1		
 adj_s_bred	de	breit	breiten	2	2	15			1		
 adj_s_bred	de	breit	breiten	2	3	15			1		
+adj_s_bred	de	breit	breiter						2		
 adj_s_bred	de	breit	breiter	1	1	1	1		1		
 adj_s_bred	de	breit	breiter	1	1	12	2		1		
 adj_s_bred	de	breit	breiter	1	3	1	1		1		
@@ -8234,6 +8384,7 @@ adj_s_bred	sv	bred	bredare						2
 adj_s_bred	sv	bred	bredast						3		
 adj_s_bred	sv	bred	bredaste		2				3		
 adj_s_bred	sv	bred	brett	1	1		2		1		
+adj_s_djup	de	tief	am tiefsten						3		
 adj_s_djup	de	tief	tief						1		
 adj_s_djup	de	tief	tiefe	1	1	3	2		1		
 adj_s_djup	de	tief	tiefe	1	2	1	1		1		
@@ -8254,6 +8405,7 @@ adj_s_djup	de	tief	tiefen	1	3	14	1		1
 adj_s_djup	de	tief	tiefen	2	1	4			1		
 adj_s_djup	de	tief	tiefen	2	2	15			1		
 adj_s_djup	de	tief	tiefen	2	3	15			1		
+adj_s_djup	de	tief	tiefer						2		
 adj_s_djup	de	tief	tiefer	1	1	1	1		1		
 adj_s_djup	de	tief	tiefer	1	1	12	2		1		
 adj_s_djup	de	tief	tiefer	1	3	1	1		1		
@@ -8338,6 +8490,7 @@ adj_s_djup	sv	djup	djupare						2
 adj_s_djup	sv	djup	djupast						3		
 adj_s_djup	sv	djup	djupaste		2				3		
 adj_s_djup	sv	djup	djupt	1	1		2		1		
+adj_s_hög	de	hoch	am höchsten						3		
 adj_s_hög	de	hoch	hoch						1		
 adj_s_hög	de	hoch	hohe	1	1	3	2		1		
 adj_s_hög	de	hoch	hohe	1	2	1	1		1		
@@ -8389,6 +8542,7 @@ adj_s_hög	de	hoch	höchster	1	3	1	1		3
 adj_s_hög	de	hoch	höchster	2	1	8			3		
 adj_s_hög	de	hoch	höchstes	1	1	3	3		3		
 adj_s_hög	de	hoch	höchstes	1	3	3	3		3		
+adj_s_hög	de	hoch	höher						2		
 adj_s_hög	de	hoch	höhere	1	1	3	2		2		
 adj_s_hög	de	hoch	höhere	1	2	1	1		2		
 adj_s_hög	de	hoch	höhere	1	2	3	2		2		
@@ -8442,6 +8596,7 @@ adj_s_hög	sv	hög	högre						2
 adj_s_hög	sv	hög	högst						3		
 adj_s_hög	sv	hög	högsta		2				3		
 adj_s_hög	sv	hög	högt	1	1		2		1		
+adj_s_kort	de	kurz	am kürzesten						3		
 adj_s_kort	de	kurz	kurz						1		
 adj_s_kort	de	kurz	kurze	1	1	3	2		1		
 adj_s_kort	de	kurz	kurze	1	2	1	1		1		
@@ -8468,6 +8623,7 @@ adj_s_kort	de	kurz	kurzer	1	3	1	1		1
 adj_s_kort	de	kurz	kurzer	2	1	8			1		
 adj_s_kort	de	kurz	kurzes	1	1	3	3		1		
 adj_s_kort	de	kurz	kurzes	1	3	3	3		1		
+adj_s_kort	de	kurz	kürzer						2		
 adj_s_kort	de	kurz	kürzere	1	1	3	2		2		
 adj_s_kort	de	kurz	kürzere	1	2	1	1		2		
 adj_s_kort	de	kurz	kürzere	1	2	3	2		2		
@@ -8546,6 +8702,7 @@ adj_s_kort	sv	kort	korta	2	2		3		1
 adj_s_kort	sv	kort	kortare						2		
 adj_s_kort	sv	kort	kortast						3		
 adj_s_kort	sv	kort	kortaste		2				3		
+adj_s_liten	de	klein	am kleinsten						3		
 adj_s_liten	de	klein	klein						1		
 adj_s_liten	de	klein	kleine	1	1	3	2		1		
 adj_s_liten	de	klein	kleine	1	2	1	1		1		
@@ -8566,6 +8723,7 @@ adj_s_liten	de	klein	kleinen	1	3	14	1		1
 adj_s_liten	de	klein	kleinen	2	1	4			1		
 adj_s_liten	de	klein	kleinen	2	2	15			1		
 adj_s_liten	de	klein	kleinen	2	3	15			1		
+adj_s_liten	de	klein	kleiner						2		
 adj_s_liten	de	klein	kleiner	1	1	1	1		1		
 adj_s_liten	de	klein	kleiner	1	1	12	2		1		
 adj_s_liten	de	klein	kleiner	1	3	1	1		1		
@@ -8662,6 +8820,7 @@ adj_s_liten	sv	liten	minst						3
 adj_s_liten	sv	liten	minsta		2				3		
 adj_s_liten	sv	liten	små	2	1		3		1		
 adj_s_liten	sv	liten	små	2	2		3		1		
+adj_s_lång	de	lang	am längsten						3		
 adj_s_lång	de	lang	lang						1		
 adj_s_lång	de	lang	lange	1	1	3	2		1		
 adj_s_lång	de	lang	lange	1	2	1	1		1		
@@ -8688,6 +8847,7 @@ adj_s_lång	de	lang	langer	1	3	1	1		1
 adj_s_lång	de	lang	langer	2	1	8			1		
 adj_s_lång	de	lang	langes	1	1	3	3		1		
 adj_s_lång	de	lang	langes	1	3	3	3		1		
+adj_s_lång	de	lang	länger						2		
 adj_s_lång	de	lang	längere	1	1	3	2		2		
 adj_s_lång	de	lang	längere	1	2	1	1		2		
 adj_s_lång	de	lang	längere	1	2	3	2		2		
@@ -8766,6 +8926,7 @@ adj_s_lång	sv	lång	långa	1	2		3		1
 adj_s_lång	sv	lång	långa	2	1		3		1		
 adj_s_lång	sv	lång	långa	2	2		3		1		
 adj_s_lång	sv	lång	långt	1	1		2		1		
+adj_s_långsam	de	langsam	am langsamsten						3		
 adj_s_långsam	de	langsam	langsam						1		
 adj_s_långsam	de	langsam	langsame	1	1	3	2		1		
 adj_s_långsam	de	langsam	langsame	1	2	1	1		1		
@@ -8786,6 +8947,7 @@ adj_s_långsam	de	langsam	langsamen	1	3	14	1		1
 adj_s_långsam	de	langsam	langsamen	2	1	4			1		
 adj_s_långsam	de	langsam	langsamen	2	2	15			1		
 adj_s_långsam	de	langsam	langsamen	2	3	15			1		
+adj_s_långsam	de	langsam	langsamer						2		
 adj_s_långsam	de	langsam	langsamer	1	1	1	1		1		
 adj_s_långsam	de	langsam	langsamer	1	1	12	2		1		
 adj_s_långsam	de	langsam	langsamer	1	3	1	1		1		
@@ -8870,6 +9032,7 @@ adj_s_långsam	sv	långsam	långsammare						2
 adj_s_långsam	sv	långsam	långsammast						3		
 adj_s_långsam	sv	långsam	långsammaste		2				3		
 adj_s_långsam	sv	långsam	långsamt	1	1		2		1		
+adj_s_rund	de	rund	am rundesten						3		
 adj_s_rund	de	rund	rund						1		
 adj_s_rund	de	rund	runde	1	1	3	2		1		
 adj_s_rund	de	rund	runde	1	2	1	1		1		
@@ -8890,6 +9053,7 @@ adj_s_rund	de	rund	runden	1	3	14	1		1
 adj_s_rund	de	rund	runden	2	1	4			1		
 adj_s_rund	de	rund	runden	2	2	15			1		
 adj_s_rund	de	rund	runden	2	3	15			1		
+adj_s_rund	de	rund	runder						2		
 adj_s_rund	de	rund	runder	1	1	1	1		1		
 adj_s_rund	de	rund	runder	1	1	12	2		1		
 adj_s_rund	de	rund	runder	1	3	1	1		1		
@@ -8974,6 +9138,7 @@ adj_s_rund	sv	rund	rundare						2
 adj_s_rund	sv	rund	rundast						3		
 adj_s_rund	sv	rund	rundaste		2				3		
 adj_s_rund	sv	rund	runt	1	1		2		1		
+adj_s_smal	de	schmal	am schmalsten						3		
 adj_s_smal	de	schmal	schmal						1		
 adj_s_smal	de	schmal	schmale	1	1	3	2		1		
 adj_s_smal	de	schmal	schmale	1	2	1	1		1		
@@ -8994,6 +9159,7 @@ adj_s_smal	de	schmal	schmalen	1	3	14	1		1
 adj_s_smal	de	schmal	schmalen	2	1	4			1		
 adj_s_smal	de	schmal	schmalen	2	2	15			1		
 adj_s_smal	de	schmal	schmalen	2	3	15			1		
+adj_s_smal	de	schmal	schmaler						2		
 adj_s_smal	de	schmal	schmaler	1	1	1	1		1		
 adj_s_smal	de	schmal	schmaler	1	1	12	2		1		
 adj_s_smal	de	schmal	schmaler	1	3	1	1		1		
@@ -9078,6 +9244,7 @@ adj_s_smal	sv	smal	smalare						2
 adj_s_smal	sv	smal	smalast						3		
 adj_s_smal	sv	smal	smalaste		2				3		
 adj_s_smal	sv	smal	smalt	1	1		2		1		
+adj_s_snabb	de	schnell	am schnellsten						3		
 adj_s_snabb	de	schnell	schnell						1		
 adj_s_snabb	de	schnell	schnelle	1	1	3	2		1		
 adj_s_snabb	de	schnell	schnelle	1	2	1	1		1		
@@ -9098,6 +9265,7 @@ adj_s_snabb	de	schnell	schnellen	1	3	14	1		1
 adj_s_snabb	de	schnell	schnellen	2	1	4			1		
 adj_s_snabb	de	schnell	schnellen	2	2	15			1		
 adj_s_snabb	de	schnell	schnellen	2	3	15			1		
+adj_s_snabb	de	schnell	schneller						2		
 adj_s_snabb	de	schnell	schneller	1	1	1	1		1		
 adj_s_snabb	de	schnell	schneller	1	1	12	2		1		
 adj_s_snabb	de	schnell	schneller	1	3	1	1		1		
@@ -9182,6 +9350,7 @@ adj_s_snabb	sv	snabb	snabbare						2
 adj_s_snabb	sv	snabb	snabbast						3		
 adj_s_snabb	sv	snabb	snabbaste		2				3		
 adj_s_snabb	sv	snabb	snabbt	1	1		2		1		
+adj_s_stor	de	groß	am größten						3		
 adj_s_stor	de	groß	groß						1		
 adj_s_stor	de	groß	große	1	1	3	2		1		
 adj_s_stor	de	groß	große	1	2	1	1		1		
@@ -9208,6 +9377,7 @@ adj_s_stor	de	groß	großer	1	3	1	1		1
 adj_s_stor	de	groß	großer	2	1	8			1		
 adj_s_stor	de	groß	großes	1	1	3	3		1		
 adj_s_stor	de	groß	großes	1	3	3	3		1		
+adj_s_stor	de	groß	größer						2		
 adj_s_stor	de	groß	größere	1	1	3	2		2		
 adj_s_stor	de	groß	größere	1	2	1	1		2		
 adj_s_stor	de	groß	größere	1	2	3	2		2		
@@ -9298,6 +9468,7 @@ adj_s_stor	sv	stor	stort	1	1		2		1
 adj_s_stor	sv	stor	större						2		
 adj_s_stor	sv	stor	störst						3		
 adj_s_stor	sv	stor	största		2				3		
+adj_s_tjock	de	dick	am dicksten						3		
 adj_s_tjock	de	dick	dick						1		
 adj_s_tjock	de	dick	dicke	1	1	3	2		1		
 adj_s_tjock	de	dick	dicke	1	2	1	1		1		
@@ -9318,6 +9489,7 @@ adj_s_tjock	de	dick	dicken	1	3	14	1		1
 adj_s_tjock	de	dick	dicken	2	1	4			1		
 adj_s_tjock	de	dick	dicken	2	2	15			1		
 adj_s_tjock	de	dick	dicken	2	3	15			1		
+adj_s_tjock	de	dick	dicker						2		
 adj_s_tjock	de	dick	dicker	1	1	1	1		1		
 adj_s_tjock	de	dick	dicker	1	1	12	2		1		
 adj_s_tjock	de	dick	dicker	1	3	1	1		1		
@@ -9402,6 +9574,7 @@ adj_s_tjock	sv	tjock	tjockare						2
 adj_s_tjock	sv	tjock	tjockast						3		
 adj_s_tjock	sv	tjock	tjockaste		2				3		
 adj_s_tjock	sv	tjock	tjockt	1	1		2		1		
+adj_s_tunn	de	dünn	am dünnsten						3		
 adj_s_tunn	de	dünn	dünn						1		
 adj_s_tunn	de	dünn	dünne	1	1	3	2		1		
 adj_s_tunn	de	dünn	dünne	1	2	1	1		1		
@@ -9422,6 +9595,7 @@ adj_s_tunn	de	dünn	dünnen	1	3	14	1		1
 adj_s_tunn	de	dünn	dünnen	2	1	4			1		
 adj_s_tunn	de	dünn	dünnen	2	2	15			1		
 adj_s_tunn	de	dünn	dünnen	2	3	15			1		
+adj_s_tunn	de	dünn	dünner						2		
 adj_s_tunn	de	dünn	dünner	1	1	1	1		1		
 adj_s_tunn	de	dünn	dünner	1	1	12	2		1		
 adj_s_tunn	de	dünn	dünner	1	3	1	1		1		
@@ -9506,6 +9680,7 @@ adj_s_tunn	sv	tunn	tunnare						2
 adj_s_tunn	sv	tunn	tunnast						3		
 adj_s_tunn	sv	tunn	tunnaste		2				3		
 adj_s_tunn	sv	tunn	tunt	1	1		2		1		
+adj_t_het	de	heiß	am heißesten						3		
 adj_t_het	de	heiß	heiß						1		
 adj_t_het	de	heiß	heiße	1	1	3	2		1		
 adj_t_het	de	heiß	heiße	1	2	1	1		1		
@@ -9526,6 +9701,7 @@ adj_t_het	de	heiß	heißen	1	3	14	1		1
 adj_t_het	de	heiß	heißen	2	1	4			1		
 adj_t_het	de	heiß	heißen	2	2	15			1		
 adj_t_het	de	heiß	heißen	2	3	15			1		
+adj_t_het	de	heiß	heißer						2		
 adj_t_het	de	heiß	heißer	1	1	1	1		1		
 adj_t_het	de	heiß	heißer	1	1	12	2		1		
 adj_t_het	de	heiß	heißer	1	3	1	1		1		
@@ -9610,6 +9786,7 @@ adj_t_het	sv	het	hetare						2
 adj_t_het	sv	het	hetast						3		
 adj_t_het	sv	het	hetaste		2				3		
 adj_t_het	sv	het	hett	1	1		2		1		
+adj_t_hård	de	hart	am härtesten						3		
 adj_t_hård	de	hart	hart						1		
 adj_t_hård	de	hart	harte	1	1	3	2		1		
 adj_t_hård	de	hart	harte	1	2	1	1		1		
@@ -9636,6 +9813,7 @@ adj_t_hård	de	hart	harter	1	3	1	1		1
 adj_t_hård	de	hart	harter	2	1	8			1		
 adj_t_hård	de	hart	hartes	1	1	3	3		1		
 adj_t_hård	de	hart	hartes	1	3	3	3		1		
+adj_t_hård	de	hart	härter						2		
 adj_t_hård	de	hart	härtere	1	1	3	2		2		
 adj_t_hård	de	hart	härtere	1	2	1	1		2		
 adj_t_hård	de	hart	härtere	1	2	3	2		2		
@@ -9714,6 +9892,7 @@ adj_t_hård	sv	hård	hårdare						2
 adj_t_hård	sv	hård	hårdast						3		
 adj_t_hård	sv	hård	hårdaste		2				3		
 adj_t_hård	sv	hård	hårt	1	1		2		1		
+adj_t_kall	de	kalt	am kältesten						3		
 adj_t_kall	de	kalt	kalt						1		
 adj_t_kall	de	kalt	kalte	1	1	3	2		1		
 adj_t_kall	de	kalt	kalte	1	2	1	1		1		
@@ -9740,6 +9919,7 @@ adj_t_kall	de	kalt	kalter	1	3	1	1		1
 adj_t_kall	de	kalt	kalter	2	1	8			1		
 adj_t_kall	de	kalt	kaltes	1	1	3	3		1		
 adj_t_kall	de	kalt	kaltes	1	3	3	3		1		
+adj_t_kall	de	kalt	kälter						2		
 adj_t_kall	de	kalt	kältere	1	1	3	2		2		
 adj_t_kall	de	kalt	kältere	1	2	1	1		2		
 adj_t_kall	de	kalt	kältere	1	2	3	2		2		
@@ -9818,6 +9998,7 @@ adj_t_kall	sv	kall	kallare						2
 adj_t_kall	sv	kall	kallast						3		
 adj_t_kall	sv	kall	kallaste		2				3		
 adj_t_kall	sv	kall	kallt	1	1		2		1		
+adj_t_lätt	de	leicht	am leichtesten						3		
 adj_t_lätt	de	leicht	leicht						1		
 adj_t_lätt	de	leicht	leichte	1	1	3	2		1		
 adj_t_lätt	de	leicht	leichte	1	2	1	1		1		
@@ -9838,6 +10019,7 @@ adj_t_lätt	de	leicht	leichten	1	3	14	1		1
 adj_t_lätt	de	leicht	leichten	2	1	4			1		
 adj_t_lätt	de	leicht	leichten	2	2	15			1		
 adj_t_lätt	de	leicht	leichten	2	3	15			1		
+adj_t_lätt	de	leicht	leichter						2		
 adj_t_lätt	de	leicht	leichter	1	1	1	1		1		
 adj_t_lätt	de	leicht	leichter	1	1	12	2		1		
 adj_t_lätt	de	leicht	leichter	1	3	1	1		1		
@@ -9922,6 +10104,7 @@ adj_t_lätt	sv	lätt	lätta	2	2		3		1
 adj_t_lätt	sv	lätt	lättare						2		
 adj_t_lätt	sv	lätt	lättast						3		
 adj_t_lätt	sv	lätt	lättaste		2				3		
+adj_t_mjuk	de	weich	am weichsten						3		
 adj_t_mjuk	de	weich	weich						1		
 adj_t_mjuk	de	weich	weiche	1	1	3	2		1		
 adj_t_mjuk	de	weich	weiche	1	2	1	1		1		
@@ -9942,6 +10125,7 @@ adj_t_mjuk	de	weich	weichen	1	3	14	1		1
 adj_t_mjuk	de	weich	weichen	2	1	4			1		
 adj_t_mjuk	de	weich	weichen	2	2	15			1		
 adj_t_mjuk	de	weich	weichen	2	3	15			1		
+adj_t_mjuk	de	weich	weicher						2		
 adj_t_mjuk	de	weich	weicher	1	1	1	1		1		
 adj_t_mjuk	de	weich	weicher	1	1	12	2		1		
 adj_t_mjuk	de	weich	weicher	1	3	1	1		1		
@@ -10026,6 +10210,7 @@ adj_t_mjuk	sv	mjuk	mjukare						2
 adj_t_mjuk	sv	mjuk	mjukast						3		
 adj_t_mjuk	sv	mjuk	mjukaste		2				3		
 adj_t_mjuk	sv	mjuk	mjukt	1	1		2		1		
+adj_t_skarp	de	scharf	am schärfsten						3		
 adj_t_skarp	de	scharf	scharf						1		
 adj_t_skarp	de	scharf	scharfe	1	1	3	2		1		
 adj_t_skarp	de	scharf	scharfe	1	2	1	1		1		
@@ -10052,6 +10237,7 @@ adj_t_skarp	de	scharf	scharfer	1	3	1	1		1
 adj_t_skarp	de	scharf	scharfer	2	1	8			1		
 adj_t_skarp	de	scharf	scharfes	1	1	3	3		1		
 adj_t_skarp	de	scharf	scharfes	1	3	3	3		1		
+adj_t_skarp	de	scharf	schärfer						2		
 adj_t_skarp	de	scharf	schärfere	1	1	3	2		2		
 adj_t_skarp	de	scharf	schärfere	1	2	1	1		2		
 adj_t_skarp	de	scharf	schärfere	1	2	3	2		2		
@@ -10130,6 +10316,7 @@ adj_t_skarp	sv	skarp	skarpare						2
 adj_t_skarp	sv	skarp	skarpast						3		
 adj_t_skarp	sv	skarp	skarpaste		2				3		
 adj_t_skarp	sv	skarp	skarpt	1	1		2		1		
+adj_t_sval	de	kühl	am kühlsten						3		
 adj_t_sval	de	kühl	kühl						1		
 adj_t_sval	de	kühl	kühle	1	1	3	2		1		
 adj_t_sval	de	kühl	kühle	1	2	1	1		1		
@@ -10150,6 +10337,7 @@ adj_t_sval	de	kühl	kühlen	1	3	14	1		1
 adj_t_sval	de	kühl	kühlen	2	1	4			1		
 adj_t_sval	de	kühl	kühlen	2	2	15			1		
 adj_t_sval	de	kühl	kühlen	2	3	15			1		
+adj_t_sval	de	kühl	kühler						2		
 adj_t_sval	de	kühl	kühler	1	1	1	1		1		
 adj_t_sval	de	kühl	kühler	1	1	12	2		1		
 adj_t_sval	de	kühl	kühler	1	3	1	1		1		
@@ -10234,6 +10422,7 @@ adj_t_sval	sv	sval	svalare						2
 adj_t_sval	sv	sval	svalast						3		
 adj_t_sval	sv	sval	svalaste		2				3		
 adj_t_sval	sv	sval	svalt	1	1		2		1		
+adj_t_torr	de	trocken	am trockensten						3		
 adj_t_torr	de	trocken	trocken						1		
 adj_t_torr	de	trocken	trockene	1	1	3	2		1		
 adj_t_torr	de	trocken	trockene	1	2	1	1		1		
@@ -10254,6 +10443,7 @@ adj_t_torr	de	trocken	trockenen	1	3	14	1		1
 adj_t_torr	de	trocken	trockenen	2	1	4			1		
 adj_t_torr	de	trocken	trockenen	2	2	15			1		
 adj_t_torr	de	trocken	trockenen	2	3	15			1		
+adj_t_torr	de	trocken	trockener						2		
 adj_t_torr	de	trocken	trockener	1	1	1	1		1		
 adj_t_torr	de	trocken	trockener	1	1	12	2		1		
 adj_t_torr	de	trocken	trockener	1	3	1	1		1		
@@ -10333,6 +10523,7 @@ adj_t_torr	sv	torr	torrare						2
 adj_t_torr	sv	torr	torrast						3		
 adj_t_torr	sv	torr	torraste		2				3		
 adj_t_torr	sv	torr	torrt	1	1		2		1		
+adj_t_tung	de	schwer	am schwersten						3		
 adj_t_tung	de	schwer	schwer						1		
 adj_t_tung	de	schwer	schwere	1	1	3	2		1		
 adj_t_tung	de	schwer	schwere	1	2	1	1		1		
@@ -10353,6 +10544,7 @@ adj_t_tung	de	schwer	schweren	1	3	14	1		1
 adj_t_tung	de	schwer	schweren	2	1	4			1		
 adj_t_tung	de	schwer	schweren	2	2	15			1		
 adj_t_tung	de	schwer	schweren	2	3	15			1		
+adj_t_tung	de	schwer	schwerer						2		
 adj_t_tung	de	schwer	schwerer	1	1	1	1		1		
 adj_t_tung	de	schwer	schwerer	1	1	12	2		1		
 adj_t_tung	de	schwer	schwerer	1	3	1	1		1		
@@ -10437,6 +10629,7 @@ adj_t_tung	sv	tung	tungare						2
 adj_t_tung	sv	tung	tungast						3		
 adj_t_tung	sv	tung	tungaste		2				3		
 adj_t_tung	sv	tung	tungt	1	1		2		1		
+adj_t_varm	de	warm	am wärmsten						3		
 adj_t_varm	de	warm	warm						1		
 adj_t_varm	de	warm	warme	1	1	3	2		1		
 adj_t_varm	de	warm	warme	1	2	1	1		1		
@@ -10463,6 +10656,7 @@ adj_t_varm	de	warm	warmer	1	3	1	1		1
 adj_t_varm	de	warm	warmer	2	1	8			1		
 adj_t_varm	de	warm	warmes	1	1	3	3		1		
 adj_t_varm	de	warm	warmes	1	3	3	3		1		
+adj_t_varm	de	warm	wärmer						2		
 adj_t_varm	de	warm	wärmere	1	1	3	2		2		
 adj_t_varm	de	warm	wärmere	1	2	1	1		2		
 adj_t_varm	de	warm	wärmere	1	2	3	2		2		
@@ -10541,6 +10735,7 @@ adj_t_varm	sv	varm	varmare						2
 adj_t_varm	sv	varm	varmast						3		
 adj_t_varm	sv	varm	varmaste		2				3		
 adj_t_varm	sv	varm	varmt	1	1		2		1		
+adj_t_våt	de	nass	am nassesten						3		
 adj_t_våt	de	nass	nass						1		
 adj_t_våt	de	nass	nasse	1	1	3	2		1		
 adj_t_våt	de	nass	nasse	1	2	1	1		1		
@@ -10561,6 +10756,7 @@ adj_t_våt	de	nass	nassen	1	3	14	1		1
 adj_t_våt	de	nass	nassen	2	1	4			1		
 adj_t_våt	de	nass	nassen	2	2	15			1		
 adj_t_våt	de	nass	nassen	2	3	15			1		
+adj_t_våt	de	nass	nasser						2		
 adj_t_våt	de	nass	nasser	1	1	1	1		1		
 adj_t_våt	de	nass	nasser	1	1	12	2		1		
 adj_t_våt	de	nass	nasser	1	3	1	1		1		
@@ -20322,6 +20518,7 @@ fys_öppna	sv	öppna	öppnas					3			2
 fys_öppna	sv	öppna	öppnat					8			1
 fys_öppna	sv	öppna	öppnat	1	1		2	8			1
 fys_öppna	sv	öppna	öppnats					8			2
+färg_blå	de	blau	am blauesten						3		
 färg_blå	de	blau	blau						1		
 färg_blå	de	blau	blaue	1	1	3	2		1		
 färg_blå	de	blau	blaue	1	2	1	1		1		
@@ -20342,6 +20539,7 @@ färg_blå	de	blau	blauen	1	3	14	1		1
 färg_blå	de	blau	blauen	2	1	4			1		
 färg_blå	de	blau	blauen	2	2	15			1		
 färg_blå	de	blau	blauen	2	3	15			1		
+färg_blå	de	blau	blauer						2		
 färg_blå	de	blau	blauer	1	1	1	1		1		
 färg_blå	de	blau	blauer	1	1	12	2		1		
 färg_blå	de	blau	blauer	1	3	1	1		1		
@@ -20426,6 +20624,7 @@ färg_blå	sv	blå	blåare						2
 färg_blå	sv	blå	blåast						3		
 färg_blå	sv	blå	blåaste		2				3		
 färg_blå	sv	blå	blått	1	1		2		1		
+färg_brun	de	braun	am braunsten						3		
 färg_brun	de	braun	braun						1		
 färg_brun	de	braun	braune	1	1	3	2		1		
 färg_brun	de	braun	braune	1	2	1	1		1		
@@ -20446,6 +20645,7 @@ färg_brun	de	braun	braunen	1	3	14	1		1
 färg_brun	de	braun	braunen	2	1	4			1		
 färg_brun	de	braun	braunen	2	2	15			1		
 färg_brun	de	braun	braunen	2	3	15			1		
+färg_brun	de	braun	brauner						2		
 färg_brun	de	braun	brauner	1	1	1	1		1		
 färg_brun	de	braun	brauner	1	1	12	2		1		
 färg_brun	de	braun	brauner	1	3	1	1		1		
@@ -20530,6 +20730,7 @@ färg_brun	sv	brun	brunare						2
 färg_brun	sv	brun	brunast						3		
 färg_brun	sv	brun	brunaste		2				3		
 färg_brun	sv	brun	brunt	1	1		2		1		
+färg_grå	de	grau	am grauesten						3		
 färg_grå	de	grau	grau						1		
 färg_grå	de	grau	graue	1	1	3	2		1		
 färg_grå	de	grau	graue	1	2	1	1		1		
@@ -20550,6 +20751,7 @@ färg_grå	de	grau	grauen	1	3	14	1		1
 färg_grå	de	grau	grauen	2	1	4			1		
 färg_grå	de	grau	grauen	2	2	15			1		
 färg_grå	de	grau	grauen	2	3	15			1		
+färg_grå	de	grau	grauer						2		
 färg_grå	de	grau	grauer	1	1	1	1		1		
 färg_grå	de	grau	grauer	1	1	12	2		1		
 färg_grå	de	grau	grauer	1	3	1	1		1		
@@ -20629,6 +20831,7 @@ färg_grå	sv	grå	gråare						2
 färg_grå	sv	grå	gråast						3		
 färg_grå	sv	grå	gråaste		2				3		
 färg_grå	sv	grå	grått	1	1		2		1		
+färg_grön	de	grün	am grünsten						3		
 färg_grön	de	grün	grün						1		
 färg_grön	de	grün	grüne	1	1	3	2		1		
 färg_grön	de	grün	grüne	1	2	1	1		1		
@@ -20649,6 +20852,7 @@ färg_grön	de	grün	grünen	1	3	14	1		1
 färg_grön	de	grün	grünen	2	1	4			1		
 färg_grön	de	grün	grünen	2	2	15			1		
 färg_grön	de	grün	grünen	2	3	15			1		
+färg_grön	de	grün	grüner						2		
 färg_grön	de	grün	grüner	1	1	1	1		1		
 färg_grön	de	grün	grüner	1	1	12	2		1		
 färg_grön	de	grün	grüner	1	3	1	1		1		
@@ -20728,6 +20932,7 @@ färg_grön	sv	grön	grönare						2
 färg_grön	sv	grön	grönast						3		
 färg_grön	sv	grön	grönaste		2				3		
 färg_grön	sv	grön	grönt	1	1		2		1		
+färg_gul	de	gelb	am gelbsten						3		
 färg_gul	de	gelb	gelb						1		
 färg_gul	de	gelb	gelbe	1	1	3	2		1		
 färg_gul	de	gelb	gelbe	1	2	1	1		1		
@@ -20748,6 +20953,7 @@ färg_gul	de	gelb	gelben	1	3	14	1		1
 färg_gul	de	gelb	gelben	2	1	4			1		
 färg_gul	de	gelb	gelben	2	2	15			1		
 färg_gul	de	gelb	gelben	2	3	15			1		
+färg_gul	de	gelb	gelber						2		
 färg_gul	de	gelb	gelber	1	1	1	1		1		
 färg_gul	de	gelb	gelber	1	1	12	2		1		
 färg_gul	de	gelb	gelber	1	3	1	1		1		
@@ -20832,7 +21038,9 @@ färg_gul	sv	gul	gulare						2
 färg_gul	sv	gul	gulast						3		
 färg_gul	sv	gul	gulaste		2				3		
 färg_gul	sv	gul	gult	1	1		2		1		
+färg_lila	de	lila	am lila						3		
 färg_lila	de	lila	lila						1		
+färg_lila	de	lila	lila						2		
 färg_lila	de	lila	lila	1	1	15	1		1		
 färg_lila	de	lila	lila	1	1	15	1		2		
 färg_lila	de	lila	lila	1	1	15	1		3		
@@ -20889,6 +21097,8 @@ färg_lila	sv	lila	lila	1	1		2		1
 färg_lila	sv	lila	lila	1	2		3		1		
 färg_lila	sv	lila	lila	2	1		3		1		
 färg_lila	sv	lila	lila	2	2		3		1		
+färg_orange	de	orange	am orange						3		
+färg_orange	de	orange	orang						2		
 färg_orange	de	orange	orange						1		
 färg_orange	de	orange	orange	1	1	15	1		1		
 färg_orange	de	orange	orange	1	1	15	1		2		
@@ -20947,7 +21157,9 @@ färg_orange	sv	orange	orange	1	1		2		1
 färg_orange	sv	orange	orange	1	2		3		1		
 färg_orange	sv	orange	orange	2	1		3		1		
 färg_orange	sv	orange	orange	2	2		3		1		
+färg_rosa	de	rosa	am rosa						3		
 färg_rosa	de	rosa	rosa						1		
+färg_rosa	de	rosa	rosa						2		
 färg_rosa	de	rosa	rosa	1	1	15	1		1		
 färg_rosa	de	rosa	rosa	1	1	15	1		2		
 färg_rosa	de	rosa	rosa	1	1	15	1		3		
@@ -21007,6 +21219,7 @@ färg_rosa	sv	rosa	rosa	1	1		2		1
 färg_rosa	sv	rosa	rosa	1	2		3		1		
 färg_rosa	sv	rosa	rosa	2	1		3		1		
 färg_rosa	sv	rosa	rosa	2	2		3		1		
+färg_röd	de	rot	am rötesten						3		
 färg_röd	de	rot	rot						1		
 färg_röd	de	rot	rote	1	1	3	2		1		
 färg_röd	de	rot	rote	1	2	1	1		1		
@@ -21033,6 +21246,7 @@ färg_röd	de	rot	roter	1	3	1	1		1
 färg_röd	de	rot	roter	2	1	8			1		
 färg_röd	de	rot	rotes	1	1	3	3		1		
 färg_röd	de	rot	rotes	1	3	3	3		1		
+färg_röd	de	rot	röter						2		
 färg_röd	de	rot	rötere	1	1	3	2		2		
 färg_röd	de	rot	rötere	1	2	1	1		2		
 färg_röd	de	rot	rötere	1	2	3	2		2		
@@ -21111,6 +21325,7 @@ färg_röd	sv	röd	rödare						2
 färg_röd	sv	röd	rödast						3		
 färg_röd	sv	röd	rödaste		2				3		
 färg_röd	sv	röd	rött	1	1		2		1		
+färg_svart	de	schwarz	am schwärzesten						3		
 färg_svart	de	schwarz	schwarz						1		
 färg_svart	de	schwarz	schwarze	1	1	3	2		1		
 färg_svart	de	schwarz	schwarze	1	2	1	1		1		
@@ -21137,6 +21352,7 @@ färg_svart	de	schwarz	schwarzer	1	3	1	1		1
 färg_svart	de	schwarz	schwarzer	2	1	8			1		
 färg_svart	de	schwarz	schwarzes	1	1	3	3		1		
 färg_svart	de	schwarz	schwarzes	1	3	3	3		1		
+färg_svart	de	schwarz	schwärzer						2		
 färg_svart	de	schwarz	schwärzere	1	1	3	2		2		
 färg_svart	de	schwarz	schwärzere	1	2	1	1		2		
 färg_svart	de	schwarz	schwärzere	1	2	3	2		2		
@@ -21215,6 +21431,7 @@ färg_svart	sv	svart	svarta	2	2		3		1
 färg_svart	sv	svart	svartare						2		
 färg_svart	sv	svart	svartast						3		
 färg_svart	sv	svart	svartaste		2				3		
+färg_vit	de	weiß	am weißesten						3		
 färg_vit	de	weiß	weiß						1		
 färg_vit	de	weiß	weiße	1	1	3	2		1		
 färg_vit	de	weiß	weiße	1	2	1	1		1		
@@ -21235,6 +21452,7 @@ färg_vit	de	weiß	weißen	1	3	14	1		1
 färg_vit	de	weiß	weißen	2	1	4			1		
 färg_vit	de	weiß	weißen	2	2	15			1		
 färg_vit	de	weiß	weißen	2	3	15			1		
+färg_vit	de	weiß	weißer						2		
 färg_vit	de	weiß	weißer	1	1	1	1		1		
 färg_vit	de	weiß	weißer	1	1	12	2		1		
 färg_vit	de	weiß	weißer	1	3	1	1		1		
@@ -32783,6 +33001,18 @@ kom_säga	sv	säga	säga					1			1
 kom_säga	sv	säga	sägas					1			2
 kom_säga	sv	säga	säger					2			1
 kom_säga	sv	säga	sägs					2			2
+komp_mer	en	more	more						1		
+komp_mer	es	más	más								
+komp_mer	fr	plus	plus								
+komp_mer	it	più	più								
+komp_mer	ja	もっと	もっと								
+komp_mer	sv	mer	mer						1		
+komp_mest	en	most	most						1		
+komp_mest	es	más	más								
+komp_mest	fr	plus	plus								
+komp_mest	it	più	più								
+komp_mest	ja	一番	一番								
+komp_mest	sv	mest	mest						1		
 komp_som	de	wie	wie								
 komp_som	en	as	as								
 komp_som	es	como	como								

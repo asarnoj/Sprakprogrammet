@@ -1317,6 +1317,26 @@ komp_som,Subjunktion,A1,es,como
 komp_som,Subjunktion,A1,it,come
 komp_som,Subjunktion,A1,ja,と同じくらい
 # komp_än: komparativ-markör (than construction)
+# komp_mer: den perifrastiska jämförelsemarkören — "mer intressant",
+# "plus grand", "más grande", "più grande". Tyskan saknar den helt (större
+# byggs syntetiskt: größer), och svenskan och engelskan använder den bara
+# för de adjektiv som inte kompareras syntetiskt.
+komp_mer,Adverb,A1,sv,mer
+komp_mer,Adverb,A1,en,more
+komp_mer,Adverb,A1,fr,plus
+komp_mer,Adverb,A1,es,más
+komp_mer,Adverb,A1,it,più
+komp_mer,Adverb,A1,ja,もっと
+
+# komp_mest: superlativmarkören. Skild från adv2_mest, som betyder
+# "mestadels" — engelskans "mostly" och "most" är olika ord.
+komp_mest,Adverb,A1,sv,mest
+komp_mest,Adverb,A1,en,most
+komp_mest,Adverb,A1,fr,plus
+komp_mest,Adverb,A1,es,más
+komp_mest,Adverb,A1,it,più
+komp_mest,Adverb,A1,ja,一番
+
 komp_än,Subjunktion,A1,sv,än
 komp_än,Subjunktion,A1,en,than
 komp_än,Subjunktion,A1,fr,que

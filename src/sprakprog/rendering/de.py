@@ -28,7 +28,7 @@ from __future__ import annotations
 import sqlite3
 
 from .spec import (
-    Aspekt, Bestämdhet, Diates, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
+    Aspekt, Bestämdhet, Diates, Grad, Mening, Nominalfras, Numerus, RenderingsFel, Tidsreferens,
 )
 from .uppslag import Uppslag
 
@@ -241,6 +241,18 @@ class TyskRenderare:
                                   self.prepositionskasus(a.preposition))]
 
     def predikativ(self, m: Mening) -> list[str]:
+        if isinstance(m.predikativ, str) and m.grad is not Grad.POSITIV:
+            # Tyskan kompareras ALLTID syntetiskt — ingen motsvarighet till
+            # "mer intressant" finns. Predikativet är oböjt i komparativ
+            # (größer) och tar am i superlativ (am größten); båda ligger som
+            # egna celler, tillagda 2026-08-13.
+            cell = ("pred_komp" if m.grad is Grad.KOMPARATIV
+                    else "pred_superl")
+            ut = [self.u.form_för(m.predikativ, cell)]
+            if m.jämförelse is not None:
+                ut.append(self.u.form_för("komp_än", "inv"))
+                ut += self.nominalfras(m.jämförelse, 1)
+            return ut
         if isinstance(m.predikativ, str):
             # Tyskan böjer inte predikativa adjektiv: "sie ist glücklich".
             # Formen ligger i den egna cellen `pred`, tillagd 2026-08-13 —
