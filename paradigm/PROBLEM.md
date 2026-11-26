@@ -4097,11 +4097,43 @@ vore inte bara verkningslös utan låsande, eftersom passet väntar på den.
 `övervakningsprov.py` — sju invarianter, sju sabotage, alla faller. Det
 förkastade måttet ovan är ett av dem: invariant 2 är dess gravsten.
 
-**VAD SOM INTE ÄR LÖST.** De tre iakttagelserna ovan står kvar och hör
-fortfarande till B3 och inte hit: tyskans exponering är omätt, mätningen
-samplar en enda meningsform, och `exponeringsgräns` följer kursens
-`meningar_per_dag` i stället för den uppmätta takten. Det sista är fortfarande
-ett beslut och inte en rättelse.
+**VAD SOM INTE ÄR LÖST.** Två av de tre iakttagelserna ovan står kvar, och
+båda hör till B3 och inte hit.
+
+Den tredje — "tyskans exponering är omätt (1 112 kort)" — **är inte längre
+sann, mätt 2026-09-04**: samtliga fyra språk har noll omätta kort, och tyskan
+har 21 kort ur schemat. Jag skrev av den ur problemtexten ovan utan att mäta
+om. Att posten säger något som var sant i augusti är rätt — problemtexten
+skrivs aldrig om — men att upprepa det i en lösning skriven i september var
+att lämna ett gammalt tal som ett aktuellt.
+
+Kvar står:
+
+1. **Mätningen samplar en enda meningsform.** `mät_exponering` bygger alltid
+   samma sats: transitivt verb, subjekt, objekt med adjektiv. Inga frågor,
+   inga bisatser, ingen negation. Docstringen erkänner det för
+   ORDFÖLJDSREGLER, där utfallet ändå blir rätt — de regler som får 0,0 är
+   just de som SKA schemaläggas. Men samma snedvridning gäller varje kort:
+   ett ord som mest förekommer i frågor får en exponering mätt i en värld
+   utan frågor.
+
+2. **`exponeringsgräns` följer `Kurs.meningar_per_dag` och inte den uppmätta
+   takten.** Kolumnen står på 20 i alla fyra kurserna och har aldrig ändrats;
+   B4 gjorde minuter till användarens ratt och lämnade den här kvar. Gränsen
+   är därför fast 0,05 i praktiken.
+
+   **Vad det kostar, mätt 2026-09-04.** Julius verkliga franska takt är 13,
+   21, 18, 5, 11, 10 meningar per dag — median 12, inte 20. Vid 12 blir
+   gränsen 1/12 = 0,083, och NIO franska kort ligger mellan 0,05 och 0,083:
+   `coûter`, `coût`, `enfant`, `femme`, `mère`, `frère`, `chien`,
+   `professeur`, `médecin`. De är övervakade idag på grund av ett tal ingen
+   satt, och de möts i själva verket bara en halv gång om dagen — alltså
+   precis den sortens kort spacing FUNGERAR på. Det är 9 av franskans 20
+   övervakade kort.
+
+   E6:s larm mildrar detta men botar det inte: ett övervakat kort som går
+   sönder kommer nu tillbaka, medan ett som bara går långsamt sämre inte gör
+   det. Att räkna om gränsen är fortfarande ett beslut och inte en rättelse.
 
 ### E7 ? — FSRS-parametrarna är biblioteksförval
 
