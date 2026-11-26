@@ -34,3 +34,4 @@ kort.db.*
 
 # Dagböckerna — en fil per kurs och dygn, maskinlokal övningsdata
 loggar/
+kartor/

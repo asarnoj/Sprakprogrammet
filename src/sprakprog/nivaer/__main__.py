@@ -24,6 +24,8 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Räkna ut kraven och nivåerna.")
     p.add_argument("karta")
     p.add_argument("kort", nargs="*")
+    p.add_argument("--krymp", action="store_true",
+                   help="krymp varje krav till en bevisat minsta mängd (dyrt, 4.2)")
     p.add_argument("--kontroll", action="store_true",
                    help="hoppa inte över något: pröva varje bevis mot renderingen")
     a = p.parse_args()
@@ -48,7 +50,7 @@ def main() -> None:
 
     krav = Krav(s, nivå)
     t = time.perf_counter()
-    karta_ = rita_nivåer(krav, kort, rapport=lambda r: print(r, flush=True))
+    karta_ = rita_nivåer(krav, kort, rapport=lambda r: print(r, flush=True), krymp=a.krymp)
     print(f"\n{krav.frågor} frågor, {time.perf_counter() - t:.0f} s")
     print(f"förklaringar: {dict(sorted(s.statistik.items()))}")
 

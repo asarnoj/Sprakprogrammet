@@ -2,14 +2,16 @@
 
 En nivå är det minsta steg som gör minst ett nytt kort prövbart i princip (4.1).
 Nivåkorten är de som inte växer med ordförrådet: mönsterkorten (ändelser och
-regler) och korten för slutna ordklasser. Ett korts krav är en minsta kortmängd
-(4.2), och nivåerna är grafens starka komponenter.
+regler) och korten för slutna ordklasser. Ett korts krav är de andra nivåkorten
+i en mening som prövar kortet, och nivåerna är grafens starka komponenter.
 
-Kraven hittas med frågor som sammansättningen besvarar uttömmande: finns en
-giltig mening som prövar kortet, byggd av bara de här nivåkorten? Den första
-mening sammansättningen hittar krymps tills inget kort går att ta bort. Kortets
-andra minsta mängder, och valet mellan dem efter täckning, kommer med
-frekvenserna (steg P2).
+Kravet är version 1 (4.2): nivåkorten i den FÖRSTA mening sammansättningen
+hittar. Den frågan går fort, eftersom sökningen slutar vid första meningen.
+Med `krymp` förbjuds sedan ett kort i taget, och mängden blir bevisat minst —
+men varje nej kräver att allt som går att bygga gås igenom, och det tar dygn för
+ett språk. Krympningen ändrar bara ordningen mellan korten, aldrig vad som går
+att pröva. Kortets andra minsta mängder, och valet mellan dem efter täckning,
+kommer med frekvenserna (steg P2).
 """
 
 from __future__ import annotations
@@ -96,18 +98,19 @@ class Krav:
     def _nivåkorten(self, träff: Träff, mål: Kort) -> frozenset:
         return frozenset(k for k in träff.kort if self.nivå(k)) - {mål}
 
-    def minsta_mängd(self, mål: Kort) -> frozenset | None:
-        """En minsta mängd, eller None om ingen giltig mening prövar kortet.
+    def mängd(self, mål: Kort, krymp: bool = False) -> frozenset | None:
+        """Kortets krav, eller None om ingen giltig mening prövar kortet.
 
-        Den första mening sammansättningen hittar ger en mängd. Ett kort i taget
-        förbjuds, och går det fortfarande att bygga en mening tas dess mindre
-        mängd. När inget kort går att ta bort är mängden minst.
+        Den första mening sammansättningen hittar ger mängden (version 1, 4.2).
+        Med `krymp` förbjuds ett kort i taget, och går det fortfarande att bygga
+        en mening tas den mindre mängden. När inget kort går att ta bort är
+        mängden bevisat minst, men varje nej kostar en uttömmande genomgång.
         """
         träff = self._finns(mål, None)
         if träff is None:
             return None
         mängd = self._nivåkorten(träff, mål)
-        krympte = True
+        krympte = krymp
         while krympte:
             krympte = False
             for kort in sorted(mängd, key=str):
@@ -167,12 +170,13 @@ class Nivåkarta:
 
 
 def rita_nivåer(krav: Krav, kort: Iterable[Kort],
-                rapport: Callable[[str], None] | None = print) -> Nivåkarta:
-    """Varje korts minsta mängd, grafen och nivåerna (4.1, 4.2)."""
+                rapport: Callable[[str], None] | None = print,
+                krymp: bool = False) -> Nivåkarta:
+    """Varje korts krav, grafen och nivåerna (4.1, 4.2)."""
     mängder: dict = {}
     for k in sorted(kort, key=str):
         t, frågor = time.perf_counter(), krav.frågor
-        mängder[k] = krav.minsta_mängd(k)
+        mängder[k] = krav.mängd(k, krymp)
         if rapport:
             text = ("inte prövbart" if mängder[k] is None
                     else "{" + ", ".join(sorted(map(str, mängder[k]))) + "}")

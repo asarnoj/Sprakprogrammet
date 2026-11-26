@@ -623,6 +623,20 @@ gren, eftersom satsen i bisatsen i bisatsen kan kortas utan att något kort till
    mängd som redan hittats, så frågorna upprepas med ett sådant kort förbjudet tills inga
    nya mängder finns.
 
+**Version 1 av nivåerna hoppar över krympningen** (avgjort 2026-09-19). Steg 1 är en snabb
+fråga: sökningen letar tills den hittar en mening och slutar där, ungefär en sekund per
+kort. Steg 2 är den dyra: för varje kort i mängden ska ett nej bevisas, och ett nej kräver
+att allt som går att bygga gås igenom. Mätt 2026-09-17, med förklaringarna: tolv timmar
+gav 43 av engelskans 214 nivåkort och 5 av svenskans 323. Kravet är därför tills vidare
+nivåkorten i den första mening sökningen hittar, utan krympning.
+
+- **Invarianten håller.** Kortet går att pröva när kravet är infört, och meningen sparas
+  som dess bevis (3.10).
+- **Priset** är ordningen: kravet kan innehålla kort som inte behövdes, och kortet kommer
+  då senare i kursen än nödvändigt.
+- **Krympningen är en senare förbättring**, som körs per kurs när resten fungerar. Den
+  ändrar bara ordningen, aldrig vad som går att pröva.
+
 Vilka beslut som syns avgör spåret på den riktiga meningen (8.3), inte kartan. Kartan
 kan inte avgöra det själv: om «Blood exists» hade kunnat vara en uppmaning beror på
 subjektets ord, och ett beslut som syns i en del kan försvinna när en annan del vägrar.
@@ -1792,9 +1806,9 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     1b  kartan                             kräver 1; rendering/karta.py; svenskan och engelskan klara (6.7)
     2   sammansättningen                   kräver 1b och 3; delarna kombineras till meningar med ord ur det tillåtna (6.7) — sökningens kärna, utan värde och budget; sammansattning/: byggd för svenska och engelska, efter antal ord
     3   kortmodellen                       kräver 0; kortmodell/: korten för svenskan och engelskan gjorda, och besluten kopplade till kort; delen av formen per kort kvar (3.4)
-    3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
-    3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2)
-    4   nivåerna och grafen                kräver 2 och 5a; kraven är kortens minsta mängder per språkpar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3; nivaer/: en minsta mängd per kort, än så länge utan språkpar och filter; nej-frågorna går fort med förklaringar (sammansattning/forklaring.py)
+    3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar; kurs/: byggd, en fil per maskin, tillståndet räknas fram ur mötena
+    3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2); fsrslager/: byggt utom optimeringen av parametrarna och mätningen av p
+    4   nivåerna och grafen                kräver 2 och 5a; kraven är kortens minsta mängder per språkpar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3; nivaer/: version 1 tar den första meningens kortmängd utan krympning (4.2), än så länge utan språkpar och filter; krympningen är en senare förbättring, och dess nej-frågor går fort med förklaringar (sammansattning/forklaring.py)
     5a  entydighetsfiltret och märkningen  kräver 2; varianterna och källmeningens märkning (6.5); behövs av 4 och 5
     5   sökningen                          kräver 5a och 3c; värdet, budgeten, villkoren 6–8 i 6.1; svarstiden mäts med en tidig prototyp innan steg 6–9 byggs
     5b  aspektkrav på koncept              parallellt (6.5)
