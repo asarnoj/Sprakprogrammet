@@ -818,7 +818,11 @@ konsekvent: hårdare krav på minnet = mer arbete.
 
 ---
 
-#### LÖSNING (beslutad 2026-08-23 — inte byggd)
+#### LÖSNING (beslutad 2026-08-23, byggd — `kort/arbetsborda.py`)
+
+De fyra stegen nedan finns som `prognos`, `nykortskurva`, `måltakt` och
+`nya_idag`, och `arbetsbördeprov` vaktar dem med nio invarianter. Texten
+beskriver alltså vad som gäller, inte vad som planerades.
 
 **Regleringen ska vara en STYRNING, inte en prognos.** Det är skillnaden
 mellan robust och gissning. En prognos över ett år ärver alla fel den gör; en
@@ -1224,6 +1228,21 @@ tio minuter inställt:
 inställning. Hemvyn säger numera *"about 2 min left · growing toward 10 min as
 reviews build up"* när dagen ligger under halva målet och det finns osett
 material kvar att växa med. Villkoret är mätt, inte antaget.
+
+**Och det är LÅNGTIDSVILLKORET som binder, inte tiden.** Julius 2026-08-28:
+*"Sen stod det about 1 minute remaining innan jag startade passet. Kan det
+stämma?"* Ja — räkningen var riktig. Mätt på hans franska, dag 2 med 26 sedda
+kort:
+
+    måltakt                96 rep/dygn    (10 min ÷ 6,26 s per repetition)
+    tak IDAG               91 nya kort    tidsvillkoret binder inte alls
+    i längden              11 nya kort    ← DET HÄR binder
+    förfallna idag          3
+
+Ett kort kostar 8,4 repetitioner över året, så 96 repetitioner om dagen bär
+elva nya kort i jämvikt — en och en halv minut av tio. Systemet kan inte
+tillverka arbete som FSRS inte har schemalagt, och att införa mer nytt idag
+vore att låna mot en budget som inte finns.
 
 ### B5 ✓ — När är dagen slut?
 
@@ -4308,68 +4327,21 @@ skäl:
 
 Kvar blir den ärliga frågan: nästa nivå lägger till N kort — ryms de?
 
-### F5b ? — Böjningsdimensionerna är inga nivåer, men borde vara det
+### F5b ✓ — Böjningsdimensionerna är inga nivåer, men borde vara det
 
 **Julius 2026-08-27:** *"je, tu, nous, vous är ett speciellt fall eftersom de
 direkt anknyter till en specifik böjning. Alla nya böjningsparametrar borde
 vara en nivå. Sen kanske man kan klumpa ihop vissa nivåer ifall de enskilt är
 för små."*
 
-**Stegen har 21 KONSTRUKTIONER** — objekt, bestämdhet, numerus, attribut,
-possessiv, io, adverbial, tempus … — och de styr vad en MENING får innehålla.
-Böjningens egna dimensioner styrs inte alls. Mätt på franskan: `befolka` på
-nivå 1 skapar ändelsekorten `e`, `es`, `ez`, `ons`, `s`, `∅` på en gång, för
-två böjningsklasser. Sex personformer, samma dag.
+Stegen hade 21 KONSTRUKTIONER — objekt, bestämdhet, numerus … — som styr vad
+en MENING får innehålla. Böjningens egna dimensioner styrdes inte alls:
+`befolka` på franskans nivå 1 skapade `e`, `es`, `ez`, `ons`, `s`, `∅` på en
+gång, sex personformer samma dag.
 
-#### TIO MINUTER SOM BLEV EN (2026-08-28)
+#### SPÄNNINGEN, OCH JULIUS LÖSNING PÅ DEN
 
-Julius: *"Sen stod det about 1 minute remaining innan jag startade passet.
-Kan det stämma?"*
-
-Ja, och räkningen är riktig: 12 rader × 4,94 sekunder per rad ≈ 1 minut.
-**Frågan är i stället varför dagen bara är tolv rader när han bett om tio
-minuter.** Mätt på hans franska, dag 2 med 26 sedda kort:
-
-    måltakt                96 rep/dygn    (10 min ÷ 6,26 s per repetition)
-    tak IDAG               91 nya kort    tidsvillkoret binder inte alls
-    i längden              11 nya kort    ← DET HÄR binder
-    förfallna idag          3
-
-**Långtidsvillkoret är det som gör dagen kort.** Ett kort kostar 8,4
-repetitioner över året, så 96 repetitioner om dagen bär elva nya kort om
-dagen i jämvikt. De elva kostar ungefär elva repetitioner idag, plus tre
-förfallna — alltså en och en halv minut av tio.
-
-**Det är beteendet B4 beskriver, och det är riktigt**: minuterna är ett TAK
-och inte ett mål. Systemet kan inte tillverka arbete som FSRS inte har
-schemalagt, och att införa mer nytt idag vore att låna mot en budget som
-inte finns. De återstående minuterna blir användbara när kortleken mognat.
-
-**Men det är obegripligt utifrån.** Skärmen säger "10 min/dag" i
-inställningen och "about 1 minute remaining" i dagen, utan att någonstans
-säga att skillnaden är avsiktlig och tillfällig. Frågan står öppen: vad ska
-gränssnittet säga när kapaciteten är tio gånger dagens arbete?
-
-**Julius poäng är att det är samma sorts axel.** Att låsa upp `nous`-formen
-öppnar mängder av kort för ord man redan kan, bara med en böjning till — och
-det är exakt vad en nivå gör. Skillnaden mot dagens steg är bara att
-konstruktionerna sitter på MENINGEN och böjningen på ORDET.
-
-**Det knyter ihop tre öppna poster:**
-
-- **Ordningsfrågan (den här postens ursprung).** `pronomen_1sg` och
-  `pronomen_1pl` fick sin ordning ur alfabetet tills paradigmordningen lades
-  in. Men ordningen mellan PRONOMEN spelar bara roll om verbformen följer
-  med, och det gör den inte idag: `je` och `nous` införs var för sig medan
-  alla sex ändelser redan finns.
-- **A3, oåtkomliga kort.** Ändelsekort som ingen mening kan nå är precis de
-  som inte hör hemma på den nivå de skapades.
-- **F5, stegen är slut vid 21.** Böjningsdimensionerna skulle ge stegen fler
-  meningsfulla trappsteg utan att hitta på nya konstruktioner.
-
-#### RÄKNINGEN ÄR GJORD (2026-08-27)
-
-**Axlarna som finns, per språk** — distinkta värden i `Former`:
+Axlarna som finns, per språk — distinkta värden i `Former`:
 
     språk  numerus species kasus genus tempus grad person diates  celler
     sv          2       2      5     3     10     3      0      2      49
@@ -4378,523 +4350,193 @@ konstruktionerna sitter på MENINGEN och böjningen på ORDET.
     fr          2       2      9     3     21     3      3      1     101
     ja          0       0      0     0     11     1      0      2      18
 
-**Person/numerus/tempus-cellerna vid FULLT ordförråd**, alltså vad en sådan
-nivå skulle bära när kursen mognat:
+En böjningsstege är olika lång i olika språk. Mätt vid fullt ordförråd — 60
+person/numerus/tempus-celler i franskan över 5 619 former, 42 i tyskan över
+3 374, **noll i svenskan** (svenska verb personböjs inte). Cellerna är
+substantiella när kursen mognat: 36 av franskans bär minst 50 former, median
+106, störst 174 — alltså en full kolumn i paradigmet, ett per verb i ordboken.
 
-    fr   60 celler, 5 619 former   36 med ≥50 former, median 106, störst 174
-    de   42 celler, 3 374 former   30 med ≥50 former, median  72, störst 174
-    sv    0 celler                 svenskan personböjer inte verb alls
-
-Störst = 174 = ett per verb i ordboken, alltså en full kolumn i paradigmet.
-
-**Tre slutsatser, och den tredje är den obekväma.**
-
-**Cellerna är substantiella när kursen mognat.** Median 106 former för
-franskan — det är inga småsteg, det är riktiga läromoment.
-
-**Men de är små i början, och det är där problemet uppstod.** På nivå 1:s
-franska kortlek finns 11 celler och 36 kort: `pres_3sg` bär 12, `pres_2sg`
-bär 5, `pres_1pl` bär 2. Tyskan har 28 celler och 72 kort, och INGEN cell når
+Men de är SMÅ i början, och det är där problemet uppstod: franskans nivå 1
+har 11 celler och 36 kort, tyskan 28 celler och 72 kort där ingen cell når
 tio. Klumpningen är alltså inte en efterjustering utan det som avgör om
 konstruktionen fungerar de första veckorna — precis Julius egen misstanke.
 
-**Och stegen skulle sluta vara språkoberoende.** Dagens 21 nivåer sitter på
-KONCEPTLAGRET och är därför samma för alla sju språken; det är en av
-paradigmets bärande egenskaper. En böjningsstege har 60 steg i franskan, 42 i
-tyskan och NOLL i svenskan. Antingen blir stegen språkspecifik — vilket bryter
-den delade axeln och kräver att `NIVÅ` blir en tabell per språk i stället för
-en dict — eller så måste dimensionerna abstraheras till något som finns i
-alla sju, och då är det inte längre "en nivå per böjningsparameter".
+Dagens konstruktioner sitter på konceptlagret och är därför samma för alla
+sju; en böjningsstege skulle bryta den delade axeln.
 
-**Det är den frågan som ska besvaras innan något byggs**, och den är en
-designfråga och inte en mätning.
-
-#### JULIUS SVAR PÅ DEN, OCH DET HÅLLER (2026-08-27)
-
-*"Man hade kunnat ha en universell nivålista som är detaljerad, och sen
+Julius svar löste det: *"en universell nivålista som är detaljerad, och sen
 renderas nivålistan olika för de olika språken genom att gå igenom och se att
-vissa rader faktiskt bidrar till något nytt i språket."*
+vissa rader faktiskt bidrar till något nytt i språket."* Listan förblir
+universell; STEGEN blir en projektion per språk — samma form som renderarna
+redan har.
 
-Det löser motsättningen utan att offra den delade axeln: listan förblir
-universell och konceptnära, och STEGEN blir en projektion av den per språk.
-Samma form som renderarna redan har — universell spec, språkspecifik
-realisering.
+**Predikatet fanns redan.** Strukturkontrollen frågar *"två specar som
+renderar identiskt betyder att en distinktion tappats"*. Det som där är ett
+FEL är här ett urvalskriterium: renderar två specar likadant bidrar raden
+inget i det språket.
 
-**Och predikatet finns redan.** Strukturkontrollen i `meningsgranskning`
-frågar exakt detta: *"TVÅ SPECAR SOM RENDERAR IDENTISKT — skiljer sig
-specarna men inte texten har renderaren tappat en distinktion."* Det som där
-är ett FEL är här ett urvalskriterium: renderar två specar likadant bidrar
-raden inget i det språket och hoppas över.
-
-**Mätt på verbets personböjning**, andel av sex verb där själva verbformen
-skiljer sig — subjektspronomenet borträknat, annars "syns" varje distinktion
-i varje språk bara för att pronomenet byts:
+Mätt på verbets personböjning — andel av sex verb där själva verbFORMEN
+skiljer sig, pronomenet borträknat:
 
     par        sv    en    de    fr    es    it
     1sg/2sg     0%    0%  100%   67%  100%  100%
     1sg/3sg     0%  100%  100%   33%  100%  100%
     2sg/3sg     0%  100%   67%  100%  100%  100%
     1sg/1pl     0%    0%  100%  100%  100%  100%
-    1pl/2pl     0%    0%  100%  100%     ?  100%
     3sg/3pl     0%  100%  100%  100%  100%  100%
 
-Utfallet är språkligt riktigt, vilket är kvittot på att måttet mäter rätt sak:
+Utfallet är språkligt riktigt, vilket är kvittot: svenskan noll överallt,
+engelskan bara där 3sg ingår (`-s` är dess enda märkning), franskans 1sg/3sg
+33 % (`parle`/`parle`). Stegen blir olika lång av sig själv, utan att någon
+skriver en lista per språk.
 
-- **Svenskan noll överallt** — svenska verb personböjs inte. Varje personrad
-  hoppas över, och stegen blir kortare utan att någon skriver en regel.
-- **Engelskan bara där 3sg ingår** — det enda märkta cellen är `-s`.
-- **Tyskans 2sg/3sg 67 %** — `liest`/`liest` faller ihop för en del verb.
-- **Franskans 1sg/3sg 33 %** — `parle`/`parle` är identiska för -er-verben,
-  och 1sg/2sg skiljer sig bara på ett stumt `-s` (67 %).
+#### DET BYGGDA — `kort/dimensioner.py`
 
-**Stegen skulle alltså bli olika långa av sig själv:** noll personnivåer i
-svenskan, en i engelskan, fem till sex i de romanska och tyskan. Ingen lista
-per språk behöver skrivas eller underhållas.
+**Kriteriet är strängidentitet, inte en tröskel:** en cell lär ut något nytt
+om dess ÄNDELSE inte redan är känd i SAMMA klass. `pres_1sg = e` och
+`pres_3sg = e` är ett moment i K0, två i K1 (`s`/`t`).
 
-#### PROJEKTIONEN ÄR BYGGD (2026-08-27) — `kort/dimensioner.py`
+**Listan HÄRLEDS.** Mitt första försök var handskrivet — en fransk lista med
+universella anspråk — och missade 11 av svenskans 12 celler, 15 av tyskans 31
+och ALLA tio japanska. Unionen av alla språks celler är den universella
+listan: 91 celler, veckade till sv 5, en 4, de 8, fr 34, es 45, it 44, ja 9.
+Engelskan får exakt fyra — walk, walks, walked, walking.
 
-Mekanismen finns nu, men är ÄNNU INTE inkopplad i nivåstegen. Den räknar, den
-styr ingenting.
+**Ordningen lästes, den gjordes inte.** `paradigm/{språk}/verb.yaml` märkte
+redan varje cell med tempus, person, numerus och diates. Sorteringen är
+`(diates, tempus, numerus, person)`, och bara tempusordningen är ett val.
+Två mätta ordningsfel: otaggad diates sorterade före aktiv (en otaggad diates
+BETYDER aktiv), och diates måste slå tempus — hela aktivum före något
+passivum, annars kom svenskans `inf_passiv` före `pres`.
 
-**Kriteriet, och varför det inte är ett val:** en cell lär ut något nytt om
-dess ÄNDELSE inte redan är känd från en tidigare cell i SAMMA klass.
-Franskans K0 har `pres_1sg = e` och `pres_3sg = e`; har man lärt sig den
-första finns ingenting kvar i den andra. K1 har `s` och `t` på samma celler,
-och där är det två moment. Det är strängidentitet i data som redan finns,
-ingen tröskel.
+**Presens först, inte infinitiv.** `Inf` rankades först eftersom det är så
+ord slås upp, men man kan inte SÄGA något med en infinitiv ensam: första
+finita formen låg på nivå 3 i franskan, 6 i tyskan, **9 i svenskan**. Åtta
+nivåer utan en enda mening.
 
-**Partiella rader löser sig av det:** raden står kvar med just de klasser som
-realiserar den. `1sg` mot `3sg` blir en nivå i K1 och inte i K0. Att det
-sitter på KLASSEN och inte på ordet är hela skillnaden mot invändningen
-ovan — `system`-kort hör redan till en klass, så granulariteten finns i
-kortmodellen och ingen omskrivning behövs.
+**Flätningen är proportionell**, beslutad av Julius: *"en gemensam numrering
+där konstruktioner och böjning varvas"*. Varannan-varannan hade tömt
+engelskans fyra steg långt före spanskans 45. Proportionen räknas ur
+längderna och är ingen inställning.
 
-**Och listan HÄRLEDS.** Mitt första försök var handskrivet — `pres_1sg`,
-`pres_2sg`, … — alltså en fransk lista med universella anspråk. Mätt mot
-datan missade den 11 av svenskans 12 celler, 15 av tyskans 31 och ALLA tio
-japanska. Svenskan fick ett enda steg, och det var listans fel. Unionen av
-alla språks celler är den universella listan.
+**Beroenden bryter proportionen och måste göra det.** `tempus` kräver
+Pret/Imperf/Fut, `perfekt` kräver Sup/PresPer, `imperativ` kräver Imp,
+`passiv` kräver diates Passiv. Utan villkoret låg `tempus` på steg 9 och
+preteritumändelserna på steg 30. Mätt: villkoret flyttar 24 av franskans steg.
 
-**Utfallet: 90 universella celler, veckade per språk.**
+#### TRE INGREPP SOM KRÄVDES INNAN GRINDEN GICK ATT SLÅ PÅ
 
-    sv   5     inf, sup, inf_passiv, pres, sup_passiv
-    en   4     pres_3sg, pret, gerund, inf_imp
-    de   8
-    fr  34     es 45     it 44     ja 9
-
-Talen är språkligt riktiga, vilket är kvittot på att kriteriet mäter rätt
-sak: **engelskan får exakt fyra** — walk, walks, walked, walking — och
-svenskan fem. Ingen lista per språk är skriven.
-
-**`dimensionsprov` vaktar fyra invarianter**, och den tredje bär idén: varje
-ändelse i varje tabell ska läras ut exakt en gång. Två gånger betyder tomma
-moment; noll gånger betyder något som inte går att lära sig.
-
-#### MÄRKNINGEN BEHÖVDE INTE GÖRAS — DEN FANNS (2026-08-27)
-
-Ordningen var det som återstod, och jag antog att cellerna måste märkas med
-sina axlar först. **De är redan märkta.** `paradigm/{språk}/verb.yaml` ger
-varje cell dess tempus, person, numerus och diates, och `ladda_slot` resolvar
-dem. Arbetet var att LÄSA märkningen, inte att göra den.
-
-Listan sorteras nu på `(diates, tempus, numerus, person)`, och bara den
-första komponenten — tempusordningen — är ett val. Den står som en läsbar
-lista över legendens fjorton värden i stället för att gömmas i en
-sorteringsfunktion eller spridas över nittio cellnamn.
-
-**Två ordningsfel som mätningen visade, och båda var lärorika:**
-
-*Otaggad diates sorterade före aktiv.* Engelskans yaml utelämnar `diates` på
-en del celler medan franskans skriver ut den, och eftersom den delade listan
-tar den LÄGSTA rangen över språken vann den otaggade. Franskans steg blev
-1sg, 2sg, 1pl, 2pl, 3pl, 3sg. En otaggad diates betyder aktiv, inte "före
-aktiv" — men numerus och person behåller sitt nollvärde, och där är det rätt:
-svenskans `pres` och japanskans `masu` gör ingen personskillnad och är
-paradigmets omarkerade form.
-
-*Diates måste slå tempus.* Svenskans `inf_passiv` (läsas) kom före `pres`
-(läser), eftersom infinitiv rankas före presens. Hela aktivum ska läras innan
-något passivum — det är en starkare regel än tempusordningen. Samma sak
-flyttade japanskans `ukemi` från andra plats till sista.
-
-**Stegarna, färdiga:**
-
-    sv (5)   inf, pres, sup, inf_passiv, sup_passiv
-    en (4)   pres_3sg, pret, gerund, inf_imp
-    de (8)   inf, pres_1sg, pres_2sg, pres_3sg, pret_1sg, konj2_2sg,
-             konj2_2pl, part1
-    fr (34)  inf, pres 1sg…3pl, pret 1sg…3pl, particip, imperfekt,
-             futurum, konditionalis, presensparticip
-    ja (9)   jisho, masu, ta, imp, kond, te, nai, vol, ukemi
-
-**Franskan hoppar över `imperf_2sg` och `kond_2sg`** — de ändelserna är redan
-lärda tidigare i paradigmet. Det är projektionen som arbetar, och det syns
-utan att någon skrivit en regel om franskan.
-
-#### FLÄTNINGEN BYGGD (2026-08-27) — `dimensioner.stege`
-
-**BESLUTAT AV JULIUS: en gemensam numrering där konstruktioner och böjning
-varvas.**
-
-Flätningen är PROPORTIONELL och inte ett-och-ett. Konstruktionerna är tjugo
-och lika i alla språk; böjningsstegen är fyra i engelskan och fyrtiofem i
-spanskan, så varannan-varannan hade tömt den korta långt före den långa.
-Båda listorna sträcks över samma intervall och slås ihop på position —
-franskan får ungefär två böjningssteg per konstruktion, engelskan ungefär en
-femtedel. Proportionen räknas ur längderna och är alltså ingen inställning.
-
-**Beroenden bryter proportionen, och måste göra det.** Fyra konstruktioner
-går inte att bygga förrän en viss böjning är införd:
-
-    tempus     kräver Pret, Imperf eller Fut
-    perfekt    kräver Sup eller PresPer
-    imperativ  kräver Imp
-    passiv     kräver diates Passiv
-
-Utan det lägger flätningen `tempus` på steg 9 medan preteritumändelserna
-kommer på steg 30, och användaren möter dåtid trettio steg innan något kort
-lär ut hur den böjs — precis felet hela böjningsstegen finns för att laga,
-återinfört ett steg senare. Mätt: villkoret flyttar 24 av franskans steg.
-
-**Stegarnas längd, färdigt flätade:**
-
-    sv 25    en 24    de 28    fr 54    es 65    it 63    ja 29
-
-**`dimensionsprov` vaktar sju invarianter**, var och en med sitt eget
-sabotage. Två lärdomar ur att skriva dem:
-
-*Ett gemensamt sabotage räcker inte.* "Släpp igenom varje cell" fällde bara
-två av fyra; de andra vaktar mot omkastning respektive för LITE undervisning,
-och ett sabotage som lär ut för mycket kan inte bryta dem. Ett prov som inte
-faller för sitt eget sabotage är stumt; ett som inte faller för någon annans
-är bara ett annat prov.
-
-*Ett prov får inte läsa sin förutsättning ur det som prövas.*
-`prov_beroenden` läste `BEROENDE` — alltså exakt tabellen sabotaget tömmer —
-och gick därför igenom med sabotaget på. Provet har nu sin egen kopia av
-kraven, och den kopian är den grammatiska sanningen: säger modulens tabell
-något annat är det provet som säger ifrån.
-
-#### GRINDEN BYGGD — OCH DEN BLOTTAR ETT VAL (2026-08-28)
-
-`befolka` tar numera `böjningsceller` och skapar bara ändelsekort för celler
-stegen öppnat. `dimensioner.upplåst_vid(språk, nivå)` ger båda mängderna ur
-samma lista — konstruktionerna och cellerna — vilket är hela poängen med en
-gemensam numrering: de kan inte glida isär, för de var aldrig två.
-
-**Verbändelser per nivå, mätt:**
-
-    fr    nivå 1: 2    nivå 6: 8    nivå 12: 16    nivå 54: 68    ogrindat 90
-    de    nivå 1: 0    nivå 6: 4    nivå 12: 8     nivå 28: 16    ogrindat 62
-    sv    nivå 1: 0    nivå 6: 2    nivå 12: 4     nivå 25: 8     ogrindat 20
-
-**En bugg i min första grind:** den nycklade på SPRÅK, och eftersom stegen
-bara känner verbcellerna föll substantivens och adjektivens ändelser bort
-helt — tyskans 241 ändelsekort blev 16. Nyckeln är nu `(språk, ordklass)`,
-och en ordklass utan stege passerar ogrindad i stället för att försvinna.
-
-**Och `kort.sql` gick inte att köra.** `Spår` skapades utan `IF NOT EXISTS`
-medan migrationen skapar den vid anslutning, och `skapa_kortdatabas` ansluter
-FÖRE den kör schemat. Ingen ny kortdatabas kunde skapas — det bröt `ordbok
-kort --återinitiera`, tyst, tills ett prov råkade skapa en.
-
-#### VALET: VAD ÄR ETT ÄNDELSEKORT NYCKLAT PÅ? (`?`)
-
-Grinden fungerar men får en följd som måste avgöras först. Franskans K0:
-
-    pres_1sg = e     ← projektionen gör den till ett steg
-    pres_3sg = e     ← UTELÄMNAD, ändelsen är redan lärd
-
-Med grinden skapas alltså inget kort för `(K0, pres_3sg)`. Men meningen
+**1. Kortet hör till ÄNDELSEN, inte cellen** (Julius val). Grinden skapade
+inget kort för `(K0, pres_3sg)` eftersom ändelsen redan var lärd — men
 `Elle parle.` slår upp just den cellen, och utan kort går ändelsen inte att
-attribuera eller pröva där. Att ta bort det tomma läromomentet tog med sig
-attributionen.
-
-#### GRINDEN GÅR INTE ATT SLÅ PÅ ÄN — NIVÅ 1 KAN INTE TALA (2026-08-28)
-
-Med hopslagningen på plats behövde grinden inte skrivas om: kortet skapas så
-snart NÅGON upplåst cell har ändelsen, och `Cellkort` pekar alla cellerna dit.
-Mätt vid varje nivå i tre språk: **noll trasiga cellkopplingar**.
-
-Men mätningen av vad som SAKNAS avslöjade hindret. Verbceller utan kort:
-
-    fr   nivå 1: 85 av 90     nivå 16: 55     nivå 54: 0
-    de   nivå 1: 62 av 62     nivå 16:  6     nivå 28: 0
-    sv   nivå 1: 20 av 20     nivå 16:  4     nivå 25: 0
-
-Vid toppen är allt täckt, vilket är rätt. Men på LÅG nivå saknas nästan allt,
-och då kan generatorn inte bygga en mening vars ändelser har kort — den
-byggde en, ändelsen saknade kort, och attributionen fick inget att peka på.
-
-**Tempusordningen var fel, och det var mätbart.** `Inf` rankades först
-eftersom det är så ord slås upp. Men man kan inte SÄGA något med en
-infinitiv ensam: den första finita formen kom på nivå 3 i franskan, 6 i
-tyskan och NIO i svenskan. Åtta nivåer utan en enda mening.
-
-Ordningen är nu presens först. Utfall:
-
-    fr, es, it   pres_1sg på nivå 1
-    de, ja       nivå 3
-    sv           nivå 4
-    en           nivå 5
-
-**Romanskan är löst, de andra inte.** Deras böjningsstegar är korta (svenskan
-fem steg, engelskan fyra) mot tjugo konstruktioner, så den proportionella
-flätningen lägger konstruktioner först — och nivå 1–4 har ingen verbform alls.
-
-#### EN NIVÅ SOM LÅSER UPP INGENTING ÄR INGEN NIVÅ (2026-08-28)
-
-Paradigmen är fullständiga; specen är det inte. Franskan har konditionalis i
-`verb.yaml` men ingen konstruktion som bygger den, tyskan har båda
-konjunktiverna, japanskan `kond` och `vol`. Ett steg för en sådan cell låser
-upp ingenting: `nåbara` filtrerar bort kortet, och nivån blir en räknare som
-tickar utan verkan.
-
-Mätt vid nivå 21 med 1 500 kandidater — celler i stegen som INGEN spec kan
-producera:
-
-    fr   6 av 13 fria böjningssteg   hela konditionalisen + presensparticipet
-    de   3 av 8                      konj2_2sg, konj2_2pl, part1
-    ja   2 av 6                      kond, vol
-    sv, en   0
-
-`nåbara_celler(språk)` mäter dem och stegen utelämnar dem. Det är samma
-tomma läromoment som drev hopslagningen av ändelsekorten, fast på nivåns
-nivå i stället för kortets.
-
-**Efter alla tre ingreppen — hopslagning, grundböjning, nåbarhet — landar
-alla sju språken på 22 till 24 nivåer**, från tjugo konstruktioner plus två
-till fyra fria böjningssteg. Resten är antingen absorberat i en konstruktion
-eller bortfiltrerat som omöjligt.
-
-#### KONSTRUKTION OCH BÖJNING ÄR ETT LÄROMOMENT (2026-08-28)
-
-Beroendena var ordnade: cellerna före konstruktionen som kräver dem. Mätt
-blev följden absurd — **franskans `pret_1sg` låg på nivå 4 och
-konstruktionen `tempus` på nivå 38.** Trettiofyra nivåer där dåtidskort
-skapas som ingen mening får använda: antingen står de i kön utan att gå att
-nå (A3), eller så filtrerar `nåbara` bort dem och de trettiofyra stegen gör
-ingenting alls.
-
-**Att ordna åt andra hållet är inte bättre** — då möter användaren dåtid
-innan något kort lär ut hur den böjs, vilket är felet `BEROENDE` fanns mot.
-De två går alltså inte att ORDNA, bara att slå ihop.
-
-Det är samma slutsats som grundböjningen tvingade fram, och av samma skäl:
-**en konstruktion och den böjning den förutsätter är ETT läromoment.**
-
-    fr    11 ▸ tempus + pret 1sg…3pl + imperf…
-          18 ▸ perfekt + pp_fem_sg + pp_msc_sg + pp_fem_pl + pp_msc_pl
-    sv    14 ▸ perfekt + sup + sup_passiv
-
-**En cell binds till EN konstruktion**, den första i stegen. `sup_passiv`
-uppfyller både perfektens krav (tempus Sup) och passivens (diates Passiv) och
-hamnade därför på två steg — samma cell upplåst två gånger.
-
-Stegarna blev kortare av hopslagningen: franskan 49 → 28, spanskan 65 → 36.
-
-**Två prov mätte en form systemet vuxit ur, och båda skrevs om.** *"Den
-flätade stegen är hel"* räknade namn PER TYP, men ett konstruktionssteg bär
-numera både ett konstruktionsnamn och celler; det räknar nu på unionen. Och
-*"de två sorterna varvas"* skulle hindra att stegen blev två block — men
-sedan cellerna ligger INUTI konstruktionsstegen är få typbyten designen och
-inte ett symptom. Den ersattes av *"grundböjningen ligger först"*, som är det
-som faktiskt bär: ligger en konstruktion före grundböjningen har kursen en
-nivå utan verbform.
-
-#### GRUNDBÖJNINGEN — NIVÅ 1 GÅR ATT TALA PÅ (2026-08-28)
-
-Regeln som saknades kunde inte härledas ur tempus, och engelskan är beviset:
-en enkel sats slår upp BÅDE `pres_3sg` ("she reads") och `inf_imp` ("I
-read"), och den andra är märkt `Inf`. Ett villkor som pekade på tempus `Pres`
-hade missat halva engelskans grundböjning.
-
-**Mängden MÄTS därför.** `grundböjning(språk)` renderar fyra verb i sex
-personer och läser instrumenteringen — samma väg som `nåbara` tar, och av
-samma skäl: bakvägen från cell till "behövs den för en enkel sats" finns
-inte. Arton renderingar per språk, cachat.
-
-    sv   pres, pres_passiv
-    en   inf_imp, pres_3sg
-    de   presens 1sg, 2sg, 3sg, 1pl
-    fr   presens alla sex
-    ja   masu
-
-**Deponensverben tvingade fram ett fjärde provverb.** Med bara läsa, arbeta
-och leva saknade svenskans grundböjning `pres_passiv`, och nivå 1 kunde bygga
-"En gris finns." utan kort för dess ändelse — ett av 164 fall. Svenskans
-deponensverb (finnas, hoppas, trivas) har ingen aktiv form; deras presens ÄR
-passivformen. `verb_finnas` ingår nu, och listan är inte "tre typiska verb"
-utan "verb som tillsammans rör varje väg genom presens".
-
-**Och grundböjningen är ETT steg, inte ett per cell.** Med en cell per steg
-byggde franskans nivå 1 hundrasextiofem meningar varav tio slog upp
-`pres_2pl`, som låg på nivå 5. Engelskan hade samma hål på `inf_imp` i 13 av
-164. Paradigmets delar går inte att låsa upp var för sig utan att generatorn
-måste veta vilka SUBJEKT som är tillåtna, och den gränsen finns inte. Att
-öppna presens som en helhet är Julius egen *"klumpa ihop vissa nivåer ifall
-de enskilt är för små"* — framtvingad i stället för vald.
-
-**Utfallet, med grinden på:**
-
-    språk   meningar på nivå 1   med celler utan kort
-    sv                     164                      0
-    en                     164                      0
-    de                     143                      0
-    fr                     165                      0
-    es                     155                      0
-    it                     165                      0
-    ja                     167                      0
-
-Stegarnas början:
-
-    sv   pres · objekt · bestämdhet · numerus · attribut · inf
-    en   pres_3sg+inf_imp · objekt · bestämdhet · numerus · attribut
-    de   pres_1sg+pres_2sg+pres_3sg+pres_1pl · objekt · bestämdhet · numerus
-    fr   [presens alla sex] · inf · objekt · pret_1sg · bestämdhet
-    ja   masu · objekt · bestämdhet · jisho · numerus
-
-`dimensionsprov` vaktar elva invarianter, var och en med eget sabotage. Den
-sista — *nivå 1 går att tala på* — renderar och resonerar inte, och det är
-den som avgör om grinden går att slå på.
-
-#### VALT OCH BYGGT: KORTET HÖR TILL ÄNDELSEN (2026-08-28)
-
-Julius valde att nyckla kortet på `(klass, ändelse)` i stället för
-`(klass, cell)`. `e` är därmed ETT kort som täcker både `pres_1sg` och
-`pres_3sg`, och båda cellernas uppslag pekar på det via `Cellkort`.
-
-Det är skillnaden mot att grinda bort den redundanta cellen: hopslagningen
-tar bort det tomma momentet UTAN att lämna ett hål. `Elle parle.` slår
-fortfarande upp `pres_3sg` och hittar ett kort.
-
-**Omfattningen, räknad ur `ändelser.tsv`:**
+attribuera. Hopslagningen tar bort det tomma momentet UTAN att lämna hålet:
+`e` är ETT kort och båda cellerna pekar dit via `Cellkort`.
 
     språk    per cell   per ändelse   tomma moment
     sv             68            39             29
-    en             20            16              4
     de            241            39            202
     fr            111            75             36
-    es            191           109             82
-    it            180            97             83
-    ja             20            19              1
     ALLA          831           394            437
 
 **52 % av alla ändelsekort frågade om något ett annat kort redan lärt ut.**
-Tyskan ensam: 241 kort för 39 kunskaper.
 
-Verifierat att attributionen håller: på `Tu trouvXX.` mot facit
-`Tu trouves.` fälls `es`-kortet och `∅`-kortet står kvar som rätt.
+Identitetsbytet gjorde 15 kort **osynliga** — inte fel, utan onåbara:
+schemalagda, förfallna, utan rad i `Cellkort`, varav 7 med historik. A3:s
+spökkort, självförvållade. `_slå_ihop_gamla_ändelsekort` flyttar historiken
+till efterföljaren, och **den svagaste evidensen vinner**: den sammanslagna
+kunskapen kan inte vara säkrare än den osäkraste mätningen av den. Mätt: 15
+kort → 12, noll föräldralösa, alla 36 repetitionsrader bevarade, idempotent.
 
-#### IDENTITETSBYTET GJORDE 15 KORT OSYNLIGA (2026-08-28)
+**2. Grundböjningen är ETT steg.** Med en cell per steg byggde franskans nivå
+1 hundrasextiofem meningar varav tio slog upp `pres_2pl`, som låg på nivå 5.
+Paradigmets delar går inte att låsa upp var för sig utan att generatorn vet
+vilka SUBJEKT som är tillåtna, och den gränsen finns inte. Julius egen
+*"klumpa ihop vissa nivåer"* — framtvingad i stället för vald.
 
-Den farligaste sortens ändring: de gamla korten blev inte fel, de blev
-**onåbara**. Mätt på Julius franska efter en nivåupplåsning utan
-nollställning — 15 cell-nycklade kort utan rad i `Cellkort`, varav **7 med
-repetitionshistorik**. Schemalagda, förfallna, och omöjliga för någon mening
-att nå. A3:s spökkort, självförvållade.
+Mängden MÄTS och härleds inte: engelskan slår upp både `pres_3sg` ("she
+reads") och `inf_imp` ("I read"), och den andra är märkt `Inf`, så ett villkor
+på tempus `Pres` hade missat halva grundböjningen. `grundböjning(språk)`
+renderar fyra verb i sex personer och läser instrumenteringen.
 
-`_slå_ihop_gamla_ändelsekort` flyttar historiken till efterföljaren och tar
-bort det gamla kortet. Mätt: 15 kort → 12, noll föräldralösa, **alla 36
-repetitionsrader bevarade**, och idempotent vid omkörning.
+Deponensverben tvingade fram det fjärde provverbet: svenskans `finnas` har
+ingen aktiv form, dess presens ÄR passivformen, och utan `verb_finnas`
+saknade nivå 1 kort för ändelsen i "En gris finns" — ett av 164 fall.
 
-**DEN SVAGASTE EVIDENSEN VINNER.** Två gamla kort — `pres_1sg` och
-`pres_3sg`, båda `e` — blir ett, och det ärver den LÄGSTA stabiliteten.
-Skälet är att den sammanslagna kunskapen inte kan vara säkrare än den
-osäkraste mätningen av den; att ta den högsta vore att påstå att man kan
-något bättre än man visat.
+**3. En nivå som låser upp ingenting är ingen nivå.** Paradigmen är
+fullständiga, specen är det inte. Mätt vid nivå 21 med 1 500 kandidater —
+celler som INGEN spec kan producera: fr 6 av 13 fria böjningssteg (hela
+konditionalisen), de 3 av 8, ja 2 av 6, sv och en noll. `nåbara_celler`
+mäter dem och stegen utelämnar dem.
 
-`dimensionsprov` vaktar numera tio invarianter, var och en med eget
-sabotage — inklusive att migrationen bevarar historiken och att varje cell
-med en ändelse har ett kort att peka på.
+#### KONSTRUKTION OCH BÖJNING ÄR ETT LÄROMOMENT
 
-**Inte påbörjat.** Julius: *"Vi behöver inte lösa alla problemen nu."*
+Beroendena ordnade cellerna FÖRE konstruktionen som kräver dem, och följden
+blev absurd: **franskans `pret_1sg` låg på nivå 4 och `tempus` på nivå 38** —
+trettiofyra nivåer där dåtidskort skapas som ingen mening får använda. Att
+ordna åt andra hållet är inte bättre; då möter användaren dåtid innan något
+kort lär ut hur den böjs. De två går inte att ORDNA, bara att slå ihop.
 
-#### INKOPPLAD: NIVÅN INDEXERAR DEN FLÄTADE STEGEN (2026-08-28)
+En cell binds till EN konstruktion, den första i stegen — `sup_passiv`
+uppfyller både perfektens och passivens krav och låstes annars upp två
+gånger. Stegarna kortades: franskan 49 → 28, spanskan 65 → 36.
 
-`Kurs.nivå` betyder inte längre "den N:te konstruktionen" utan "det N:te
-steget". Tre kopplingar bytte:
+**Efter alla ingreppen landar alla sju språken på 22 till 24 nivåer**, och
+nivå 1 går att tala på i alla:
 
-    Samplare.tillåtet   upplåst_vid(språk, nivå) i stället för upplåst(nivå)
-    byggbarhet          frågar OLIKA saker beroende på stegets sort
-    befolka             härleder böjningscellerna ur nivån
+    språk   meningar på nivå 1   med celler utan kort
+    sv/en/fr/it            164–165                   0
+    de                         143                   0
+    es                         155                   0
+    ja                         167                   0
 
-**Grinden frågar olika saker om de två sorterna.** Ett konstruktionssteg
-prövas på SPECEN — `ANVÄNDER` svarar utan att rendera, och de celler som
-slagits ihop med konstruktionen kommer med på köpet. Ett rent böjningssteg
-har ingen konstruktion att fråga om; kravet är i stället att meningen
-faktiskt SLÅR UPP en av cellerna, och det syns bara i renderingen.
-`byggbarhet` har uppslagen redan, så det kostar ingenting extra.
+#### INKOPPLINGEN, OCH VAD DEN KOSTADE
 
-**Nivå 1 kräver ingenting.** Den är grundböjningen, som varje mening
-använder — att kräva den vore att kräva att meningen har ett verb.
+`Kurs.nivå` betyder nu "det N:te steget". Grinden frågar olika saker om de
+två sorterna: ett konstruktionssteg prövas på SPECEN (`ANVÄNDER` svarar utan
+rendering), ett rent böjningssteg på att meningen faktiskt SLÅR UPP cellen —
+vilket bara syns i renderingen. Nivå 1 kräver ingenting; den är
+grundböjningen, som varje mening använder.
 
-**Tre fel på vägen, alla självförvållade:**
+**Fyra fel på vägen, alla självförvållade och alla lärorika:**
 
-*Oändlig rekursion.* `stege` → `nåbara_celler` → `Samplare` → `upplåst_vid`
-→ `stege`. Mätningen av vilka celler specen kan producera ska ha ALLT
-upplåst, inte fråga stegen. `Samplare` tar numera emot en färdig mängd, och
-parametern finns just för att bryta cirkeln.
+- *Oändlig rekursion* `stege → nåbara_celler → Samplare → upplåst_vid →
+  stege`. Mätningen av vad specen KAN producera ska ha allt upplåst, inte
+  fråga stegen; `Samplare` tar numera emot en färdig mängd.
+- *`upplåst_vid` räknade celler som konstruktioner* — 33 av tjugo möjliga.
+- *Grinden nycklade på SPRÅK* och tappade därmed substantivens och
+  adjektivens ändelser helt: tyskans 241 ändelsekort blev 16. Nyckeln är
+  `(språk, ordklass)`, och en ordklass utan stege passerar ogrindad.
+- *`kort.sql` skapade `Spår` utan `IF NOT EXISTS`*, så ingen ny kortdatabas
+  kunde skapas — tyst, tills ett prov råkade skapa en.
 
-*`upplåst_vid` räknade celler som konstruktioner.* Ett hopslaget steg bär
-både konstruktionsnamnet och cellerna; att läsa hela tupeln gav 33
-"konstruktioner" av tjugo möjliga, och `Samplare.tillåtet` fick namn som
-`pret_1sg` som ingen `ANVÄNDER`-post känner.
-
-*Talet 21 var hårdkodat.* `ordföljdsprov` byggde sin generator på nivå 21 och
-fick tre ordföljdsregler som inte gick att möta — `est_ce_que` och japanskans
-bisatsregler ligger på steg 22 och senare. `toppnivå(språk)` härleds nu, och
-gränssnittet visar 22 för franskan och 24 för japanskan i stället för alltid
-21.
-
-**Verifierat på `kort.db`:** nivå 1 ger grundböjningens åtta franska
-ändelsekort, och meningarna attribuerar dem — `J'ai.` prövar `s` och `∅`.
+**LEKTIONERNA VAR OTÄCKTA, OCH DÄRFÖR TRASIGA.** Ordet "lektion" fanns i två
+provfiler, båda gånger i en kommentar. `LEKTIONER` slog upp texten på
+nivåTALET med en heltalsnycklad tabell 1–21, så franskans nivå 21 — som efter
+flätningen är `inf`-böjningen — visade rubriken **"Wh-questions"**, och
+`LEKTIONER[22]` kastade `KeyError` vid ett klick. Tretton nät var gröna medan
+en hel vy var trasig, och det är den egentliga lärdomen. Tabellen nycklas nu
+på konstruktionsnamn plus `"grund"` och `"böjning"`, och `_nyckel_för` frågar
+`nivåns_krav` vad steget faktiskt är.
 
 **NIVÅTALET HAR BYTT INNEBÖRD I BEFINTLIGA KURSER.** Tyskans "nivå 4" betydde
-`numerus` förut och betyder nu det fjärde steget i den flätade stegen. Ingen
-översättningstabell är skriven: kurserna är testdata, och en nollställning
-bygger om kortleken med den nya grinden. Skulle en riktig kurs finnas när
+`numerus` förut. Ingen översättningstabell är skriven: kurserna är testdata
+och en nollställning bygger om kortleken. Skulle en riktig kurs finnas när
 det här läses är en migration det första som måste göras.
 
-#### LEKTIONERNA VAR OTÄCKTA — OCH DÄRFÖR TRASIGA (2026-08-28)
+#### VAD SOM VAKTAR DET
 
-Julius kunde inte starta servern med det kommando jag gav (`python -m
-sprakprog.webb` finns inte; det heter `ordbok webb`), och när han väl kom in
-stod det fortfarande "21 nivåer". Felet visade sig sitta på TRE ställen, och
-bara ett av dem hade jag rättat:
+`dimensionsprov` (15 invarianter) och `lektionsprov` (4), var och en med sitt
+eget sabotage. Tre lärdomar ur att skriva dem, och de gäller alla prov:
 
-**Ytan.** `sida.html` hade sitt eget hårdkodade `of 21` i markupen, oberoende
-av `n.av` som backend redan skickade. Talet lästes aldrig.
-
-**Djupet.** `Lektioner` slog upp texten på nivåTALET — `LEKTIONER[nivå]` med
-en heltalsnycklad tabell 1–21. Efter flätningen betyder franskans nivå 21
-`inf`-böjningen, så lektionen visade rubriken **"Wh-questions"** för ett steg
-om infinitiv. Och `LEKTIONER[22]` fanns inte: franskans faktiska sista steg
-hade kastat `KeyError` vid ett klick.
-
-**Taket.** `lektionen()` avvisade allt över nivå 21 med ett hårdkodat
-villkor.
-
-**INGET NÄT RÖRDE LEKTIONSKODEN.** Ordet "lektion" förekom i två provfiler,
-båda gånger i en kommentar. Tretton nät var gröna medan en hel vy var trasig
-— och det är den egentliga lärdomen här, inte de tre rättelserna.
-
-`LEKTIONER` nycklas numera på KONSTRUKTIONSNAMN (`"objekt"`, `"bisats"` …)
-plus två fasta: `"grund"` för steg 1 och `"böjning"` — en delad text för de
-fria böjningsstegen. `_nyckel_för` frågar `nivåns_krav` vad steget faktiskt
-är, så rubriken kan inte gå isär från innehållet igen. `exempel()` filtrerar
-dessutom på rätt sak per stegsort: konstruktioner prövas på specen,
-böjningssteg på UPPSLAGEN — samma uppdelning som `byggbarhet`.
-
-Verifierat: franskans nivå 21 ger `Des avions froids doivent aimer` —
-infinitiven syns — och nivå 22 ger `Qu'est-ce que…`-frågor i stället för att
-krascha.
-
-`lektionsprov` är nu nät nummer fjorton, med fyra invarianter och ett
-sabotage var. Två av sabotagen var först otrogna mot felet och gav stumma
-prov: det ena föll tillbaka på `"grund"` i stället för att SAKNA nyckel, som
-den heltalsnycklade tabellen gjorde, och det andra bröt listans längd i
-stället för upplåstheten det skulle pröva.
+- **Ett gemensamt sabotage räcker inte.** "Släpp igenom varje cell" fällde
+  bara två av fyra; de andra vaktar mot omkastning respektive för LITE
+  undervisning, och ett sabotage som lär ut för mycket kan inte bryta dem.
+- **Ett prov får inte läsa sin förutsättning ur det som prövas.**
+  `prov_beroenden` läste `BEROENDE` — exakt tabellen sabotaget tömmer — och
+  gick därför igenom med sabotaget på. Provet har nu sin egen kopia.
+- **Ett sabotage måste vara troget mot felet.** Två av lektionsprovets föll
+  tillbaka på `"grund"` i stället för att SAKNA nyckel, som den
+  heltalsnycklade tabellen gjorde, och blev stumma.
 
 ### F3 ? — Två oberoende tak, och ett tredje som inte styrs
 
