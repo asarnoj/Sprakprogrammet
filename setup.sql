@@ -64,6 +64,16 @@ CREATE TABLE Koncept (
                      'Kvantifikator'
                  )),
     källa        TEXT    NOT NULL,
+    /* nivå : CEFR-nivån ordet hör till, ur nivålistorna. En egenskap hos
+       KONCEPTET och inte hos lexemet — mätt 2026-08-14: noll av 736 koncept
+       har olika nivå i olika språk, vilket är väntat eftersom nivån säger
+       hur grundläggande begreppet är, inte hur svårt ordet är.
+
+       Kolumnen fanns i CSV-filerna från början men lästes aldrig in; den
+       återinfördes när generatorn behövde veta vilka ord en nybörjare ska
+       möta. Skild från komplexitetsstegens nivå (GENERATOR.md), som styr
+       KONSTRUKTIONER — de två är ortogonala och behövs båda. */
+    nivå         TEXT    CHECK (nivå IN ('A1', 'A2', 'B1', 'B2', 'C1', 'C2')),
     valens       INTEGER,
     personlighet INTEGER,
     gradbarhet   TEXT    CHECK (gradbarhet IN ('Gradbar', 'Icke gradbar')),

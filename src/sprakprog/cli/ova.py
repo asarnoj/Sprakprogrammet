@@ -25,7 +25,7 @@ def kör(args: argparse.Namespace) -> int:
     with anslut() as språk_db:
         språk_db.row_factory = sqlite3.Row
         g = Generator(språk_db, kort_db, args.språk, nivå=args.nivå,
-                      budget=args.budget)
+                      cefr=args.cefr, budget=args.budget)
         rätt = fel = 0
         for i in range(args.antal):
             f = g.föreslå(kandidater=args.kandidater)
@@ -55,6 +55,8 @@ def lägg_till_parser(sub) -> None:
     p.add_argument("språk", choices=SPRÅK)
     p.add_argument("--antal", type=int, default=10, help="antal meningar")
     p.add_argument("--nivå", type=int, default=21, help="tak på komplexitetsstegen")
+    p.add_argument("--cefr", default="C2", choices=("A1", "A2", "B1", "B2", "C1", "C2"),
+                   help="tak på ordförrådets CEFR-nivå")
     p.add_argument("--budget", type=float, default=1.5,
                    help="Σ(1−R) att sikta på per mening")
     p.add_argument("--kandidater", type=int, default=800)
