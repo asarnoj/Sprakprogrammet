@@ -199,7 +199,8 @@ class SvenskRenderare:
 
         self.u.kontrollera_naken(nf)
         self.u.kontrollera_kvantifikator(nf)
-        kontrollera_stöd(nf, "sv", ("demonstrativ", "kvantifikator", "räkneord"))
+        kontrollera_stöd(nf, "sv", ("demonstrativ", "kvantifikator",
+                                    "räkneord", "självständig"))
 
         # Genus avgör artikel, possessiv och adjektiv bara i singular — "de
         # stora böckerna", "de stora husen". Egenskapen läses ändå alltid;
@@ -209,6 +210,18 @@ class SvenskRenderare:
             raise RenderingsFel(
                 f"sv/{self.u.lemma(huvud)}: genus saknas — artikel och "
                 f"adjektivkongruens går inte att avgöra utan det")
+
+        if nf.självständig:
+            # "boken är min", "huset är mitt", "böckerna är mina". Svenskan
+            # har ingen egen självständig form utan kongruerar med det som
+            # utelämnas — därför måste huvudordets genus läsas ändå.
+            if nf.possessiv is None:
+                raise RenderingsFel(
+                    "sv: en självständig fras måste ha en possessiv "
+                    "— 'min', inte bara 'boken'")
+            variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
+            return [self.u.form_för(
+                nf.possessiv, _possessivcell(nf.numerus, genus), variant)]
 
         if nf.frågedeterminant is not None:
             naturlig = "frågedeterminant"
@@ -425,6 +438,11 @@ class SvenskRenderare:
             genus = self.u.egenskap(self.u.lexem(m.subjekt.koncept), "genus") or UTRUM
             return [self._adjektiv(m.predikativ, False,
                                    self._subjektets_numerus(m.subjekt), genus)]
+        if m.predikativ.självständig:
+            # "boken är min" — possessiven är hela predikativet, och den
+            # böjs som en vanlig nominalfras gör. Ingen artikelfråga finns
+            # att ställa, så vägen går rakt dit.
+            return self.nominalfras(m.predikativ)
         # Predikativt substantiv står utan artikel: "hon är läkare".
         form = self.u.regel(PREDIKATIVT_SUBSTANTIV, "utan_artikel")
         lexem = self.u.lexem(m.predikativ.koncept)

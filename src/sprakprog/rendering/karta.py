@@ -234,6 +234,7 @@ def _domän(k: _Kontext, klass: str, namn: str) -> list:
             "kvantifikator": [ingen, ("symbol", sym(("Nominalfras",
                                                      "kvantifikator")))],
             "räkneord": [ingen, ("symbol", sym(("Nominalfras", "räkneord")))],
+            "självständig": _booldomän(),
         }[namn]
     if klass == "Attribut":
         return {"koncept": [("symbol", sym(("Attribut", "koncept")))],

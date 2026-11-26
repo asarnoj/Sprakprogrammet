@@ -299,6 +299,21 @@ class Nominalfras:
     attribut ("den andra boken"), och `Koncept.roll` skiljer dem åt.
     """
 
+    självständig: bool = False
+    """Frasen ÄR possessiven: "boken är min", "the book is mine".
+
+    Huvudordet står kvar i specen men skrivs inte ut. Det måste stå kvar,
+    för svenskan kongruerar med det som utelämnas — "boken är min", "huset
+    är mitt", "böckerna är mina" — medan engelskan har en egen oböjlig form
+    och skriver "mine" i alla tre fallen.
+
+    Det är den formen `species: Best` betyder i possessivparadigmet (se
+    _legend.yaml): Obest är den attributiva, "my book", och Best den
+    självständiga, "mine". Sju engelska celler satt bakom det här fältet.
+
+    Kräver `possessiv`.
+    """
+
 
 @dataclass(frozen=True, slots=True)
 class Prepositionsfras:
@@ -503,7 +518,7 @@ NAKEN = (Bestämdhet.GENERISK, Bestämdhet.PARTITIV)
 #: Nominalfrasens led som inte alla sju renderare bygger än. Listan står här
 #: och inte i renderarna, så att ett nytt led fälls av `kontrollera_stöd` i
 #: samtliga språk tills var och en av dem säger att den bygger det.
-VALFRIA_LED = ("demonstrativ", "kvantifikator", "räkneord")
+VALFRIA_LED = ("demonstrativ", "kvantifikator", "räkneord", "självständig")
 
 
 def kontrollera_stöd(nf: "Nominalfras", språk: str, stöder=()) -> None:
@@ -519,7 +534,7 @@ def kontrollera_stöd(nf: "Nominalfras", språk: str, stöder=()) -> None:
         # Reservvärdet gäller bara nominalfraser som lästs ur ett äldre
         # facit: en `slots`-dataklass saknar de fält som tillkommit sedan
         # den betades. En fras byggd här har alltid alla led.
-        if getattr(nf, led, None) is not None and led not in stöder:
+        if getattr(nf, led, None) and led not in stöder:
             raise RenderingsFel(
                 f"{språk}: nominalfrasen har {led}, men {språk}-renderaren "
                 f"bygger inte det ledet än och skulle tyst utelämna ordet")

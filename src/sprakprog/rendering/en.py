@@ -121,9 +121,19 @@ class EngelskRenderare:
                                 "subjektsform" if subjekt else "objektsform")
             return [self.u.form(huvud, "nom" if form == "subjektsform" else "obl")]
 
+        if nf.självständig:
+            # "the book is mine" — possessiven ÄR frasen. Engelskan har en
+            # egen oböjlig form för det, och huvudordet skrivs inte ut.
+            if nf.possessiv is None:
+                raise RenderingsFel(
+                    "en: en självständig fras måste ha en possessiv "
+                    "— 'mine', inte bara 'the book'")
+            return [self.u.form_för(nf.possessiv, "best")]
+
         self.u.kontrollera_naken(nf)
         self.u.kontrollera_kvantifikator(nf)
-        kontrollera_stöd(nf, "en", ("demonstrativ", "kvantifikator", "räkneord"))
+        kontrollera_stöd(nf, "en", ("demonstrativ", "kvantifikator",
+                                    "räkneord", "självständig"))
 
         if nf.frågedeterminant is not None:
             naturlig = "frågedeterminant"
