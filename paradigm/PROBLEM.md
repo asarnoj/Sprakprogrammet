@@ -4110,16 +4110,61 @@ Ordningen är nu presens först. Utfall:
 fem steg, engelskan fyra) mot tjugo konstruktioner, så den proportionella
 flätningen lägger konstruktioner först — och nivå 1–4 har ingen verbform alls.
 
-**Vad som saknas är en regel om att varje sats behöver ett finit verb.** Den
-är av samma slag som `BEROENDE`, fast åt andra hållet: inte "den här
-konstruktionen kräver den här böjningen" utan "ALLA konstruktioner kräver att
-något går att böja". Engelskan gör den svår — dess vanligaste satsform
-använder grundformen (`inf_imp`, "I read"), inte den enda märkta
-presensformen (`pres_3sg`, "she reads") — så regeln kan inte bara peka på
-tempus `Pres`.
+#### GRUNDBÖJNINGEN — NIVÅ 1 GÅR ATT TALA PÅ (2026-08-28)
 
-Grinden står därför kvar AVSTÄNGD som standard. Den är byggd och mätt; det
-som fattas är att stegens första nivåer ska gå att tala på.
+Regeln som saknades kunde inte härledas ur tempus, och engelskan är beviset:
+en enkel sats slår upp BÅDE `pres_3sg` ("she reads") och `inf_imp` ("I
+read"), och den andra är märkt `Inf`. Ett villkor som pekade på tempus `Pres`
+hade missat halva engelskans grundböjning.
+
+**Mängden MÄTS därför.** `grundböjning(språk)` renderar fyra verb i sex
+personer och läser instrumenteringen — samma väg som `nåbara` tar, och av
+samma skäl: bakvägen från cell till "behövs den för en enkel sats" finns
+inte. Arton renderingar per språk, cachat.
+
+    sv   pres, pres_passiv
+    en   inf_imp, pres_3sg
+    de   presens 1sg, 2sg, 3sg, 1pl
+    fr   presens alla sex
+    ja   masu
+
+**Deponensverben tvingade fram ett fjärde provverb.** Med bara läsa, arbeta
+och leva saknade svenskans grundböjning `pres_passiv`, och nivå 1 kunde bygga
+"En gris finns." utan kort för dess ändelse — ett av 164 fall. Svenskans
+deponensverb (finnas, hoppas, trivas) har ingen aktiv form; deras presens ÄR
+passivformen. `verb_finnas` ingår nu, och listan är inte "tre typiska verb"
+utan "verb som tillsammans rör varje väg genom presens".
+
+**Och grundböjningen är ETT steg, inte ett per cell.** Med en cell per steg
+byggde franskans nivå 1 hundrasextiofem meningar varav tio slog upp
+`pres_2pl`, som låg på nivå 5. Engelskan hade samma hål på `inf_imp` i 13 av
+164. Paradigmets delar går inte att låsa upp var för sig utan att generatorn
+måste veta vilka SUBJEKT som är tillåtna, och den gränsen finns inte. Att
+öppna presens som en helhet är Julius egen *"klumpa ihop vissa nivåer ifall
+de enskilt är för små"* — framtvingad i stället för vald.
+
+**Utfallet, med grinden på:**
+
+    språk   meningar på nivå 1   med celler utan kort
+    sv                     164                      0
+    en                     164                      0
+    de                     143                      0
+    fr                     165                      0
+    es                     155                      0
+    it                     165                      0
+    ja                     167                      0
+
+Stegarnas början:
+
+    sv   pres · objekt · bestämdhet · numerus · attribut · inf
+    en   pres_3sg+inf_imp · objekt · bestämdhet · numerus · attribut
+    de   pres_1sg+pres_2sg+pres_3sg+pres_1pl · objekt · bestämdhet · numerus
+    fr   [presens alla sex] · inf · objekt · pret_1sg · bestämdhet
+    ja   masu · objekt · bestämdhet · jisho · numerus
+
+`dimensionsprov` vaktar elva invarianter, var och en med eget sabotage. Den
+sista — *nivå 1 går att tala på* — renderar och resonerar inte, och det är
+den som avgör om grinden går att slå på.
 
 #### VALT OCH BYGGT: KORTET HÖR TILL ÄNDELSEN (2026-08-28)
 

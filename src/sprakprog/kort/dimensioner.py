@@ -202,8 +202,97 @@ BEROENDE: dict[str, tuple[str, ...]] = {
 PASSIVKONSTRUKTION = "passiv"
 
 
-def stege(språk: str, ordklass: str = "Verb") -> list[tuple[str, str]]:
+#: Verben som mäts. De tre första är valda för att vara REGELBUNDNA i alla
+#: sju språken — mätningen ska säga vad ett paradigm kräver, inte vad ett
+#: suppletivt verb råkar göra.
+#:
+#: `verb_finnas` är med av motsatt skäl. Svenskans DEPONENSVERB — finnas,
+#: hoppas, trivas — har ingen aktiv form: deras presens ÄR `pres_passiv`.
+#: Utan det verbet i mätningen saknade grundböjningen den cellen, och nivå 1
+#: kunde bygga "En gris finns." utan att ha ett kort för dess ändelse. Ett av
+#: 164 fall, och just det slaget som annars upptäcks först i drift.
+#:
+#: Listan är alltså inte "tre typiska verb" utan "verb som tillsammans rör
+#: varje väg genom presens". Hittas en väg till hör ett verb till här.
+GRUNDVERB = ("kom_läsa", "arb_arbeta", "ext_leva", "verb_finnas")
+
+_grundcache: dict[str, frozenset] = {}
+
+
+def grundböjning(språk: str, ordklass: str = "Verb") -> frozenset[str]:
+    """Cellerna en MINIMAL SATS slår upp — subjekt plus verb, sex personer.
+
+    NIVÅ 1 MÅSTE GÅ ATT TALA PÅ. Utan den här mängden lade den proportionella
+    flätningen konstruktioner först i språk med korta böjningsstegar, och då
+    hade kursen nivåer utan en enda verbform: mätt kom den första finita
+    formen på nivå 4 i svenskan och 5 i engelskan. En nivå man inte kan säga
+    något på är ingen nivå.
+
+    MÄNGDEN MÄTS, den räknas inte fram. Renderarens instrumentering säger
+    vilka celler som faktiskt slogs upp — samma väg som `nåbara` tar, och av
+    samma skäl: bakvägen från cell till "behövs den för en enkel sats" finns
+    inte och behöver inte finnas.
+
+    Och den kan inte härledas ur tempus. Engelskan slår upp BÅDE `pres_3sg`
+    ("she reads") och `inf_imp` ("I read") för samma enkla sats, och den
+    andra är märkt Inf. En regel som pekade på tempus `Pres` hade missat
+    hälften av engelskans grundböjning.
+
+    Mätt utfall:
+
+        sv   pres
+        en   inf_imp, pres_3sg
+        de   presens alla sex personer
+        fr   presens alla sex personer
+        ja   masu
+    """
+    if språk in _grundcache:
+        return _grundcache[språk]
+    from ..db import anslut
+    from ..rendering import (RENDERARE, Mening, Nominalfras, RenderingsFel,
+                             Uppslag)
+    from ..rendering.spec import Referentgenus
+
+    db = anslut()
+    subjekt = [Nominalfras("pronomen_1sg"), Nominalfras("pronomen_2sg"),
+               Nominalfras("pronomen_3sg_fem"),
+               Nominalfras("pronomen_1pl", referent=Referentgenus.MASKULIN),
+               Nominalfras("pronomen_2pl", referent=Referentgenus.MASKULIN),
+               Nominalfras("pronomen_3pl", referent=Referentgenus.MASKULIN)]
+    celler: set[str] = set()
+    original = Uppslag.form
+
+    def logga(själv, lexem, cell):
+        rad = db.execute(
+            """SELECT k.ordklass FROM Lexem l JOIN Koncept k ON k.id = l.koncept_id
+               WHERE l.språk = ? AND l.id = ? LIMIT 1""",
+            (språk, lexem["id"])).fetchone()
+        if rad and rad["ordklass"] == ordklass:
+            celler.add(cell)
+        return original(själv, lexem, cell)
+
+    Uppslag.form = logga
+    try:
+        renderare = RENDERARE[språk](db)
+        for verb in GRUNDVERB:
+            for nf in subjekt:
+                try:
+                    renderare.rendera(Mening(verb=verb, subjekt=nf))
+                except (RenderingsFel, KeyError, ValueError):
+                    continue
+    finally:
+        Uppslag.form = original
+        db.close()
+    _grundcache[språk] = frozenset(celler)
+    return _grundcache[språk]
+
+
+def stege(språk: str,
+          ordklass: str = "Verb") -> list[tuple[str, tuple[str, ...]]]:
     """Den sammanflätade stegen: [(typ, namn)] där typ är 'konstruktion' eller 'böjning'.
+
+    `namn` är en TUPEL, därför att ett steg kan bära flera saker. Nästan alla
+    bär en; grundböjningen bär hela presensparadigmet, se nedan.
 
     TVÅ STEGAR MED HELT OLIKA LÄNGD. Konstruktionerna är tjugo och samma i
     alla språk; böjningsstegen är fyra i engelskan och fyrtiofem i spanskan.
@@ -232,30 +321,50 @@ def stege(språk: str, ordklass: str = "Verb") -> list[tuple[str, str]]:
     except FileNotFoundError:
         axlar = {}
 
-    def sist_med(villkor) -> int:
-        """Index för den SISTA böjningscell som uppfyller villkoret, annars −1."""
-        träffar = [i for i, cell in enumerate(böjning) if villkor(axlar.get(cell, {}))]
+    def sist_med(lista, villkor) -> int:
+        """Index för den SISTA cellen i `lista` som uppfyller villkoret, annars −1."""
+        träffar = [i for i, cell in enumerate(lista) if villkor(axlar.get(cell, {}))]
         return träffar[-1] if träffar else -1
 
+    # GRUNDBÖJNINGEN FÖRST, före varje konstruktion. Se `grundböjning`.
+    grund = grundböjning(språk, ordklass)
+    först = [c for c in böjning if c in grund]
+    resten = [c for c in böjning if c not in grund]
+
+    # KRAVEN RÄKNAS MOT RESTEN, eftersom grundböjningen redan ligger före
+    # varje konstruktion. Att räkna dem mot hela listan gav ett index i fel
+    # lista så snart grundböjningen bröts ut.
     krav: dict[str, int] = {}
     for namn, tempus in BEROENDE.items():
         krav[namn] = sist_med(
-            lambda a, t=tempus: tempusnamn.get(a.get("tempus")) in t)
-    krav[PASSIVKONSTRUKTION] = sist_med(lambda a: a.get("diates") == 2)
+            resten, lambda a, t=tempus: tempusnamn.get(a.get("tempus")) in t)
+    krav[PASSIVKONSTRUKTION] = sist_med(
+        resten, lambda a: a.get("diates") == 2)
 
-    # Proportionell position i [0, 1) för varje rad i båda listorna.
-    rader: list[tuple[float, int, str, str]] = []
-    for i, cell in enumerate(böjning):
-        rader.append(((i + 1) / len(böjning), 0, "böjning", cell))
+    # GRUNDBÖJNINGEN ÄR ETT ENDA STEG, inte ett per cell. Mätt med grinden
+    # på och en cell per steg: nivå 1 kunde bygga 164 meningar men tio av dem
+    # slog upp `pres_2pl`, som låg på nivå 5 — "Vous travaillez" hade ingen
+    # ändelse att pröva. Engelskan hade samma hål på `inf_imp` i 13 av 164.
+    #
+    # Delarna av ett paradigm går inte att låsa upp var för sig utan att
+    # generatorn måste veta vilka SUBJEKT som är tillåtna, och det är en
+    # gräns systemet inte har. Att öppna presens som en helhet är det som
+    # gör nivå 1 talbar — och det är Julius egen "klumpa ihop vissa nivåer
+    # ifall de enskilt är för små", framtvingad i stället för vald.
+    rader: list[tuple[float, int, str, tuple[str, ...]]] = []
+    if först:
+        rader.append((-1.0, 0, "böjning", tuple(först)))
+    for i, cell in enumerate(resten):
+        rader.append(((i + 1) / len(resten), 0, "böjning", (cell,)))
     for i, namn in enumerate(konstruktioner):
         pos = (i + 1) / len(konstruktioner)
         # Ligger konstruktionen före sitt krav skjuts den ner precis efter.
         gräns = krav.get(namn, -1)
-        if gräns >= 0:
-            pos = max(pos, (gräns + 1) / len(böjning))
+        if gräns >= 0 and resten:
+            pos = max(pos, (gräns + 1) / len(resten))
         # 1 = konstruktionen kommer EFTER böjningen på samma position, så
         # den böjning ett krav pekar på hinner före.
-        rader.append((pos, 1, "konstruktion", namn))
+        rader.append((pos, 1, "konstruktion", (namn,)))
     rader.sort(key=lambda r: (r[0], r[1]))
     return [(typ, namn) for _, _, typ, namn in rader]
 
@@ -273,5 +382,5 @@ def upplåst_vid(språk: str, nivå: int,
     eftersom de aldrig var två.
     """
     steg = stege(språk, ordklass)[:max(0, nivå)]
-    return ([namn for typ, namn in steg if typ == "konstruktion"],
-            {namn for typ, namn in steg if typ == "böjning"})
+    return ([n for typ, namn in steg if typ == "konstruktion" for n in namn],
+            {n for typ, namn in steg if typ == "böjning" for n in namn})

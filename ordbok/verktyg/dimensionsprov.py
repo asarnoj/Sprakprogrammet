@@ -112,8 +112,11 @@ def prov_stegen_är_hel() -> list[str]:
     fel = []
     for språk in SPRÅK:
         s = d.stege(språk)
-        k = [n for t, n in s if t == "konstruktion"]
-        b = [n for t, n in s if t == "böjning"]
+        # NAMNET ÄR EN TUPEL sedan grundböjningen blev ett steg som bär hela
+        # presensparadigmet. Att läsa det som en sträng gav en lista av
+        # tuplar och ett prov som föll på fel grund.
+        k = [n for t, namn in s if t == "konstruktion" for n in namn]
+        b = [n for t, namn in s if t == "böjning" for n in namn]
         väntad_b = [c for c, _ in d.projicera().get(språk, [])]
         if sorted(k) != sorted(NIVÅ.values()):
             fel.append(f"{språk}: konstruktionerna stämmer inte ({len(k)} av "
@@ -153,7 +156,7 @@ def prov_beroenden() -> list[str]:
     fel = []
     for språk in SPRÅK:
         s = d.stege(språk)
-        plats = {namn: i for i, (_, namn) in enumerate(s)}
+        plats = {n: i for i, (_, namn) in enumerate(s) for n in namn}
         try:
             axlar = {c.id: c.axlar
                      for c in ladda_slot(språk, "Verb", legend).celler}
@@ -162,7 +165,7 @@ def prov_beroenden() -> list[str]:
         for konstruktion, tempus in KRAV.items():
             if konstruktion not in plats:
                 continue
-            celler = [n for t, n in s if t == "böjning" and (
+            celler = [n for t, namn in s if t == "böjning" for n in namn if (
                 (axlar.get(n, {}).get("diates") == 2) if tempus is None
                 else tempusnamn.get(axlar.get(n, {}).get("tempus")) in tempus)]
             if celler and plats[celler[-1]] > plats[konstruktion]:
@@ -312,6 +315,80 @@ def prov_migrationen_bevarar_historiken() -> list[str]:
     return fel
 
 
+def prov_nivå_ett_går_att_tala_på() -> list[str]:
+    """Varje verbcell en NIVÅ 1-mening slår upp ska ha ett kort.
+
+    DET HÄR ÄR PROVET SOM AVGÖR OM GRINDEN GÅR ATT SLÅ PÅ. Utan det bygger
+    generatorn meningar vars ändelser inget kort täcker, och då är
+    kunskapen både oprövbar och oattribuerbar — precis felet böjningsstegen
+    fanns för att laga, återinfört av sin egen grind.
+
+    Mätt under bygget, med en cell per steg: franskans nivå 1 byggde 165
+    meningar varav tio slog upp `pres_2pl` som låg på nivå 5, och engelskan
+    hade samma hål på `inf_imp` i 13 av 164. Grundböjningen är därför ETT
+    steg — hela presensparadigmet öppnas på en gång, eftersom delarna inte
+    går att låsa upp var för sig utan att generatorn måste veta vilka subjekt
+    som är tillåtna.
+
+    PROVET RENDERAR, det resonerar inte. Samma väg som `nåbara` tar.
+    """
+    import random
+    import tempfile
+    from sprakprog.db import anslut
+    from sprakprog.generator.urval import Ordförråd, Samplare
+    from sprakprog.kort.befolka import befolka
+    from sprakprog.kort.db import skapa_kortdatabas
+    from sprakprog.rendering import RENDERARE, RenderingsFel, Uppslag, Validator
+
+    sp = anslut()
+    katalog = Path(tempfile.mkdtemp())
+    fel = []
+    for språk in SPRÅK:
+        db = skapa_kortdatabas(katalog / f"{språk}.db")
+        _, celler = d.upplåst_vid(språk, 1)
+        befolka(db, sp, {språk}, cefr="A1", mät=False,
+                böjningsceller={(språk, "Verb"): celler})
+        täckta = {r["cell"] for r in db.execute(
+            """SELECT DISTINCT c.cell FROM Cellkort c JOIN Kort k ON k.id = c.kort_id
+               WHERE c.språk = ? AND k.typ = 'system' AND k.ordklass = 'Verb'""",
+            (språk,))}
+        renderare = RENDERARE[språk](sp)
+        validator = Validator(sp)
+        samplare = Samplare(Ordförråd(sp, språk, "A1"), 1, random.Random(0))
+        rörda: list = []
+        original = Uppslag.form
+        Uppslag.form = lambda själv, lex, cell: (
+            rörda.append((lex["id"], cell)) or original(själv, lex, cell))
+        hål: set[str] = set()
+        try:
+            for _ in range(60):
+                m = samplare.kandidat()
+                if m is None or validator.validera(m):
+                    continue
+                rörda.clear()
+                try:
+                    renderare.rendera(m)
+                except (RenderingsFel, KeyError, ValueError):
+                    continue
+                for lid, cell in rörda:
+                    if cell in täckta:
+                        continue
+                    rad = sp.execute(
+                        """SELECT k.ordklass FROM Lexem l
+                           JOIN Koncept k ON k.id = l.koncept_id WHERE l.id = ?""",
+                        (lid,)).fetchone()
+                    if rad and rad["ordklass"] == "Verb":
+                        hål.add(cell)
+        finally:
+            Uppslag.form = original
+        db.close()
+        if hål:
+            fel.append(f"{språk}: nivå 1 bygger meningar som slår upp "
+                       f"{', '.join(sorted(hål))} — celler utan kort")
+    sp.close()
+    return fel
+
+
 PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("ingen ändelse lärs ut två gånger", prov_ingen_upprepning),
         ("varje ändelse lärs ut någon gång", prov_allt_lärs_ut),
@@ -321,7 +398,8 @@ PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("de två sorterna varvas", prov_varvas),
         ("inget tomt läromoment", prov_inget_tomt_läromoment),
         ("varje cell har ett kort", prov_varje_cell_har_ett_kort),
-        ("migrationen bevarar historiken", prov_migrationen_bevarar_historiken)]
+        ("migrationen bevarar historiken", prov_migrationen_bevarar_historiken),
+        ("nivå 1 går att tala på", prov_nivå_ett_går_att_tala_på)]
 
 
 
@@ -462,6 +540,13 @@ def _sabotage_utan_migration():
     return lambda: setattr(b, "_slå_ihop_gamla_ändelsekort", äkta)
 
 
+def _sabotage_grundböjning_utspridd():
+    """Före hopklumpningen: ett steg per cell, även i grundböjningen."""
+    äkta = d.grundböjning
+    d.grundböjning = lambda språk, ordklass="Verb": frozenset()
+    return lambda: setattr(d, "grundböjning", äkta)
+
+
 #: (sabotage, vilket prov det ska fälla).
 SABOTAGE = [
     (_sabotage_omkastad, 0),
@@ -474,6 +559,7 @@ SABOTAGE = [
     (_sabotage_kort_per_cell, 7),
     (_sabotage_hoppa_celler, 8),
     (_sabotage_utan_migration, 9),
+    (_sabotage_grundböjning_utspridd, 10),
 ]
 
 
