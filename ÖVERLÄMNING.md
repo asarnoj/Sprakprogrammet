@@ -700,20 +700,43 @@ Att öppna en nivå ÄR att köra befolkningen igen. Den är additiv och
 idempotent, så historiken överlever — och det är precis vad som ska hända:
 gamla ord får nya former att lära sig.
 
-**Tröskeln** ligger i `schemalaggning.py`: nivån är klar när 90 % av dess
-schemalagda kort har stabilitet över sju dagar. Stabilitet är det FSRS
-faktiskt modellerar, sju dagar betyder "överlevt minst en glömskekurva", och
-nittio procent lämnar plats för de svåraste korten att släpa efter.
-`ordbok kort --läge` visar hur nära man är. Två tal, båda gissningar av
-samma sort som vikterna — men lätta att ändra och lätta att förstå.
+**Tröskeln** är en KAPACITETSFRÅGA och inte en behärskningsfråga. Att mäta om
+användaren "kan" nivån vore att implementera om FSRS garanti: håller man
+repetitionerna minns man per konstruktion 90 % av sina kort, hela tiden. Det
+som däremot är en verklig gräns är arbetsmängden.
 
-Hela cykeln, körd:
+| storhet | varifrån |
+|---|---|
+| belastning, Σ 1/intervall | FSRS egna intervall |
+| kort per mening | mätt ur användarens egen logg |
+| meningar per dag | **användarens val**, i `Kurs` bredvid `budget` |
+
+Ett enda valt tal, och det är en uppgift om användarens dygn. Hela cykeln,
+körd på tysk A1 med kapaciteten satt till 20 meningar om dagen:
 
 ```
-nivå 4                    1 112 kort,   0 % mogna
-öva tills tröskeln nås    1 112 kort,  94 % mogna   ✓ klar
-lås upp nivå 9           +262 kort,   76 % mogna   90 % krävs
+sedda kort   rep/dag   meningar/dag           nivå 9 (+262 kort)
+       100     556,0           91,6              113,2  ✗ för dyrt
+       400     178,7           29,5               36,4  ✗
+       700     112,3           18,5  ✓ plats      22,9  ✗
+     1 000      85,7           14,1  ✓ plats      17,5  ✓ RYMS
+     1 112      80,8           13,3  ✓ plats      16,5  ✓
 ```
+
+`ordbok kort --läge [--kostnad NIVÅ]` visar det, och kostnadsfrågan ställs i
+en kopia — att fråga vad något kostar får inte vara att köpa det.
+
+**Två mått förkastades, båda mätta först.** "Generatorn kan inte längre bygga
+en tillräckligt svår mening" gav 1,18 halvlärt mot 1,02 helt lärt — ingen
+spännvidd, och principiellt fel eftersom R faller med tiden sedan
+repetitionen: måttet säger "slut" på kvällen och "inte slut" efter en veckas
+uppehåll. Och att räkna osedda kort med stabiliteten efter första rätta
+svaret beskrev en topp som aldrig inträffar. Vad ett kort kostar när det
+sitter mäts i stället på just den användaren, ur hens egna sedda kort.
+
+Kursen svarar hellre **"oövad"** än gissar. Utan historik finns ingen mätning,
+och utan mätning inget svar — men heller ingen förlust, för man kan inte lämna
+en nivå man inte börjat på.
 
 ---
 

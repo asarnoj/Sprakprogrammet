@@ -623,11 +623,54 @@ en signal om något annat: att ordet hör tillbaka till introduktionen.
 testa precis när dess form går att nå med `Mening` — sv 95 %, en 89 %,
 de 82 %. Kort för onåbara former ska inte skapas.
 
-**Upplåsning: automatisk tröskel, användaren får skjuta upp.** Nivån öppnas
-när tillräckligt är kunnat, men man tvingas inte börja.
+**Upplåsning är en kapacitetsfråga och inte en behärskningsfråga.** Nivån
+öppnas när belastningen den skulle ge ryms i det användaren valt att öva —
+inte när ett prov är avklarat. Se avsnittet nedan.
 
 **Undervisning vid upplåsning**, med möjlighet att gå tillbaka till
 lektionen. Att undervisa en regel och att schemalägga den är olika saker.
+
+### Upplåsningen: kapacitet, inte behärskning
+
+Det första förslaget var "nivån öppnas när 90 % av korten har stabilitet över
+sju dagar". Det var två påhittade tal, och värre än så: **regeln var
+överflödig.** FSRS kontrakt är att den som håller sina repetitioner minns
+90 % av sina kort, hela tiden. Att sedan mäta om användaren "kan" nivån är
+att implementera om schemaläggarens garanti, sämre och med gissade
+konstanter. Det finns ingen behärskning kvar att pröva.
+
+Den verkliga gränsen är arbetsmängden. Nya kort kostar repetitioner och
+dygnet är ändligt. Alltså:
+
+| storhet | varifrån |
+|---|---|
+| belastning, Σ 1/intervall | FSRS egna intervall |
+| kort per mening | mätt ur användarens egen logg |
+| meningar per dag | **användarens val** |
+
+Ett enda valt tal, och det är en uppgift om användarens dygn som ingen
+mätning kan ersätta. Det bor i `Kurs` bredvid `budget`, av samma skäl.
+
+**Två förkastade mått, båda mätta först.** Det ena var "generatorn kan inte
+längre bygga en tillräckligt svår mening", alltså högsta uppnåeliga Σ(1−R).
+Mätningen dömde ut det: 1,18 halvlärt mot 1,02 helt lärt, ingen spännvidd
+att tala om. Skälet är principiellt — R faller med tiden sedan repetitionen,
+så måttet säger "materialet slut" på kvällen och "inte slut" efter en veckas
+uppehåll. Stabilitet har inte det felet. Belastningen gav 90 → 13 meningar
+per dag på samma material.
+
+Det andra var att räkna osedda kort med stabiliteten efter första rätta
+svaret. Det beskriver en topp som aldrig inträffar: generatorn introducerar
+nya kort i den takt användaren övar, inte alla på en gång, och intervallen
+växer. Måttet påstod att 262 nya kort kostar 22 meningar om dagen för alltid.
+Vad ett kort kostar när det väl sitter går i stället att **mäta på just den
+här användaren** — medelbelastningen över hens egna sedda kort. Estimatet är
+pessimistiskt precis när hon har lite data om sig själv, vilket är rätt håll
+att fela åt, och det skärps av sig självt.
+
+Kursen svarar hellre "oövad" än gissar: utan historik finns ingen mätning,
+och utan mätning inget svar. Det är heller ingen förlust — man kan inte lämna
+en nivå man inte börjat på, och att öva den skapar mätningen.
 
 ---
 

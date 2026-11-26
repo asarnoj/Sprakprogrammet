@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import sqlite3
 from pathlib import Path
 
 from ..db import anslut
@@ -37,14 +38,37 @@ def kör(args: argparse.Namespace) -> int:
     # och inte en ändring.
     if args.läge:
         from ..kort import upplåsningsläge
-        from ..kort.schemalaggning import UPPLÅSNINGSANDEL, UPPLÅSNINGSDAGAR
-        print(f"\nUpplåsning (mogen = stabilitet ≥ {UPPLÅSNINGSDAGAR:.0f} dagar):")
+        print("\nUpplåsning — ryms nästa nivå i dagen?")
+        print(f"   {'':4}{'kort':>7}{'rep/dag':>10}{'kort/mening':>13}"
+              f"{'meningar/dag':>14}{'du valt':>9}")
         for s_ in sorted(språk):
-            l = upplåsningsläge(kort_db, s_)
+            l = upplåsningsläge(kort_db, s_, args.meningar_per_dag)
             if not l["totalt"]:
                 continue
-            märke = "✓ klar" if l["klar"] else f"{UPPLÅSNINGSANDEL:.0%} krävs"
-            print(f"   {s_}  {l['mogna']:5}/{l['totalt']:<5} {l['andel']:5.0%}   {märke}")
+            k = f"{l['kort_per_mening']:.1f}" if l["kort_per_mening"] else "—"
+            krävs = f"{l['krävs']:.1f}" if l["krävs"] is not None else "oövad"
+            rep = f"{l['rep_per_dag']:.1f}" if l["rep_per_dag"] is not None else "—"
+            märke = "  ✓ plats finns" if l["klar"] else ""
+            print(f"   {s_:4}{l['totalt']:7}{rep:>10}{k:>13}"
+                  f"{krävs:>14}{l['kapacitet']:9}{märke}")
+        if args.kostnad:
+            from ..kort.schemalaggning import kostnad
+            with anslut() as språk_db:
+                språk_db.row_factory = sqlite3.Row
+                for s_ in sorted(språk):
+                    k = kostnad(kort_db, språk_db, s_, args.kostnad, args.cefr,
+                                args.meningar_per_dag)
+                    if not k["före"]["totalt"]:
+                        continue
+                    e = k["efter"]
+                    rad = f"\n   {s_} → nivå {args.kostnad}: +{k['nya_kort']} kort"
+                    if e["krävs"] is None:
+                        print(rad + " — kursen oövad, kostnaden går inte att mäta")
+                        continue
+                    print(f"{rad}, {e['rep_per_dag']:.0f} rep/dag "
+                          f"= {e['krävs']:.1f} meningar/dag   "
+                          + ("✓ ryms" if k["ryms"] else
+                             f"✗ över de {e['kapacitet']} du valt"))
         return 0
 
     if args.kö:
@@ -101,6 +125,10 @@ def lägg_till_parser(sub) -> None:
                    help="tak på ordförrådets CEFR-nivå")
     p.add_argument("--kö", choices=SPRÅK, help="visa dagens kö för ett språk")
     p.add_argument("--antal", type=int, default=20, help="kölängd")
+    p.add_argument("--meningar-per-dag", type=int, dest="meningar_per_dag",
+                   help="hur mycket du vill öva — annars kursens inställning")
+    p.add_argument("--kostnad", type=int, metavar="NIVÅ",
+                   help="vad en nivå skulle kosta, utan att låsa upp den")
     p.add_argument("--läge", action="store_true",
                    help="hur nära nästa nivå kursen står")
     p.add_argument("--db", help="annan sökväg än kort.db")
