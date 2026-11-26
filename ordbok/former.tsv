@@ -14487,7 +14487,8 @@ eko_v_äga	ja	所有する	所有しろ					16			1
 eko_v_äga	ja	所有する	所有する					1			1
 eko_v_äga	ja	所有する	所有すれば					2048			1
 eko_v_äga	ja	所有する	所有できる					512			1
-eko_v_äga	sv	äga	äg					17			1
+eko_v_äga	sv	äga	äg					16			1
+eko_v_äga	sv	äga	äga					1			1
 eko_v_äga	sv	äga	ägd	1	1		1	8			1
 eko_v_äga	sv	äga	ägda				3	8			1
 eko_v_äga	sv	äga	ägde					4			1
@@ -18169,9 +18170,10 @@ fys_lyfta	ja	持ち上げる	持ち上げる					1			1
 fys_lyfta	ja	持ち上げる	持ち上げれば					2048			1
 fys_lyfta	ja	持ち上げる	持ち上げろ					16			1
 fys_lyfta	sv	lyfta	lyft					8			1
-fys_lyfta	sv	lyfta	lyft					17			1
+fys_lyfta	sv	lyfta	lyft					16			1
 fys_lyfta	sv	lyfta	lyft	1	1		1	8			1
 fys_lyfta	sv	lyfta	lyft	1	1		2	8			1
+fys_lyfta	sv	lyfta	lyfta					1			1
 fys_lyfta	sv	lyfta	lyfta				3	8			1
 fys_lyfta	sv	lyfta	lyfte					4			1
 fys_lyfta	sv	lyfta	lyfter					2			1
@@ -18710,7 +18712,8 @@ fys_röra	ja	触る	触れば					2048			1
 fys_röra	ja	触る	触れる					512			1
 fys_röra	ja	触る	触ろう					1024			1
 fys_röra	sv	röra	rör					2			1
-fys_röra	sv	röra	rör					17			1
+fys_röra	sv	röra	rör					16			1
+fys_röra	sv	röra	röra					1			1
 fys_röra	sv	röra	rörd	1	1		1	8			1
 fys_röra	sv	röra	rörda				3	8			1
 fys_röra	sv	röra	rörde					4			1
@@ -23130,7 +23133,8 @@ gen_försöka	ja	試みる	試みられる					512			1
 gen_försöka	ja	試みる	試みる					1			1
 gen_försöka	ja	試みる	試みれば					2048			1
 gen_försöka	ja	試みる	試みろ					16			1
-gen_försöka	sv	försöka	försök					17			1
+gen_försöka	sv	försöka	försök					16			1
+gen_försöka	sv	försöka	försöka					1			1
 gen_försöka	sv	försöka	försöker					2			1
 gen_försöka	sv	försöka	försöks					3			2
 gen_försöka	sv	försöka	försökt					8			1
@@ -25973,7 +25977,8 @@ gen_tycka	ja	思う	思った					4			1
 gen_tycka	ja	思う	思って					128			1
 gen_tycka	ja	思う	思わない					256			1
 gen_tycka	ja	思う	思われる					1			2
-gen_tycka	sv	tycka	tyck					17			1
+gen_tycka	sv	tycka	tyck					16			1
+gen_tycka	sv	tycka	tycka					1			1
 gen_tycka	sv	tycka	tyckas					1			2
 gen_tycka	sv	tycka	tycker					2			1
 gen_tycka	sv	tycka	tycks					2			2
@@ -29205,7 +29210,8 @@ kog_lära	ja	学ぶ	学ぼう					1024			1
 kog_lära	ja	学ぶ	学んだ					4			1
 kog_lära	ja	学ぶ	学んで					128			1
 kog_lära	sv	lära sig	lär sig					2			1
-kog_lära	sv	lära sig	lär sig					17			1
+kog_lära	sv	lära sig	lär sig					16			1
+kog_lära	sv	lära sig	lära sig					1			1
 kog_lära	sv	lära sig	läras sig					1			2
 kog_lära	sv	lära sig	lärd sig	1	1		1	8			1
 kog_lära	sv	lära sig	lärda sig				3	8			1
@@ -30095,7 +30101,8 @@ kog_tänka	ja	考える	考えられる					512			1
 kog_tänka	ja	考える	考える					1			1
 kog_tänka	ja	考える	考えれば					2048			1
 kog_tänka	ja	考える	考えろ					16			1
-kog_tänka	sv	tänka	tänk					17			1
+kog_tänka	sv	tänka	tänk					16			1
+kog_tänka	sv	tänka	tänka					1			1
 kog_tänka	sv	tänka	tänkas					1			2
 kog_tänka	sv	tänka	tänker					2			1
 kog_tänka	sv	tänka	tänks					2			2
@@ -35452,7 +35459,8 @@ käns_gråta	ja	泣く	泣ける					512			1
 käns_gråta	ja	泣く	泣こう					1024			1
 käns_gråta	sv	gråta	grät					4			1
 käns_gråta	sv	gråta	gräts					4			2
-käns_gråta	sv	gråta	gråt					17			1
+käns_gråta	sv	gråta	gråt					16			1
+käns_gråta	sv	gråta	gråta					1			1
 käns_gråta	sv	gråta	gråtad	1	1		1	8			1
 käns_gråta	sv	gråta	gråtade				3	8			1
 käns_gråta	sv	gråta	gråtat	1	1		2	8			1
@@ -46992,8 +47000,9 @@ soc_gifta_sig	ja	結婚する	結婚できる					512			1
 soc_gifta_sig	sv	gifta sig	gift	1	1		1	8			1
 soc_gifta_sig	sv	gifta sig	gift	1	1		2	8			1
 soc_gifta_sig	sv	gifta sig	gift sig					8			1
-soc_gifta_sig	sv	gifta sig	gift sig					17			1
+soc_gifta_sig	sv	gifta sig	gift sig					16			1
 soc_gifta_sig	sv	gifta sig	gifta				3	8			1
+soc_gifta_sig	sv	gifta sig	gifta sig					1			1
 soc_gifta_sig	sv	gifta sig	gifte sig					4			1
 soc_gifta_sig	sv	gifta sig	gifter sig					2			1
 soc_hälsa	de	grüßen	gegrüßt					8			1

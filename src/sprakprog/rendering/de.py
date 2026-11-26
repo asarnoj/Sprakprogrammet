@@ -247,6 +247,19 @@ class TyskRenderare:
             numerus = "pl"
         return person, numerus
 
+    def _ren_infinitiv(self, m: Mening) -> bool:
+        """Tar verbet sitt komplement UTAN zu?
+
+        Skillnaden avgör hela slutfältet, och den ligger redan i datan: de
+        sex modalverben har ingen preposition på sin komplementslot, de sex
+        andra komplementverben har zu. En ren infinitiv bildar ett
+        KOHERENT verbalkomplex tillsammans med det styrande verbet — de två
+        formerna hör ihop som ett block. En zu-infinitiv gör inte det; den
+        är en egen fras.
+        """
+        return (m.komplement is not None
+                and self.u.infinitivmarkör(m.verb) is None)
+
     def verbdelar(self, m: Mening) -> tuple[str, list[str]]:
         """Returnerar (finit verb, infinita delar sist i satsen).
 
@@ -286,6 +299,26 @@ class TyskRenderare:
                 infinita = [self.u.form_för("verb_bli", "part2_passiv")]
             return finit, [self.u.form_för(m.verb, "part2"), *infinita]
         if m.aspekt is Aspekt.PERFEKT:
+            stam = "pret" if m.tid is Tidsreferens.FÖRFLUTEN else "pres"
+            if self._ren_infinitiv(m):
+                # ERSATZINFINITIV. Ett verb som styr ren infinitiv byter i
+                # perfekt ut sitt EGET particip mot infinitiven: "er hat
+                # lesen können", aldrig "er hat lesen gekonnt". Formen är
+                # infinitivens, funktionen participets — därför namnet.
+                #
+                # Hjälpverbet är alltid haben. Det är konstruktionens val
+                # och inte verbets, så Lexem.hjälpverb läses inte här: det
+                # beskriver modalverbet som huvudverb ("er hat gekonnt"),
+                # vilket är en annan sats än den här.
+                if m.verb == "modal_ska":
+                    # modal_ska ÄR werden, och werden i den betydelsen är
+                    # futurumhjälpverbet — det har ingen perfekt alls.
+                    # "har skolat läsa" finns inte att säga på tyska.
+                    raise RenderingsFel(
+                        "de/werden: futurumhjälpverbet har ingen perfekt — "
+                        "meningen går inte att bygga med modal_ska i perfekt")
+                return (self.u.form_för("verb_ha", f"{stam}_{person}{numerus}"),
+                        [self.u.form_för(m.verb, "inf")])
             # "sie hat gelesen" mot "sie ist gegangen" — hjälpverbet väljs
             # per verb ur Lexem.hjälpverb, kolumnen som fylldes långt innan
             # det fanns någon konstruktion som använde den.
@@ -295,12 +328,13 @@ class TyskRenderare:
                 raise RenderingsFel(
                     f"de/{verb['lemma']}: hjälpverb={hjälp!r} — perfekt kan "
                     f"inte byggas utan att veta om det är haben eller sein")
-            stam = "pret" if m.tid is Tidsreferens.FÖRFLUTEN else "pres"
             return (self.u.form_för("verb_ha" if hjälp == "ha" else "verb_vara",
                                     f"{stam}_{person}{numerus}"),
                     [self.u.form(verb, "part2")])
         if m.tid is Tidsreferens.FRAMTID:
-            # Futurum: werden böjt + huvudverbets infinitiv sist.
+            # Futurum: werden böjt + huvudverbets infinitiv i slutfältet.
+            # Sist där står den bara så länge verbet inte styr en egen
+            # infinitiv — då hamnar den styrda före, se satsled().
             return (self.u.form_för("modal_ska", f"pres_{person}{numerus}"),
                     [self.u.form_för(m.verb, "inf")])
         if m.tid not in TEMPUSSTAM:
@@ -421,13 +455,40 @@ class TyskRenderare:
         if m.predikativ is not None:
             mittelfeld += self.predikativ(m)
 
+        # Två infinitiver i rad vänder på bisatsens verbföljd — se nedan. Att
+        # klammern innehåller två former räcker inte: passivens två är
+        # particip ("gelesen worden"), och den regeln gäller bara infinitiv.
+        dubbelinfinitiv = False
         if m.komplement is not None:
-            # Komplementet hamnar i satsklammern, sist i satsen, med zu
-            # omedelbart före: "sie versucht das Buch zu lesen".
             markör = self.u.infinitivmarkör(m.verb)
-            if markör is not None:
-                infinit.append(self.u.form_för(markör, "inv"))
-            infinit.append(self.u.form_för(m.komplement, "inf"))
+            if markör is None:
+                # Ren infinitiv hör till verbalkomplexet, och DÄR står den
+                # styrande formen sist: "wird hören sollen", inte "wird
+                # sollen hören". Ordningen är den omvända mot satsens i
+                # övrigt — det styrda kommer före det styrande — och det är
+                # därför komplementet läggs FÖRST i slutfältet och inte sist.
+                dubbelinfinitiv = bool(infinit) and m.diates is Diates.AKTIV
+                infinit.insert(0, self.u.form_för(m.komplement, "inf"))
+            else:
+                # zu-infinitiven är ingen del av verbalkomplexet utan en EGEN
+                # FRAS, och därför placeras den efter satstyp och inte efter
+                # klustrets huvudfinala ordning ovanför.
+                #
+                # HUVUDSATS: frasen står sist, utanför klammern. "Sie versucht
+                # das Buch zu lesen", "Er wird versuchen zu lesen."
+                #
+                # BISATS: frasen går in före verbkedjan. "..., dass wir zu
+                # spielen versuchen werden" — inte "versuchen zu spielen
+                # werden", som delar klustret mitt itu och är ogrammatiskt.
+                #
+                # Har det styrande verbet ingen infinit form är slutfältet
+                # tomt och de två ordningarna sammanfaller. Det är därför
+                # "dass wir zu arbeiten versuchen" stämde redan förut, och
+                # varför felet bara syntes i futurum och perfekt.
+                zu_fras = [self.u.form_för(markör, "inv"),
+                           self.u.form_för(m.komplement, "inf")]
+                infinit = ([*zu_fras, *infinit] if bisats
+                           else [*infinit, *zu_fras])
 
         # Tyskan har V2 i påstående men V1 i ja/nej-fråga: det finita
         # verbet flyttar FÖRBI Vorfeld i stället för att stå efter det.
@@ -441,6 +502,15 @@ class TyskRenderare:
             stam, partikel = _dela_partikel(finit)
             if partikel is not None:
                 finit = partikel + stam
+            if dubbelinfinitiv:
+                # Dubbelinfinitiven är undantaget från verbet-sist: det
+                # finita verbet hoppar FÖRE hela klustret. "..., weil er hat
+                # hören können", "..., weil er wird hören sollen" — aldrig
+                # "weil er hören können hat". Klustret självt står i samma
+                # ordning som i huvudsatsen; det är bara hjälpverbet som
+                # byter sida, och det är det enda stället i tyskan där
+                # bisatsens finita verb inte står sist.
+                return [*vorfeld, *mittelfeld, finit, *infinit, *efterfält]
             return [*vorfeld, *mittelfeld, *infinit, finit, *efterfält]
         # I HUVUDSATS lämnar partikeln det finita verbet och går sist i
         # satsklammern: "Das Mädchen ruft den Bruder an". Det är samma
