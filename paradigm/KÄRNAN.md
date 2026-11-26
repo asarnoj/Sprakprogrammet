@@ -108,6 +108,55 @@ Franskan tappar därmed 210 kort. *(Den gamla modellens lek var 810 kort och
 blir 600 — båda mätta i `kort.db`. Den nya modellens totalsumma är inte
 bestämd, eftersom den hänger på punkt 11.1.)*
 
+### Varför det blir just dessa typer, och inga andra
+
+Typerna är inte valda — de faller ur **vad renderaren måste avgöra för att
+skriva ett ord.** Den listan är sluten, och därmed är kortmängden komplett:
+
+| Renderarens fråga | Kortet | Nyckeln |
+|---|---|---|
+| vilket ord betyder detta? | `ord` | ordet |
+| vilken form ska ordet ha? — **läst** ur en tabell | `oregelbunden` | ordet |
+| vilken form ska ordet ha? — **byggd** ur ett mönster | `ändelse` | mönstret |
+| vad kräver det regerande ordet? | `rektion` | ordet |
+| var i satsen står det? | `regel` | mönstret |
+| vad är ordets egenskap, när den syns på ett **annat** ord? | `egenskap` | ordet |
+
+**Formfrågan har exakt två svar och inget tredje:** antingen läste renderaren
+en sträng, eller byggde den en. Det är därför `oregelbunden` och `ändelse` är
+två typer och inte en — och testet på att delningen är rätt är att de kan
+**falla var för sig**:
+
+    arbetde    ordet rätt, ändelsen fel    ->  ändelsekortet föll
+    gådde      mönstret rätt, ordet inte   ->  det oregelbundna kortet föll
+
+**Egenskapskortet finns av ett skäl och bara ett: attributionen.** `ett hus`
+mot `en bil` — genuset syns varken i `hus` eller i `bil` utan i artikeln, och i
+`ett stort hus` mot `en stor bil` också i adjektivet. Beslutet hör till
+substantivet, följden syns på grannen. Skriver användaren `en hus` är det
+genuskortet som föll, inte ordkortet och inte artikelns ändelse.
+
+### Två familjer, inte sex typer
+
+Nyckelkolumnen ovan har bara två värden, och det är hela strukturen:
+
+| | nyckel | växer med | exempel |
+|---|---|---|---|
+| **ordfamiljen** | ett ord | ordförrådet | `gå → gick` är ett faktum om ett ord |
+| **mönsterfamiljen** | ett mönster | ingenting | `-de` är dåtid för svaga verb |
+
+    språk    ordfamiljen    mönsterfamiljen
+    de             1 172                 42
+    fr             1 281                 34
+    ja               843                 24
+    en               734                 19
+
+**Mönsterfamiljen är liten och sluten.** Den växer inte när ordförrådet växer —
+det är definitionen av ett mönster. Ordfamiljen växer linjärt, och det ska den.
+
+Därför behöver ingen fråga «vilken typ är det här kortet». Frågan är **«vad
+slog renderaren upp — ett ord eller ett mönster?»**, och typen är svarets form.
+
 ### Vilka egenskaper som blir kort
 
 `sprak.db` drar redan gränsen: **`Lexem` har en rad per språk, `Koncept` har en
@@ -725,9 +774,10 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-*Omgång 1–6 avklarade. Punkt 1 föddes när Julius upptäckte att korttabellen
-aldrig uppdaterats efter omgång 3; punkt 2 när hans krav «täcka ALLA
-inlärningsmoment» prövades mot renderarna.*
+*Omgång 1–6 avklarade. **Två luckor kvar.** Punkt 1 föddes när Julius upptäckte
+att korttabellen aldrig uppdaterats efter omgång 3, punkt 2 när hans krav «täcka
+ALLA inlärningsmoment» prövades mot renderarna, och punkt 3 ströks när han
+frågade varför olika antal kort per språk ens vore ett problem.*
 
 ---
 
@@ -747,28 +797,42 @@ skillnaden är ett verkligt läromoment:
 Den första talar för gruppnivå, den andra för formnivå. **Båda finns i samma
 språk**, vilket är skälet att frågan inte har ett självklart svar.
 
-**Varför det inte går att räkna sig till svaret ännu.** Två försök att mäta hur
-många korten blir gav båda artefakter, inte språk:
+**Varför mina två mätförsök gav artefakter — och vad det egentligen betyder.**
+Två försök att definiera «regelbunden» föll:
 
 1. *Stam = lemmat minus infinitivändelsen.* Faller på franskans futurum, där
-   ändelsetabellen redan bär `-erai` och basen alltså är `parl`, inte `parler`.
+   ändelsetabellen redan bär `-erai` och basen alltså är `parl`.
 2. *Stam = lemmat minus klassens vanligaste avkortning.* Faller på tyskan:
-   `arbeiten` → `gearbeitet` är inte en avkortning av lemmat alls, så **alla
-   174 tyska verb** blev oregelbundna i particip. Samma sak i japanskan, 0 av
-   169 regelbundna.
+   `arbeiten` → `gearbeitet` är ingen avkortning, så **alla 174 tyska verb**
+   blev oregelbundna i particip. Japanskan likaså, 0 av 169.
 
-Båda felen har samma orsak: `stammar.tsv` har redan **valt var snittet går**,
-och det valet är ett renderarbeslut. `arbeiten` ligger där som fyra rader
-(`arbeit`, `arbeite`, `arbeitet`, `arbeitete`) därför att bindevokalen `-e-`
-bokförts i stammen i stället för i ändelsen. Att räkna kort på den tabellen
-mäter tabellens bokföring, inte tyskans oregelbundenhet.
+**Felet var inte skriptet — det var att regelbundenheten inte finns i datan.**
+Svenskan visar det renast, och utan franska:
 
-**Alltså är punkt 1 blockerad bakom renderarnas redovisning** — samma beroende
-som byggordningen (punkt 10) redan sätter först. När renderaren säger «här slog
-jag upp en lagrad form, här härledde jag» är oregelbundenhetens enhet definierad
-och talet faller ut. Inte förr.
+    arbeta   ->  arbetade     svagt, varje svensk härleder det
+    gå       ->  gick         starkt, måste memoreras
 
-**Alternativ, att avgöra när redovisningen finns.**
+`stammar.tsv` lagrar **båda** som en stam med cellen `pret`. Strukturellt är
+de identiska. Och klassen skiljer dem inte: svenskans 174 verb fördelar sig på
+K0 och K1, men `arbeta` och `gå` ligger i **samma klass**.
+
+**Alltså hjälper inte renderarnas redovisning** — utkast 22 hade fel där.
+Renderaren *läste* både `arbetade` och `gick` ur samma tabell, så dess
+redovisning säger «uppslagen» om båda. Frågan den kan besvara är en annan än
+den här.
+
+**Vad som faktiskt behövs: en regelbundenhetsregel per språk, skriven för
+hand.** Prövat på svenskan — «lemmat plus `de`, `te` eller `dde`, med tappat
+slutvokal tillåtet» — och det fungerar:
+
+    102 svaga, härledbara:   ha/hade · brukar/brukade · åka/åkte · köra/körde
+     66 starka, memoreras:   vara/var · bli/blev · kan/kunde · ska/skulle
+
+Regeln är en rad per språk, alltså **sju beslut**, och svenskan och engelskan
+kan Julius skriva själv. Det är samma manuella väg han föreslog i omgång 2:
+*«En lösning är att göra alla osäkerheter manuellt.»*
+
+**Alternativ för enheten, när regelbundenheten går att avgöra.**
 
 - **a) Per form.** Varje oregelbunden form är sitt eget kort. Renast mot
   produktionstestet — facit är alltid något man skriver — men flest kort, och
@@ -829,39 +893,25 @@ täcks inte.*
 
 ---
 
-### 3 · Korttypernas mix skiljer sig mellan språken
+### 3 · ~~Korttypernas mix skiljer sig mellan språken~~ — struken
 
-**Idag.** Två av tre grundtyper går att räkna direkt. `ord` är ett per lexem i
-`sprak.db`; `ändelse` är en rad i `ordbok/ändelser.tsv`, alltså ett mönster per
-(klass × cell):
+*Struken 2026-09-11. Julius: «Jag förstår inte riktigt vad problemet är. Varför
+skulle det vara problematiskt att de har olika många kort?»*
 
-    språk    ord    ändelse    klasser    oregelbunden
-    de       736        241          7         punkt 1
-    en       734         20          6         punkt 1
-    es       740        191          9         punkt 1
-    fr       733        111          8         punkt 1
-    it       733        180          9         punkt 1
-    ja       732         20          3         punkt 1
-    sv       741         68         10         punkt 1
+Han har rätt. Att tyskan har 241 ändelserader och engelskan 20 är inget
+designfel — **det är språken som skiljer sig, och modellen som speglar dem
+korrekt.** Engelskans hela böjningslära ryms i tjugo rader därför att engelskan
+har tjugo ändelser:
 
-**Luckan.** Specen visar franskan genomgående och säger aldrig att spannet är
-så här brett. Tyskan har **241 ändelsekort mot japanskans 20** — tolv gånger
-fler — och japanskan klarar sig med **tre böjningsklasser mot spanskans nio**.
-Det är rätt för språken, men överraskande för en läsare som bara sett franskan.
+    Substantiv   -s · -'s · -s'        Verb   -s · -ed · -ing
+    Adjektiv     -er · -est            Possessiv  -r · -rs
 
-Svenskan står med i tabellen därför att den finns i ordboken, men har inga kort
-i `kort.db`: ingen kurs har svenska som målspråk.
+Att ändelserna är **färre än orden** är inte heller misstänkt — det är hela
+poängen med att faktorisera. Tjugo rader betjänar engelskans 734 ord.
 
-**Alternativ.**
-
-- **a)** Tabellen ovan flyttar in i punkt 2, så att korttyperna presenteras med
-  sitt spann från början.
-- **b)** Korttyperna är en möjlig mängd som varje språk fyller efter behov, och
-  mixen visas som en mätning i stället för som en norm. Då behöver specen bara
-  säga att den mäts, inte vad den blir.
-
-*Kolumnen `oregelbunden` kan inte fyllas förrän punkt 1 är avgjord — och det
-är hela poängen med att den står tom här i stället för att gissas.*
+Kvar av punkten står bara alternativ (b), och det är ingen lucka utan en
+formulering: *korttyperna är en möjlig mängd som varje språk fyller efter
+behov, och mixen är en mätning, inte en norm.* Det är infört i punkt 2.
 
 ---
 
