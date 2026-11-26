@@ -605,92 +605,62 @@ faller det innan något raderats.
 
 ## 11 · Kvarstående luckor
 
-**Ordningen är byggordningen.** Julius tar dem uppifrån. Löser ett svar en
-punkt stryks den; lämnar svaret något öppet blir resten en ny punkt.
-
-*Omgång 1–4 avklarade. Tolv punkter strukna, tre nya födda. Kvar är tre, och
-den översta är ett helt avsnitt som ska skrivas — inte ett val.*
+*Omgång 1–5 avklarade. Fjorton punkter strukna, två nya födda. Kvar är två,
+och den översta är ett avsnitt som ska skrivas — inte ett val.*
 
 ---
 
 ### 1 · Meningsurvalet — avsnittet som ska skrivas
 
-*Julius: «jag pluggade nyligen algoritmer och komplexitet och vill ta
-inspiration från att hitta den optimala lösningen… jag vill gärna vara med och
-designa aspekterna och hur man ska kunna fatta beslut med så många olika
-parametrar.»*
-
-**Problemets form, mätt på franskan som den ser ut i dag:**
+**Problemets form**, mätt på franskan som den ser ut i dag:
 
     införda kort                                85
     byggbara kandidater av 2 000 försök      1 692
     DISTINKTA kortmängder                      727    ← sökrummets bredd
     införda kort per mening                   3–13, typvärde 7
 
-**Det är ett övertäckningsproblem (set cover).** Universum är dagens förfallna
-kort; mängderna är de meningar som går att bygga; varje mängd har en kostnad
-Σ(1−R) som måste rymmas i budgeten. Målet är att täcka universum med så få
-meningar som möjligt.
+Det är ett **övertäckningsproblem**: universum är dagens förfallna kort,
+mängderna är de byggbara meningarna, kostnaden är Σ(1−R) per mening. NP-svårt
+i allmänhet men litet här, och mängderna går bara att **sampla**, inte räkna
+upp.
 
-Set cover är **NP-svårt** i allmänhet. Men instansen är liten — tiotals
-förfallna kort, hundratals distinkta mängder — så en exakt lösning är
-realistisk, och den giriga algoritmen ger ln(n)-approximation som undre gräns
-på kvaliteten.
+**Men Julius ställde frågan som ändrar problemklassen:** *«ifall användaren
+svarar fel, förändrar det vad resten av meningarna borde vara?»*
 
-**Två saker gör problemet intressantare än läroboksversionen:**
+Ja. Ett fel lägger till arbete — kortet ska tas igen samma dag. **Universum
+växer alltså medan man löser problemet.** Det är inte en statisk instans utan
+ett **online-problem**, och det betyder att en exakt lösning för hela dagen är
+bortkastad: första felsvaret ogiltigförklarar den.
 
-1. **Mängderna går inte att räkna upp.** Man kan bara sampla dem: 2 000 försök
-   gav 1 692 kandidater och 727 distinkta kortmängder. Det är alltså set cover
-   med ett *orakel som drar mängder*, och kostnaden ligger i dragningen, inte
-   i täckningen.
+Det räddar delvis giriga metoder. Det som återstår att designa är hur långt
+framåt varje steg ska titta:
 
-2. **Dagens algoritm optimerar fel sak.** Den väljer bästa NÄSTA mening, inte
-   bästa UPPSÄTTNING meningar. Det är girig täckning utan att veta om det, och
-   det är där «sofistikerat» skulle börja: optimera dagen i stället för
-   meningen.
+- **rent girigt** — välj meningen som täcker mest just nu
+- **girigt med framblick** — välj så att resten fortfarande går att täcka
+- **omplanera efter varje svar** — dyrast, men enda sättet att svara på hur
+  ett fel ändrar resten
 
-**Parametrarna Julius räknade upp blir sekundära mål** — de skiljer mellan
-täckningar av samma storlek:
+**Frågan «ett förfallet kort per mening eller flera» har redan ett svar i
+budgeten:**
 
-- variation i **längd** och **konstruktionstyp**
-- spridning i **svårighetsgrad**, inte bara ett tak
-- hur en plats som inte är ett mål får sitt ord
-- **ett förfallet kort per mening eller flera?** Ett ger många korta meningar
-  och ren attribution; flera ger färre meningar och tätare mätningar men
-  suddigare skuld.
+    korttillstånd                R      kostnad 1−R    ryms i 1,5
+    nytt kort, aldrig sett     0,00        1,00             2
+    förfallet på sin dag       0,90        0,10            15
+    lite försenat              0,80        0,20             8
+    sitter, inte förfallet     0,99        0,01           150
 
-**Nästa omgång ägnas åt att skriva det här avsnittet**, inte åt att beta av
-punkter.
+**Budgeten binder på NYA kort, inte på förfallna.** Ett nytt kort äter två
+tredjedelar av en menings budget; femton förfallna på sin dag ryms. Frågan är
+alltså inte hur många förfallna en mening får bära — det är många — utan hur
+många **nya**, och där är svaret ungefär ett.
 
----
-
-### 2 · Källspråkets datahål
-
-*Kvar av gamla «tysta silen» efter mätningen.*
-
-**Idag.** Mätt på 2 557 franska kandidater föll 24 på svenskan, 0,9 %. De är
-två olika saker:
-
-    17   SPRÅKSKILLNAD — svenskan har ingen sådan form
-          «vantar» är plurale tantum, franskans «une moufle» finns i singular
-     7   DATAHÅL — formen saknas i svenska ordboken
-          sv/bröd, cellen best_pl_ack_dat_nom är tom
-
-**Luckan.** De 17 är **rätt beteende** — det universella meningsobjektet är
-riktigt, men ett enskilt språk realiserar inte varje cell, och då ska meningen
-inte ställas. De 7 är en bugg i ordboksdatan.
-
-**Alternativ.**
-
-- **a)** Skilj dem åt i loggen: språkskillnad räknas och tigs, datahål
-  rapporteras som fel att laga.
-- **b)** Laga de 7 och behandla resten som normal drift.
-- **c)** Låt byggbarheten räkna källspråket, så att ett kort som bara går att
-  nå med meningar svenskan inte klarar aldrig hamnar i planen.
+**Kvar att designa:** framblicken, variationen i längd och konstruktionstyp,
+spridningen i svårighetsgrad, och hur en plats som inte är ett mål får sitt
+ord.
 
 ---
 
-### 3 · Korttabellen är franskspecifik
+### 2 · Korttabellen är franskspecifik
 
 **Idag.** `egenskap`-kort finns bara i tre språk. Japanskan har inga alls.
 
@@ -704,6 +674,94 @@ inte ställas. De 7 är en bugg i ordboksdatan.
 ---
 
 ## 12 · Beslut ur omgångarna
+
+### Omgång 5 (2026-09-10)
+
+#### Grind 1 binder vid två ord och aldrig mer
+
+Julius: *«jag är skeptisk till att det finns situationer där vi har fysiskt för
+få kort för att kunna aktivera en nivå. Det finns en risk att vi bygger detta
+och ser att denna grind aldrig sätter stopp för något.»*
+
+**Mätt, och han har rätt.** Byggbarheten på franskans TOPPNIVÅ, med växande
+ordförråd:
+
+    ordförråd    byggbarhet nivå 22    × 1000     grind 1
+        2              0,000               0      STÄNGD
+        4              0,985             985      ÖPPEN
+        8              0,998             998      ÖPPEN
+       32              0,968             968      ÖPPEN
+
+Grinden kräver `byggbarhet × kandidater ≥ 1`, alltså 0,001. Den ligger på
+0,97 — **tusen gånger från att binda**. Den stoppar det degenererade fallet på
+dag ett och aldrig något annat.
+
+Den får stå kvar därför att den är gratis och korrekt, men **den är inte
+takten**. Takten är regeln om en nivå per dygn och införselhastigheten.
+
+#### Efterfrågan per ordklass är en verklig signal
+
+Julius föreslog att mäta *«vilka typer av ord det är hög eller låg efterfrågan
+på, så att vi håller värdena balanserade»*. Mätt på franskan, 1 500
+kandidater mot de 85 införda korten:
+
+    ordklass       i leken   andel   efterfrågan   andel   kvot
+    Substantiv        17      53 %       1 694      36 %   0,67
+    Artikel            2       6 %       1 430      30 %   4,84
+    Verb               5      16 %       1 280      27 %   1,73
+    Pronomen           8      25 %         321       7 %   0,27
+
+Kvot över 1 betyder att klassen efterfrågas oftare än den finns. **Införandet
+lägger alltså in för många substantiv och pronomen och för få verb** i
+förhållande till vad meningar faktiskt behöver.
+
+**En nyans som måste med:** artiklarnas 4,84 går inte att åtgärda — franskan
+har två obestämda artiklar och fler finns inte. Signalen får bara styra de
+**öppna** ordklasserna, där det finns fler kort att införa.
+
+#### Det finns inga källspråk i motorn
+
+Julius: *«resonemanget att just källspråket är trasigt låter konstigt eftersom
+det inte finns några källspråk. Kurserna kanske har det, men motorn ser alla
+språk som symmetriska och likvärdiga i alla riktningar.»*
+
+Rätt, och min framing dolde det verkliga felet. Prövat symmetriskt — 1 010
+meningsspecar mot alla sju renderare:
+
+    språk som klarar specen     antal specar
+       7                             612
+       6                             322
+       5                              69
+       4                               5
+       3                               2
+
+    misslyckanden per språk
+       it  292  (28,9 %)      en   14  (1,4 %)
+       de   79  ( 7,8 %)      sv   10  (1,0 %)
+       es   62  ( 6,1 %)      fr    2  (0,2 %)
+       ja   24  ( 2,4 %)
+
+**Italienskan faller på 29 % av alla specar — 145 gånger oftare än
+franskan.** Och 291 av de 292 fallen kommer från ETT lexem:
+
+    es   un, unos, una, unas     4 former
+    fr   un, une, des            3
+    it   un, uno, una            3   ← alla singular
+
+**Italienskan saknar obestämd plural helt.** Systemet visste redan — koden bär
+noten *«Italian is missing indefinite plurals — about a third of sentences
+cannot be built yet»* — och mätningen bekräftar «about a third» exakt.
+
+Tyskans 79 är något annat: fraslexem med framförställt adjektiv,
+`älterer Bruder`, alltså samma tvåledsböjning som `sœur aînée`.
+
+Julius gissning att alla renderingsfel är buggar stämmer nästan. Undantaget är
+svenskans plurale tantum — `vantar` har ingen singular, och då **ska** meningen
+inte ställas. Det är inte en bugg utan en språkskillnad, och den syns bara som
+ett fel därför att den räknas tillsammans med dem.
+
+---
+
 
 ### Omgång 4 (2026-09-10)
 
