@@ -1047,19 +1047,38 @@ def mät_exponering(kort_db, språk_db, språk: str, meningar: int = 2000) -> in
             except RenderingsFel:
                 continue
             byggda += 1
+            # ETT KORT RÄKNAS EN GÅNG PER MENING, inte en gång per uppslag.
+            #
+            # `exponering` är andelen meningar kortet möts i, alltså ett tal
+            # mellan 0 och 1 — och tyskans `system:∅` stod på 1,891. Talet är
+            # omöjligt, och orsaken är att flera KÄLLOR pekar på samma kort:
+            # `∅` är ändelsen i många celler, och en mening som rör två av dem
+            # räknade kortet två gånger. Samma sak för ordkorten, där
+            # `set(rörda)` deduplicerar på hela cellnyckeln medan uppslaget
+            # bara använder koncept och variant — ett substantiv i två kasus
+            # räknades alltså dubbelt.
+            #
+            # Felet lutar systematiskt åt ETT håll och drabbar just de kort
+            # som delas mest, alltså precis dem `exponeringsgräns` ska skilja
+            # ut. Det påverkar också införselordningen (B3), som sorterar på
+            # samma tal.
+            #
+            # Mätt: bara ett kort i hela beståndet passerade 1,0, men
+            # dubbelräkningen finns i varje delat kort under gränsen också —
+            # den syns bara inte lika tydligt.
+            träffade: set[int] = set()
             for nyckel in set(rörda):
-                for kid in karta.get(nyckel, []):
-                    träffar[kid] += 1
+                träffade.update(karta.get(nyckel, []))
             for _, koncept, variant, _ in set(rörda):
-                for kid in ordkort.get((koncept, variant), []):
-                    träffar[kid] += 1
+                träffade.update(ordkort.get((koncept, variant), []))
             for nyckel in set(egenskaper):
-                for kid in egenskapskort.get(nyckel, []):
-                    träffar[kid] += 1
+                träffade.update(egenskapskort.get(nyckel, []))
             for regel in set(ordföljder):
                 kid = ordföljdskort.get(regel)
                 if kid is not None:
-                    träffar[kid] += 1
+                    träffade.add(kid)
+            for kid in träffade:
+                träffar[kid] += 1
     finally:
         Uppslag.form = original
         Uppslag.egenskap = original_egenskap

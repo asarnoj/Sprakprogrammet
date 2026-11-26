@@ -405,8 +405,25 @@ class Övningstjänst:
                               self.kort_db, p["pass_id"], "ny"),
                           oövade=None if extra else oövade_koncept(
                               self.kort_db, kurs["målspråk"]))
+            # EN TOM SÖKNING ÄR OCKSÅ NÖDUTGÅNGEN, och det stod redan i
+            # generatorns egen docstring: *"`None` här betyder alltså inte
+            # 'sökningen misslyckades' utan 'ingenting NYTT går att bygga',
+            # och `Övningstjänst.uppgift` svarar på det med samma nödutgång
+            # som B8 använder."* Det gjorde den inte — den svarade `None`,
+            # alltså ett fel till klienten, och passets rader stod kvar som
+            # väntande. Dagen kunde därmed aldrig ta slut.
+            #
+            # Luckan var dold så länge sökningen nästan alltid hittade något:
+            # okändgränsen släpptes hellre än att ge upp. När det släppet
+            # spärrades på en AVKLARAD dag (se `_sök`) blev `None` ett
+            # vanligt och riktigt svar, och då syntes att ingen tog emot det.
+            #
+            # Mätt i `tjänsteprov` innan raden nedan: "ingen mening gick att
+            # bygga, men dagen är inte klar — 3 rader väntar utan att skrivas
+            # av (B8)".
             if f is None:
-                return None
+                n = passlager.avskriv(self.kort_db, p["pass_id"])
+                return {"tomt": True, "oåtkomliga": n, "onåbart_nytt": n}
             # INGEN TÄCKNING BETYDER ATT DET INTE GÅR ATT KOMMA LÄNGRE. Kön är
             # inte tom, men den bästa av flera hundra kandidater rör inget av
             # det som står i den — alltså går de kvarvarande korten inte att

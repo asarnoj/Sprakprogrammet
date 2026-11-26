@@ -40,6 +40,8 @@ ROT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROT / "src"))
 
 from sprakprog.db import anslut                       # noqa: E402
+from sprakprog.kort.befolka import befolka             # noqa: E402
+from sprakprog.kort.db import anslut_kort              # noqa: E402
 from sprakprog.generator.rattning import (               # noqa: E402
     KASUSTOKEN, Rättare,
 )
@@ -377,9 +379,42 @@ def _kör_extra(r_per_språk) -> list[str]:
     return prov_inget_falskt_godkännande(r_per_språk)
 
 
+#: Nivån provets kortbestånd byggs på. FALLEN KRÄVER KORT SOM BARA FINNS
+#: HÖGRE UPP — tyskans dativformer `dem`/`den` hör till en nivå långt över
+#: grundsatsen — och beståndet ärvdes tidigare ur `kort.db` som den råkade se
+#: ut. Julius nollställde sv→de till nivå 1 den 2026-09-04, och då fanns
+#: korten inte: provet rapporterade "inget kort hör till ordet" för två fall.
+#:
+#: Det är fjärde gången ett prov visar sig bero på vilket tillstånd databasen
+#: råkar ha, och svaret är detsamma varje gång: låt provet ställa upp sin egen
+#: förutsättning. `befolka` är additiv och rör aldrig ett befintligt kort, så
+#: den lägger bara till det som saknas.
+NIVÅ_PROVAS = 24
+CEFR_PROVAS = "C2"
+
+
+def _eget_bestånd(katalog: Path) -> sqlite3.Connection:
+    """Kopia av kortleken, påfylld till `NIVÅ_PROVAS` för fallens språk."""
+    mål = katalog / "attribution.db"
+    käll = sqlite3.connect(ROT / "kort.db")
+    dst = sqlite3.connect(mål)
+    try:
+        käll.backup(dst)
+    finally:
+        dst.close()
+        käll.close()
+    kort = anslut_kort(mål)
+    with anslut() as sp:
+        sp.row_factory = sqlite3.Row
+        # `mät=False`: exponeringen kostar sekunder och styr ingenting här.
+        befolka(kort, sp, {"de", "fr", "sv"},
+                nivå=NIVÅ_PROVAS, cefr=CEFR_PROVAS, mät=False)
+    return kort
+
+
 def main() -> int:
-    kort = sqlite3.connect(ROT / "kort.db")
-    kort.row_factory = sqlite3.Row
+    katalog = tempfile.TemporaryDirectory()
+    kort = _eget_bestånd(Path(katalog.name))
     språk_db = anslut()
     rättare: dict[str, Rättare] = {}
 
@@ -397,14 +432,15 @@ def main() -> int:
     # RÄTTNINGENS HÅRDASTE REGEL, prövad för sig. Den handlar inte om VILKET
     # kort som får skulden utan om vad som händer med de övriga.
     with tempfile.TemporaryDirectory() as tmp:
+        # SAMMA BESTÅND SOM OVAN, inte `kort.db` igen: annars prövar den
+        # här halvan en annan kortlek än den förra.
         kopia = Path(tmp) / "a.db"
-        käll = sqlite3.connect(ROT / "kort.db")
+        käll = kort
         dst = sqlite3.connect(kopia)
         try:
             käll.backup(dst)
         finally:
             dst.close()
-            käll.close()
         prov_db = sqlite3.connect(kopia)
         prov_db.row_factory = sqlite3.Row
         prov_db.execute(

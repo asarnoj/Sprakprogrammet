@@ -505,7 +505,7 @@ class Generator:
         # gav den `None` med jämna mellanrum: engelskan tog slut efter en
         # mening när ingen av 200 kandidater råkade hålla sig under gränsen.
         redan_klara = self._redan_klara(nu)
-        bäst, reserv, nödfall, täckte = self._sök(
+        bäst, reserv, nödfall, täckte, avklarade = self._sök(
             kandidater, mål, förfallna, sedda, nu, redan_klara)
 
         # RESERVUTGÅNGEN, på hela sökningens nivå. Gick ingen mening att bygga
@@ -526,10 +526,18 @@ class Generator:
         # ger dessutom en uppgift som inte går att lösa. Upprepningen vinner
         # alltså över undantaget, och undantaget är kvar för det läge det
         # byggdes för: när ingenting alls gick att bygga.
+        # OCH INTE HELLER NÄR DAGEN ÄR AVKLARAD. `avklarade` säger att
+        # kandidater FANNS men att varje kort i dem redan bedömts idag. Det
+        # är inte "ingenting går att bygga" utan "ingenting mer går att
+        # mäta", och svaret på det är B8:s nödutgång — inte ett nytt ord.
+        #
+        # Utan skillnaden blev en tom dag en väg in för oanmälda ord, och
+        # spärren ovan var verkningslös just när den behövdes: en dag vars
+        # material tagit slut är precis den dag som saknar rena kandidater.
         släppt = False
-        if bäst is None and reserv is None and nödfall is None:
+        if bäst is None and reserv is None and nödfall is None and not avklarade:
             self.samplare.begränsa(None)
-            bäst, reserv, nödfall, täckte2 = self._sök(
+            bäst, reserv, nödfall, täckte2, _ = self._sök(
                 kandidater, mål, förfallna, sedda, nu, redan_klara)
             täckte = täckte or täckte2
             # OCH DET SYNS ATT DEN TOGS. C5 kallar reserven "ett UNDANTAG som
@@ -556,7 +564,7 @@ class Generator:
             övriga = [k["koncept"] for k in kö if k["koncept"]
                       and k["koncept"] not in igen_mål]
             if övriga:
-                bäst, reserv2, nöd2, täckte3 = self._sök(
+                bäst, reserv2, nöd2, täckte3, _ = self._sök(
                     kandidater, övriga, förfallna, sedda, nu, redan_klara)
                 täckte = täckte or täckte3
                 reserv = reserv or reserv2
@@ -694,7 +702,7 @@ class Generator:
 
     def _sök(self, kandidater: int, mål: list, förfallna: set,
              sedda: set, nu,
-             redan_klara: set[int] | None = None) -> tuple["Förslag | None", "Förslag | None"]:
+             redan_klara: set[int] | None = None):
         """Bästa kandidaten kring `mål`, och bästa oavsett. Se `föreslå`.
 
         Två tiers, och skälet till att sökningen aldrig får misslyckas står i
@@ -707,6 +715,10 @@ class Generator:
         nödfall: Förslag | None = None
         # Täckte NÅGON kandidat något? Se `Förslag.täckning_fanns`.
         täckte = False
+        # FÖLL NÅGON KANDIDAT PÅ ATT ALLT REDAN VAR BEDÖMT IDAG? Det är en
+        # helt annan sak än att ingenting gick att bygga, och `föreslå`
+        # måste kunna skilja dem åt innan den släpper okändgränsen.
+        avklarade = False
         # MÅLORDEN VARVAS, DE LOTTAS INTE. `rng.choice` gav varje mål samma
         # FÖRVÄNTADE antal försök, vilket är något annat än samma antal: med
         # trettio mål och tusen kandidater är spridningen stor nog att ett mål
@@ -743,8 +755,24 @@ class Generator:
             # när en sådan finns. Finns ingen alls returnerar `föreslå` None,
             # och `uppgift` svarar med B8:s nödutgång — vilket är rätt
             # besked: de kvarvarande korten går inte att nå idag.
+            #
+            # ETT UNDANTAG FÖR ÅTERFÖRSÖK PRÖVADES OCH FÖRKASTADES. Tanken
+            # var att en `igen`-rad ska gå att stänga med ett rätt svar
+            # (Julius 2026-08-27), så en mening som rör ett väntande
+            # återförsök skulle få passera trots att den inte bokför något.
+            #
+            # Mätt: den gav 4 tomma meningar av 23 i `tjänsteprov`, alltså
+            # exakt det Julius en gång rapporterade — *"Den gav en mening som
+            # inte testar ett enda kort."* Att lösa en läcka genom att
+            # återinföra ett känt fel är inte att lösa den.
+            #
+            # Rätt svar ligger i stället i `föreslå`: den avklarade dagen får
+            # inte släppa okändgränsen, och en tom sökning ska utlösa B8:s
+            # nödutgång. Då skrivs återförsöket av som onåbart i dag och
+            # kommer tillbaka i morgon, när det faktiskt går att MÄTA.
             if redan_klara is not None and not (
                     {k["id"] for k in kort} - redan_klara):
+                avklarade = True
                 continue
             # SAMMA FORM I TVÅ ARGUMENTLED mäter ingenting och fördubblar
             # fallrisken — se `_samma_form_två_gånger`.
@@ -800,7 +828,7 @@ class Generator:
                 nödfall = förslag
             else:
                 reserv = förslag
-        return bäst, reserv, nödfall, täckte
+        return bäst, reserv, nödfall, täckte, avklarade
 
     def _rendera_källa(self, m: Mening) -> str | None:
         """Meningen på källspråket, eller None om det språket inte når den.

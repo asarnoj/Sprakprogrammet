@@ -376,10 +376,82 @@ def _sedda_ord(kort: sqlite3.Connection, språk: str) -> set[str]:
            AND sedd IS NOT NULL""", (språk,))}
 
 
+def _avklara_dagen(kort: sqlite3.Connection, språk: str,
+                   sedda: set[str]) -> list[int]:
+    """Gör dagen AVKLARAD: allt som går att bygga av är redan bedömt.
+
+    Vilka kort det är följer av vad drillen infört. Ett `stam`-kort bär sitt
+    ords koncept; `system` och `ordföljd` har inget koncept alls och delas av
+    varje mening. Precis de korten hade Julius bedömt efter tre meningar
+    2026-09-04 — och därmed hade varje byggbar mening enbart avklarade kort.
+
+    ORDEN UTANFÖR `sedda` LÄMNAS OSEDDA, för det är dem läckan skulle hämta.
+    Markerar man allt finns inget okänt kvar och provet mäter ingenting.
+    """
+    platser = ",".join("?" * len(sedda))
+    idn = [r["id"] for r in kort.execute(
+        f"""SELECT id FROM Kort WHERE språk = ?
+            AND (koncept IN ({platser}) OR koncept IS NULL)""",
+        (språk, *sorted(sedda)))]
+    nu = datetime.now(UTC).isoformat()
+    kort.executemany("UPDATE Kort SET sedd = ? WHERE id = ?",
+                     [(nu, i) for i in idn])
+    kort.executemany(
+        "INSERT INTO Repetition (kort_id, tidpunkt, betyg) VALUES (?,?,3)",
+        [(i, nu) for i in idn])
+    kort.commit()
+    return idn
+
+
+def prov_avklarad_dag(kort, kurs, n) -> list[str]:
+    """En dag vars material tagit slut får inte hitta på nya ord.
+
+    LÄGET SOM FAKTISKT INTRÄFFADE 2026-09-04, när Julius körde sv→de från
+    noll: fyra drillade ord, allt bedömt, och två `igen`-rader kvar. De enda
+    byggbara meningarna — `Du existierst.` och `Du hast.` — föll på
+    tomgångsspärren, alla tre tiers blev tomma, och `föreslå` läste det som
+    "ingenting går att bygga". Okändgränsen släpptes, och `Du findest.`
+    införde `finden`, ett ord som aldrig stod i dagens plan.
+
+    PROVET MÄTER PRECIS DET `prov_meningen` INTE KAN. Den räknar bort varje
+    mening med `reserv_släppt`, med rätta: C5 säger att reserven ÄR designen
+    när ingenting går att bygga. Men då kan den heller aldrig se att reserven
+    löser ut när den inte borde — och det var där felet satt. Här är
+    påståendet i stället att flaggan inte får sättas alls: att kandidater
+    faller för att de redan är avklarade är "ingenting mer går att MÄTA",
+    inte "ingenting går att BYGGA", och svaret på det är B8:s nödutgång.
+    """
+    språk = kurs["målspråk"]
+    sedda = _kallstart(kort, språk, n, kurs["nivå"], kurs["cefr"])
+    if not sedda:
+        return []
+    idn = _avklara_dagen(kort, språk, sedda)
+    if not idn:
+        return []
+    # ETT ÅTERFÖRSÖK VÄNTAR. Utan det finns inget mål att söka kring, och
+    # sökningen blir tom av en annan anledning än den provet gäller.
+    fel = []
+    for frö in (7, 11, 23, 41):
+        g = Generator(anslut(), kort, språk, källspråk=kurs["källspråk"],
+                      nivå=kurs["nivå"], cefr=kurs["cefr"],
+                      budget=kurs["budget"], frö=frö)
+        f = g.föreslå(kandidater=300, nya_tillåtna=0, oövade=[],
+                      passkö=set(idn))
+        if f is None:
+            continue                       # nödutgången: rätt svar
+        okända = [k["facit"] for k in f.kort
+                  if k["typ"] == "ord" and k["sedd"] is None]
+        if f.reserv_släppt or okända:
+            fel.append(f"frö {frö}: {f.text!r} släppte okändgränsen på en "
+                       f"avklarad dag och införde {okända or 'inget ord'}")
+    return fel
+
+
 PROV = [("kön — inget böjningskort före sitt ord", prov_kön),
         ("drillen — varje ordkort går att nå", prov_drillen),
         ("meningen — inget ord införs av en mening", prov_meningen),
-        ("tjänsten — samma sak hela vägen genom vyerna", prov_tjänsten)]
+        ("tjänsten — samma sak hela vägen genom vyerna", prov_tjänsten),
+        ("avklarad dag hittar inte på ord", prov_avklarad_dag)]
 
 
 # ── falsifiering: varje gammal väg in ska fälla sitt prov ────────────
@@ -486,9 +558,34 @@ def _sabotage_kallstart():
     return ångra
 
 
+def _sabotage_avklarad_dag():
+    """Släppet löser ut även när dagen bara är AVKLARAD.
+
+    Läget 2026-09-04, när Julius körde sv→de från noll: fyra drillade ord,
+    allt bedömt, två `igen`-rader kvar. De enda byggbara meningarna föll på
+    tomgångsspärren, alla tre tiers blev tomma, och `föreslå` läste det som
+    "ingenting går att bygga". Okändgränsen släpptes, och `Du findest.`
+    införde `finden` — ett ord som aldrig stod i dagens plan.
+
+    Sabotaget återinför precis det: `_sök` slutar skilja "ingenting går att
+    BYGGA" från "ingenting mer går att MÄTA".
+    """
+    orig = Generator._sök
+
+    def utan_skäl(self, kandidater, mål, förfallna, sedda, nu,
+                  redan_klara=None):
+        bäst, reserv, nödfall, täckte, _ = orig(
+            self, kandidater, mål, förfallna, sedda, nu, redan_klara)
+        return bäst, reserv, nödfall, täckte, False
+
+    Generator._sök = utan_skäl
+    return lambda: setattr(Generator, "_sök", orig)
+
+
 #: Vilket sabotage som ska fälla vilket prov, som index i `PROV`.
 SABOTAGE = [(_sabotage_målord, 0), (_sabotage_schemalagt, 1),
-            (_sabotage_nykvot, 2), (_sabotage_kallstart, 3)]
+            (_sabotage_nykvot, 2), (_sabotage_kallstart, 3),
+            (_sabotage_avklarad_dag, 4)]
 
 
 def _kör(kort, prov_f) -> list[str]:

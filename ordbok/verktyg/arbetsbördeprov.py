@@ -33,6 +33,7 @@ ROT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROT / "src"))
 
 from sprakprog.kort import arbetsborda as A  # noqa: E402
+from sprakprog.kort.befolka import sätt_schemalagt  # noqa: E402
 from sprakprog.kort import schemalaggning as S  # noqa: E402
 
 
@@ -147,10 +148,28 @@ def prov_prognosens_dag_noll(k) -> list[str]:
     databasen, ingen modell. Avviker den har simuleringen börjat gissa om
     nuet.
     """
+    # OCH JÄMFÖRELSEN MÅSTE HA SAMMA FORMAT. `förfaller` lagras som ISO med
+    # `T`, medan `datetime('now')` ger mellanslag — och SQLite jämför dem som
+    # TEXT. `'2026-09-05T20:18' < '2026-09-05 21:55'` är alltså FALSKT, för
+    # 'T' sorterar efter blanksteg. Felet var osynligt så länge datumen
+    # skilde sig och slog till först när ett kort förföll samma dygn.
+    #
+    # DAG 0 ÄR ETT DYGN, INTE ETT ÖGONBLICK. `prognos` bucketar på
+    # `(förfaller − nu).days`, och dess egen docstring säger vad dag 0 är:
+    # "de kort som redan förfallit PLUS de som förfaller idag". Frågan här
+    # löd `förfaller <= datetime('now')`, alltså bara den första halvan.
+    #
+    # De två sammanföll så länge inget kort råkade ligga mellan `now` och
+    # dygnets slut. Julius sv→de-pass 2026-09-04 skapade fem sådana kort —
+    # två med förfallodag exakt på dygnsgränsen — och då sa provet
+    # "prognos[0] = 5, faktiskt förfallna 0". Provet var alltså sant vissa
+    # timmar på dygnet och falskt andra, vilket är värre än att vara fel:
+    # det går inte att lita på när det är grönt.
     p = A.prognos(k, "de")
     förfallna = k.execute(
         """SELECT COUNT(*) FROM Kort WHERE språk = 'de' AND schemalagt = 1
-           AND förfaller IS NOT NULL AND förfaller <= datetime('now')"""
+           AND sedd IS NOT NULL AND förfaller IS NOT NULL
+           AND förfaller < strftime('%Y-%m-%dT%H:%M:%f', 'now', '+1 day')"""
     ).fetchone()[0]
     return ([] if abs(p[0] - förfallna) < 1e-9 else
             [f"prognos[0] = {p[0]:.0f}, faktiskt förfallna {förfallna}"])
@@ -238,6 +257,31 @@ def prov_saldot_ser_de_oschemalagda(k) -> list[str]:
     De fem osynliga var `system` 2, `form` 1, `ordföljd` 1, `stam` 1. Taket
     var 25, så filtret dolde en femtedel av överskridandet.
     """
+    # DAGENS TILLDELNING GÖRS FÄRSK, för provet gäller saldots ARITMETIK och
+    # inte vilken dag det är. Kort som införts idag förbrukar tilldelningen
+    # (`infört_idag`), så efter att Julius övat tyska var `nya` noll och
+    # provet kunde inte mäta något alls — det ärvde hans dag i stället för
+    # att ställa upp sin egen. Samma lärdom som `introduktionsprov` fick tre
+    # gånger, nu för fjärde.
+    #
+    # `tak_datum` nollas med: taket fryses en gång per dygn (se `dagsplan`),
+    # så utan det skulle det gamla talet stå kvar.
+    # TIDZONEN MÅSTE ÖVERLEVA. `datetime(sedd, '-2 days')` kapar `+00:00`,
+    # och `_till_card` läser då en naiv tidpunkt som FSRS inte kan subtrahera
+    # från en tidszonsatt — provet kraschade i stället för att mäta.
+    k.execute("""UPDATE Kort SET sedd =
+                     strftime('%Y-%m-%dT%H:%M:%f', sedd, '-2 days') || '+00:00'
+                 WHERE språk = 'de' AND sedd >= date('now')""")
+    k.execute("UPDATE Kurs SET tak_datum = NULL, tak_kort = NULL "
+              "WHERE målspråk = 'de'")
+    k.commit()
+    # OCH UPPDELNINGEN SCHEMALAGT/ÖVERVAKAT STÄLLS UPP, den ärvs inte.
+    # Provet gäller att ett OSCHEMALAGT kort ändå förbrukar av dagen, så det
+    # måste finnas minst ett. Sedan 2026-09-04 mäts gränsen ur meningsloggen,
+    # och en kurs som just nollställts har ingen — då lyfts inget kort ur
+    # schemat och provet har inget att mäta på. Takten här är en KULISS,
+    # precis som i `ordföljdsprov`.
+    sätt_schemalagt(k, 20.0, språk="de")
     p = S.dagsplan(k, "de")
     if not p["nya"]:
         return ["kursen har inga nya kort kvar — provet kan inte mäta"]
