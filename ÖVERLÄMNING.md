@@ -708,7 +708,10 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
    systemkort i stället för ett kort per cell, mätt fram i fyra steg),
    uppdelningen schemalagda mot mätta kort, och var kortlagret bor —
    inlärardatabasen ska vara en egen fil och kort får aldrig peka på
-   `Former.id`, som flyttar vid ombyggnad. **Den var blockerad av meningskomplexiteten och är det
+   `Former.id`, som flyttar vid ombyggnad. Och 2026-08-14 med SÖKNINGEN:
+   sampla tusen kandidater och poängsätt (41 000 kandidater/s mätt, ingen
+   lösare behövs), svårighet som budget plus koncentration, en adaptiv loop
+   och inte två, ingen beroendeordning mellan kort. **Den var blockerad av meningskomplexiteten och är det
    inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
    nu mogen — med 59–95 % nåbart avgörs det som övas av strategin, inte av
    uttrycksförmågan.
