@@ -58,15 +58,13 @@ LJUDREGLER = {
 
 
 def _före_konsonant(stam: str, spår: Spår) -> str:
-    if stam.endswith(("mm", "nn")):
-        spår("mm_nn_före_konsonant")
+    if stam.endswith(("mm", "nn")) and spår("mm_nn_före_konsonant"):
         return stam[:-1]
     return stam
 
 
 def _ordslut(stam: str, spår: Spår) -> str:
-    if stam.endswith("mm"):
-        spår("mm_i_ordslut")
+    if stam.endswith("mm") and spår("mm_i_ordslut"):
         return stam[:-1]
     return stam
 
@@ -115,8 +113,7 @@ def _verbbas(facit: dict, lexem) -> tuple[dict, dict]:
 
 def _svag_pret(stam: str, spår: Spår) -> str:
     s = _före_konsonant(stam, spår)
-    if len(s) >= 2 and s[-1] in "dt" and s[-2] not in VOKAL:
-        spår("konsonant_dt_tar_e")
+    if len(s) >= 2 and s[-1] in "dt" and s[-2] not in VOKAL and spår("konsonant_dt_tar_e"):
         return s + "e"
     return s + ("te" if s[-1] in TONLÖS else "de")
 
@@ -146,10 +143,15 @@ def verb(info: dict, k: dict, spår: Spår) -> dict:
         pres = inf + "r"
     ut["pres"] = pres
     klass2 = pres == stam + "er" or (stam.endswith("r") and pres == stam)
+    # Klassen syns i presens, den form som visar den (3.4).
+    klass = "er" if klass2 else ("ar" if inf.endswith("a") else "kortverb")
+    if "pres" not in k:
+        spår.ändelse(klass)
 
     spår.cell = "imp"
     ut["imp"] = (_ordslut(pres[:-2] if pres.endswith("er") else pres, spår)
                  if klass2 else inf)
+    spår.ändelse(klass)
 
     spår.cell = "pret"
     if "pret" in k:
@@ -158,8 +160,10 @@ def verb(info: dict, k: dict, spår: Spår) -> dict:
         pret = k["pret_passiv"][:-1]
     elif klass2:
         pret = _svag_pret(stam, spår)
+        spår.ändelse(klass)
     else:
         pret = inf + ("de" if inf.endswith("a") else "dde")
+        spår.ändelse(klass)
     ut["pret"] = pret
 
     spår.cell = "sup"
@@ -169,21 +173,28 @@ def verb(info: dict, k: dict, spår: Spår) -> dict:
         sup = k["sup_passiv"][:-1]
     else:
         sup = _sup_ur_pret(pret)
+        if sup is not None:
+            spår.ändelse(klass)
     ut["sup"] = sup
 
     spår.cell = "perfpart_obest_utr_sg"
+    particip = ("perfpart_obest_utr_sg", "perfpart_obest_neu_sg", "perfpart_a")
     utr = k.get("perfpart_obest_utr_sg")
     if utr is not None and utr.endswith("en"):
         bas = utr[:-2]
         neu, a = bas + "et", _före_konsonant(bas, spår) + "na"
+        spår.ändelse("stark", *particip[1:])
     elif utr is not None:
         neu, a = sup, utr + "a"
+        spår.ändelse(klass, *particip[1:])
     elif sup and sup.endswith("it"):
         bas = sup[:-2]
         utr, neu, a = bas + "en", bas + "et", _före_konsonant(bas, spår) + "na"
+        spår.ändelse("stark", *particip)
     elif pret.endswith(("de", "te")):
         utr = pret[:-1]
         neu, a = sup, (pret if pret.endswith("ade") else utr + "a")
+        spår.ändelse(klass, *particip)
     else:
         utr = neu = a = None
     ut.update({"perfpart_obest_utr_sg": utr, "perfpart_obest_neu_sg": neu,
@@ -192,16 +203,18 @@ def verb(info: dict, k: dict, spår: Spår) -> dict:
     spår.cell = "pres_passiv"
     if klass2:
         imp = ut["imp"]
-        if imp.endswith(("s", "x")):
-            spår("s_x_tar_es")
+        if imp.endswith(("s", "x")) and spår("s_x_tar_es"):
             pres_passiv = imp + "es"
         else:
             pres_passiv = imp + "s"
     else:
         pres_passiv = inf + "s"
+    spår.ändelse(klass)
     ut.update({"inf_passiv": inf + "s", "pres_passiv": pres_passiv,
                "pret_passiv": pret + "s" if pret else None,
                "sup_passiv": sup + "s" if sup else None})
+    # S-passiven av infinitiv, preteritum och supinum är samma -s i alla klasser.
+    spår.ändelse("alla", "inf_passiv", "pret_passiv", "sup_passiv")
     ut.update(k)
     return ut
 
@@ -250,15 +263,19 @@ def substantiv(info: dict, k: dict, spår: Spår) -> dict:
     if genus == NEUTRUM:
         if bas[-1] in VOKAL:
             best = bas + "t"
-        elif _obetonat_slut(bas):
-            spår("obetonat_e_faller")
+            spår.ändelse("neutrum_vokal")
+        elif _obetonat_slut(bas) and spår("obetonat_e_faller"):
             best = _före_konsonant(bas[:-2], spår) + bas[-1] + "et"
+            spår.ändelse("neutrum")
         else:
             best = bas + "et"
+            spår.ändelse("neutrum")
     elif bas[-1] in VOKAL or _obetonat_slut(bas) or (len(bas) > 3 and bas.endswith("or")):
         best = bas + "n"
+        spår.ändelse("utrum_n")
     else:
         best = bas + "en"
+        spår.ändelse("utrum")
     best = k.get("best_sg_ack_dat_nom", best)
     ut["best_sg_ack_dat_nom"] = best
 
@@ -266,22 +283,36 @@ def substantiv(info: dict, k: dict, spår: Spår) -> dict:
     if tantum:
         pl = bas
     elif genus == NEUTRUM:
-        pl = bas + "er" if bas.endswith("eri") else (bas + "n" if bas[-1] in VOKAL else bas)
+        if bas.endswith("eri"):
+            pl = bas + "er"                        # bagerier
+            spår.ändelse("neutrum_eri")
+        elif bas[-1] in VOKAL:
+            pl = bas + "n"                         # äpplen
+            spår.ändelse("neutrum_vokal")
+        else:
+            pl = bas                               # hus
+            spår.ändelse("neutrum")
     elif bas.endswith("are"):
         pl = bas                                   # lärare
+        spår.ändelse("are")
     elif bas.endswith("else"):
         pl = bas + "r"                             # upplevelser
+        spår.ändelse("else")
     elif bas.endswith(("ing", "dom")):
         pl = bas + "ar"                            # klänningar, sjukdomar
+        spår.ändelse("ing_dom")
     elif bas.endswith("a"):
         pl = bas[:-1] + "or"                       # flickor
+        spår.ändelse("a")
     elif bas.endswith("e"):
         pl = bas[:-1] + "ar"                       # pojkar
-    elif _obetonat_slut(bas):
-        spår("obetonat_e_faller")
+        spår.ändelse("e")
+    elif _obetonat_slut(bas) and spår("obetonat_e_faller"):
         pl = _före_konsonant(bas[:-2], spår) + bas[-1] + "ar"   # fåglar
+        spår.ändelse("obetonat_slut")
     elif bas.endswith(ER_SUFFIX):
         pl = bas + "er"
+        spår.ändelse("suffix_er")
     else:
         pl = None
     pl = k.get("obest_pl_ack_dat_nom", pl)
@@ -292,23 +323,32 @@ def substantiv(info: dict, k: dict, spår: Spår) -> dict:
         bestpl = None
     elif tantum and pl.endswith("r"):
         bestpl = pl + "na"
+        spår.ändelse("tantum_r")
     elif genus == UTRUM and pl == bas and bas.endswith("are"):
         bestpl = bas[:-1] + "na"                   # lärarna
+        spår.ändelse("are")
     elif pl.endswith("on"):
         bestpl = pl + "en"                         # ögonen
+        spår.ändelse("on")
     elif genus == NEUTRUM and not tantum and pl == bas and best.endswith("et"):
         bestpl = best[:-2] + "en"                  # husen, rummen
+        spår.ändelse("neutrum")
     elif pl.endswith("r"):
         bestpl = pl + "na"
+        spår.ändelse("r")
     elif pl.endswith("n"):
         bestpl = pl + "a"                          # ansiktena
+        spår.ändelse("n")
     else:
         bestpl = pl + "en"                         # mössen
+        spår.ändelse("övrig")
     ut["best_pl_ack_dat_nom"] = k.get("best_pl_ack_dat_nom", bestpl)
 
     for gen, nom in GENITIV_AV.items():
         spår.cell = gen
         ut[gen] = _genitiv(ut[nom]) if ut.get(nom) else (_genitiv(bas) if nom == "obest_sg_ack_dat_nom" else None)
+        if ut[gen] is not None:
+            spår.ändelse("efter_s_x_z" if ut[gen] == (ut.get(nom) or bas) else "genitiv")
     ut.update(k)
     return ut
 
@@ -341,42 +381,48 @@ def _adjbas(facit: dict, lexem) -> tuple[dict, dict]:
 
 
 def _neutrum(bas: str, spår: Spår) -> str:
-    if bas.endswith("en") and _obetonat_slut(bas):
-        spår("en_blir_et")
+    if bas.endswith("en") and _obetonat_slut(bas) and spår("en_blir_et"):
+        spår.ändelse("t")
         return bas[:-1] + "t"                      # öppet, litet
     if bas.endswith("ad") and _stavelser(bas) >= 2:
+        spår.ändelse("ad")
         return bas[:-1] + "t"                      # förvånat, men glad → glatt
-    if bas.endswith("dd"):
-        spår("d_blir_t")
+    if bas.endswith("dd") and spår("d_blir_t"):
+        spår.ändelse("t")
         return bas[:-2] + "tt"                     # rädd → rätt
     if bas.endswith("tt"):
+        spår.ändelse("tt")
         return bas                                 # lätt, trött
-    if bas.endswith("d"):
-        spår("d_blir_t")
+    if bas.endswith("d") and spår("d_blir_t"):
+        spår.ändelse("t")
         return bas[:-1] + ("tt" if bas[-2] in VOKAL else "t")   # rött, hårt
     if bas.endswith("t"):
-        if bas[-2] in VOKAL:
-            spår("vokal_t_blir_tt")
+        if bas[-2] in VOKAL and spår("vokal_t_blir_tt"):
+            spår.ändelse("t")
             return bas + "t"                       # vitt
+        spår.ändelse("konsonant_t")
         return bas                                 # svart
-    if bas.endswith("nn"):
-        spår("mm_nn_före_konsonant")
+    if bas.endswith("nn") and spår("mm_nn_före_konsonant"):
+        spår.ändelse("t")
         return bas[:-1] + "t"                      # tunt
-    if bas[-1] in VOKAL:
-        spår("slutvokal_tar_tt")
+    if bas[-1] in VOKAL and spår("slutvokal_tar_tt"):
+        spår.ändelse("t")
         return bas + "tt"                          # nytt
+    spår.ändelse("t")
     return bas + "t"
 
 
 def _adjplural(bas: str, spår: Spår) -> str:
-    if _obetonat_slut(bas):
-        spår("obetonat_e_faller")
+    if _obetonat_slut(bas) and spår("obetonat_e_faller"):
+        spår.ändelse("a")
         return _före_konsonant(bas[:-2], spår) + bas[-1] + "a"   # öppna, enkla, vackra
     if bas.endswith("ad") and _stavelser(bas) >= 2:
+        spår.ändelse("ad")
         return bas + "e"                           # förvånade, men glad → glada
-    if bas.endswith("sam"):
-        spår("sam_dubblar_m")
+    if bas.endswith("sam") and spår("sam_dubblar_m"):
+        spår.ändelse("a")
         return bas + "ma"                          # ensamma
+    spår.ändelse("a")
     return bas + "a"
 
 
@@ -386,9 +432,22 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
     ut: dict[str, str | None] = {}
 
     spår.cell = "obest_f_sg_pos"
-    ut["obest_f_sg_pos"] = bas if oböjligt else _neutrum(bas, spår)
+    if oböjligt:
+        ut["obest_f_sg_pos"] = bas
+        spår.ändelse("oböjligt")
+    else:
+        ut["obest_f_sg_pos"] = _neutrum(bas, spår)
     spår.cell = "obest_a_pl_pos"
-    pl = k.get("obest_a_pl_pos", bas if oböjligt else _adjplural(bas, spår))
+    svaga = ("obest_a_pl_pos", "best_a_sg_pos", "best_a_pl_pos")
+    if "obest_a_pl_pos" in k:
+        pl = k["obest_a_pl_pos"]
+        spår.ändelse("som_plural", *svaga[1:])
+    elif oböjligt:
+        pl = bas
+        spår.ändelse("oböjligt", *svaga)
+    else:
+        pl = _adjplural(bas, spår)
+        spår.ändelse(spår.klasser["obest_a_pl_pos"], *svaga[1:])
     ut.update({"obest_a_pl_pos": pl, "best_a_sg_pos": pl, "best_a_pl_pos": pl})
 
     spår.cell = "komp"
@@ -398,6 +457,7 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
         komp = None                                # mer förvånad — participen kompareras med mer
     else:
         komp = (pl[:-1] if pl.endswith("a") else pl) + "are"
+        spår.ändelse("are")
     ut["komp"] = komp
 
     spår.cell = "obest_superl"
@@ -405,12 +465,17 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
         superl = k["obest_superl"]
     elif komp and komp.endswith("are"):
         superl = komp[:-3] + "ast"                 # billigast
+        spår.ändelse("are")
     elif komp and komp.endswith("re"):
         superl = komp[:-2] + "st"                  # större → störst
+        spår.ändelse("re")
     else:
         superl = None
     ut["obest_superl"] = superl
+    spår.cell = "best_superl"
     ut["best_superl"] = None if superl is None else superl + ("e" if superl.endswith("ast") else "a")
+    if superl is not None:
+        spår.ändelse("ast" if superl.endswith("ast") else "st")
     ut.update(k)
     return ut
 

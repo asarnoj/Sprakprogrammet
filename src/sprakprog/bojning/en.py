@@ -86,33 +86,25 @@ def _dubblar(stam: str) -> bool:
 def _ändelse(stam: str, ändelse: str, spår: Spår) -> str:
     """Stam plus -s, -ed, -ing, -er eller -est, med stavningsreglerna."""
     if ändelse == "s":
-        if stam.endswith(SIBILANT):
-            spår("sibilant_tar_es")
+        if stam.endswith(SIBILANT) and spår("sibilant_tar_es"):
             return stam + "es"
-        if _konsonant_y(stam):
-            spår("konsonant_y_blir_i")
+        if _konsonant_y(stam) and spår("konsonant_y_blir_i"):
             return stam[:-1] + "ies"
         return stam + "s"
     if ändelse == "ing":
-        if stam.endswith("ie"):
-            spår("ie_blir_y")
+        if stam.endswith("ie") and spår("ie_blir_y"):
             return stam[:-2] + "ying"
         if (stam.endswith("e") and not stam.endswith(("ee", "oe", "ye"))
-                and any(t in VOKAL for t in stam[:-1])):
-            spår("stumt_e_faller")
+                and any(t in VOKAL for t in stam[:-1]) and spår("stumt_e_faller")):
             return stam[:-1] + "ing"
-        if _dubblar(stam):
-            spår("enstavig_dubblar")
+        if _dubblar(stam) and spår("enstavig_dubblar"):
             return stam + stam[-1] + "ing"
         return stam + "ing"
-    if stam.endswith("e"):                        # -ed, -er, -est
-        spår("e_smälter_med_e")
+    if stam.endswith("e") and spår("e_smälter_med_e"):     # -ed, -er, -est
         return stam + ändelse[1:]
-    if _konsonant_y(stam):
-        spår("konsonant_y_blir_i")
+    if _konsonant_y(stam) and spår("konsonant_y_blir_i"):
         return stam[:-1] + "i" + ändelse
-    if _dubblar(stam):
-        spår("enstavig_dubblar")
+    if _dubblar(stam) and spår("enstavig_dubblar"):
         return stam + stam[-1] + ändelse
     return stam + ändelse
 
@@ -142,22 +134,34 @@ def verb(info: dict, k: dict, spår: Spår) -> dict:
     ut: dict[str, str | None] = {}
 
     spår.cell = "pres_3sg"
-    ut["pres_3sg"] = k["pres_3sg"] if "pres_3sg" in k else _ändelse(bas, "s", spår)
+    if "pres_3sg" in k:
+        ut["pres_3sg"] = k["pres_3sg"]
+    else:
+        ut["pres_3sg"] = _ändelse(bas, "s", spår)
+        spår.ändelse("regelbunden")
 
     spår.cell = "pret"
-    pret = k["pret"] if "pret" in k else _ändelse(bas, "ed", spår)
+    if "pret" in k:
+        pret = k["pret"]
+    else:
+        pret = _ändelse(bas, "ed", spår)
+        spår.ändelse("regelbunden")
     ut["pret"] = pret
 
     spår.cell = "sup"
     ut["sup"] = k.get("sup", pret)
+    if "sup" not in k and "pret" not in k:
+        spår.ändelse("regelbunden")
 
     spår.cell = "gerund"
     if "gerund" in k:
         ut["gerund"] = k["gerund"]
     elif pret == bas + bas[-1] + "ed" and not _dubblar(bas):
         ut["gerund"] = bas + bas[-1] + "ing"       # preferred → preferring
+        spår.ändelse("regelbunden")
     else:
         ut["gerund"] = _ändelse(bas, "ing", spår)
+        spår.ändelse("regelbunden")
 
     ut["pres_1sg"] = k.get("pres_1sg", bas)
     ut["pres_2sg"] = k.get("pres_2sg", ut["pres_1sg"])
@@ -196,9 +200,15 @@ def substantiv(info: dict, k: dict, spår: Spår) -> dict:
     spår.cell = "pl"
     if "pl" in k:
         pl = k["pl"]
+    elif tantum:
+        pl = bas
     else:
-        pl = bas if tantum else _ändelse(bas, "s", spår)
+        pl = _ändelse(bas, "s", spår)
+        spår.ändelse("regelbunden")
     ut = {"pl": pl, "sg_gen": None if tantum else bas + "'s", "pl_gen": _plgenitiv(pl)}
+    if not tantum:
+        spår.ändelse("genitiv", "sg_gen")
+    spår.ändelse("efter_s" if pl.endswith("s") else "genitiv", "pl_gen")
     ut.update(k)
     return ut
 
@@ -234,6 +244,7 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
         komp = k["komp"]
     elif " " not in bas and (stavelser == 1 or (stavelser == 2 and bas.endswith("y"))):
         komp = _ändelse(bas, "er", spår)
+        spår.ändelse("regelbunden")
     else:
         komp = None                                # more interesting, more in love
 
@@ -242,6 +253,7 @@ def adjektiv(info: dict, k: dict, spår: Spår) -> dict:
         superl = k["superl"]
     elif komp and komp.endswith("er"):
         superl = komp[:-2] + "est"                 # bigger → biggest
+        spår.ändelse("regelbunden")
     else:
         superl = None
     ut = {"komp": komp, "superl": superl}

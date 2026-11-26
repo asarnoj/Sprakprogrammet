@@ -6,8 +6,8 @@ inte ändringar i den kod som finns.
 
 > **Läge 2026-09-14.** Designen är avgjord utom frågorna i punkt 10. Steg 0, 1 och 1b är
 > gjorda för det första språkparet, svenska och engelska (8.3, 6.7). Kvar i dem är
-> granskningen av komparationen och de godtagbara utfallen. Nästa steg är
-> sammansättningen (steg 2).
+> granskningen av komparationen och de godtagbara utfallen. Nu byggs kortmodellen
+> (steg 3), som sammansättningen (steg 2) behöver.
 
 Här står besluten och de skäl en byggare behöver för att inte ändra dem av
 misstag. Resonemangen och mätningarna bakom dem finns i git-historiken
@@ -271,6 +271,16 @@ Kontrollen i steg 0 namnger undantaget med den första form som visar det; tabel
 som räknas fram i steg 3, avgör vilken del av varje form kortet står för.
 `Uppslag.form` redovisar ur tabellen (8.3), och rättningen graderar varje kort på dess
 del (3.1, 7.3).
+
+**Tabellen räknas fram, den skrivs inte** (`kortmodell/`). Böjningsreglerna namnger
+klassen för varje ändelse de använder, efter klassens synliga villkor (`er`,
+`neutrum_vokal`). Vilka undantag och ljudregler en form beror på räknas ut som
+positionerna i 6.2: kortet tas bort, formerna förutsägs igen, och de som ändras hör
+till kortet. `köper` ingår därför i `köpte`, `köpt` och `köps`, och ljudregeln i `kände`
+också i `känt`. En form kan alltså ha flera formkort. Väljer reglerna ändelse efter
+stammens ljud utan en namngiven ljudregel — neutrum `-t` efter vokal, annars `-et` —
+blir varianterna olika ändelsekort, vilket är det försiktiga valet. Svenskan får 77
+ändelsekort och 10 ljudregler, engelskan 10 och 6.
 
 #### Hur reglerna tas fram
 
@@ -1636,7 +1646,7 @@ De förväxlingsbara besluten är nästan alla predikativets artikel mot frasens
     1   renderarna redovisar sina beslut   svenskan och engelskan byggda och mätta (8.3), utom godtagbara utfall; fem språk kvar, inventerade i TYSTA_BESLUT.md
     1b  kartan                             kräver 1; rendering/karta.py; svenskan och engelskan klara (6.7)
     2   sammansättningen                   kräver 1b och 3; delarna kombineras till meningar med ord ur det tillåtna (6.7) — sökningens kärna, utan värde och budget
-    3   kortmodellen                       kräver 0; tabellen från form till kort (3.4)
+    3   kortmodellen                       kräver 0; kortmodell/: korten för svenskan och engelskan gjorda, och besluten kopplade till kort; delen av formen per kort kvar (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
     3c  FSRS-lagret                        kräver 3b; tillstånd och betyg, optimeringen av parametrarna (7.1), mätningen av p (6.2)
     4   nivåerna och grafen                kräver 2; kraven är kortens minsta meningar (4.2), nivåerna grafens starka komponenter (4.1); kontrollerar invarianten i 4.3

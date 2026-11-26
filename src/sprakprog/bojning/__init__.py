@@ -21,19 +21,34 @@ from typing import Callable
 
 
 class Spår:
-    """Vilka ljudregler som användes, per cell.
+    """Vilka ljudregler och ändelser som användes, per cell.
 
     En ljudanpassning som beror på ljudet och inte på klassen är ett eget
     regelkort (KÄRNAN 3.4). Förutsägelsen sätter `cell` innan den räknar ut en
-    cell, och anropar spåret med regelns namn när en ljudregel tillämpas.
+    cell, och anropar spåret med regelns namn när en ljudregel ska tillämpas.
+    Svaret säger om den får det: en avstängd regel tillämpas inte, och så räknar
+    kortmodellen ut vilka former regeln bestämmer.
+
+    `ändelse(klass)` säger att cellen byggdes med klassens ändelse. Klassen
+    namnges efter sitt synliga villkor, och ändelsekortet är (ordklass, klass,
+    cell).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, avstängda: frozenset = frozenset()) -> None:
         self.cell: str | None = None
         self.per_cell: dict[str | None, set[str]] = defaultdict(set)
+        self.klasser: dict[str, str] = {}
+        self.avstängda = avstängda
 
-    def __call__(self, regel: str) -> None:
+    def __call__(self, regel: str) -> bool:
+        if regel in self.avstängda:
+            return False
         self.per_cell[self.cell].add(regel)
+        return True
+
+    def ändelse(self, klass: str, *celler: str) -> None:
+        for cell in celler or (self.cell,):
+            self.klasser[cell] = klass
 
 
 @dataclass(frozen=True)

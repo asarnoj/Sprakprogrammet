@@ -14,6 +14,9 @@ fast mängd meningar (samma specar som `renderarfacit.py`) och mäter:
                         till ett enda kort (villkor 7 i KÄRNAN 6.1)
   kortbestånd           hur många olika regelkort meningarna rör
 
+Formkorten kommer ur kortmodellen (steg 3) för de språk som har böjningsregler:
+ändelsen, ljudreglerna och undantagen. Övriga språk räknar en cell per ord.
+
 Kör:  python ordbok/verktyg/redovisningsmätning.py sv [ANTAL]
 """
 from __future__ import annotations
@@ -29,32 +32,56 @@ sys.path.insert(0, str(ROT / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from renderarfacit import specar                                    # noqa: E402
+from sprakprog.kortmodell import REGLER, Formtabell, Kort, beslutskort  # noqa: E402
 from sprakprog.rendering import RENDERARE, RenderingsFel, spåra    # noqa: E402
 
 
-def kort_i(ut) -> list[tuple[tuple, frozenset, tuple | None]]:
+def _platser(b) -> frozenset:
+    return frozenset({("ord", i) for i in b.positioner} | {("lucka", g) for g in b.luckor})
+
+
+def kort_i(ut, tabell: Formtabell | None = None) -> list[tuple[object, frozenset, object]]:
     """(kort, platser, undantaget) för varje kort i meningen.
 
     Undantaget är ordkortet ett formkort får dela plats med.
     """
     ut_kort = []
     for i, o in enumerate(ut.ord):
-        ord_kort = ("ord", o.koncept)
-        ut_kort.append((ord_kort, frozenset({("ord", i)}), None))
-        ut_kort.append((("form", o.koncept, o.cell), frozenset({("ord", i)}),
-                        ord_kort))
+        plats = frozenset({("ord", i)})
+        if tabell is not None:
+            ord_kort, *formkort = tabell.kort(tabell.u.lexem(o.koncept, o.variant), o.cell)
+        else:
+            ord_kort, formkort = ("ord", o.koncept), [("form", o.koncept, o.cell)]
+        ut_kort.append((ord_kort, plats, None))
+        ut_kort += [(k, plats, ord_kort) for k in formkort]
     for b in ut.beslut:
         if not b.syns:
             continue
-        if b.sort in ("regel",):
+        if tabell is not None:
+            nyckel = beslutskort(tabell.språk, b)
+        elif b.sort == "regel":
             nyckel = ("regel", b.id[2], b.utfall)
         elif b.sort == "ordning":
             nyckel = ("ordning", b.id[2])
         else:
             nyckel = (b.sort, *b.id[2:-1], b.utfall)
-        platser = {("ord", i) for i in b.positioner} | {("lucka", g) for g in b.luckor}
-        ut_kort.append((nyckel, frozenset(platser), None))
+        ut_kort.append((nyckel, _platser(b), None))
     return ut_kort
+
+
+def _mönsternyckel(k) -> tuple | None:
+    """Nyckeln för kortbeståndet: regler, rektioner, ändelser och egenskaper."""
+    if isinstance(k, Kort):
+        if k.typ in ("regel", "rektion", "ändelse"):
+            return (k.typ, *k.nyckel)
+        if k.typ == "egenskap":
+            return ("egenskap", k.nyckel[1])
+        return None
+    if k[0] in ("regel", "ordning", "rektion"):
+        return k
+    if k[0] == "egenskap":
+        return ("egenskap", k[2])
+    return None
 
 
 def högst_samtidigt_svaga(kort) -> int:
@@ -90,6 +117,7 @@ def main() -> None:
     antal = int(sys.argv[2]) if len(sys.argv) > 2 else 5000
     conn = sqlite3.connect(ROT / "sprak.db")
     renderare = RENDERARE[språk](conn)
+    tabell = Formtabell(renderare.u) if språk in REGLER else None
     t = time.perf_counter()
     s = Counter()
     fördelning = {"ord": Counter(), "kort": Counter(), "svaga": Counter(),
@@ -104,7 +132,7 @@ def main() -> None:
         except RenderingsFel:
             continue
         s["meningar"] += 1
-        kort = kort_i(ut)
+        kort = kort_i(ut, tabell)
         s["ord"] += len(ut.ord)
         s["kort"] += len(kort)
         fördelning["ord"][len(ut.ord)] += 1
@@ -115,11 +143,9 @@ def main() -> None:
         svaga = högst_samtidigt_svaga(kort)
         s["högst samtidigt svaga"] += svaga
         fördelning["svaga"][svaga] += 1
-        for nyckel, _, _ in kort:
-            if nyckel[0] in ("regel", "ordning", "rektion"):
+        for k, _, _ in kort:
+            if (nyckel := _mönsternyckel(k)) is not None:
                 regelkort[nyckel] += 1
-            elif nyckel[0] == "egenskap":
-                regelkort[("egenskap", nyckel[2])] += 1
         # Förväxlingsbara: samma alternativa mening från två olika beslut.
         # Ett alternativ som ger samma text som meningen själv visar bara att
         # beslutet inte syns just där ("trasiga" är både plural och svag form),
@@ -141,7 +167,8 @@ def main() -> None:
                 förväxlade[(b.sort, b.id[2])] += 1
     dt = time.perf_counter() - t
     n = s["meningar"]
-    print(f"{språk}: {n} meningar spårade på {dt:.1f} s\n")
+    print(f"{språk}: {n} meningar spårade på {dt:.1f} s"
+          f"{'' if tabell else ' (utan kortmodell)'}\n")
     print(f"  ord per mening                 {s['ord'] / n:5.1f}")
     print(f"  kort per mening                {s['kort'] / n:5.1f}")
     print(f"  högst samtidigt svaga kort     {s['högst samtidigt svaga'] / n:5.1f}")
@@ -152,9 +179,9 @@ def main() -> None:
         rad = "  ".join(f"{k}:{v}" for k, v in sorted(fördelning[namn].items()))
         print(f"\n  fördelning {namn}: {rad}")
     typer = Counter(k[0] for k in regelkort)
-    print(f"\n  olika regelkort som rörs: {dict(typer)}")
+    print(f"\n  olika mönster- och regelkort som rörs: {dict(typer)}")
     for k, v in regelkort.most_common():
-        if k[0] in ("regel", "ordning", "rektion"):
+        if k[0] != "egenskap":
             print(f"    {v:>6}  {' · '.join(map(str, k))}")
     if förväxlade:
         print("\n  förväxlingsbara, per beslut:")
