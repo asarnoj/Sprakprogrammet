@@ -701,49 +701,47 @@ nybörjare möter tidigast. "Antal former" duger inte som mått åt något håll
 
 ## Vad som återstår
 
-1. **Meningsgeneratorn.** KORTLAGRET är byggt (2026-08-14): `kort.sql`,
-   `src/sprakprog/kort/`, `ordbok kort`. 24 187 kort och 124 191
-   cellkopplingar härledda ur språkdatabasen och stamanalysen, och
-   beroendekartan täcker varje formuppslag i alla sju språk.
-   FSRS-SCHEMALÄGGNINGEN är byggd: `src/sprakprog/kort/schemalaggning.py`,
-   ovanpå paketet `fsrs` 6.3.2. Och GENERATORN själv:
-   `src/sprakprog/generator/` — samplare, poängfunktion och sökning, 0,18 s
-   per mening i alla sju språk.
+**Slingan är öppen på exakt ett ställe.** Generatorn bygger meningen och
+schemaläggaren tar emot utfallet — men ingenting däremellan jämför
+användarens svar med facit. `registrera_mening(utfall)` väntar sig
+`kort_id → klarade det`, och den ordboken finns det ingen som fyller i.
 
-   **Vikterna i `poang.py` är en första gissning.** De går bara att hitta
-   genom att köra systemet, precis som GENERATOR.md säger. Allt loggas —
-   budget och utfall per mening — så frågan är besvarbar när det finns
-   användning att mäta mot.
+1. **RÄTTNINGEN.** Fritext in, diff mot facit ut, och därifrån ett betyg per
+   kort. Besluten står redan i GENERATOR.md, "Attribution": mekanisk
+   rättning först eftersom databasen har alla former med koordinater, och
+   tre mekanismer i tur och ordning när datan inte räcker — meningen
+   vittnar, historiken avgör, självrättning erbjuds. Beroendekartan som
+   attributionen bygger på är byggd och testad (`Cellkort`, 124 191
+   kopplingar). Det som saknas är diffen och de tre mekanismerna.
 
-   Kortmodellen är utredd och nedskriven i
-   [`paradigm/GENERATOR.md`](paradigm/GENERATOR.md): fem korttyper, formen
-   som bärare, attribution via renderarens beroendekarta, FSRS på faktisk
-   förfluten tid. Utökad 2026-08-14 med kortens UPPLÖSNING (stam- och
-   systemkort i stället för ett kort per cell, mätt fram i fyra steg),
-   uppdelningen schemalagda mot mätta kort, och var kortlagret bor —
-   inlärardatabasen ska vara en egen fil och kort får aldrig peka på
-   `Former.id`, som flyttar vid ombyggnad. Och 2026-08-14 med SÖKNINGEN:
-   sampla tusen kandidater och poängsätt (41 000 kandidater/s mätt, ingen
-   lösare behövs), svårighet som budget plus koncentration, en adaptiv loop
-   och inte två, ingen beroendeordning mellan kort. **Den var blockerad av meningskomplexiteten och är det
-   inte längre.** Frågan om täckande mot opportunistisk urvalsstrategi är
-   nu mogen — med 59–95 % nåbart avgörs det som övas av strategin, inte av
-   uttrycksförmågan.
-2. **Italienska possessiver saknar artikel** — "suo libro" ska vara "il suo
-   libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
-3. **Spanskans el agua** — feminina ord på betonat /a/ tar `el` i singular.
-   Kräver en flagga på lexemet; betoningen syns inte i stavningen.
-4. **Partikelverbens satsklammer i tyskan.** 14 verb, fel redan i
-   indikativen: "ruft an den Bruder" ska vara "ruft den Bruder an".
-   Partikeln ligger i formen och borde ligga i det infinita fältet.
+   Utan den kan systemet generera men inte lära sig något av svaret.
+
+2. **Tre språkfel som väntar, alla hittade under bygget:**
+   - Italienska possessiver saknar artikel — "suo libro" ska vara "il suo
+     libro", utom vid oböjda släktskapsord i singular. Gäller alla grader.
+   - Spanskans *el agua* — feminina ord på betonat /a/ tar `el` i singular.
+     Kräver en flagga på lexemet; betoningen syns inte i stavningen.
+   - Partikelverbens satsklammer i tyskan. 14 verb, fel redan i indikativen:
+     "ruft an den Bruder" ska vara "ruft den Bruder an".
+   - Och japanskan renderar enstaka verb som "たいです", där masu-formen
+     saknas och adjektivgrenen tar över.
+
+3. **Nivåerna och lektionerna.** CEFR-nivån finns i `ordbok/nivålistor/*.csv`
+   (397 A1, 329 A2, 15 B1 för svenska) men importerades aldrig till
+   `Koncept`. Generatorns `nivå`-parameter finns och fungerar, men ingenting
+   fyller den med innehåll. Upplåsning och undervisning vid upplåsning är
+   beslutade i GENERATOR.md men obyggda.
+
+4. **Vikterna i `poang.py`.** En första gissning, och det står i
+   modulhuvudet. De går bara att hitta genom att köra systemet — men allt
+   loggas redan, budget och utfall per mening, så frågan är besvarbar när
+   det finns användning att mäta mot.
+
 5. **Appen.** Desktop först, mobil senare.
 
-**Komplexitetsstegen är slut.** De 21 nivåerna i GENERATOR.md är byggda i
-alla sju språk. Det som återstår ovan är inte fler satstyper utan djup i
-dem som finns — och generatorn.
-
-Håll FSRS, ljuduppläsning och appen utanför tills generatorn löser fram
-meningar.
+**Komplexitetsstegen är slut** — de 21 nivåerna är byggda i alla sju språk.
+Det som återstår är inte fler satstyper utan djup i dem som finns, och
+gränssnittet.
 
 ---
 
