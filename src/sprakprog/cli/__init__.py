@@ -109,6 +109,13 @@ def main(argv: list[str] | None = None) -> int:
     from .granska import lägg_till_argument as _granska_args
     _granska_args(p_granska)
 
+    # ── rendera ──────────────────────────────────────────────────────────
+    p_rendera = sub.add_parser(
+        "rendera",
+        help="Rendera en meningsspecifikation till ett språk")
+    from .rendera import lägg_till_argument as _rendera_args
+    _rendera_args(p_rendera)
+
     args = parser.parse_args(argv)
 
     # Lazy import för snabb startup på enskilda kommandon
@@ -151,6 +158,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.kommando == "granska-former":
         from .granska import kör as kör_granska
         return kör_granska(args)
+
+    if args.kommando == "rendera":
+        from .rendera import kör as kör_rendera
+        return kör_rendera(args)
 
     parser.error(f"okänt kommando: {args.kommando}")
     return 2
