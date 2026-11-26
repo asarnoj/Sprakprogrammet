@@ -69,6 +69,15 @@ HON = Nominalfras("pronomen_3sg_fem")
 VI = Nominalfras("pronomen_1pl", referent=Referentgenus.MASKULIN)
 DE = Nominalfras("pronomen_3pl", referent=Referentgenus.FEMININ)
 DU = Nominalfras("pronomen_2sg")
+# ETT ANIMAT INDIREKT OBJEKT MED KÄND SEMANTIK. Första försöket var
+# `pronomen_2pl` med `referent=MASKULIN` — kopierat från `VI` ovan, och fel
+# axel: spanskans 2pl varierar efter ARTIGHET (vosotros/ustedes), inte genus,
+# så varianten pekades inte ut och renderingen kastade. Ett substantiv har
+# inga sådana varianter och bär semantiken ANIMAT rakt av.
+BARNET = Nominalfras("fam_barn", Bestämdhet.BESTÄMD)
+# ETT ÖPPNINGSBART OBJEKT. `fys_stänga` kräver ÖPPNINGSBAR, och korpusen
+# stängde en HUND — se kommentaren vid `perfekt` nedan.
+DÖRREN = Nominalfras("hem_dörr", Bestämdhet.BESTÄMD)
 
 
 def _m(**kw) -> Mening:
@@ -85,12 +94,22 @@ KORPUS: tuple[tuple[str, Mening], ...] = (
     ("transitiv-obestämd", _m(verb="fys_köpa", objekt=KATT)),
     ("plural-objekt", _m(verb="fys_hålla", objekt=HÄST)),
     ("pronomen-subjekt-1pl", _m(verb="arb_arbeta", subjekt=VI)),
-    ("bitransitiv", _m(verb="fys_ge", objekt=HUND, io=DE)),
+    # `io=DE` FÖRR, och `pronomen_3pl` har medvetet ingen semantik: "de" kan
+    # syfta på vad som helst (se `semantik.sql`). `fys_ge` kräver ANIMAT i
+    # io-slotten, och ett krav som inte GÅR att pröva räknas som brutet — så
+    # specen var ogiltig utan att vara fel. `pronomen_2pl` är animat och känt.
+    ("bitransitiv", _m(verb="fys_ge", objekt=HUND, io=BARNET)),
 
     # ── tempus och aspekt ─────────────────────────────────────────────
     ("preteritum", _m(verb="arb_leka", tid=Tidsreferens.FÖRFLUTEN)),
     ("futurum", _m(verb="fys_göra", objekt=HUND, tid=Tidsreferens.FRAMTID)),
-    ("perfekt", _m(verb="fys_stänga", objekt=HUND, aspekt=Aspekt.PERFEKT)),
+    # KORPUSEN STÄNGDE EN HUND. `fys_stänga` kräver ÖPPNINGSBAR i objektet
+    # och `djur_hund` har det inte, så de tre specarna här och nedan var
+    # OGILTIGA — validatorn avvisade dem, men `korpus_ur_svep` renderar utan
+    # att fråga den. Modellgranskningen 2026-08-29 flaggade dem i alla sju
+    # språken: 19 av 77 anmärkningar gällde meningar som aldrig borde ha
+    # byggts, och renderarna hade gjort helt rätt på var och en.
+    ("perfekt", _m(verb="fys_stänga", objekt=DÖRREN, aspekt=Aspekt.PERFEKT)),
     ("pluskvamperfekt", _m(verb="fys_hitta", objekt=KATT,
                            tid=Tidsreferens.FÖRFLUTEN, aspekt=Aspekt.PERFEKT)),
     ("futurum-perfekt", _m(verb="fys_köpa", objekt=KATT,
@@ -103,7 +122,7 @@ KORPUS: tuple[tuple[str, Mening], ...] = (
     ("ja-nej-fråga", _m(verb="fys_använda", objekt=HUND, fråga=True)),
     ("fråga-negerad", _m(verb="fys_hitta", objekt=KATT, fråga=True, negerad=True)),
     ("passiv", _m(verb="fys_göra", subjekt=HUND, diates=Diates.PASSIV)),
-    ("passiv-perfekt", _m(verb="fys_stänga", subjekt=HUND,
+    ("passiv-perfekt", _m(verb="fys_stänga", subjekt=DÖRREN,
                           diates=Diates.PASSIV, aspekt=Aspekt.PERFEKT)),
     ("passiv-futurum", _m(verb="fys_köpa", subjekt=KATT,
                           diates=Diates.PASSIV, tid=Tidsreferens.FRAMTID)),
@@ -154,7 +173,7 @@ KORPUS: tuple[tuple[str, Mening], ...] = (
     ("infinitiv-negerad", _m(verb="asp_sluta", komplement="arb_leka", negerad=True)),
     ("infinitiv-futurum", _m(verb="asp_börja", komplement="fys_göra",
                              tid=Tidsreferens.FRAMTID)),
-    ("imperativ", _m(verb="fys_stänga", subjekt=DU, objekt=HUND,
+    ("imperativ", _m(verb="fys_stänga", subjekt=DU, objekt=DÖRREN,
                      modus=Satsmodus.IMPERATIV)),
     ("imperativ-plural", _m(verb="arb_hjälpa", subjekt=Nominalfras("pronomen_2pl"),
                             objekt=HUND, modus=Satsmodus.IMPERATIV)),
@@ -265,9 +284,37 @@ def läs() -> dict[tuple[str, str], str]:
             if len(d := rad.split("\t")) == 3}
 
 
+def ogiltiga_specar(conn) -> list[str]:
+    """Korpusspecar som validatorn avvisar. Ska vara tom.
+
+    KORPUSEN RENDERAS UTAN ATT NÅGON FRÅGAR VALIDATORN — `korpus_ur_svep`
+    kallar `rendera` direkt — och den är handskriven, så ingenting hindrar
+    att en spec bryter mot restriktionerna. Fyra gjorde det: tre stängde en
+    HUND (`fys_stänga` kräver ÖPPNINGSBAR) och en gav något till `de`
+    (`pronomen_3pl` saknar semantik med flit, så ANIMAT-kravet inte GÅR att
+    pröva och räknas som brutet).
+
+    KOSTNADEN VAR MODELLTID. Svepet 2026-08-29 skickade dem till granskning i
+    alla sju språken, och 19 av 77 anmärkningar gällde meningar systemet
+    redan visste var olagliga. Renderarna hade gjort helt rätt på var och en.
+
+    Kontrollen ligger här och inte i `korpus_ur_svep`, för svaret är att
+    LAGA specen och inte att hoppa över den: hoppar man över tappar
+    korpusen tre konstruktioner ur renderarbilden utan att någon märker det.
+    """
+    from sprakprog.rendering.restriktioner import Validator
+    v = Validator(conn)
+    return [f"{namn}: {b[0]}" for namn, m in KORPUS if (b := v.validera(m))]
+
+
 def main() -> int:
     conn = sqlite3.connect("sprak.db")
     conn.row_factory = sqlite3.Row
+    if ogiltiga := ogiltiga_specar(conn):
+        print(f"✗ {len(ogiltiga)} korpusspecar bryter mot restriktionerna:")
+        for o in ogiltiga:
+            print(f"      {o}")
+        return 1
     nu = rendera_alla(conn)
     fel = sum(1 for _, _, t in nu if t.startswith(("FEL", "KRASCH")))
     print(f"{len(KORPUS)} konstruktioner × 7 språk = {len(nu)} rader, "

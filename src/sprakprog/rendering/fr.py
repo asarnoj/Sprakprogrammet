@@ -81,5 +81,22 @@ class FranskRenderare(RomanskRenderare):
         return (första in ELIDERAR
                 and andra[:1].lower() in self.VOKAL | {"h"})
 
+    def sammandrar(self, första: str, andra: str, nästa: str) -> bool:
+        """ELISIONEN GÅR FÖRE SAMMANDRAGNINGEN i franskan.
+
+        `au` och `du` finns bara när artikeln STÅR KVAR som `le`. Framför
+        vokal blir artikeln `l'`, och då finns ingenting att dra ihop med:
+        det heter `à l'enfant` och `de l'homme`, aldrig `au enfant`.
+
+        Italienskan gör tvärtom och eliderar det sammandragna (`dell'acqua`),
+        vilket är därför regeln sitter här och inte i `romansk.sandhi`.
+
+        Funnet 2026-08-29 när korpusens `bitransitiv` bytte indirekt objekt
+        till `fam_barn`: renderingen gav `Elle donne le chien au enfant`.
+        Felet fanns hela tiden — ingen korpusmening hade råkat ställa `à` +
+        `le` framför en vokal.
+        """
+        return not self.eliderar(andra, nästa)
+
     # Franskan ställer pronomenet före infinitiven, som eget ord.
     REFLEXIV_INFINITIV_ENKLITISK = False

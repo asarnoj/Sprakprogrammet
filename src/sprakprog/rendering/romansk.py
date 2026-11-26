@@ -377,12 +377,22 @@ class RomanskRenderare:
     # ── sandhi ───────────────────────────────────────────────────────
 
     def sandhi(self, ord: list[str]) -> list[str]:
-        """Elision och sammandragning mellan intilliggande ord."""
+        """Elision och sammandragning mellan intilliggande ord.
+
+        ORDNINGEN MELLAN DE TVÅ ÄR SPRÅKENS EGEN. Italienskan drar ihop
+        först och eliderar RESULTATET — `di` + `la` + `acqua` blir `della`
+        och sedan `dell'acqua`. Franskan gör tvärtom: eliderar artikeln
+        sker ingen sammandragning alls, så `à` + `le` + `enfant` blir
+        `à l'enfant` och inte `au enfant`. Därför frågar
+        slingan `sammandrar` innan den drar ihop, och den behöver NÄSTA ord
+        för att kunna svara.
+        """
         ut: list[str] = []
-        for o in ord:
+        for i, o in enumerate(ord):
             if ut:
                 ersättning = self.SAMMANDRAG.get((ut[-1], o))
-                if ersättning is not None:
+                nästa = ord[i + 1] if i + 1 < len(ord) else ""
+                if ersättning is not None and self.sammandrar(ut[-1], o, nästa):
                     ut[-1] = ersättning
                     continue
                 if self.eliderar(ut[-1], o):
@@ -394,6 +404,10 @@ class RomanskRenderare:
 
     def eliderar(self, första: str, andra: str) -> bool:
         return False
+
+    def sammandrar(self, första: str, andra: str, nästa: str) -> bool:
+        """Ska sammandragningen ske, givet vad som följer? Se `sandhi`."""
+        return True
 
     # ── klitika ──────────────────────────────────────────────────────
 

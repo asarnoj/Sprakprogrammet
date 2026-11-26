@@ -2125,6 +2125,49 @@ slutat gälla.
 Invarianten ligger i `samplarprov` och mäter genom urvalet, inte på
 kandidaterna.
 
+#### FÖRSTA SVEPET, 2026-08-29 — 466 meningar, 77 anmärkningar
+
+Julius körde `--svep` för första gången. Rapporten sorterar sig i fyra
+högar, och den viktigaste upptäckten är hur få av anmärkningarna som
+gällde renderarna:
+
+    19   korpusen renderade en spec validatorn REDAN avvisar
+    14   restriktion saknas: `fys_göra` + djur
+     8   andra restriktionsluckor
+    36   äkta renderar- och formfel, spridda över sju språk
+
+**Sex konstruktioner föll i alla sju språken**, och det var beskedet: ett fel
+i sju oberoende renderare är nästan aldrig sju buggar. `svep:futurum`,
+`svep:passiv`, `svep:imperativ`, `svep:perfekt` och två till gav `göra
+hunden` och `stänga hunden` — och renderarna hade gjort HELT RÄTT på var och
+en. Felet var att specen aldrig borde ha byggts.
+
+**Korpusen gick förbi validatorn.** `korpus_ur_svep` kallar `rendera` direkt,
+och korpusen är handskriven, så ingenting hindrade en olaglig spec. Fyra av
+70 var det: tre stängde en HUND (`fys_stänga` kräver ÖPPNINGSBAR, och
+validatorn sa det redan) och en gav något till `de` (`pronomen_3pl` saknar
+semantik med flit, så ANIMAT-kravet inte GÅR att pröva). Kostnaden var
+modelltid: nitton anmärkningar om meningar systemet redan visste var omöjliga.
+
+Rättat genom att laga specarna, inte genom att hoppa över dem — hoppar man
+över tappar renderarbilden tre konstruktioner utan att någon märker det.
+`renderarbild.ogiltiga_specar` vaktar det nu.
+
+**Och bytet blottade ett äkta fel i franskan.** `bitransitiv` med `fam_barn`
+som indirekt objekt gav `Elle donne le chien au enfant`. Sammandragningen
+kördes före elisionen: `à` + `le` blev `au` innan någon såg att nästa ord
+började på vokal. Franskan gör tvärtom mot italienskan — `dell'acqua` är
+sammandragningen ELIDERAD, medan `à l'enfant` är sammandragningen INSTÄLLD.
+Felet fanns hela tiden; ingen korpusmening hade råkat ställa `à` + `le`
+framför en vokal.
+
+**Öppet efter svepet:** `fys_göra` har en objektslot utan tagg, så `göra
+hunden` passerar valideringen. Restriktionerna är POSITIVA (`faktisk & krav
+== krav`) och det finns ingen bit som utesluter en hund men släpper in
+typiska tillverkade ting — att laga det kräver antingen en ny bit eller ett
+negativt krav, alltså ett designbeslut. De 36 renderar- och formfelen står
+kvar som C7:s arbetslista.
+
 #### VERKTYGET BYGGT 2026-08-24 — `ordbok granska-meningar`
 
 Gemensamt för C3, C7 och G4, eftersom de tre är samma arbete sett från olika

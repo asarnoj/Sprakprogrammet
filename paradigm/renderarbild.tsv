@@ -4,10 +4,10 @@ transitiv	sv	Hon hittar hunden.
 transitiv-obestämd	sv	Hon köper en katt.
 plural-objekt	sv	Hon håller hästarna.
 pronomen-subjekt-1pl	sv	Vi arbetar.
-bitransitiv	sv	Hon ger dem hunden.
+bitransitiv	sv	Hon ger barnet hunden.
 preteritum	sv	Hon lekte.
 futurum	sv	Hon ska göra hunden.
-perfekt	sv	Hon har stängt hunden.
+perfekt	sv	Hon har stängt dörren.
 pluskvamperfekt	sv	Hon hade hittat en katt.
 futurum-perfekt	sv	Hon har köpt en katt.
 negation	sv	Hon hjälper inte hunden.
@@ -15,7 +15,7 @@ negation-preteritum	sv	Hon lekte inte.
 ja-nej-fråga	sv	Använder hon hunden?
 fråga-negerad	sv	Hittar hon inte en katt?
 passiv	sv	Hunden görs.
-passiv-perfekt	sv	Hunden har stängts.
+passiv-perfekt	sv	Dörren har stängts.
 passiv-futurum	sv	En katt ska köpas.
 attribut	sv	Hon hittar den snälla hunden.
 attribut-obestämd	sv	Hon köper en vacker katt.
@@ -35,7 +35,7 @@ två-adverbial	sv	Hon leker framför hunden bredvid en katt.
 infinitivkomplement	sv	Hon börjar att arbeta.
 infinitiv-negerad	sv	Hon slutar inte att leka.
 infinitiv-futurum	sv	Hon ska börja att göra.
-imperativ	sv	Stäng hunden!
+imperativ	sv	Stäng dörren!
 imperativ-plural	sv	Hjälp hunden!
 modal-ren-infinitiv	sv	Hon kan arbeta.
 modal-futurum	sv	Hon ska böra leka.
@@ -74,10 +74,10 @@ transitiv	en	She finds the dog.
 transitiv-obestämd	en	She buys a cat.
 plural-objekt	en	She holds the horses.
 pronomen-subjekt-1pl	en	We work.
-bitransitiv	en	She gives them the dog.
+bitransitiv	en	She gives the child the dog.
 preteritum	en	She played.
 futurum	en	She will do the dog.
-perfekt	en	She has closed the dog.
+perfekt	en	She has closed the door.
 pluskvamperfekt	en	She had found a cat.
 futurum-perfekt	en	She has bought a cat.
 negation	en	She does not help the dog.
@@ -85,7 +85,7 @@ negation-preteritum	en	She did not play.
 ja-nej-fråga	en	Does she use the dog?
 fråga-negerad	en	Does she not find a cat?
 passiv	en	The dog is done.
-passiv-perfekt	en	The dog has been closed.
+passiv-perfekt	en	The door has been closed.
 passiv-futurum	en	A cat will be bought.
 attribut	en	She finds the kind dog.
 attribut-obestämd	en	She buys a beautiful cat.
@@ -105,7 +105,7 @@ två-adverbial	en	She plays in front of the dog next to a cat.
 infinitivkomplement	en	She starts to work.
 infinitiv-negerad	en	She does not stop playing.
 infinitiv-futurum	en	She will start to do.
-imperativ	en	Close the dog!
+imperativ	en	Close the door!
 imperativ-plural	en	Help the dog!
 modal-ren-infinitiv	en	She can work.
 modal-futurum	en	FEL en/should: cellen 'inf_imp' är tom — formen saknas i databasen
@@ -144,10 +144,10 @@ transitiv	de	Sie findet den Hund.
 transitiv-obestämd	de	Sie kauft eine Katze.
 plural-objekt	de	Sie hält die Pferde.
 pronomen-subjekt-1pl	de	Wir arbeiten.
-bitransitiv	de	Sie gibt ihnen den Hund.
+bitransitiv	de	Sie gibt dem Kind den Hund.
 preteritum	de	Sie spielte.
 futurum	de	Sie wird den Hund machen.
-perfekt	de	Sie hat den Hund geschlossen.
+perfekt	de	Sie hat die Tür geschlossen.
 pluskvamperfekt	de	Sie hatte eine Katze gefunden.
 futurum-perfekt	de	Sie hat eine Katze gekauft.
 negation	de	Sie hilft dem Hunde nicht.
@@ -155,7 +155,7 @@ negation-preteritum	de	Sie spielte nicht.
 ja-nej-fråga	de	Benutzt sie den Hund?
 fråga-negerad	de	Findet sie keine Katze?
 passiv	de	Der Hund wird gemacht.
-passiv-perfekt	de	Der Hund ist geschlossen worden.
+passiv-perfekt	de	Die Tür ist geschlossen worden.
 passiv-futurum	de	Eine Katze wird gekauft werden.
 attribut	de	Sie findet den netten Hund.
 attribut-obestämd	de	Sie kauft eine schöne Katze.
@@ -175,7 +175,7 @@ två-adverbial	de	Sie spielt vor dem Hunde neben einer Katze.
 infinitivkomplement	de	Sie fängt zu arbeiten an.
 infinitiv-negerad	de	Sie hört nicht zu spielen auf.
 infinitiv-futurum	de	Sie wird anfangen zu machen.
-imperativ	de	Schließ den Hund!
+imperativ	de	Schließ die Tür!
 imperativ-plural	de	Helft dem Hunde!
 modal-ren-infinitiv	de	Sie kann arbeiten.
 modal-futurum	de	Sie wird spielen sollen.
@@ -214,10 +214,10 @@ transitiv	fr	Elle trouve le chien.
 transitiv-obestämd	fr	Elle achète un chat.
 plural-objekt	fr	Elle tient les chevaux.
 pronomen-subjekt-1pl	fr	Nous travaillons.
-bitransitiv	fr	Elle leur donne le chien.
+bitransitiv	fr	Elle donne le chien à l'enfant.
 preteritum	fr	Elle a joué.
 futurum	fr	Elle fera le chien.
-perfekt	fr	Elle a fermé le chien.
+perfekt	fr	Elle a fermé la porte.
 pluskvamperfekt	fr	Elle avait trouvé un chat.
 futurum-perfekt	fr	Elle a acheté un chat.
 negation	fr	Elle n'aide pas le chien.
@@ -225,7 +225,7 @@ negation-preteritum	fr	Elle n'a pas joué.
 ja-nej-fråga	fr	Est-ce qu'elle utilise le chien?
 fråga-negerad	fr	Est-ce qu'elle ne trouve pas un chat?
 passiv	fr	Le chien est fait.
-passiv-perfekt	fr	Le chien a été fermé.
+passiv-perfekt	fr	La porte a été fermée.
 passiv-futurum	fr	Un chat sera acheté.
 attribut	fr	Elle trouve le gentil chien.
 attribut-obestämd	fr	Elle achète un beau chat.
@@ -245,7 +245,7 @@ två-adverbial	fr	Elle joue devant le chien à côté de un chat.
 infinitivkomplement	fr	Elle commence à travailler.
 infinitiv-negerad	fr	Elle n'arrête pas de jouer.
 infinitiv-futurum	fr	Elle commencera à faire.
-imperativ	fr	Ferme le chien!
+imperativ	fr	Ferme la porte!
 imperativ-plural	fr	Aidez le chien!
 modal-ren-infinitiv	fr	Elle peut travailler.
 modal-futurum	fr	Elle devra jouer.
@@ -284,10 +284,10 @@ transitiv	es	Ella encuentra el perro.
 transitiv-obestämd	es	Ella compra un gato.
 plural-objekt	es	Ella sujeta los caballos.
 pronomen-subjekt-1pl	es	Nosotros trabajamos.
-bitransitiv	es	Ella les da el perro.
+bitransitiv	es	Ella le da el perro al niño.
 preteritum	es	Ella jugó.
 futurum	es	Ella hará el perro.
-perfekt	es	Ella ha cerrado el perro.
+perfekt	es	Ella ha cerrado la puerta.
 pluskvamperfekt	es	Ella había encontrado un gato.
 futurum-perfekt	es	Ella ha comprado un gato.
 negation	es	Ella no ayuda el perro.
@@ -295,7 +295,7 @@ negation-preteritum	es	Ella no jugó.
 ja-nej-fråga	es	¿Ella usa el perro?
 fråga-negerad	es	¿Ella no encuentra un gato?
 passiv	es	El perro es hecho.
-passiv-perfekt	es	El perro ha sido cerrado.
+passiv-perfekt	es	La puerta ha sido cerrada.
 passiv-futurum	es	Un gato será comprado.
 attribut	es	Ella encuentra el perro amable.
 attribut-obestämd	es	Ella compra un gato hermoso.
@@ -315,7 +315,7 @@ två-adverbial	es	Ella juega delante de el perro al lado de un gato.
 infinitivkomplement	es	Ella empieza a trabajar.
 infinitiv-negerad	es	Ella no deja de jugar.
 infinitiv-futurum	es	Ella empezará a hacer.
-imperativ	es	¡Cierra el perro!
+imperativ	es	¡Cierra la puerta!
 imperativ-plural	es	¡Ayudad el perro!
 modal-ren-infinitiv	es	Ella puede trabajar.
 modal-futurum	es	Ella deberá jugar.
@@ -354,10 +354,10 @@ transitiv	it	Lei trova il cane.
 transitiv-obestämd	it	Lei compra un gatto.
 plural-objekt	it	Lei tiene i cavalli.
 pronomen-subjekt-1pl	it	Noi lavoriamo.
-bitransitiv	it	Lei gli dà il cane.
+bitransitiv	it	Lei dà il cane al bambino.
 preteritum	it	Lei ha giocato.
 futurum	it	Lei farà il cane.
-perfekt	it	Lei ha chiuso il cane.
+perfekt	it	Lei ha chiuso la porta.
 pluskvamperfekt	it	Lei aveva trovato un gatto.
 futurum-perfekt	it	Lei ha comprato un gatto.
 negation	it	Lei non aiuta il cane.
@@ -365,7 +365,7 @@ negation-preteritum	it	Lei non ha giocato.
 ja-nej-fråga	it	Lei usa il cane?
 fråga-negerad	it	Lei non trova un gatto?
 passiv	it	Il cane è fatto.
-passiv-perfekt	it	Il cane è stato chiuso.
+passiv-perfekt	it	La porta è stata chiusa.
 passiv-futurum	it	Un gatto sarà comprato.
 attribut	it	Lei trova il cane gentile.
 attribut-obestämd	it	Lei compra un bello gatto.
@@ -385,7 +385,7 @@ två-adverbial	it	Lei gioca davanti a il cane accanto a un gatto.
 infinitivkomplement	it	Lei inizia a lavorare.
 infinitiv-negerad	it	Lei non smette di giocare.
 infinitiv-futurum	it	Lei inizierà a fare.
-imperativ	it	Chiudi il cane!
+imperativ	it	Chiudi la porta!
 imperativ-plural	it	Aiutate il cane!
 modal-ren-infinitiv	it	Lei può lavorare.
 modal-futurum	it	Lei dovrà giocare.
@@ -424,10 +424,10 @@ transitiv	ja	彼女は犬を見つけます。
 transitiv-obestämd	ja	彼女は猫を買います。
 plural-objekt	ja	彼女は馬を持ちます。
 pronomen-subjekt-1pl	ja	私たちは働きます。
-bitransitiv	ja	彼女は彼らに犬をあげます。
+bitransitiv	ja	彼女は子供に犬をあげます。
 preteritum	ja	彼女は遊びました。
 futurum	ja	彼女は犬をします。
-perfekt	ja	彼女は犬を閉めました。
+perfekt	ja	彼女はドアを閉めました。
 pluskvamperfekt	ja	彼女は猫を見つけました。
 futurum-perfekt	ja	彼女は猫を買いました。
 negation	ja	彼女は犬を手伝いません。
@@ -435,7 +435,7 @@ negation-preteritum	ja	彼女は遊びませんでした。
 ja-nej-fråga	ja	彼女は犬を使いますか。
 fråga-negerad	ja	彼女は猫を見つけませんか。
 passiv	ja	犬はされます。
-passiv-perfekt	ja	犬は閉められました。
+passiv-perfekt	ja	ドアは閉められました。
 passiv-futurum	ja	猫は買われます。
 attribut	ja	彼女は優しい犬を見つけます。
 attribut-obestämd	ja	彼女は美しい猫を買います。
@@ -455,7 +455,7 @@ två-adverbial	ja	彼女は犬の前に猫の隣に遊びます。
 infinitivkomplement	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
 infinitiv-negerad	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
 infinitiv-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
-imperativ	ja	犬を閉めてください。
+imperativ	ja	ドアを閉めてください。
 imperativ-plural	ja	犬を手伝ってください。
 modal-ren-infinitiv	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
 modal-futurum	ja	FEL ja: infinitivkomplement finns inte i japanskan. Modalitet uttrycks med suffix och konstruktioner på HUVUDVERBET — 読みたい (vill), 読める (kan), 読まなければならない (måste) — inte med ett styrande verb plus infinitiv. Kräver en egen modell och är inte byggt
