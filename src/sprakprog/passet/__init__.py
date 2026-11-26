@@ -351,6 +351,18 @@ class Passet:
                       key=lambda k: ((0, *self.s._ordvikt(k.nyckel[0])) if k.familj == "ord"
                                      else (-1, 0.0, 0, str(k))))
 
+    def att_presentera(self) -> list[Kort]:
+        """Nästa nivås kort som inte är införda OCH inte presenterade i dag.
+
+        Skilt från `kandidater`, som bara drar bort de införda. Introfasen
+        inför ingenting (5.4), så `kandidater` står stilla över hela
+        introfasen — och gränssnittet lät då användaren köra om den i
+        oändlighet, med samma fem kort tre varv i rad. Dagens nya kort
+        presenteras en gång (5.1); sedan prövas de i meningar.
+        """
+        presenterade = self.data.presenterade()
+        return [k for k in self.kandidater() if k not in presenterade]
+
     def _ensamt_mål(self, kort: Kort, paket: frozenset) -> Uppgift | None:
         """En övning med kortet som ENDA mål, byggd utan gränsvärde (5.4).
 
@@ -407,5 +419,7 @@ class Passet:
         nu = datetime.now().astimezone()
         return {"dag": self.data.dag(), "tid": nu.strftime("%H:%M"),
                 "införda": len(self.data.införda()),
+                "presenterade": len(self.data.presenterade()),
                 "svaga": len(self.svaga()),
+                "att_presentera": len(self.att_presentera()),
                 "kandidater": len(self.kandidater())}

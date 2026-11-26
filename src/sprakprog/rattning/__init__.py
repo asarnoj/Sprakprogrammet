@@ -84,6 +84,38 @@ def _jämför(facit: list[str], svar: list[str]) -> tuple[set[int], set[int], li
     return lika, tillagda, diff
 
 
+#: Tecken som MENINGEN får av `spec.slutar` och av versaliseringen i
+#: renderarens `rendera`, inte av något kort: punkt, frågetecken, utropstecken
+#: och spanskans inledande ¿ och ¡.
+SATSENS_FORM = ".!?¿¡…"
+
+
+def _avskalad(ord_: list[str]) -> list[str]:
+    """Orden utan det ingen bestämde: sluttecknet och den inledande versalen.
+
+    Ett korts positioner är de utskrivna ord vars FORM kortet bestämde (6.2).
+    Punkten i slutet bestämmer inget kort — den kommer ur `spec.slutar`, som
+    läser meningens modus — och den inledande versalen kommer ur
+    renderarens sista rad. Ändå satt de på samma tokens som orden, så ett
+    svar utan punkt fällde varje kort som stod på sista ordet.
+
+    Det hände direkt i den första riktiga körningen: «Time exists» i stället
+    för «Time exists.» underkände fem kort, däribland ordet, ändelsen,
+    kongruensen och ordföljden. Inget av dem hade gjort något.
+
+    Skillnaden försvinner alltså ur ATTRIBUTIONEN. Den syns fortfarande för
+    användaren, eftersom facit skrivs ut som det är.
+    """
+    if not ord_:
+        return ord_
+    ut = list(ord_)
+    ut[-1] = ut[-1].rstrip(SATSENS_FORM)
+    ut[0] = ut[0].lstrip(SATSENS_FORM)
+    if ut[0][:1].isupper():
+        ut[0] = ut[0][:1].lower() + ut[0][1:]
+    return ut
+
+
 def _spann(ut: Utskrift, facit: list[str]) -> list[range]:
     """Var varje uppslag står i den skrivna texten.
 
@@ -121,7 +153,9 @@ def rätta(tabell: Formtabell, ut: Utskrift, svar: str) -> Rättning:
     """Betyget per kort, räknat ur diffen mellan facit och svaret."""
     facit = ut.text.split()
     spann = _spann(ut, facit)
-    lika, tillagda, diff = _jämför(facit, svar.split())
+    # Attributionen jämför utan satsens form; diffen som visas behåller den.
+    lika, tillagda, _ = _jämför(_avskalad(facit), _avskalad(svar.split()))
+    *_, diff = _jämför(facit, svar.split())
     betyg: dict[Kort, str] = {}
     for kort, platser in meningens_kort(tabell, ut):
         ord_ = {i for sort, j in platser if sort == "ord" for i in spann[j]}

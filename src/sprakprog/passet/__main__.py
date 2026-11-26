@@ -44,7 +44,11 @@ def _fråga(text: str) -> str:
 
 def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
            paket: frozenset = frozenset()) -> bool:
-    """Ställ meningen och rätta svaret. Ger True när allt gick rätt.
+    """Ställ meningen och rätta svaret.
+
+    Ger True när allt gick rätt, False när något föll och None när användaren
+    hoppade över. Utan det sista satt man fast: ett `n` för att gå vidare
+    rättades som översättning, tre gånger i rad i den första körningen.
 
     I introfasen (`fas="intro"`) BOKFÖRS INGENTING (5.4). Övningen finns för
     att användaren inte ska möta ny kunskap oförberedd, inte för FSRS; kortet
@@ -56,6 +60,9 @@ def _ställ(passet: Passet, uppgift, *, fas: str = "mening",
     svar = _fråga("  > ")
     if svar == "q":
         raise SystemExit
+    if svar == "s":
+        print("  hoppade över.")
+        return None
     rättning = passet.rätta(uppgift, svar, time.perf_counter() - start)
     intro = fas == "intro"
     if rättning.rätt:
@@ -133,9 +140,10 @@ def _introfas(passet: Passet) -> None:
     Ett kort som går fel läggs SIST i kön och görs om senare (5.4) — inte
     direkt, eftersom användaren då har facit i färskt minne.
     """
-    kö = passet.kandidater()
+    kö = passet.att_presentera()
     if not kö:
-        print("  inget kort att presentera nu.")
+        print("  allt i nästa nivå är redan presenterat i dag — korten prövas "
+              "i meningar nu ([enter]).")
         return
     nivån = frozenset(kö)
     print(f"  introfasen: {len(kö)} kort i nästa nivå. Inget bokförs här.")
@@ -153,9 +161,13 @@ def _introfas(passet: Passet) -> None:
         if övning is None:
             print("  ingen andra mening att öva på — kortet prövas i meningsfasen.")
             continue
-        if _ställ(passet, övning, fas="intro"):
+        utfall = _ställ(passet, övning, fas="intro")
+        if utfall:
             medan_inget_gick = 0
             continue
+        if utfall is None and not kvar:
+            print("  introfasen avbruten.")
+            return
         kvar.append(kort)          # sist i kön (5.4)
         medan_inget_gick += 1
         if medan_inget_gick >= len(kvar) + 1:
@@ -180,26 +192,41 @@ def main() -> None:
     passet = Passet(data, Sammansättare(sprak, karta, par=a.källspråk),
                     Lager(data), krav, nivåer)
 
-    print(f"{a.källspråk} → {språk}.  [enter] nästa mening · n nytt kort · q sluta")
+    print(f"{a.källspråk} → {språk}.  [enter] öva · n nästa nivå · q sluta")
+    print("  när en mening ställs: skriv översättningen, "
+          "s hoppar över, q slutar")
     while True:
         läge = passet.läge()
         print(f"\n[{läge['dag']} {läge['tid']}]  införda {läge['införda']} · "
-              f"svaga {läge['svaga']} · nästa nivå {läge['kandidater']} kort")
+              f"presenterade {läge['presenterade']} · svaga {läge['svaga']} · "
+              f"att presentera {läge['att_presentera']}")
         val = _fråga("> ")
         if val == "q":
             return
         if val == "n":
             _introfas(passet)
-            continue
+            # Faserna följer på varandra (5.1): efter introfasen prövas korten
+            # i meningar. Att gå tillbaka till menyn här var det som lät
+            # introfasen köras om i stället, och passet nådde aldrig fram.
+            val = ""
         svaga = sorted(passet.svaga(), key=str)
         if not svaga:
-            print("  inget förfallet just nu — ta ett nytt kort med n.")
+            print("  inget svagt kort just nu — ta nästa nivå med n.")
             continue
-        uppgift = passet.uppgift(svaga[0])
-        if uppgift is None:
-            print(f"  {svaga[0]}: ingen mening inom budgeten ännu.")
-            continue
-        _ställ(passet, uppgift)
+        # Meningsfasen körs tills högarna är tomma (5.3), inte en mening per
+        # tangenttryck: dagen är klar när det svaga är klarat.
+        while svaga:
+            kortet = svaga[0]
+            uppgift = passet.uppgift(kortet)
+            if uppgift is None:
+                print(f"  {kortet}: ingen mening att pröva det med i dag.")
+                svaga = [k for k in svaga if k != kortet]
+                continue
+            if _ställ(passet, uppgift) is None:
+                break
+            svaga = sorted(passet.svaga(), key=str)
+        if not svaga:
+            print("\n  högarna är tomma — dagens arbete är gjort (5.3).")
 
 
 if __name__ == "__main__":

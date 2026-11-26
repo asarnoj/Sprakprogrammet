@@ -219,6 +219,41 @@ def meningen_använder_bara_tillåtet(p: Passet) -> list[str]:
     return brister
 
 
+def korten_införs_när_de_går_rätt(p: Passet, data: Kursdata) -> list[str]:
+    """5.1. Ett nytt kort blir infört när det går rätt i en mening.
+
+    I den första riktiga körningen infördes noll kort på 32 ställda meningar.
+    Passet kom aldrig ur introfasen — som inför ingenting — eftersom
+    gränssnittet lät den köras om, och räknaren stod stilla eftersom den
+    räknade oinförda kort. Provet går hela vägen: presentera, svara RÄTT,
+    och kräv att korten är inne.
+    """
+    nivån = p.nästa_nivå()
+    for kort in p.att_presentera():
+        uppgift = p.presentera(kort, paket=nivån)
+        if uppgift is not None:
+            p.ställ(uppgift, "intro")
+    p.uppdatera()
+    if p.att_presentera():
+        return [f"{len(p.att_presentera())} kort kvar att presentera efter "
+                f"introfasen — den tar aldrig slut"]
+    for _ in range(12):
+        svaga = sorted(p.svaga(), key=str)
+        if not svaga:
+            break
+        uppgift = p.uppgift(svaga[0])
+        if uppgift is None:
+            break
+        uppgift = p.ställ(uppgift)
+        rättning = p.rätta(uppgift, uppgift.facit, 1.0)   # svarar rätt
+        if not rättning.rätt:
+            return [f"ett svar lika med facit underkändes: «{uppgift.facit}» "
+                    f"fällde {sorted(map(str, rättning.fel))}"]
+        p.bokför(uppgift, rättning)
+    return ([] if data.införda() else
+            ["inget kort infördes trots att varje svar var lika med facit"])
+
+
 INVARIANTER = [
     ("introfasen bokför ingenting", introfasen_bokför_ingenting, True),
     ("introövningen har ett enda mål", introövningen_har_ett_mål, False),
@@ -228,6 +263,7 @@ INVARIANTER = [
     ("paketet införs helt eller inte alls", paketet_införs_helt, True),
     ("dag ett går att komma igenom", dag_ett_går_att_komma_igenom, True),
     ("meningen använder bara tillåtet", meningen_använder_bara_tillåtet, False),
+    ("korten införs när de går rätt", korten_införs_när_de_går_rätt, True),
 ]
 
 
