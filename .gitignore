@@ -31,3 +31,6 @@ kort.db-shm
 # inte `kort.db.före-D3-20260824`, eftersom filnamnet slutar på datumet.
 säkerhetskopior/
 kort.db.*
+
+# Dagböckerna — en fil per kurs och dygn, maskinlokal övningsdata
+loggar/

@@ -27,10 +27,12 @@ som inte finns.
 from __future__ import annotations
 
 import json
+import logging
 import math
 import sqlite3
 import threading
 import time
+from dataclasses import asdict
 from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -38,6 +40,7 @@ from urllib.parse import unquote
 
 from ..db import anslut
 from ..generator import Generator
+from ..kort import dagbok
 from ..kort import pass_ as passlager
 from ..kort import (
     Schemaläggare, anslut_kort, befolka, dagsplan, dygnets_början,
@@ -78,6 +81,18 @@ EN_KURS_PER_MÅLSPRÅK = ("Det finns redan en kurs mot {mål} ({fanns}). Alla ku
          "den befintliga först om du vill byta källspråk.")
 
 
+def _tal(p: dict) -> dict:
+    """De tal ur PASSETS läge som säger hur dagen såg ut, för dagboken.
+
+    Ur passet och inte ur dagsplanen, eftersom `_dagsplan` bygger passet om
+    det saknas — och en dagbok som muterar det den bevittnar är inget
+    vittne. Se `bokför`.
+    """
+    return {k: p.get(k) for k in
+            ("att_göra", "glosor", "förfallna", "nya", "igen", "gjorda",
+             "onåbara", "klar")}
+
+
 class Övningstjänst:
     """Generatorerna och deras tillstånd, en per kurs."""
 
@@ -89,6 +104,9 @@ class Övningstjänst:
         self.lås = threading.Lock()
         self._generatorer: dict[tuple, Generator] = {}
         self._öppna: dict[int, tuple] = {}
+        #: uppgift-id → (kortlägen, korrekt, omedföljande). Fylls av `svara`
+        #: och läses av `bokför` för dagboken; se `kort/dagbok.py`.
+        self._lägen: dict[int, tuple] = {}
         #: (kurs, extraläge) → id på den uppgift som lämnats ut men ännu inte
         #: besvarats. Se `uppgift`.
         self._pågående: dict[tuple[int, bool], int] = {}
@@ -544,6 +562,11 @@ class Övningstjänst:
                     return "redan_fälld"
                 return "bedömd"
             lägen = {kid: läget(kid) for kid in rörda_ider}
+            # DAGBOKEN BEHÖVER LÄGENA, och de räknas fram här. Att räkna om
+            # dem vid bokföringen vore att räkna en ANNAN sak: `_redan_idag`
+            # svarar annorlunda när meningen väl är bokförd.
+            self._lägen[id_] = (dict(lägen), r.korrekt,
+                                {k["id"] for k in f.kort} - set(planerade))
             return {"id": id_, "korrekt": r.korrekt, "facit": f.text,
                     "bokförs": bokförs, "rörda": len(f.kort),
                     "igen": self._igen_efter(g, r.utfall),
@@ -649,6 +672,21 @@ class Övningstjänst:
             kurs = self.kort_db.execute(
                 "SELECT * FROM Kurs WHERE id = ?", (kurs_id,)).fetchone()
             g = self._generator(kurs)
+            # ÖGONBLICKSBILDEN TAS FÖRE MUTATIONERNA. Ett felaktigt beslut
+            # syns i ÖVERGÅNGEN och inte i sluttillståndet, så dagboken
+            # måste ha båda ändarna. Se `kort/dagbok.py`.
+            pass_före = passlager.nuvarande(self.kort_db, kurs_id)
+            ögonblick = dagbok.före(
+                self.kort_db,
+                pass_före["id"] if pass_före is not None else None,
+                {k["id"] for k in f.kort})
+            # `passlager.läget` OCH INTE `_dagsplan`. Dagboken är ett VITTNE
+            # och får inte ändra det den bevittnar: `_dagsplan` BYGGER passet
+            # om det saknas och fryser dagens tak. Med den här raden som
+            # `_dagsplan` blev två sabotage i `tjänsteprov` stumma — passet
+            # hann repareras innan provet mätte det. `läget` läser bara.
+            dagsläge_före = (passlager.läget(self.kort_db, pass_före["id"])
+                             if pass_före is not None else {})
             # BYGGBARHETEN ÄNDRAS NÄR ORD LÄRS IN, så cachen töms här. Utan
             # det kunde upplåsningsknappen dröja kvar dold en hel session
             # efter att nivån faktiskt blivit övningsbar.
@@ -667,9 +705,31 @@ class Övningstjänst:
             # av dygnet en repetition förbrukar. Råtiden sparas OKAPAD —
             # kapningen är ett analysval (`AVBROTTSGRÄNS_MS`) och görs när
             # talet används, annars går den verkliga fördelningen förlorad.
-            g.registrera(f, utfall, självrättade=rättade,
-                         millisekunder=int((time.monotonic() - start) * 1000),
-                         svar=svar, anmärkningar=anmärkningar)
+            ms = int((time.monotonic() - start) * 1000)
+            mening_id = g.registrera(f, utfall, självrättade=rättade,
+                                     millisekunder=ms,
+                                     svar=svar, anmärkningar=anmärkningar)
+            lägen, korrekt, _ = self._lägen.pop(id_, ({}, None, set()))
+            # DAGBOKEN FÅR ALDRIG FÄLLA ETT PASS. Den är ett vittne och inte
+            # en del av bokföringen; går skrivningen fel ska övningen ändå gå
+            # vidare, och felet synas i det som ändå loggas.
+            try:
+                dagbok.skriv(dagbok.rad(
+                    nu=dagbok.nu_utc(), kurs=kurs, pass_rad=pass_före,
+                    förslag=f, svar=svar, korrekt=korrekt, utfall=utfall,
+                    lägen=lägen, anmärkningar=[
+                        a if isinstance(a, dict) else asdict(a)
+                        for a in (anmärkningar or [])],
+                    ögonblick=ögonblick, kort_db=self.kort_db,
+                    mening_id=mening_id, millisekunder=ms,
+                    dagsläge={
+                        "före": _tal(dagsläge_före),
+                        "efter": _tal(
+                            passlager.läget(self.kort_db, pass_före["id"])
+                            if pass_före is not None else {})}))
+            except Exception as e:                            # noqa: BLE001
+                logging.getLogger(__name__).warning(
+                    "dagboken kunde inte skrivas: %s", e)
             return {"bokförd": True, "självrättade": len(rättade),
                     "igen": self._dagsplan(
                         self.kort_db.execute("SELECT * FROM Kurs WHERE id = ?",

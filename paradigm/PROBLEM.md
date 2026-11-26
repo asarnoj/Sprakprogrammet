@@ -4855,6 +4855,68 @@ Problemet är alltså korpusens TÄCKNING, inte nätets konstruktion. Ett nät s
 täcker allt kan inte byggas för hand; det kräver antingen sveptäckning (som
 `nåbarhet.py` gör för C6) eller extern granskning (G5).
 
+### G7 ! — Prov som slutar mäta utan att bli röda (ny 2026-08-31)
+
+Ett prov kan sluta bevisa något på två sätt, och båda är tysta.
+
+**Provet mäter inget, för att fixturen inte ger det något att mäta.**
+`tjänsteprov` kopierar Julius riktiga `kort.db`, och en kurs vars dag redan
+är gjord ger provet en tom dag. Två prov — `passet tar slut` och `ingen tom
+mening ställs` — slutade därför mäta beroende på NÄR PÅ DYGNET sviten kördes.
+Samma fel fanns i `passprov`s `minuterna syns` och rättades där tidigare
+samma dag. Botemedlet är att nollställa kursen i provet, som
+`prov_tomt_pass_fylls` redan gjorde, och att göra "jag mätte ingenting" till
+ett BROTT i stället för ett godkännande.
+
+**Sabotaget biter inte längre, för att koden blivit robustare.** Det är det
+lömska fallet, eftersom det ser ut som framgång. `passet tar slut` har nu
+gått stumt TVÅ gånger av den orsaken: först 2026-08-26, när generatorn
+började ta dagens nya kort ur passet, och igen 2026-08-31, när C4:s
+tomgångsfix gjorde att dagen tar slut även med nödutgången avstängd. Varje
+gång är produkten bättre och nätet svagare.
+
+**Regeln som följer:** ett sabotage ska vara troget mot ett fel som
+FORTFARANDE kan hända. Ett sabotage som bara återskapar ett fel koden vuxit
+ur bevisar att det gamla felet är borta, inte att invarianten håller.
+
+**✓ ÅTGÄRDAT 2026-08-31, båda halvorna.**
+
+*Fixturen.* De tre dagsproven bygger nu en EGEN tjänst per kurs och
+nollställer den. Det gör dem oberoende av när på dygnet sviten körs — och
+det avslöjade G6b, se nedan.
+
+*Sabotaget.* Det nya är troget mot ett fel som fortfarande KAN hända:
+`pass_.avskriv` slås av, alltså B8:s skrivning. Provet fick samtidigt täppa
+sitt eget hål — det tog `tomt` som framgång utan att kontrollera att dagen
+BLEV klar, och skillnaden mellan "inget gick att bygga, dagen skrevs av" och
+"inget gick att bygga, passet står kvar låst" är precis vad `avskriv` finns
+för.
+
+**Regeln står kvar som post** därför att den kommer att hända igen: varje
+gång koden växer ur ett gammalt fel blir dess sabotage stumt, och det ser ut
+som framgång. Markören är `!` tills sviten mäter det själv — ingenting
+hindrar idag att ett nytt sabotage tystnar utan att någon märker det utom
+raden "N prov kunde inte falla", som måste läsas av en människa.
+
+### G6b ? — Tjänstens tillstånd läcker mellan kurser (ny 2026-08-31)
+
+Mätt när `prov_dagen_tar_slut` gjordes verklig. Franskans dag behöver fler
+och fler meningar ju fler kurser som körts före den i SAMMA `Övningstjänst`:
+
+    fr ensam                        10 meningar, dagen klar
+    de → fr                         12 meningar, dagen klar
+    ja → fr                         15 meningar, dagen klar
+    de → en → ja → fr              119 meningar, dagen INTE klar (70 kvar)
+
+Kortlekarna är skilda per språk — `Kort.språk` — så det är inte data som
+delas. Det är tjänstens eget tillstånd: generatorcachen, byggbarhetscachen,
+poängsättarens minne av tidigare meningar, eller något av de lexikon som
+lever på `Övningstjänst`.
+
+I drift har Julius en kurs i taget öppen, så felet syns inte där. Det syns i
+provet, och det räcker som skäl: ett prov som måste hålla isär kurser för att
+mäta sin egen invariant döljer en riktig fråga.
+
 ### G5 ? — Hur upptäcks att en koppling försvunnit?
 
 `Cellkort` var tom för tyskan i en månad utan att något sa ifrån. Under den

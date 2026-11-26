@@ -228,6 +228,12 @@ def prov_räknaren_är_i_takt(tj, kurs) -> list[str]:
     return []
 
 
+def _egen_tjänst(kurs):
+    """En tjänst med bara den här kursens tillstånd. Se `prov_dagen_tar_slut`."""
+    import tempfile as _tf
+    return tjänst(Path(_tf.mkdtemp()) / f"dag{kurs['id']}.db")[0]
+
+
 def prov_dagen_tar_slut(tj, kurs) -> list[str]:
     """Ett pass måste kunna TA SLUT. Rätta svar ska tömma dagen.
 
@@ -250,6 +256,22 @@ def prov_dagen_tar_slut(tj, kurs) -> list[str]:
     # mot 0,007 s för `_dagsplan`, alltså tusen gånger. Provet spelar igenom
     # hundra steg per kurs, så skillnaden var 39 minuter mot en dryg minut.
     # Övningsskärmen gör redan samma sak av samma skäl (`dagsläge`).
+    # NOLLSTÄLL FÖRST, av samma skäl som `prov_tomt_pass_fylls`: kopian bär
+    # Julius RIKTIGA läge, och en kurs vars dag redan är gjord ger provet
+    # ingenting att mäta. Utan raden blev provet stumt beroende på när på
+    # dygnet sviten kördes — det upptäcktes 2026-08-31, och två prov hade
+    # då slutat mäta utan att någon rad blev röd.
+    #
+    # EGEN TJÄNST PER KURS, och det är inte kosmetika. Med en DELAD tjänst
+    # tog franskans dag fler och fler meningar ju fler kurser som körts före:
+    # 10 ensam, 12 efter tyskan, 15 efter japanskan, och efter alla tre tog
+    # den inte slut på 120. Kortlekarna är skilda per språk, så det är
+    # tjänstens eget tillstånd som läcker mellan kurser — en egen fråga, och
+    # den står som öppen i G6. Provet här mäter sin EGNA invariant: att en
+    # dag tar slut. Att låta det bära två frågor gör det oläsbart när det
+    # faller.
+    tj = _egen_tjänst(kurs)
+    tj.nollställ(kurs["id"], "RESET")
     tak = 120
     for i in range(tak):
         h = tj._dagsplan(kurs)
@@ -261,6 +283,17 @@ def prov_dagen_tar_slut(tj, kurs) -> list[str]:
             continue
         u = tj.uppgift(kurs["id"])
         if u is None or u.get("tomt"):
+            # NÖDUTGÅNGEN MÅSTE FAKTISKT AVSLUTA DAGEN. Provet tog `tomt`
+            # som framgång utan att kontrollera det, och det var hålet: går
+            # ingen mening att bygga MEN passet står kvar med väntande rader
+            # är dagen inte slut, den är låst. Skillnaden är precis vad B8:s
+            # `avskriv` finns för, och utan kontrollen kunde sabotaget som
+            # slår av den inte fälla provet.
+            if not tj._dagsplan(kurs)["klar"]:
+                kvar = tj._dagsplan(kurs)["att_göra"]
+                return [f"[{kurs['målspråk']}] ingen mening gick att bygga, "
+                        f"men dagen är inte klar — {kvar} rader väntar utan "
+                        f"att skrivas av (B8)"]
             return []
         tj.svara(u["id"], tj._öppna[u["id"]][1].text)
         tj.bokför(u["id"])
@@ -513,6 +546,13 @@ def prov_ingen_tom_mening(tj, kurs) -> list[str]:
     tomma — dagen blev alltså inte kortare, bara ärligare.
     """
     fel = []
+    # EGEN TJÄNST OCH NOLLSTÄLLNING, se `prov_dagen_tar_slut`. Utan dem
+    # mätte provet Julius halvgjorda dag i stället för en hel, och blev
+    # stumt: med en delad tjänst nådde franskan aldrig det läge där alla
+    # kandidaters kort redan är bedömda.
+    tj = _egen_tjänst(kurs)
+    tj.nollställ(kurs["id"], "RESET")
+    ställda = 0
     for i in range(120):
         h = tj._dagsplan(kurs)
         if h["klar"]:
@@ -526,10 +566,82 @@ def prov_ingen_tom_mening(tj, kurs) -> list[str]:
             break
         sv = tj.svara(u["id"], tj._öppna[u["id"]][1].text)
         tj.bokför(u["id"])
+        ställda += 1
         if sv is not None and sv["bokförs"] == 0:
             fel.append(f"[{kurs['målspråk']}] mening {i + 1} bokförde noll "
                        f"kort: {sv['facit'][:40]!r}")
+    # ETT PROV SOM INTE MÄTTE NÅGOT FÅR INTE SÄGA GRÖNT. Utan den här raden
+    # blev provet tyst så snart dagen råkade vara tom.
+    if not ställda:
+        fel.append(f"[{kurs['målspråk']}] ingen mening ställdes — provet "
+                   f"prövade ingenting")
     return fel[:4]
+
+
+def prov_dagboken_fångar_övergången(tj, kurs) -> list[str]:
+    """Dagboken ska bära kortets tillstånd FÖRE och EFTER, inte bara efter.
+
+    Julius: *"kunna kolla tillbaka och se exakt när det har skett fel beslut
+    i rättning sortering eller något annat. Så att jag slipper återberätta."*
+    Ett felaktigt beslut syns i ÖVERGÅNGEN — ett kort som flyttades fel, ett
+    betyg som inte skulle ha satts — och en logg som bara har sluttillståndet
+    besvarar inte frågan. Ögonblicksbilden måste därför tas före mutationen,
+    och det är lätt att råka ta den efter.
+
+    Provet svarar RÄTT på en mening och kräver att minst ett kort visar en
+    skillnad mellan `före` och `efter`. Det räcker som vittne: kan raden
+    visa en övergång är den tagen på rätt sida om bokföringen.
+
+    Provet kräver också att raden bär kortens IDENTITET — nyckel, typ,
+    facit — och inte bara id:n. Skälet är hela anledningen att dagboken är
+    en fil: Julius nollställer kursen, id:n återanvänds, och en rad som bara
+    bär id:n pekar då på fel kort.
+    """
+    import tempfile as _tf
+    from pathlib import Path as _P
+    from sprakprog.kort import dagbok as D
+
+    katalog = _P(_tf.mkdtemp()) / "loggar"
+    äkta, D.KATALOG = D.KATALOG, katalog
+    try:
+        tj.nollställ(kurs["id"], "RESET")     # se `prov_dagen_tar_slut`
+        for _ in range(40):
+            h = tj._dagsplan(kurs)
+            if h["klar"]:
+                return ["dagen var redan klar — provet kunde inte mäta"]
+            if h["nya_ord"]:
+                for o in tj.glosor(kurs["id"])["ord"]:
+                    tj.glossvar(kurs["id"], o["kort_id"], True)
+                continue
+            u = tj.uppgift(kurs["id"])
+            if u is None or u.get("tomt"):
+                return ["ingen uppgift gick att bygga — provet kunde inte mäta"]
+            tj.svara(u["id"], tj._öppna[u["id"]][1].text)
+            tj.bokför(u["id"])
+            break
+        else:
+            return ["ingen mening ställdes på 40 steg"]
+
+        poster = [p for b in D.dagböcker(katalog) for p in D.läs(b)]
+        if not poster:
+            return [f"[{kurs['målspråk']}] dagboken skrevs inte alls"]
+        post = poster[-1]
+        fel = []
+        if not post["kort"]:
+            return [f"[{kurs['målspråk']}] raden bär inga kort"]
+        if any(k.get("facit") is None and k.get("nyckel") is None
+               for k in post["kort"]):
+            fel.append(f"[{kurs['målspråk']}] kort utan identitet — raden går "
+                       f"inte att läsa efter en nollställning")
+        rörelse = [k for k in post["kort"]
+                   if k["bokförd"] and k["före"] != k["efter"]]
+        if not rörelse:
+            fel.append(f"[{kurs['målspråk']}] inget kort visar en skillnad "
+                       f"mellan `före` och `efter` — bilden är tagen efter "
+                       f"bokföringen")
+        return fel
+    finally:
+        D.KATALOG = äkta
 
 
 PROV = [
@@ -547,6 +659,8 @@ PROV = [
     ("sista nivån går att nå", prov_sista_nivån_går_att_nå),
     ("ingen tom mening ställs",
      lambda tj, k, kurs: prov_ingen_tom_mening(tj, kurs)),
+    ("dagboken fångar övergången",
+     lambda tj, k, kurs: prov_dagboken_fångar_övergången(tj, kurs)),
 ]
 
 
@@ -587,6 +701,20 @@ def _sabotera(namn: str):
         äkta = passlager._stäng_redan_bedömda
         passlager._stäng_redan_bedömda = lambda *a, **kw: 0
         return lambda: setattr(passlager, "_stäng_redan_bedömda", äkta)
+
+    if namn == "dagboken fångar övergången":
+        # Före rättelsen: ögonblicksbilden togs EFTER mutationerna, så
+        # `före` och `efter` blev samma sak och övergången försvann.
+        from sprakprog.kort import dagbok as D
+        äkta = D.före
+        D.före = lambda kort_db, pass_id, idn: {
+            "kort": {}, "fast": {k: {"nyckel": None, "typ": None,
+                                     "koncept": None, "variant": None,
+                                     "facit": None, "ordklass": None,
+                                     "klass": None, "cell": None,
+                                     "egenskap": None} for k in idn},
+            "pass": {}, "ordet_sett": {}}
+        return lambda: setattr(D, "före", äkta)
 
     if namn == "ingen tom mening ställs":
         # Före rättelsen: sökningen visste inte vilka kort som redan var
@@ -680,6 +808,14 @@ def _sabotera(namn: str):
         # funktionen, och skriver man tillbaka den rakt av blir den en vanlig
         # metod som får `self` som första argument. Sabotaget lämnade då
         # klassen trasig för de prov som kom efter.
+        # OCH NÖDUTGÅNGENS SKRIVNING, som är det sätt dagen KAN fastna i
+        # dagens kod. De två ovan slutade bita när koden växte ur felen de
+        # återskapade (se G7); den här är trogen mot ett fel som fortfarande
+        # är möjligt: hittas ingen mening och skrivs raderna inte av, står
+        # passet kvar med väntande arbete för alltid.
+        from sprakprog.kort import pass_ as _p
+        äkta_avskriv = _p.avskriv
+        _p.avskriv = lambda *a, **kw: 0
         äkta = Övningstjänst.__dict__["_onåbar"]
         Övningstjänst._onåbar = staticmethod(
             lambda f, p: f.poäng is not None and f.poäng.täckta == 0
@@ -705,9 +841,10 @@ def _sabotera(namn: str):
                 själv, **{**kw, "nya": None}))
 
         def ångra():
-            Övningstjänst._onåbar = äkta
+            Övningstjänst._onåbar = staticmethod(äkta)
             Generator.övningsbara = äkta_sil
             Generator.föreslå = äkta_föreslå
+            _p.avskriv = äkta_avskriv
         return ångra
 
 
