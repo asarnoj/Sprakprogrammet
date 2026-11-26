@@ -54,6 +54,15 @@ class Uppslag:
         träffar = [r for r in rader if r["variant"] == variant]
         if len(träffar) == 1:
             return träffar[0]
+
+        # Etiketten 'neutral' betyder omarkerad form: ja 私 mot 僕, あなた mot
+        # 君. Skillnaden är register, som ligger utanför projektets scope
+        # (se ÖVERLÄMNING.md), så den omarkerade formen är rätt default när
+        # meningen inte säger något annat.
+        if variant is None:
+            neutrala = [r for r in rader if r["variant"] == "neutral"]
+            if len(neutrala) == 1:
+                return neutrala[0]
         varianter = sorted(str(r["variant"]) for r in rader)
         raise RenderingsFel(
             f"{self.språk}: {koncept!r} har {len(rader)} lemman "
