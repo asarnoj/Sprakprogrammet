@@ -4,8 +4,8 @@ Den fullständiga specifikationen av kärnan — korten, nivåerna, dagspasset,
 meningsbygget och bedömningen — så som den ska byggas. Filen beskriver målet,
 inte ändringar i den kod som finns.
 
-> **Läge 2026-09-13.** Designen är avgjord utom meningsgeneratorn och frågorna i punkt
-> 10. Generatorn är nästa designarbete och blockerar steg 4; frågorna blockerar inget.
+> **Läge 2026-09-13.** Designen är avgjord utom frågorna i punkt 10, och ingen av dem
+> blockerar bygget.
 > Steg 0 är gjort för svenska och väntar på granskning
 > (`ordbok/regelkontroll/sv.md`). Steg 1 är inventerat men inte byggt
 > (`paradigm/TYSTA_BESLUT.md`). Nästa arbete är att bygga steg 1 och ta fram
@@ -251,7 +251,7 @@ riktig form. Användaren får aldrig frågan vilken klass ett ord tillhör.
 **«Den första formen» är den första i nivåordningen** (4.2): cellen vars regel öppnas
 tidigast. Öppnas flera celler av samma nivå spelar valet ingen roll för vad som kan
 prövas — kräver en form ett undantagskort som inte är infört, väljs de som ett paket
-(3.10) — och cellerna tas då i registrets ordning (8.3). Steg 0 använder i dag en
+(3.10) — och cellerna tas då i kartans ordning (6.7). Steg 0 använder i dag en
 provisorisk cellordning, som byts när nivåerna finns.
 
 #### Enheten för ett undantag
@@ -551,10 +551,10 @@ på frågorna i punkt 10 — till exempel om skiljetecken är kort.
 
 ### 4.2 Ordningen är en graf
 
-Kraven **anges där regeln registreras**, bredvid renderaren (8.3). Provsviten
-kontrollerar att renderaren aldrig slår upp något som regeln inte har angett. Att i
-stället mäta kraven genom att rendera exempelmeningar vore sampling, och ett krav som
-inte råkar dyka upp skulle missas.
+Kraven **läses ur kartan** (6.7): ett korts krav är de kort som finns i dess minsta
+meningar. Kartan går igenom varje del av renderaren uttömmande, så inget krav kan
+missas. Att i stället rendera exempelmeningar vore sampling, och ett krav som inte
+råkar dyka upp skulle missas.
 
     klitika_före   kräver  objektsform
     inversion_wh   kräver  whfråga
@@ -571,7 +571,7 @@ varandra, och `je` och alla klassers ändelser bli en enda nivå. Därför:
 - **Ett krav som ordförrådet kan uppfylla är alltid uppfyllt.** Subjektet kan vara vilket
   substantiv som helst, och ord är upplåsta från början (3.1). Det blir ingen kant.
 - **Övriga krav med flera alternativ blir en kant till ett av dem**: det som ger mest
-  täckning per kort (5.6), räknat med hela ordförrådet. Vid lika avgör registrets
+  täckning per kort (5.6), räknat med hela ordförrådet. Vid lika avgör kartans
   ordning.
 
 **Krav som följer av entydigheten står också i grafen.** När två kort konkurrerar om
@@ -840,7 +840,7 @@ användning. Den är täckt när alla kort den kräver är införda. Ett korts *
 Kandidaterna är de kort som är upplåsta, inte införda och prövbara nu (3.10), ensamma
 eller i ett paket. Ett paket jämförs med sin nya täckning delad med sitt antal kort.
 Korten väljs ett i taget, och varje val ändrar vad nästa kort ger. Ger två kandidater
-lika mycket avgör registrets ordning (8.3), så att ordningen blir densamma varje gång.
+lika mycket avgör kartans ordning (6.7), så att ordningen blir densamma varje gång.
 
 | Kort | Vad det ger |
 |---|---|
@@ -859,7 +859,7 @@ perfekt blir möjligt, eftersom inga perfektformer är täckta utan det. När gr
 sitter ger ett nytt ord bara sina egna användningar, och då avgör hur vanligt det är.
 
 **Räkningen görs utan att bygga meningar.** Den nya täckningen läses ur tabellen från
-form till kort (3.4) och registret (8.3), så räkningen är snabb även med tusentals kort.
+form till kort (3.4) och kartan (6.7), så räkningen är snabb även med tusentals kort.
 Bara de kort som faktiskt väljs för dagen provbyggs, en mening var (3.10).
 
 **Frekvenserna.** Grammatiken bestämmer vad som går att lära; hur språket används
@@ -912,6 +912,11 @@ En mening får ställas endast om:
 7. **ett fel på ett mål går att knyta till just det kortet**: inget annat enskilt kort
    förklarar samma avvikelser (7.3). Det kontrolleras med samma rendering som rättningen
    använder, och gör R5 till ett villkor när meningen byggs i stället för en förhoppning
+8. **källmeningen har inte ställts i dag.** Efter ett fel har användaren sett facit, och
+   samma fråga igen mäter minnet av facit i stället för kortet — samma skäl som omprovet
+   i bilaga A föll på. Värdet (6.6) ser det inte, eftersom p efter ett fel mäts över
+   olika meningar. En annan dag gäller inte villkoret. Finns ingen annan mening för
+   kortet tas ensamövningen (6.3), och det är inget brott mot invarianten i 3.10
 
 Två regler kan kräva former som inte går ihop. Då är meningen inte svår utan
 omöjlig att bygga, och sökningen fortsätter.
@@ -1034,7 +1039,8 @@ Att ett kort är upplåst och förfallet gör inte att det dyker upp av sig sjä
 Franskans `inversion_wh` förekommer bara i wh-frågor, så när kortet är förfallet
 måste generatorn **välja** att bygga en wh-fråga. Varje regel ska därför ha ett
 byggvillkor — «meningen måste innehålla ett objektspronomen» — och den kunskapen
-finns redan i renderaren. Villkoret står i registret, bredvid regelns krav (4.2, 8.3).
+finns redan i renderaren. Byggvillkoret läses ur kartan (6.7): det är villkoren på de
+vägar där kortet finns.
 Dagens generator kan sikta på ord men inte på regler.
 
 **Samma bygge används tre gånger:** i kontrollen före införandet (3.10), i
@@ -1073,7 +1079,7 @@ Bara varianter som går att bygga av det tillåtna (5.2) räknas. Därefter:
 
 Varianterna filtret hittar är också de svar rättningen godtar (7.3).
 
-**Kostnaden hålls nere på två sätt.** Källrenderarens spår (8.3) visar vilka fält
+**Kostnaden hålls nere på två sätt.** Källspråkets karta (6.7) visar vilka fält
 meningen läste. Ett fält som inte lästes syns inte i källmeningen och varieras; ett fält
 som lästes varieras bara där två värden ger samma form (tyskans `sie` är både «hon» och
 «de»). Och filtret körs på kandidaterna i värdeordning (6.6), tills en klarar sig.
@@ -1104,8 +1110,8 @@ bredvid. Det finns inte ännu (steg 4b).
     I   det tillåtna: införda och dagens presenterade kort (5.2)
     τ   budgeten
 
-Ett steg: bygg kandidatmeningar av `I` med mål ur `F` (6.1, 6.2), välj den med högst
-värde, rätta svaret, och lägg tillbaka de kort som föll i `F`. Ryms inget mål i någon
+Ett steg: sök den giltiga mening av `I` med mål ur `F` som har högst värde (6.1, 6.2,
+6.7), rätta svaret, och lägg tillbaka de kort som föll i `F`. Ryms inget mål i någon
 mening tas reservstegen i 6.3.
 
 **Kandidaterna jämförs med hur många mål som klaras per sekund:**
@@ -1138,10 +1144,96 @@ Om algoritmen i övrigt:
   lämna kort som ingen mening når. Här kan det inte hända: bara prövbara kort är
   införda, varje kort har ett bevis (3.10), inga kort tillkommer under meningsfasen,
   och budgeten kan inte göra ett kort onåbart (6.3).
-- **Kostnaden ligger i att ta fram kandidater**, inte i att välja bland dem. Mätt i det
-  gamla systemet: 2 000 försök gav 1 692 kandidatmeningar med 727 olika kortmängder.
-  Antalet försök väljs inte utan mäts i provsviten: det minsta antal där det bästa
-  värdet slutar bli bättre.
+- **Sökningen är exakt** (6.7). Den hittar den bästa meningen, inte en bra mening bland
+  slumpade kandidater.
+
+### 6.7 Kartan och sökningen
+
+**Generatorns uppgift.** In: det tillåtna, dagens mål och deras p. Ut: den giltiga
+mening (6.1) som har högst värde (6.6), bevisat bäst — eller beskedet att inget mål
+ryms, och då tas reservstegen (6.3). Giltigheten och värdet ligger utanför sökningen.
+Sökningen kan därför bytas mot en bättre utan att något annat ändras, och provsviten
+kan jämföra två sökningar på samma mått.
+
+#### Kartan
+
+En renderare ställer frågor medan den skriver: är satsen nekad, är subjektet i plural,
+är ordet neutrum? Varje svar leder till nya frågor tills meningen är skriven. Frågorna
+och svaren bildar ett träd, och **kartan** är det trädet, avläst i förväg.
+
+Kartan tas fram genom att köra renderaren med ett orakel som svarar på varje läsning,
+och gå igenom alla svar. Varje väg ger:
+
+- **villkoret** — vilka fält i specen och vilka ordegenskaper som lästes, med vilka värden
+- **utfallet** — vilka kort, former och regler vägen gav och var i meningen, eller att
+  renderaren vägrade
+
+Kartan skrivs inte, den läses av. Den kan därför inte glida isär från renderaren, och
+inga krav eller byggvillkor skrivs för hand. Det är inte sampling: varje del gås igenom
+i sin helhet.
+
+#### Delarna
+
+**Hela satsen går inte att gå igenom, men dess delar gör det.** Mätt 2026-09-13 på den
+svenska renderaren med en prototyp (`ordbok/verktyg/karta_sv.py`):
+
+    del                        vägar          olika utfall
+    hela satsen, odelad        ≈ 70 000 000   (skattat)
+    ordföljd, huvudsats            73 728     1 152
+    ordföljd, bisats               13 824       384
+    nominalfras                     1 839        90
+    verbfras                          147        26
+    predikativ                         26        21
+
+Satsens oberoende val — negation, tempus, fråga, adverbial — multipliceras med
+varandra, men varje frasfunktion läser bara en liten del av specen. Hela svenskan tar
+under 15 sekunder. Prototypen förenklade tre saker: symboliska celler antogs finnas,
+jämförelser mot bestämda koncept lagades för hand, och listor hade högst ett element.
+Bara svenskan är mätt; de andra språken mäts i steg 1b.
+
+**En del** är en frasfunktion med uttryckliga indata: de fält den läser och det
+sammanhang den får som argument (kasus, roll, bisats). Läser två delar samma fält i
+specen — predikativet läser subjektets numerus — binds de samman av sökningen.
+
+#### Sökningen
+
+Sökningen väljer en väg i varje del så att delarna passar ihop, och ord ur det tillåtna
+så att vägarnas villkor, konceptens krav (6.1 punkt 6) och målen uppfylls.
+
+- **Delarna kombineras nerifrån och upp**, eftersom meningen är ett träd av delar:
+  satsen innehåller nominalfraser, som kan innehålla ägare.
+- **Varje delresultat sammanfattas med fyra tal:** summan av p för målen, antalet kort,
+  P(0 fel) och P(1 fel). De räcker för att räkna värdet och budgeten för hela meningen.
+  För två delar A och B är P(0) = P₀(A)·P₀(B) och P(1) = P₁(A)·P₀(B) + P₀(A)·P₁(B).
+- **Ett delresultat som är sämre än ett annat på alla fyra kastas.** Det kan aldrig
+  ingå i den bästa meningen.
+- **Att varje svagt kort är ensamt på sin plats** (6.2) prövas inom delen, eftersom
+  positionerna finns i utfallet.
+- **Det som gäller hela meningen prövas sist, i värdeordning:** entydighetsfiltret (6.5)
+  och villkor 7–8 i 6.1. Den första kandidat som klarar dem är bevisat bäst.
+
+Sökningens svarstid mäts i provsviten. Blir den för lång tas exaktheten upp som ett eget
+beslut; sökningen lämnar aldrig tyst en mening som inte är bevisat bäst.
+
+#### Vad kartan också ger
+
+| Specen behöver | Kartan ger |
+|---|---|
+| kraven och nivåerna (4.1, 4.2) | varje korts minsta meningar |
+| prövbarhet och bevis (3.10) | en sökning med kortet som enda mål |
+| byggvillkoren (6.4) | villkoren på de vägar där kortet finns |
+| entydighetsfiltrets axlar (6.5) | källspråkets karta: vilka fält källmeningen läste |
+| «förklara» i rättningen (7.3) | ett besluts andra utfall är grenen bredvid |
+| båda språken kan uttrycka meningen (6.1) | vägarna där renderaren vägrar |
+
+#### Vad renderarna måste uppfylla
+
+1. **Allt läses genom vägar kartan ser** — specens fält, ordens egenskaper och ljud
+   (italienskans `lo`/`il` beror på nästa ords första ljud). Läser en del något förbi,
+   stoppar genomgången med ett fel, och förbigångarna i steg 1 hittas av sig själva.
+2. **Renderaren är delad i frasfunktioner med uttryckliga indata.**
+3. **Ingen del är för stor att gå igenom.** Blir en del det, delas den. Storleken mäts
+   per språk.
 
 ---
 
@@ -1317,7 +1409,7 @@ hindrar att gammal kod lever kvar.
 
 | Del | Rader | Beslut |
 |---|---|---|
-| renderarna, sju språk (`rendering/`) | 4 400 | står kvar — utökas med redovisade beslut |
+| renderarna, sju språk (`rendering/`) | 4 400 | står kvar — utökas med redovisade beslut och delas i delar för kartan (6.7) |
 | språkdatabasen och paradigmen | — | står kvar |
 | ordboksbygget | 2 200 | står kvar |
 | FSRS-integrationen | — | skrivs om, tunn |
@@ -1358,39 +1450,37 @@ Steg 1 gör därför fem saker:
    tysta besluten gäller kongruens, konstruktion och ljud, inte ordföljd.
 2. **Förbigångarna lagas först**, eftersom de gör befintliga korttyper omätbara.
 3. **De hårdkodade orden blir lexem**, så att de får `ord`-kort.
-4. **Varje regel registreras i förväg**, med namn, krav och byggvillkor. Generatorn
-   behöver byggvillkoren innan meningen byggs, och grafen behöver kraven innan något
-   renderas — ett anrop som sker under renderingen kommer för sent. Anropet i
-   renderaren hänvisar till den registrerade regeln, och provsviten kontrollerar att de
-   stämmer. Registret ger nivågrafen dess kanter (4.2), generatorn förmågan att bygga
-   mot regeln (6.4), och underlaget för prövbarheten (3.10) och införandeordningen
-   (5.6).
+4. **Renderaren delas i frasfunktioner med uttryckliga indata**, så att kartan kan gå
+   igenom varje del uttömmande (6.7). Kraven och byggvillkoren läses sedan ur kartan i
+   stället för att skrivas för hand. Ett anrop under renderingen hade kommit för sent,
+   men kartan finns innan något byggs. Den ger nivågrafen dess kanter (4.2), generatorn
+   förmågan att bygga mot en regel (6.4), och underlaget för prövbarheten (3.10) och
+   införandeordningen (5.6).
 5. **Renderaren spårar vilka kort som bestämde varje utskrivet ord**, och för en
    ordföljdsregel vilka ord den placerade. Det är positionerna i 6.2 och rättningens
    underlag i 7.3. `form` redovisar formens kort ur tabellen i 3.4.
 
-Att redovisa ett beslut betyder att registrera det och göra det till ett anrop:
+Att redovisa ett beslut betyder att göra det till ett anrop:
 
 ```python
-REGLER.registrera("klitika_före", kräver=["objektsform"],
-                  byggvillkor="objektspronomen")          # i förväg
-self.u.regel("klitika_före")                               # redovisat — syns
-def eliderar(self, första, andra):                         # inte redovisat — sker tyst
+self.u.regel("klitika_före")            # redovisat — syns, och finns i kartan
+def eliderar(self, första, andra):      # inte redovisat — sker tyst
 ```
 
-Registreringen gör beslutet till ett kort med en plats i grafen. Anropet visar var i
-meningen beslutet fattades.
+Anropet gör beslutet till ett kort. Var i kartan anropet finns ger kortets krav och
+byggvillkor.
 
 ---
 
 ## 9 · Byggordningen
 
     0   böjningsreglerna per språk         svenskan gjord, väntar på granskning; slutna ordklasser och sex språk kvar
-    1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); registret med krav och byggvillkor, spåret; allt annat bygger på detta
-    2   nivåerna och grafen                kräver 1; nivåerna är grafens starka komponenter (4.1)
+    1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); delar med uttryckliga indata, spåret; allt annat bygger på detta
+    1b  kartan                             kräver 1; varje del genomgången uttömmande, storleken mätt per språk (6.7); prototyp för svenskan i ordbok/verktyg/karta_sv.py
+    2   nivåerna och grafen                kräver 1b; kraven ur kartan, nivåerna är grafens starka komponenter (4.1)
     3   kortmodellen                       kräver 0; tabellen från form till kort (3.4)
     3b  datamodellen                       möten, betyg och omrättningar, nivåer, dagens tilldelning, presenterade och införda kort, sparat tempo, bevis, karantän, felrapporter, inställningar, kursens språkpar
-    4   bygga mot ett kort                 kräver 1, 3 och generatorns design (punkt 10); byggvillkoren (6.4), entydighetsfiltret (6.5), villkoren 6–7 i 6.1; kontrollerar invarianten i 4.3
+    4   sökningen                          kräver 1b och 3; exakt sökning över kartan (6.7), entydighetsfiltret (6.5), villkoren 6–8 i 6.1; kontrollerar invarianten i 4.3
     4b  aspektkrav på koncept              parallellt (6.5)
     5   dagspasset och införandet          kräver 2 och 4; presenterat och infört (5.1), prövbarheten med bevis och karantän (3.10), introövningarna (5.4), tidsmodellen (5.5), täckningen (5.6)
     6   urvalet                            kräver 5; p och värdet per mening (6.2, 6.6), reservstegen (6.3)
@@ -1413,24 +1503,7 @@ datafelen i punkt 12.
 
 ## 10 · Öppna frågor
 
-### Meningsgeneratorn — nästa designarbete
-
-Hur kandidatmeningar byggs kring givna mål (6.6) är inte beskrivet, och steg 4 kan inte
-byggas utan det. Riktningen:
-
-- **Bygg utifrån målen**, i stället för att generera och filtrera. Det gamla systemet
-  drog 2 000 slumpförsök och upptäckte efteråt vad de innehöll — samma grundfel som i
-  punkt 1.
-- **Sök exakt.** Budgeten tillåter bara ett fåtal mål per mening, så sökningen kan
-  beskäras mot det bästa värde som hittats hittills i stället för att sampla.
-- **Bakom ett fast gränssnitt.** In: det tillåtna, dagens mål och deras p. Ut: den
-  giltiga mening (6.1) som har högst värde (6.6). Giltigheten och värdet ligger utanför
-  sökningen, så sökningen kan bytas mot en bättre utan att något annat ändras, och
-  provsviten kan jämföra två sökningar på samma mått.
-
-### Frågor som väntar på Julius
-
-Ingen av dem blockerar bygget.
+Frågorna väntar på Julius, och ingen av dem blockerar bygget.
 
 - **Svenska böjningsregler** — fem frågor i `ordbok/regelkontroll/sv.md`. Den första,
   om utrala substantiv på konsonant har en standardklass, kan principen själv besvara:
@@ -1443,7 +1516,6 @@ Ingen av dem blockerar bygget.
   `mer`, alltså på ett annat ord — eller ett undantagskort?
 - **Japansk skrift.** Stavfel räknas som fel (7.2), men att skriva ett ord med kana när
   facit har kanji är ett val av skrift, inte ett stavfel. Ska båda godtas?
-
 ---
 
 ## 11 · Acceptans
@@ -1452,6 +1524,9 @@ Ingen av dem blockerar bygget.
 |---|---|---|
 | kort i en mening som varken är införda eller presenterade i dag | 4 | 0 |
 | paket som blivit delvis införda | ej mätt | 0 |
+| läsningar i renderarna som går förbi kartan | 26 kända förbigångar | 0 — genomgången stoppar på dem (6.7) |
+| meningar som inte är bevisat bäst | ej styrt | 0 |
+| källmeningar som ställs två gånger samma dag | ej styrt | 0 |
 | införda kort som inte är prövbara | ej mätt | 0 |
 | kort i dagsplanen utan bevis vid passets start | ej mätt | 0 |
 | kort i karantän | ej mätt | 0 — varje fall är en felrapport |
@@ -1562,6 +1637,10 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | krav med flera alternativ som kanter till varje alternativ | alla alternativ kräver varandra, och nivåerna smälter ihop (4.2) |
 | ordkortet fallet när svaret inte är en form av lexemet | felaktiga former som `köpade` skulle belasta ordet i stället för undantaget (3.3) |
 | en kommentar i uppgiften om vilken synonym som inte söks | visar ett ord på målspråket varje gång, även när användaren aldrig hade tänkt på synonymen (7.4) |
+| sampla kandidater och poängsätt dem (det gamla systemets generator) | upptäcker meningens innehåll i efterhand, hittar inte den bästa, och poängens vikter är valda (6.7) |
+| krav och byggvillkor skrivna för hand i ett register | kan glida isär från renderaren; kartan läser av dem (6.7) |
+| en karta över hela satsen i ett stycke | ≈ 70 miljoner vägar i svenskan; delarna har högst 73 728 (6.7) |
+| samma mening igen samma dag, när den är den bästa | användaren har just sett facit; svaret mäter minnet av facit och inte kortet (6.1 punkt 8) |
 
 ---
 
