@@ -28492,14 +28492,14 @@ kog_föreställa	ja	想像する	想像しろ					16			1
 kog_föreställa	ja	想像する	想像する					1			1
 kog_föreställa	ja	想像する	想像すれば					2048			1
 kog_föreställa	ja	想像する	想像できる					512			1
-kog_föreställa	sv	föreställa sig	föreställ sig					16			1
-kog_föreställa	sv	föreställa sig	föreställa sig					1			1
+kog_föreställa	sv	föreställa sig	föreställ					16			1
+kog_föreställa	sv	föreställa sig	föreställa					1			1
 kog_föreställa	sv	föreställa sig	föreställd	1	1		1	8			1
 kog_föreställa	sv	föreställa sig	föreställda				3	8			1
-kog_föreställa	sv	föreställa sig	föreställde sig					4			1
-kog_föreställa	sv	föreställa sig	föreställer sig					2			1
+kog_föreställa	sv	föreställa sig	föreställde					4			1
+kog_föreställa	sv	föreställa sig	föreställer					2			1
 kog_föreställa	sv	föreställa sig	föreställt	1	1		2	8			1
-kog_föreställa	sv	föreställa sig	föreställt sig					8			1
+kog_föreställa	sv	föreställa sig	föreställt					8			1
 kog_förstå	de	verstehen	verstand	1				4		1	1
 kog_förstå	de	verstehen	verstand	1				4		3	1
 kog_förstå	de	verstehen	verstanden					8			1
@@ -29035,10 +29035,10 @@ kog_koncentrera	ja	集中する	集中しろ					16			1
 kog_koncentrera	ja	集中する	集中する					1			1
 kog_koncentrera	ja	集中する	集中すれば					2048			1
 kog_koncentrera	ja	集中する	集中できる					512			1
-kog_koncentrera	sv	koncentrera sig	koncentrera sig					17			1
-kog_koncentrera	sv	koncentrera sig	koncentrerade sig					4			1
-kog_koncentrera	sv	koncentrera sig	koncentrerar sig					2			1
-kog_koncentrera	sv	koncentrera sig	koncentrerat sig					8			1
+kog_koncentrera	sv	koncentrera sig	koncentrera					17			1
+kog_koncentrera	sv	koncentrera sig	koncentrerade					4			1
+kog_koncentrera	sv	koncentrera sig	koncentrerar					2			1
+kog_koncentrera	sv	koncentrera sig	koncentrerat					8			1
 kog_lära	de	lernen	gelernt					8			1
 kog_lära	de	lernen	lern	1				16		2	1
 kog_lära	de	lernen	lerne	1				1024		3	1
@@ -29209,18 +29209,18 @@ kog_lära	ja	学ぶ	学べる					512			1
 kog_lära	ja	学ぶ	学ぼう					1024			1
 kog_lära	ja	学ぶ	学んだ					4			1
 kog_lära	ja	学ぶ	学んで					128			1
-kog_lära	sv	lära sig	lär sig					2			1
-kog_lära	sv	lära sig	lär sig					16			1
-kog_lära	sv	lära sig	lära sig					1			1
-kog_lära	sv	lära sig	läras sig					1			2
-kog_lära	sv	lära sig	lärd sig	1	1		1	8			1
-kog_lära	sv	lära sig	lärda sig				3	8			1
-kog_lära	sv	lära sig	lärde sig					4			1
-kog_lära	sv	lära sig	lärdes sig					4			2
-kog_lära	sv	lära sig	lärs sig					2			2
-kog_lära	sv	lära sig	lärt sig					8			1
-kog_lära	sv	lära sig	lärt sig	1	1		2	8			1
-kog_lära	sv	lära sig	lärts sig					8			2
+kog_lära	sv	lära sig	lär					2			1
+kog_lära	sv	lära sig	lär					16			1
+kog_lära	sv	lära sig	lära					1			1
+kog_lära	sv	lära sig	läras					1			2
+kog_lära	sv	lära sig	lärd	1	1		1	8			1
+kog_lära	sv	lära sig	lärda				3	8			1
+kog_lära	sv	lära sig	lärde					4			1
+kog_lära	sv	lära sig	lärdes					4			2
+kog_lära	sv	lära sig	lärs					2			2
+kog_lära	sv	lära sig	lärt					8			1
+kog_lära	sv	lära sig	lärt	1	1		2	8			1
+kog_lära	sv	lära sig	lärts					8			2
 kog_minnas	de	sich erinnern	erinnere	1				16		2	1
 kog_minnas	de	sich erinnern	erinnere	1				1024		3	1
 kog_minnas	de	sich erinnern	erinnere	1				1026		1	1
@@ -36341,15 +36341,15 @@ käns_oroa	ja	心配する	心配しろ					16			1
 käns_oroa	ja	心配する	心配する					1			1
 käns_oroa	ja	心配する	心配すれば					2048			1
 käns_oroa	ja	心配する	心配できる					512			1
-käns_oroa	sv	oroa sig	oroa sig					17			1
+käns_oroa	sv	oroa sig	oroa					17			1
 käns_oroa	sv	oroa sig	oroad	1	1		1	8			1
 käns_oroa	sv	oroa sig	oroade				3	8			1
-käns_oroa	sv	oroa sig	oroade sig					4			1
+käns_oroa	sv	oroa sig	oroade					4			1
 käns_oroa	sv	oroa sig	oroades					4			2
-käns_oroa	sv	oroa sig	oroar sig					2			1
+käns_oroa	sv	oroa sig	oroar					2			1
 käns_oroa	sv	oroa sig	oroas					3			2
 käns_oroa	sv	oroa sig	oroat	1	1		2	8			1
-käns_oroa	sv	oroa sig	oroat sig					8			1
+käns_oroa	sv	oroa sig	oroat					8			1
 käns_oroa	sv	oroa sig	oroats					8			2
 käns_skratta	de	lachen	gelacht					8			1
 käns_skratta	de	lachen	lach	1				16		2	1
@@ -44840,13 +44840,13 @@ rör_skynda	ja	急ぐ	急げ					16			1
 rör_skynda	ja	急ぐ	急げば					2048			1
 rör_skynda	ja	急ぐ	急げる					512			1
 rör_skynda	ja	急ぐ	急ごう					1024			1
-rör_skynda	sv	skynda sig	skynda sig					17			1
+rör_skynda	sv	skynda sig	skynda					17			1
 rör_skynda	sv	skynda sig	skyndad	1	1		1	8			1
 rör_skynda	sv	skynda sig	skyndade				3	8			1
-rör_skynda	sv	skynda sig	skyndade sig					4			1
-rör_skynda	sv	skynda sig	skyndar sig					2			1
+rör_skynda	sv	skynda sig	skyndade					4			1
+rör_skynda	sv	skynda sig	skyndar					2			1
 rör_skynda	sv	skynda sig	skyndat	1	1		2	8			1
-rör_skynda	sv	skynda sig	skyndat sig					8			1
+rör_skynda	sv	skynda sig	skyndat					8			1
 rör_snubbla	de	stolpern	gestolpert					8			1
 rör_snubbla	de	stolpern	stolpere	1				16		2	1
 rör_snubbla	de	stolpern	stolpere	1				1024		3	1
@@ -46999,12 +46999,12 @@ soc_gifta_sig	ja	結婚する	結婚すれば					2048			1
 soc_gifta_sig	ja	結婚する	結婚できる					512			1
 soc_gifta_sig	sv	gifta sig	gift	1	1		1	8			1
 soc_gifta_sig	sv	gifta sig	gift	1	1		2	8			1
-soc_gifta_sig	sv	gifta sig	gift sig					8			1
-soc_gifta_sig	sv	gifta sig	gift sig					16			1
+soc_gifta_sig	sv	gifta sig	gift					8			1
+soc_gifta_sig	sv	gifta sig	gift					16			1
 soc_gifta_sig	sv	gifta sig	gifta				3	8			1
-soc_gifta_sig	sv	gifta sig	gifta sig					1			1
-soc_gifta_sig	sv	gifta sig	gifte sig					4			1
-soc_gifta_sig	sv	gifta sig	gifter sig					2			1
+soc_gifta_sig	sv	gifta sig	gifta					1			1
+soc_gifta_sig	sv	gifta sig	gifte					4			1
+soc_gifta_sig	sv	gifta sig	gifter					2			1
 soc_hälsa	de	grüßen	gegrüßt					8			1
 soc_hälsa	de	grüßen	grüße	1				16		2	1
 soc_hälsa	de	grüßen	grüße	1				1024		3	1

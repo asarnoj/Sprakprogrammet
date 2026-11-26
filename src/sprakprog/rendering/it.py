@@ -140,3 +140,17 @@ class ItalienskRenderare(RomanskRenderare):
         """
         return (första in ELIDERAR
                 and andra[:1].lower() in self.VOKAL)
+
+    def reflexivt(self, lemma: str) -> bool:
+        # Italienskan likaså: svegliarsi. Infinitiverna slutar på -are/-ere/
+        # -ire, så -si är entydigt reflexivt.
+        return lemma.endswith("si")
+
+    def infinitivstam(self, inf: str) -> str:
+        # Italienskans infinitivceller är OENIGA: `svegliare` står naken
+        # medan `sbrigarsi` och `sedersi` bär klitikat. Båda formerna
+        # hanteras — klitikat faller bort om det finns, annars slutvokalen,
+        # som enklisen alltid tar (svegliare + mi → svegliarmi).
+        if inf.endswith("si"):
+            return inf[:-2]
+        return inf[:-1] if inf.endswith("e") else inf

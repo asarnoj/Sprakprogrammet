@@ -144,3 +144,14 @@ class SpanskRenderare(RomanskRenderare):
             form = "se" if coi[0] in ("le", "les") else coi[0]
             return [form, cod[0]]
         return [x[0] for x in (cod, coi) if x]
+
+    def reflexivt(self, lemma: str) -> bool:
+        # Spanskan fäster pronomenet vid infinitiven: despertarse. Alla
+        # spanska infinitiver slutar på -ar/-er/-ir, så en ändelse på -se
+        # kan inte vara något annat än det reflexiva klitikat.
+        return lemma.endswith("se")
+
+    def infinitivstam(self, inf: str) -> str:
+        # Spanskans infinitivcell bär redan klitikat (`despertarse`), och
+        # det ska bytas mot det som kongruerar med subjektet.
+        return inf[:-2] if inf.endswith("se") else inf

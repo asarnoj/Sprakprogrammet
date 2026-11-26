@@ -57,6 +57,12 @@ class FranskRenderare(RomanskRenderare):
             return "pl"
         return "m_sg" if genus == MASKULIN else "f_sg"
 
+    def reflexivt(self, lemma: str) -> bool:
+        # Franskan ställer pronomenet FÖRE infinitiven och skriver ut det
+        # som eget ord: se réveiller, s'asseoir. Elisionen framför vokal
+        # sköts av ELIDERAR ovan, som redan har med se/me/te.
+        return lemma.startswith(("se ", "s'"))
+
     def eliderar(self, första: str, andra: str) -> bool:
         """le/la → l' framför vokal.
 
@@ -74,3 +80,6 @@ class FranskRenderare(RomanskRenderare):
             return andra[:1].lower() in self.VOKAL | {"h"}
         return (första in ELIDERAR
                 and andra[:1].lower() in self.VOKAL | {"h"})
+
+    # Franskan ställer pronomenet före infinitiven, som eget ord.
+    REFLEXIV_INFINITIV_ENKLITISK = False

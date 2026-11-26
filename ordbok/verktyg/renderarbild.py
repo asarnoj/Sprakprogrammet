@@ -198,6 +198,40 @@ KORPUS: tuple[tuple[str, Mening], ...] = (
         bisats=Bisats("subj_att", Mening(verb="arb_leka", subjekt=VI, negerad=True)))),
     ("adverbialbisats", _m(verb="arb_arbeta",
         adverbial=(Bisats("subj_när", Mening(verb="arb_leka", subjekt=VI)),))),
+    # ── reflexiva verb ────────────────────────────────────────────────
+    # Tillagda 2026-08-26 av samma skäl som verbalkomplexet ovan: korpusen
+    # täckte dem bara av en slump, genom `se souvenir` i två bisatsrader,
+    # och FRÖS DÄRFÖR FELET som facit — `Elle souvient` stod som sanning i
+    # bilden tills pronomenet byggdes. Ett fel som redan finns när korpusen
+    # skrivs är osynligt för nätet, och det enda motmedlet är att täcka
+    # konstruktionen medvetet.
+    #
+    # Raderna är valda för att pronomenet realiseras OLIKA i varje: som
+    # eget ord före verbet, elidera framför vokal, kongruera med subjektet,
+    # följa med participet, och fästa på infinitiven i es/it.
+    ("reflexiv", _m(verb="krop_v_vakna")),
+    ("reflexiv-1sg", _m(verb="krop_v_vakna", subjekt=Nominalfras("pronomen_1sg"))),
+    ("reflexiv-elision", _m(verb="pos_sitta", subjekt=Nominalfras("pronomen_1sg"))),
+    ("reflexiv-plural", _m(verb="rör_skynda", subjekt=VI)),
+    ("reflexiv-perfekt", _m(verb="krop_v_vakna", tid=Tidsreferens.FÖRFLUTEN,
+                            aspekt=Aspekt.PERFEKTIV)),
+    ("reflexiv-negerad", _m(verb="krop_v_vila", negerad=True)),
+    ("reflexiv-fråga", _m(verb="krop_v_vakna", fråga=True)),
+    ("reflexiv-infinitiv", _m(verb="modal_vill", komplement="krop_v_vakna")),
+    ("reflexiv-infinitiv-1sg", _m(verb="modal_vill", subjekt=Nominalfras("pronomen_1sg"),
+                                  komplement="pos_sitta")),
+    ("reflexiv-nekad-imperativ", _m(verb="krop_v_vakna", subjekt=DU,
+                                    modus=Satsmodus.IMPERATIV, negerad=True)),
+    # käns_oroa är reflexivt i ALLA FEM språk som har konstruktionen — oroa
+    # sig, sich sorgen, s'inquiéter, preocuparse, preoccuparsi. Raderna ovan
+    # bygger på verb som bara romanskan böjer reflexivt, och lämnade därför
+    # svenskan och tyskan otäckta. Den nekade perfekten prövar dessutom
+    # svenskans objektsskifte: "vi har inte oroat oss", inte "oss oroat".
+    ("reflexiv-alla-språk", _m(verb="käns_oroa", subjekt=VI)),
+    ("reflexiv-perfekt-alla", _m(verb="käns_oroa", subjekt=VI, aspekt=Aspekt.PERFEKT)),
+    ("reflexiv-objektsskifte", _m(verb="käns_oroa", subjekt=VI,
+                                  aspekt=Aspekt.PERFEKT, negerad=True)),
+
     ("wh-subjekt", _m(verb="fys_hitta", objekt=HUND, fråga_om="subjekt")),
     ("wh-objekt", _m(verb="fys_hitta", objekt=HUND, fråga_om="objekt")),
     ("wh-negerad", _m(verb="fys_köpa", objekt=KATT, fråga_om="objekt", negerad=True)),

@@ -429,6 +429,79 @@ class RomanskRenderare:
             genus = self.u.egenskap_för(nf.koncept, "genus") or MASKULIN
         return genus, numerus
 
+    # Reflexivpronomenets konceptnyckel per person och numerus.
+    #
+    # Bara TREDJE person har ett eget reflexivt pronomen i de tre språken.
+    # Första och andra lånar det vanliga objektsklitikat — "je me lave" är
+    # samma `me` som i "il me voit" — och därför står bara 1 och 2 här;
+    # tredje person faller igenom till `pronomen_reflexiv`.
+    REFLEXIVKLITIKA = {(1, "sg"): "pronomen_1sg", (2, "sg"): "pronomen_2sg",
+                       (1, "pl"): "pronomen_1pl", (2, "pl"): "pronomen_2pl"}
+
+    def reflexivt(self, lemma: str) -> bool:
+        """Bär lemmat ett reflexivpronomen?
+
+        FRÅGAN STÄLLS TILL LEMMAT därför att det är där pronomenet står:
+        ordboken skriver `se réveiller`, `despertarse`, `svegliarsi`. De
+        BÖJDA formerna är nakna — `réveille`, `despierto`, `sveglio` — så
+        den som renderar måste sätta tillbaka pronomenet. Gjorde den inte
+        det blev facit `Je réveille` för "jag vaknar", och användaren fick
+        fel på ett rätt svar.
+        """
+        raise NotImplementedError
+
+    def reflexivklitikum(self, m: Mening) -> str | None:
+        """Reflexivpronomenet i SUBJEKTETS person, None om verbet inte är det.
+
+        Pronomenet kongruerar med subjektet och inte med verbet: je **me**
+        lave, tu **te** laves, il **se** lave. Det är därför det inte kan
+        ligga i paradigmet — samma verbform tar olika pronomen.
+        """
+        if not self.reflexivt(self.u.lexem(m.verb, self.kopulavariant(m))["lemma"]):
+            return None
+        return self._reflexivform(m.subjekt)
+
+    def _reflexivform(self, subjekt: Nominalfras) -> str:
+        """Klitikat som kongruerar med subjektet.
+
+        VARIANTEN MÅSTE FÖLJA MED. Spanskans `pronomen_2pl` är två lemman
+        med olika klitika — vosotros ger `os`, ustedes ger `se` — så ett
+        uppslag utan variant pekar inte ut ett enda och kastar. Samma väg
+        som `_pronomen` tar för objektsklitika.
+        """
+        person, numerus, _ = self._subjektsform(subjekt)
+        koncept = self.REFLEXIVKLITIKA.get((person, numerus), "pronomen_reflexiv")
+        variant = (subjekt.referent.value if subjekt.referent is not None
+                   and koncept == subjekt.koncept else None)
+        return self.u.form(self.u.lexem(koncept, variant), "cod")
+
+    # Fäster ett reflexivt INFINITIVKOMPLEMENT sitt pronomen på infinitiven?
+    # Spanskan och italienskan gör det ("quiero despertarme", "voglio
+    # svegliarmi"), franskan ställer det som eget ord före ("je veux me
+    # réveiller"). Det är samma skillnad som vid jakande imperativ.
+    REFLEXIV_INFINITIV_ENKLITISK: bool = True
+
+    def infinitivstam(self, inf: str) -> str:
+        """Infinitiven utan klitikum, redo att få ett nytt påfäst."""
+        raise NotImplementedError
+
+    def infinitivkomplement(self, m: Mening) -> list[str]:
+        """Infinitivkomplementet, med reflexivpronomen när verbet kräver det.
+
+        Pronomenet kongruerar med SATSENS subjekt och inte med infinitiven:
+        "je veux me réveiller", aldrig "je veux se réveiller". Lemmat bär
+        alltid pronomenet, men infinitivCELLEN gör det bara i spanskan — och
+        i italienskan bara ibland. Därför läses reflexiviteten ur lemmat och
+        formen byggs, i stället för att cellen litas på.
+        """
+        inf = self.u.form_för(m.komplement, "inf")
+        if not self.reflexivt(self.u.lexem(m.komplement, None)["lemma"]):
+            return [inf]
+        klitikum = self._reflexivform(m.subjekt)
+        if not self.REFLEXIV_INFINITIV_ENKLITISK:
+            return [klitikum, inf]
+        return [self.infinitivstam(inf) + klitikum]
+
     # Tilltal → imperativcell. De tre språken skiljer sig på artigheten:
     # franskan lånar 2pl-formen (vouvoiement), spanskan och italienskan har
     # en egen tredjepersonsform (usted, Lei).
@@ -573,12 +646,13 @@ class RomanskRenderare:
         # "objekt" för pronomen — de ska aldrig hamna där.
         cod = self._klitika(m.objekt, "cod")
         coi = self._klitika(m.io, "coi")
+        refl = self.reflexivklitikum(m)
         if coi is None and self.DUBBLERAR and m.io is not None:
             coi = self._dubblering(m.io)
             if coi is not None:
                 self.u.ordföljd("klitikadubblering")
         if (m.modus is Satsmodus.IMPERATIV and not m.negerad
-                and (cod is not None or coi is not None)):
+                and (cod is not None or coi is not None or refl is not None)):
             # JAKANDE imperativ fäster klitikan EFTER verbet, och inte som
             # ett eget ord: "donne-le-moi", "¡dámelo!", "dammelo!". Enklisen
             # har egna regler i varje språk — bindestreck och moi/toi i
@@ -586,15 +660,21 @@ class RomanskRenderare:
             # italienskan — och byggs inte av samma maskineri som proklisen.
             # Den NEKADE imperativen är proklitisk som alla andra satser
             # ("no me lo des") och går därför igenom här.
+            # Reflexivet räknas hit: "réveille-toi", "¡despiértate!",
+            # "svegliati!" är enklitiska OCH byter form (me→moi, te→toi i
+            # franskan). Att vägra är ärligare än att svara "réveille te".
             raise RenderingsFel(
                 f"{self.SPRÅK}: jakande imperativ med klitika kräver enklis "
                 f"— inte byggd. Nekad imperativ fungerar.")
 
         före, efter = self.negation(m)
         ord += före
-        if cod is not None or coi is not None:
+        if cod is not None or coi is not None or refl is not None:
             self.u.ordföljd("klitika_före")
-        ord += self.ordna_klitika(cod, coi)
+        # Reflexivet står FÖRST i klitikakedjan: "je me le rappelle", aldrig
+        # "je le me rappelle". Det tillhör me/te/se-serien, som i sin tur
+        # står före le/la/les — samma två serier som `ordna_klitika` skiljer.
+        ord += ([refl] if refl is not None else []) + self.ordna_klitika(cod, coi)
         verb = self.verbdelar(m, self._objektskongruens(m.objekt) if cod else None)
         # Negationens efterled hamnar efter det FINITA verbet, inte efter
         # participet: "elle n'a pas donné", aldrig "elle n'a donné pas".
@@ -613,7 +693,7 @@ class RomanskRenderare:
             markör = self.u.infinitivmarkör(m.verb)
             if markör is not None:
                 ord.append(self.u.form_för(markör, "inv"))
-            ord.append(self.u.form_för(m.komplement, "inf"))
+            ord += self.infinitivkomplement(m)
         if m.predikativ is not None:
             ord += self.predikativ(m)
         if m.objekt is not None and cod is None and m.fråga_om != "objekt":

@@ -359,6 +359,43 @@ class SvenskRenderare:
         celler = self.u._celler(lexem)
         return not celler.get("inf") and bool(celler.get("inf_passiv"))
 
+    # Reflexivpronomenets konceptnyckel per person och numerus. Bara tredje
+    # person har ett eget reflexivt pronomen — "sig" — medan första och
+    # andra använder sitt vanliga objektspronomen: mig, dig, oss, er. Det
+    # artiga `ni` bär sitt eget (`er`) och står därför med i tabellen i
+    # stället för att falla igenom.
+    REFLEXIVPRONOMEN = {(1, "sg"): "pronomen_1sg", (2, "sg"): "pronomen_2sg",
+                        (1, "pl"): "pronomen_1pl", (2, "pl"): "pronomen_2pl"}
+
+    def reflexivpronomen(self, m: Mening) -> str | None:
+        """Verbets reflexiva pronomen i subjektets person, annars None.
+
+        PRONOMENET LÅG INBAKAT I FORMEN — `Former.form` stod som "skyndar
+        sig" — och det är rätt bara i tredje person. Svenskans reflexiv
+        kongruerar med subjektet: jag skyndar mig, vi skyndar oss, ni
+        skyndar er. Facit blev därför "Vi skyndar sig".
+
+        Formerna står numera nakna (se migrationen `reflexiva_former.sql`)
+        och pronomenet byggs här, ur LEMMAT som bär det: "skynda sig".
+        """
+        if not self.u.lexem(m.verb, None)["lemma"].endswith(" sig"):
+            return None
+        nf = m.subjekt
+        if nf.koncept == "pronomen_2sg_formal":
+            # Artigt `ni` är andra person SINGULAR i Koncept men tar
+            # pluralens `er`. Utan undantaget blev det "ni skyndar dig".
+            koncept = "pronomen_2sg_formal"
+        else:
+            rad = self.u.conn.execute(
+                "SELECT person, numerus FROM Koncept WHERE nyckel = ?",
+                (nf.koncept,)).fetchone()
+            person = rad["person"] if rad and rad["person"] else 3
+            numerus = ("pl" if nf.numerus is Numerus.PL
+                       or (rad and rad["numerus"] == 2) else "sg")
+            koncept = self.REFLEXIVPRONOMEN.get((person, numerus),
+                                                "pronomen_reflexiv")
+        return self.u.form_för(koncept, "ack_dat")
+
     def satsled(self, m: Mening, bisats: bool = False) -> list[str]:
         """Satsens ord, utan skiljetecken och utan inledande subjunktion.
 
@@ -369,6 +406,7 @@ class SvenskRenderare:
         samma funktion i stället för att få en egen.
         """
         verb = self.verbfras(m)
+        reflexiv = self.reflexivpronomen(m)
         # Imperativen säger inte ut den tilltalade: "läs boken!". Subjektet
         # finns kvar i specen och har redan prövats mot verbets krav — det
         # är bara ordet som uteblir.
@@ -397,6 +435,8 @@ class SvenskRenderare:
                 self.u.ordföljd("biff")
                 ord.append(self.u.form_för("neg_inte", "inv"))
             ord.extend(verb)
+            if reflexiv is not None:
+                ord.append(reflexiv)
         else:
             omvänd = m.fråga or frågeord is not None
             if omvänd:
@@ -406,11 +446,24 @@ class SvenskRenderare:
             ord = [verb[0], *subjekt] if omvänd else [*subjekt, verb[0]]
             if frågeord is not None:
                 ord.insert(0, frågeord)
+            # OBJEKTSSKIFTE. Ett pronominellt objekt flyttar vänster om
+            # satsadverbialet BARA när huvudverbet självt har flyttat, alltså
+            # i enkla tempus: "jag skyndar mig inte". Finns ett hjälpverb
+            # står huvudverbet kvar och pronomenet stannar till höger om
+            # det: "vi har inte oroat oss", aldrig "vi har oss oroat".
+            #
+            # Det är Holmbergs generalisering, och den syns bara när
+            # verbfrasen har fler än en del — vilket är skälet att felet
+            # gick att missa i presens.
+            if reflexiv is not None and len(verb) == 1:
+                ord.append(reflexiv)
             if m.negerad:
                 # Satsadverbialet står efter det FINITA verbet: "ska inte ge",
                 # inte "ska ge inte". Därför delas verbfrasen här.
                 ord.append(self.u.form_för("neg_inte", "inv"))
             ord.extend(verb[1:])
+            if reflexiv is not None and len(verb) > 1:
+                ord.append(reflexiv)
         for slot, nf in (("io", m.io), ("objekt", m.objekt)):
             if nf is not None and slot != m.fråga_om:
                 ord.extend(self.nominalfras(nf))

@@ -2246,13 +2246,98 @@ upplåsningen — se A3, samma fråga).
 
 ### C7 ! — Producerar renderarna korrekt språk?
 
-Två kända fel:
+Ett känt fel kvar:
 
-- **Franskans reflexiva verb tappar sitt pronomen.** `se laver` renderas utan
-  `se`.
 - **Tyskans fraslexem får fel deklination.** `älterer Bruder` böjs efter fel
   paradigm; renderaren vägrar numera kombinationen i stället för att svara
   fel, vilket är ärligare men inte löst.
+
+#### DE REFLEXIVA VERBEN — LÖST I FEM SPRÅK 2026-08-26
+
+Posten sade "franskans reflexiva verb tappar sitt pronomen". Det stämde, men
+det var en femtedel av felet: **samma fel fanns i spanskan, italienskan,
+tyskan och svenskan**, i tre olika former.
+
+    fr/es/it   pronomenet i LEMMAT, formerna nakna
+               `se réveiller` → `réveille`      gav "Je réveille"
+    de         samma sak
+               `sich beeilen` → `beeilt`        gav "Wir beeilen"
+    sv         pronomenet INBAKAT I FORMEN
+               `skynda sig` → `skyndar sig`     gav "Vi skyndar sig"
+
+Svenskans variant är värst, för den ser rätt ut. `sig` är korrekt i tredje
+person och fel i alla andra — jag skyndar MIG, vi skyndar OSS — så felet
+syns bara på de subjekt man råkar pröva. Det är samma genväg som en gång gav
+224 franska verbformer med subjektspronomenet inbakat: saknas mekanismen
+skriver någon in resultatet i datan.
+
+**Rättningen läser reflexiviteten ur LEMMAT och bygger pronomenet.** Det går
+inte att kopiera lemmats `se`/`sich`/`sig` rakt av, eftersom pronomenet
+kongruerar med subjektet. Formerna i `pronomen_1sg` med flera fanns redan —
+`me/te/se/nous/vous`, `mich/dich/sich/uns/euch`, `mig/dig/sig/oss/er` — så
+ingenting behövde hittas på. Bara tredje person har ett eget reflexivt
+pronomen; första och andra lånar det vanliga objektsklitikat.
+
+Tre saker föll ut gratis när pronomenet väl fanns, och de är kvittot på att
+det byggdes på rätt ställe:
+
+    Elle s'est réveillée.        elision + participkongruens med subjektet
+    Sie ruht sich nicht aus.     partikelverb + Mittelfeld + negation
+    Nous ne nous sommes pas      être-hjälpverbet, negationen runt om
+      inquiétés.
+
+Fyra saker krävde egna beslut:
+
+**Svenskans objektsskifte.** "Jag skyndar mig inte" men "vi har inte oroat
+oss" — pronomenet flyttar vänster om satsadverbialet bara när huvudverbet
+självt har flyttat. Holmbergs generalisering, och den syns bara när
+verbfrasen har fler än en del, vilket är skälet att den gick att missa i
+presens. Första försöket gav "Vi har oss oroat".
+
+**Tyskans dativreflexiv.** `sich vorstellen` tar dativ — "ich stelle mir vor"
+— därför att tyskan inte tillåter två ackusativ och verbet redan har ett
+ackusativobjekt. De övriga sex tar ackusativ. **Regeln går inte att härleda
+ur mönstren**: `kog_minnas` och `kog_föreställa` har identiska MönsterKrav-
+rader och ändå olika kasus. Kasusen hör alltså hemma som en `reflexiv`-slot
+i MönsterKrav, bredvid objekt och io. Den slotten finns inte i schemats
+CHECK, och att bygga den för ETT verb är oproportionerligt — så listan står
+som en sluten lexikal konstant i `de.py`, med samma motivering som franskans
+`ELIDERAR`, och ska flytta när ordboken gör den längre.
+
+**Jakande imperativ vägras.** "Réveille-toi", "¡despiértate!", "svegliati!"
+är enklitiska OCH byter form. Det är samma vägran som redan gällde
+objektsklitika, och den nekade imperativen fungerar.
+
+**Italienskans infinitivceller är oeniga.** `svegliare` står naken medan
+`sbrigarsi` och `sedersi` bär klitikat. `infinitivstam` hanterar båda
+formerna, men det är att absorbera ett datafel, inte att lösa det — cellerna
+borde vara enhetliga. Står kvar som `?`.
+
+#### OCH REGRESSIONSNÄTET BEVISADE SIN EGEN SVAGHET (2026-08-26)
+
+När pronomenet byggdes gav korpusen exakt fyra diffar:
+
+    fr  Elle souvient que …      →  Elle se souvient que …
+    de  Sie erinnert, dass …     →  Sie erinnert sich, dass …
+
+**Felet stod alltså som FACIT i bilden.** Det är precis vad G4 säger att
+nätet inte kan fånga — förändringar, inte fel som redan fanns när korpusen
+frystes — och här syns kostnaden i klartext. Korpusen täckte reflexiva verb
+bara av en slump, genom `se souvenir` och `sich erinnern` i två bisatsrader,
+och frös därför deras fel.
+
+Korpusen har därför fått **tretton reflexiva konstruktioner**, valda för att
+pronomenet realiseras olika i var och en: eget ord före verbet, elision,
+kongruens, participkongruens, enklis på infinitiven, objektsskifte. Tre av
+dem använder `käns_oroa`, som är reflexivt i alla fem språk som har
+konstruktionen, eftersom de första tio byggde på verb som bara romanskan
+böjer reflexivt och därmed lämnade svenskan och tyskan otäckta.
+
+**Omfattning i drift.** 23 av franskans 1 153 kort byggde på de tretton
+reflexiva verben, och 15 av dem hade redan lärts ut i fjortondagarsleken —
+alltså med fel facit. Verben är `stanna, minnas, oroa, vakna, vila, sitta,
+stå, öva, undra, gifta sig, skynda, koncentrera`, och flera av dem är bland
+de vanligaste som finns.
 
 Regressionsnätets 399 frysta meningar täcker ingendera — se G4: nätet fångar
 FÖRÄNDRINGAR, inte fel som redan fanns när korpusen frystes.
@@ -3627,8 +3712,35 @@ från noll. Det är därför så många poster i det här dokumentet är `~` och
 
 ### G4 ~ — Skyddsnät mot tysta fel
 
-Regressionsnätet fryser 399 renderade meningar som förväntad utdata. Varje
+Regressionsnätet fryser 490 renderade meningar som förväntad utdata. Varje
 ändring som rör deras text faller.
+
+#### JAG RAPPORTERADE GRÖNT PÅ EN INAKTUELL KÖRNING (2026-08-26)
+
+Nivågrindens rättelse (F1) gjorde `passprov`-invarianten *upplåsning utökar
+dagen* omätbar, och det upptäcktes först dagen efter. Skälet är inte att
+provet var svagt utan att **jag startade sviten i bakgrunden och fortsatte
+redigera medan den gick** — den rapport jag sedan läste som "elva nät, alla
+gröna" beskrev ett träd som inte längre fanns.
+
+Det är samma sorts fel som posten om ärvd förutsättning nedan, fast i tiden i
+stället för i databasen: ett resultat som gällde ett annat läge än det man
+tror sig ha prövat. **En svit som startats före den sista redigeringen är
+inte ett kvitto på den.**
+
+Felet i sak var däremot provets, inte produktens. `utöka` lägger till upp
+till `tak_nya − väntande_nytt`, och den drill som gör kursen redo att låsa
+upp fyller samtidigt dagen ända till taket. Mätt: varje kurs nådde
+upplåsningen med rummet noll — tyskan på tak 5 med 5 redan planerade — så
+110 nya kort blev möjliga och dagen stod stilla. Det är RÄTT: taket är
+minutbudgeten (B4), och att låsa upp en nivå höjer inte hur lång tid
+användaren har.
+
+Provet höjer numera minuterna FÖRE upplåsningen och fångar `före` efter
+höjningen, så att minuternas verkan redan ligger i utgångsvärdet och
+tillväxten bara kan komma från upplåsningen. Sabotaget fäller fortfarande
+invarianten, vilket är det som skiljer en rättad uppsättning från en
+bortförklarad.
 
 **Vad det fångar:** förändringar. Om en renderarändring bryter något som
 fungerade syns det direkt.

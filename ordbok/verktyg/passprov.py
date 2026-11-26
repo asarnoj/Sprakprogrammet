@@ -169,6 +169,18 @@ def prov_upplåsning_utökar(tj, kort) -> list[str]:
         # noll på `avslutad`). Regeln gäller en dag som PÅGÅR — "det som är
         # gjort ska stå kvar, det nya ska kunna komma in idag" — så
         # upplåsningen ska ske vid första tillfälle den är möjlig.
+        # DAGEN MÅSTE HA RUM UNDER SITT TAK, annars mäter provet fel sak.
+        # `utöka` lägger till upp till `tak_nya − väntande_nytt`, och den
+        # drill som gör kursen redo att låsa upp fyller samtidigt dagen till
+        # taket. Mätt: varje kurs nådde upplåsningen med rummet noll — tyskan
+        # på tak 5 med 5 planerade — och 110 nya kort kunde då inte komma in.
+        # Det är RÄTT beteende (taket är minutbudgeten, B4), men det gör
+        # invarianten omätbar, och ett omätbart prov är inget prov.
+        #
+        # Minuterna höjs därför före upplåsningen, och `före` fångas EFTER
+        # höjningen. Då ligger minuternas verkan redan i utgångsvärdet och
+        # tillväxten kan bara komma från upplåsningen.
+        tj.sätt_minuter(kurs["id"], 60)
         r = före = None
         for _ in range(8):
             # `före` fångas i SAMMA varv som upplåsningen prövas, annars

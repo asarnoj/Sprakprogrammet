@@ -93,6 +93,25 @@ def _substantivcell(kasus: int, numerus: Numerus) -> str:
     return f"{KASUSNAMN[kasus]}_sg"
 
 
+# Reflexiva verb vars pronomen står i DATIV i stället för ackusativ.
+# Sluten och lexikal, som ELIDERAR i franskan.
+#
+# Skälet är att tyskan inte tillåter två ackusativ i samma sats: `sich
+# vorstellen` har redan ett ackusativobjekt — det man föreställer sig — och
+# reflexivet viker då till dativ, "ich stelle mir das Buch vor". De övriga
+# sex reflexiva verben i ordboken har inget ackusativobjekt och tar därför
+# ackusativ, "ich beeile mich".
+#
+# REGELN GÅR INTE ATT HÄRLEDA ur mönstren som de ser ut: kog_minnas och
+# kog_föreställa har IDENTISKA MönsterKrav-rader (objekt, frastyp 33, ingen
+# kasus), och ändå tar det ena ackusativ och det andra dativ. Kasusen är
+# alltså ett lexikalt faktum om verbet och hör hemma i MönsterKrav som en
+# `reflexiv`-slot bredvid objekt och io. Den slotten finns inte i schemats
+# CHECK, och att bygga den för ETT verb är oproportionerligt — listan ska
+# flytta dit när ordboken gör den längre än så.
+REFLEXIV_DATIV = frozenset({"kog_föreställa"})
+
+
 class TyskRenderare:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.u = Uppslag(conn, "de")
@@ -283,6 +302,29 @@ class TyskRenderare:
             numerus = "pl"
         return person, numerus
 
+    # Reflexivpronomenets konceptnyckel per person och numerus. Bara tredje
+    # person har ett eget reflexivt pronomen — "sich" — medan första och
+    # andra lånar det vanliga objektspronomenet: mich, dich, uns, euch. Det
+    # artiga Sie kongruerar som tredje person plural och får därför sich.
+    REFLEXIVPRONOMEN = {(1, "sg"): "pronomen_1sg", (2, "sg"): "pronomen_2sg",
+                        (1, "pl"): "pronomen_1pl", (2, "pl"): "pronomen_2pl"}
+
+    def reflexivpronomen(self, m: Mening) -> str | None:
+        """Verbets reflexiva pronomen i subjektets person, annars None.
+
+        ORDBOKEN SKRIVER PRONOMENET I LEMMAT — `sich beeilen` — men inte i
+        formerna, som står nakna (`beeilt`). Renderaren måste därför sätta
+        tillbaka det, och kan inte kopiera lemmats `sich` rakt av: pronomenet
+        kongruerar med subjektet. Utan den här metoden blev facit "Wir
+        beeilen" för "vi skyndar oss".
+        """
+        if not self.u.lexem(m.verb, None)["lemma"].startswith("sich "):
+            return None
+        person, numerus = self._subjektsform(m.subjekt)
+        koncept = self.REFLEXIVPRONOMEN.get((person, numerus), "pronomen_reflexiv")
+        return self.u.form_för(koncept,
+                               "dat" if m.verb in REFLEXIV_DATIV else "akk")
+
     def _ren_infinitiv(self, m: Mening) -> bool:
         """Tar verbet sitt komplement UTAN zu?
 
@@ -467,6 +509,14 @@ class TyskRenderare:
             if m.fråga_om != "subjekt":
                 mittelfeld = [*vorfeld, *mittelfeld]
             vorfeld = [frågeord]
+        # Reflexivet står FÖRST i Mittelfeld: "wir beeilen uns", "warum
+        # beeilst du dich". Pronomen går före fulla nominalfraser i tyskan,
+        # och reflexivet är det som står närmast verbet. I wh-frågan har
+        # subjektet just lagts i mittelfeld ovanför, och reflexivet hamnar
+        # då efter det — vilket är rätt: "warum beeilst du dich".
+        reflexiv = self.reflexivpronomen(m)
+        if reflexiv is not None:
+            mittelfeld.append(reflexiv)
         if m.io is not None and m.fråga_om != "io":
             mittelfeld += self.nominalfras(m.io, self.kasus_för(m.verb, "io"))
         # Bisatser hör inte hemma i Mittelfeld. De står i Nachfeld, alltså
