@@ -398,6 +398,9 @@ def main() -> None:
     # ihop faserna: introfasen tar sina övningar ur den, och meningsfasen sina
     # meningar, så att de två aldrig slåss om samma källmening (6.1 punkt 8).
     plan = None
+    #: Dygnet planen lades. Nya nivåer öppnas bara vid passets start (4.4), så
+    #: en plan per dygn — inte en per tangenttryckning.
+    planens_dag = None
     #: Kort vars meningar tagit slut i dag (6.1 punkt 8). Dagsskopat, inte
     #: karantän: i morgon gäller villkoret inte och kortet tas om (5.1).
     utan_material: set = set()
@@ -416,25 +419,35 @@ def main() -> None:
         if val == "q":
             return
         if val == "n":
-            # GRINDEN (5.5). Tidsmodellen säger hur många nya kort dagen tål,
-            # och ett paket tas helt eller inte alls (3.10) — så ett paket som
-            # inte ryms väntar tills det sparade tempot räcker. Utan modellen
-            # finns ingen gräns, och då är tangenttryckningen hela grinden.
+            # EN PLAN PER DAG (4.4, 5.1). «Nivåer öppnas bara när passet startas:
+            # starta eller starta med nya nivåer. Planen räknas ut efter valet
+            # och ändras inte under passet.» Och 5.1: «vilka nya kort dagen har
+            # är bestämt innan passet börjar».
+            #
+            # Förut lade varje `n`-tryck en NY plan, så «dagens plan» var i
+            # själva verket «den här nivåns plan» — och fyra nivåer gick igenom
+            # på fem minuter.
+            if planens_dag == data.dag():
+                print("  dagens plan är redan lagd, och den ändras inte under "
+                      "passet (4.4). Öva det du har med [enter]; nya nivåer "
+                      "öppnas i morgon.")
+                continue
             svar = passet.tempo(a.minuter)
             if svar is not None:
                 tempot, budget = svar
-                paket = len(passet.paket() - data.införda())
                 print(f"  {a.minuter:.0f} min om dagen räcker till "
                       f"{tempot.nya} nya kort; med sparat {budget:.1f}. "
-                      f"Nästa paket är {paket} kort.")
-                if paket > budget:
-                    data.spara_tempo(0, budget)
-                    print(f"  paketet ryms inte i dag — {budget:.1f} sparas till "
-                          "i morgon (5.5). Öva det du har med [enter].")
-                    continue
-                data.spara_tempo(paket, max(0.0, budget - paket))
+                      f"Kursen tar {tempot.slutdagen} dagar i det tempot.")
             print("  lägger dagens plan …")
             plan = passet.dagsplan(rapport=lambda r: print(r, flush=True))
+            planens_dag = data.dag()
+            nya = len(plan.kort - data.införda())
+            if svar is not None:
+                # Det som inte gick åt sparas till i morgon (5.5).
+                data.spara_tempo(nya, max(0.0, budget - nya))
+                if nya > budget:
+                    print(f"  ⚠ planen har {nya} nya kort men budgeten var "
+                          f"{budget:.1f} — paketet togs helt (3.10).")
             _introfas(passet, plan)
             # Faserna följer på varandra (5.1): efter introfasen prövas korten
             # i meningar. Att gå tillbaka till menyn här var det som lät

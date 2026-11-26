@@ -580,18 +580,33 @@ class Passet:
     # ── introfasen ──
 
     def nästa_nivå(self) -> frozenset:
-        """Den första nivå som inte är införd och vars krav är införda (4.4).
+        """Den första nivå vars grind är uppfylld (4.4).
+
+        > En nivå kan öppnas när föregångarnas kort infördes en TIDIGARE dag.
+
+        DAGSVILLKORET ÄR GRINDEN, och det saknades. Utan det öppnade nivå 2 en
+        minut efter att nivå 1:s kort införts, och en användare kunde ta fyra
+        nivåer på fem minuter. Med det gäller 4.4:s följd av sig själv: «längs en
+        kedja öppnas högst en nivå per dygn». Ingen ny regel behövdes — den låg
+        i att införandet måste ha skett en tidigare dag.
 
         Korten i en nivå kräver varandra (4.1), så ett enskilt kort går inte att
         införa först. Nivån öppnas i sin helhet, och dess kort införs sedan i
-        paket (3.10) — ett eller flera, allt efter vad budgeten rymmer.
+        paket (3.10).
+
+        ARBETSBÖRDAN PRÖVAS INTE HÄR. 4.4: «Att öppna en nivå lägger inga kort i
+        passet, bara kandidater… En grind som prövade arbetsbördan vid
+        upplåsningen skulle aldrig spärra.» Taket sätter tidsmodellen när dagens
+        kort väljs (5.5), inte grinden.
         """
         införda = self.data.införda()
+        i_dag = self.data.dag()
+        tidigare = {k for k, dag in self.data.införda_dagar().items() if dag < i_dag}
         for nivå in self.nivåer:
             if nivå <= införda:
                 continue
             krav = frozenset().union(*(self.krav.get(k, frozenset()) for k in nivå))
-            if krav - nivå <= införda:
+            if krav - nivå <= tidigare:
                 return nivå
         return frozenset()
 
@@ -621,17 +636,26 @@ class Passet:
                                      else (-1, 0.0, 0, str(k))))
 
     def tempo(self, minuter: float):
-        """5.5: hur många nya kort dagen tål, och `sparat` från förut.
+        """5.5: hur många nya kort dagen tål, och budgeten med sparat inräknat.
 
-        Ger `(tid.Tempo, budget)` där budgeten är tempot plus det som sparats,
-        eller None när något mått saknas. «Utan talet finns ingen väg från
-        minuter till kort», och då svarar modellen inte alls i stället för att
-        gissa.
+        Ger `(tid.Tempo, budget)`, eller None när något mått saknas. «Utan talet
+        finns ingen väg från minuter till kort», och då svarar modellen inte alls
+        i stället för att gissa.
 
-        SPARAT FÖLJER AV PAKETET. «Ett paket (3.10) tas med helt, så en dag kan
-        ge färre kort än n. Det som inte används sparas till nästa dag.» Budgeten
-        är därför n plus det sparade, och ett paket som inte ryms väntar tills
-        det gör det — det är grinden.
+        DET HÄR ÄR INGEN GRIND VID UPPLÅSNINGEN. 4.4 förbjuder en sådan: «att
+        öppna en nivå lägger inga kort i passet, bara kandidater… en grind som
+        prövade arbetsbördan vid upplåsningen skulle aldrig spärra.» Talet är ett
+        TAK FÖR DAGENS KORTMÄNGD, alltså för införandet, och det hör till 5.6:s
+        fråga «vad borde läras nu» — inte till 4.4:s «vad går att lära nu» (4.5).
+
+        Jag byggde först den förbjudna grinden, och den prövade dessutom mot
+        `paket()` — sju kort för nivå 1 — medan dagen lärde ut tretton. Budgeten
+        debiterade sju och levererade tretton, och eftersom den lästes ur GÅRDAGENS
+        rad förbrukades den aldrig inom dagen: fyra nivåer gick igenom på fem
+        minuter.
+
+        SPARAT. «Ett paket tas med helt, så en dag kan ge färre kort än n. Det
+        som inte används sparas till nästa dag» (5.5).
         """
         if self.tidsmodell is None or self.kort_i_kursen is None:
             return None

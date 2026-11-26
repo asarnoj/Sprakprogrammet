@@ -304,6 +304,14 @@ class Kursdata:
             "VALUES (?, ?, ?, ?, ?, ?)", (self.id, *_kolumner(kort), nu(), mening_id))
         self.conn.commit()
 
+    def införda_dagar(self) -> dict[Kort, str]:
+        """Kort → det dygn det infördes. Grinden i 4.4 behöver dagen, inte bara
+        mängden: «en nivå kan öppnas när föregångarnas kort infördes en TIDIGARE
+        dag»."""
+        gräns = self.inställning("dygnsgräns")
+        return {_kort(r): dygnet(r["tid"], gräns) for r in self.conn.execute(
+            "SELECT * FROM infört WHERE kurs_id = ?", (self.id,))}
+
     def införda_åldrar(self, dag: str | None = None) -> list[int]:
         """Hur många dygn sedan varje infört kort infördes — E(t) i 5.5.
 

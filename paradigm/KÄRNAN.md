@@ -730,6 +730,32 @@ grinden bli långsammare för varje nytt ord i ordförrådet.
   möte kräver en mening som gick att bygga. Att en nivå skulle sakna material kan
   bara hända om den öppnar noll kort — och det förbjuder invarianten.
 
+#### Byggd 2026-09-27, och tre fel som kom ur samma sammanblandning
+
+`nästa_nivå` prövade bara MÄNGDEN införda kort, aldrig vilken dag de infördes. Nivå 2
+öppnade en minut efter att nivå 1:s kort införts, och en användare tog fyra nivåer på
+fem minuter. Dagsvillkoret i den första raden ovan är alltså hela grinden: med det gäller
+«högst en nivå per dygn längs en kedja» av sig själv, och en oberoende nivå får ändå
+öppna samma dag — mätt: `regel:val/satsart/imperativ` öppnar bredvid nivå 1, vilket är
+riktigt, eftersom den inte beror på den.
+
+**Planen lades per `n`-tryck i stället för per dag**, så «dagens plan» var i själva verket
+«den här nivåns plan». Raden ovan säger motsatsen: planen räknas ut efter valet och ändras
+inte under passet. En plan per dygn.
+
+**Och en arbetsbördegrind byggdes vid upplåsningen**, som det här stycket uttryckligen
+förbjuder. Den prövade dessutom mot paketet — sju kort för nivå 1 — medan dagen lärde ut
+tretton, och läste budgeten ur gårdagens rad så att den aldrig förbrukades. Taket hör
+till införandet (5.5), inte till grinden.
+
+**Det som mätningen sedan visade var det motsatta problemet.** Med dagsvillkoret och en
+plan per dygn får dag 1 tretton kort, dag 2 tolv, och **dag 3 och framåt ett till tre** —
+medan takten tillåter tjugosju. Kursens 951 kort skulle ta omkring 475 dagar i stället för
+de 36 tidsmodellen räknar fram. Orsaken är version-1-noteringen i 5.6: kandidatmängden är
+nästa nivå, och en nivå har median ett kort. 4.5 beskriver redan vad som ska gälla i
+stället — «att låsa upp tio nivåer ger en kö av kort» — och kön var blockerad på
+tidsmodellen, som nu finns.
+
 ### 4.5 Upplåsning är inte införande
 
 | | Frågan | Rätt svar? | Kostar |

@@ -439,6 +439,21 @@ def meningen_använder_bara_tillåtet(p: Passet, data: Kursdata) -> list[str]:
     return brister
 
 
+def _nästa_dygn(data: Kursdata) -> None:
+    """Flytta kursen ett dygn framåt: införandena hamnar i går.
+
+    Grinden i 4.4 öppnar en nivå först när föregångarens kort infördes en
+    TIDIGARE dag, så ett prov som behöver två nivåer måste passera ett dygn.
+    Dagens presenterade och ställda meningar hör till dygnet och rensas.
+    """
+    data.conn.execute(
+        "UPDATE infört SET tid = datetime(tid, '-1 day') WHERE kurs_id = ?",
+        (data.id,))
+    data.conn.execute("DELETE FROM presenterat WHERE kurs_id = ?", (data.id,))
+    data.conn.execute("DELETE FROM mening WHERE kurs_id = ?", (data.id,))
+    data.conn.commit()
+
+
 def _oinförda_lån(plan, införda, nivå) -> int:
     """Hur många lånekort i planens introövningar användaren INTE kan.
 
@@ -473,10 +488,15 @@ def lånekorten_är_de_kända(p, data) -> list[str]:
 
     def två_nivåer() -> list[int]:
         # Egen färsk kurs: jämförelsen ska börja från samma läge båda gångerna.
+        #
+        # DYGNET MÅSTE PASSERA MELLAN NIVÅERNA. Grinden i 4.4 kräver att
+        # föregångarens kort infördes en TIDIGARE dag, så två nivåer längs en
+        # kedja går inte att ta samma dag. Provet tog dem i följd och fick bara
+        # en mätpunkt när dagsvillkoret kom på plats.
         with tempfile.TemporaryDirectory() as mapp:
             q, d = _passet(Path(mapp) / "lån.db")
             ut = []
-            for _ in range(2):
+            for varv in range(2):
                 nivå, införda = q.nästa_nivå(), set(d.införda())
                 plan = q.dagsplan()
                 if not plan.introövningar:
@@ -489,6 +509,9 @@ def lånekorten_är_de_kända(p, data) -> list[str]:
                     u2 = q.ställ(u)
                     q.bokför(u2, q.rätta(u2, u2.facit, 1.0), paket=q.paket())
                 q.uppdatera()
+                if varv == 0:
+                    _nästa_dygn(d)
+                    q.uppdatera()
             return ut
 
     med = två_nivåer()
@@ -509,6 +532,41 @@ def lånekorten_är_de_kända(p, data) -> list[str]:
     return brister
 
 
+def grinden_kräver_en_tidigare_dag(p, data) -> list[str]:
+    """4.4. «En nivå kan öppnas när föregångarnas kort infördes en TIDIGARE dag.»
+
+    Följden står i samma stycke: «längs en kedja öppnas högst en nivå per dygn».
+    Ingen egen regel om antal nivåer per dag behövs — den ligger i dagsvillkoret.
+
+    Utan det öppnade nivå 2 en minut efter att nivå 1:s kort införts, och fyra
+    nivåer gick igenom på fem minuter. Provet tar nivå 1 helt och kräver att
+    ingen nivå som BEROR på den öppnar samma dag; en oberoende nivå får öppna,
+    och ska göra det — «nivåer som inte beror på varandra behöver inte vänta».
+    """
+    nivå = p.nästa_nivå()
+    if not nivå:
+        return ["ingen nivå att börja med"]
+    plan = p.dagsplan()
+    if not plan.introövningar:
+        return ["dagsplanen är tom"]
+    _introfasen(p, plan)
+    for u in plan.meningsfasen:
+        u2 = p.ställ(u)
+        p.bokför(u2, p.rätta(u2, u2.facit, 1.0), paket=p.paket())
+    p.uppdatera()
+    if not (nivå <= data.införda()):
+        return ["nivån blev inte införd — provet kan inte pröva grinden"]
+
+    nästa = p.nästa_nivå()
+    if not nästa:
+        return []
+    kraven = frozenset().union(*(p.krav.get(k, frozenset()) for k in nästa))
+    beroende = (kraven - nästa) & nivå
+    return ([f"{sorted(map(str, nästa))} öppnade samma dag fast den kräver "
+             f"{sorted(map(str, beroende))}, som infördes i dag"]
+            if beroende else [])
+
+
 INVARIANTER = [
     ("introfasen bokför ingenting", introfasen_bokför_ingenting, True),
     ("introövningen har ett enda mål", introövningen_har_ett_mål, False),
@@ -524,6 +582,7 @@ INVARIANTER = [
     ("dagsplanen är genomförbar", dagsplanen_är_genomförbar, True),
     ("meningen använder bara tillåtet", meningen_använder_bara_tillåtet, True),
     ("lånekorten är de kända", lånekorten_är_de_kända, True),
+    ("grinden kräver en tidigare dag", grinden_kräver_en_tidigare_dag, True),
 ]
 
 
@@ -564,6 +623,11 @@ def _falsifiera(mapp: Path) -> list[str]:
         ("planens uppgifter bar fel kort som mål",
          "introövningen har ett enda mål", introövningen_har_ett_mål, False,
          (Passet, "märk", lambda self, uppgift, kort: uppgift)),
+        # Grinden såg bara MÄNGDEN införda kort, inte vilken dag de infördes.
+        ("grinden saknade sitt dagsvillkor",
+         "grinden kräver en tidigare dag", grinden_kräver_en_tidigare_dag, True,
+         (Kursdata, "införda_dagar", lambda self: {k: "0000-00-00"
+                                                  for k in self.införda()})),
         ("ordförrådet räckte inte till fler meningar",
          "dagsplanen är genomförbar", dagsplanen_är_genomförbar, True,
          (Passet, "_ordförråd", lambda self, korten, tillåtna: frozenset(
