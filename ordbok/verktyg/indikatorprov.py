@@ -156,6 +156,33 @@ def prov_summan_stämmer(tj, kort, kurs) -> list[str]:
                        f"nya {i['nya']} + glosor {i['glosor']})")
         if i["klar"] and i["att_göra"]:
             fel.append(f"varv {n}: klar men att_göra={i['att_göra']}")
+        # OCH DEN UPPDELNING SKÄRMEN FAKTISKT RITAR ska summera till samma
+        # tal. Raden ovan prövar de fyra LÖSA talen; `delar` är den lista
+        # gränssnittet renderar, och det var där felet satt.
+        #
+        # Sidan räknade tidigare fram sin egen uppdelning i JS —
+        # `former = max(0, nya − glosor)` — och drog därmed bort ett tal som
+        # inte ingick, eftersom `nya` och `glosor` är olika roller i
+        # `Passkort` och aldrig överlappar. Mätt 2026-08-26: rubriken sa 57
+        # kort medan raden under summerade till 52, och japanskans rubrik sa
+        # 50 med knapptexten "0 due · 0 new" bredvid sig.
+        #
+        # Inget prov fångade det, och det är hela lärdomen: näten prövade
+        # API:t, och ingenting prövade vad SIDAN räknade fram ur det. Svaret
+        # blev att flytta räkningen till servern, där den går att pröva —
+        # inte att skriva ett prov som kör JavaScript.
+        delar = i.get("delar")
+        if delar is None:
+            fel.append(f"varv {n}: `delar` saknas — gränssnittet får då "
+                       f"räkna själv, vilket är felet regeln finns mot")
+        else:
+            d = sum(x["antal"] for x in delar)
+            if d != i["att_göra"]:
+                fel.append(f"varv {n}: att_göra={i['att_göra']} men `delar` "
+                           f"ger {d} ({delar})")
+            if any(x["antal"] <= 0 for x in delar):
+                fel.append(f"varv {n}: `delar` bär en nolla — en del utan "
+                           f"arbete ska inte ritas alls: {delar}")
     return fel[:4]
 
 

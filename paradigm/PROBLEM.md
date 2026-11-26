@@ -3582,6 +3582,107 @@ tyska rader. Och tröskeln räknade BETYG i stället för TIDTAGNA rader, så et
 språk med 33 repetitioner utan en enda klocka såg mätt ut. *Rättat: samma
 reservväg och samma tröskel som takten.*
 
+#### OCH DÄRFÖR MISSADE PROVET NÄSTA OMGÅNG (2026-08-26)
+
+Provet ovan mäter API:t. Det som stod på SKÄRMEN mätte ingenting, och sidan
+räknade själv — så när en genomgång av gränssnittet gjordes fanns fyra fel
+kvar av precis den sort provet skrevs för.
+
+**RUBRIKEN OCH RADEN UNDER DEN SUMMERADE INTE.** Hemvyn räknade fram sin egen
+uppdelning i JS: `former = max(0, nya − glosor)`. Men `nya` och `glosor` är
+OLIKA ROLLER i `Passkort` och överlappar aldrig — subtraktionen drog bort ett
+tal som inte ingick. Mätt på fem kurser:
+
+    kurs 1   rubriken 57 kort, raden under summerade till 52
+    kurs 2   rubriken 48, raden 45, knappen under dem 5
+    kurs 3   rubriken 50 kort, knapptexten "0 due · 0 new"
+
+Den sista är den värsta: hela dagen var femtio glosor, och knappen sa att det
+inte fanns något att göra. Subtraktionen var en kvarleva från när `nya`
+innehöll ordkorten.
+
+**TRE VYER, TRE TAL FÖR SAMMA SAK.** "Ord som återstår" fanns på tre skärmar:
+
+    hemvyn      "Words in this level's vocabulary: 1 058"
+    kursvyn     "201 left"
+    glosvyn     "5 of 205 words left"
+
+`1 058` var OSEDDA KORT av alla sju typer för hela språket — 428 genuskort,
+373 stammar, 202 ordkort, 27 ändelser, 18 former, 6 rektioner, 4
+ordföljdsregler. Etiketten sa "words" och "this level's". `201` var en
+KVOT: osedda kort delat på kort-per-koncept, alltså en skattning. `205` var
+det räknade svaret.
+
+**ETIKETTER SOM ÖVERLEVT SITT TAL.** Rutan för nästa nivå visar sedan F1 en
+DOM och inte ett antal, men etiketten `cards to go` stod kvar bredvid. Skärmen
+sa ordagrant "Ready cards to go".
+
+**ETT TAL SOM RÄKNADES OCH SEDAN KASTADES.** `slut()` deklarerades med ett
+argument och anropades med två; det andra var antalet kort som skrivits av som
+onåbara (B8). Det betyder att dagen tog slut i FÖRTID, och utan raden ser en
+avkortad dag exakt ut som en fullbordad — vilket är precis vad A3 säger att
+den inte får göra.
+
+*Rättat, och inte var för sig.* Uppdelningen räknas nu i `pass_.läget` och
+skickas som en LISTA av (nyckel, antal) som per konstruktion summerar till
+`att_göra`; sidan renderar den och räknar ingenting. Ordräkningen är en
+`COUNT(*)` på osedda ordkort och läses av alla tre vyerna ur samma anrop.
+Etiketten är borta. Avskrivna kort sägs.
+
+**Invarianten är utökad:** `att_göra är summan av sina delar` prövar numera
+också `delar`-listan, alltså det gränssnittet faktiskt ritar, och kräver att
+ingen del bär en nolla. Verifierat att den faller: med den gamla
+JS-subtraktionen serverflyttad ger den två brott på första varvet.
+
+**Lärdomen är var gränsen gick.** Provet frågade "stämmer talen servern
+räknar" — och det gjorde de. Frågan som saknades var "stämmer det som står",
+och den kunde bara ställas genom att flytta räkningen till servern. Ett prov
+som kör JavaScript hade varit det andra svaret, och det sämre.
+
+### H6 ~ — Vilket språk talar gränssnittet? (ny 2026-08-26)
+
+Programspråket är engelska och är avsiktligt INTE kursens källspråk — en
+svensk som lär sig tyska kan vilja ha engelskt gränssnitt. All
+gränssnittstext ligger därför samlad i `T` i sida.html, med noteringen att
+ett andra programspråk är en kolumn där och ingenting annat.
+
+**Utom att den inte låg samlad.** Fyra sorters text gick förbi `T` och rakt
+ut på skärmen på svenska, och tre av dem i det ögonblick användaren är som
+mest beroende av att förstå — direkt efter ett fel:
+
+    rättningens slutsatser   "fel stam — skrev formen för pres_3sg"
+    ordföljdsreglerna        "finita verbet på plats två i huvudsats"
+    korttyperna i lektionen  "129 new cards: 115 stam, 9 system, 5 form"
+    ordklasserna i ordboken  "Substantiv", "Artikel", "Frågepronomen"
+
+De två första kom ur `Rättare` respektive `Kort.facit`; de två sista var
+databasens egna nycklar utskrivna rakt. Och just `stam`, `system` och `form`
+är de tre ord en inlärare omöjligt kan känna till — de är systemets
+kortmodell, inte språkets grammatik.
+
+**Rättat med samma rörelse tre gånger:** backend skickar en NYCKEL och det
+nyckeln handlar om, `T` sätter texten. `Anmärkning` fick `nyckel` och `arg`
+vid sidan av `slutsats`; ordföljdskorten fick sin `egenskap` med i
+kortlistan; lektionen och ordboken slår upp sina nycklar i `T`.
+
+**Den svenska prosan är KVAR i `Anmärkning.slutsats`**, och det är inte
+slarv. Den är vad `__str__` skriver, alltså vad som står i loggar och i
+felsvepets utskrifter — och den är gränssnittets reserv när en nyckel saknas.
+Ett gränssnitt som tiger om ett fel är värre än ett som säger det på fel
+språk.
+
+**Vad som INTE översattes, med flit.** Cellnamnen (`pres_3sg`) och
+formsträngarna (`haben`, `hab`, `∅`) står kvar. De förra är ett
+paradigmspråk och inte svenska, och de står i samma form i ordboksvyn; de
+senare ÄR svaret — att röra dem vore att visa något annat än det kortet
+prövar.
+
+**Posten är `~` och inte `✓`.** Ingenting hindrar nästa sträng från att gå
+samma väg. Det som skulle stänga felklassen är en kontroll som läser
+API-svaren och fäller på svenska ord i fält gränssnittet visar — samma form
+som G6 saknar för anrop och G5 för data, alltså tredje gången samma sorts
+invariant efterlyses.
+
 ### H4 ? — Hur presenteras framsteg över tid?
 
 Det finns ingen vy för utveckling — bara dagens läge och nästa nivå.
@@ -3592,10 +3693,33 @@ Notera att den blir svår att göra ärlig så länge B2 gäller: en prognos som
 bygger på `per_kort` skulle visa en framtid som är fel med en faktor tio. En
 statistiksida som ljuger om framtiden är sämre än ingen.
 
-### H5 ? — Vad händer på mobil?
+### H5 ~ — Vad händer på mobil?
 
 Layouten viker sig, men inget är prövat på riktigt. Nedprioriterat: det
 viktigaste är att motorn fungerar perfekt först.
+
+#### PRÖVAT 2026-08-26 — den håller
+
+Mätt i en riktig webbläsare på 375 × 812, hela vägen genom hemvyn, glosvyn
+och övningen:
+
+    horisontell scroll     ingen (scrollWidth 375 = innerWidth)
+    de två kolumnerna      staplas, båda läsbara
+    räknarraden            343 px av 375 — och håller med TRESIFFRIGA tal
+                           (prövat med 148 / 132 / 276 / 104)
+    navigationen           bryter till två rader, allt nåbart
+    inmatningsfältet       full bredd, tangentbordet skymmer inget
+
+Posten går därmed från `?` till `~`: den är prövad i en emulerad vy och inte
+på en verklig telefon, och tangentbord, `100vh` och safe-area är sådant som
+bara riktig hårdvara avslöjar.
+
+**Ett fel hittades och rättades på vägen, och det gällde inte mobilen.**
+Ordparen i glosvyn låg i tre kolumner med `flex:1` på målordet, vilket sköt
+översättningen till kolumnens högerkant — på en bred skärm två centimeters
+tomrum mellan `gehen` och `gå`. Just den vyns enda uppgift är att PARET ska
+fastna, och layouten tvingade ögat att leta rätt på vilken översättning som
+hörde till vilket ord. Nu står de på två rader, tätt, som i en glosbok.
 
 ---
 
@@ -3787,11 +3911,11 @@ urvalet (B3, F3) bygger på.
 ## Sammanräkning
 
     ✓  löst          25
-    ~  antagande     10
-    ?  öppet         17
+    ~  antagande     12   (H5 prövad, H6 ny)
+    ?  öppet         16
     !  känd defekt    8   (C5b tillkom 2026-08-26 och är rättad, men står
                     ───    som `!` enligt dokumentets regel: en post byter
-                     60    status när NÅGON läst efter, inte när koden ändras)
+                     61    status när NÅGON läst efter, inte när koden ändras)
 
 ## Vad som gjordes 2026-08-26 — en genomgång som inte utgick från buggarna
 

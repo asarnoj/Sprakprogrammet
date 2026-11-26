@@ -107,6 +107,26 @@ class Anmärkning:
     kort_id: int | None = None
     osäker: bool = False
 
+    #: SLUTSATSEN SOM NYCKEL, vid sidan av den svenska texten.
+    #:
+    #: `slutsats` är prosa på svenska och gick rakt ut i gränssnittet, som är
+    #: på engelska. Skärmen sa ordagrant "fel stam — skrev formen för
+    #: pres_3sg": ett svenskt omdöme och ett internt cellnamn, mitt i en
+    #: engelsk rättning. Samma sak för ordföljdsreglerna, vars facit är
+    #: "finita verbet på plats två i huvudsats".
+    #:
+    #: Texten bor därför i `T` i sida.html, där all annan gränssnittstext bor,
+    #: och backend skickar nyckeln plus det som ska fyllas i. Ett andra
+    #: programspråk blir då en kolumn där och ingenting här.
+    #:
+    #: `slutsats` STÅR KVAR och är fortfarande svensk prosa: den är vad
+    #: `__str__` skriver, alltså vad som hamnar i loggar och i
+    #: felsvepets utskrifter. Att ta bort den vore att göra proven svårare att
+    #: läsa för att gränssnittet skulle bli rätt.
+    nyckel: str = ""
+    #: Det nyckeln behöver fyllas med — ett koncept, en cellista, en form.
+    arg: str = ""
+
     #: Ordet var RÄTT men stod på fel plats. Då fälls inget kort — se
     #: `_flyttade`. Skiljs från `kort_id is None`, som betyder motsatsen:
     #: att felet var verkligt men inte gick att knyta till ett kort.
@@ -340,8 +360,12 @@ class Rättare:
 
     def _skyll(self, skrev: str, väntat: str, koncept: str, variant: str | None,
                cell: str, egenskaper: list | None = None,
-               rektioner: list | None = None) -> tuple[int | None, str, bool]:
-        """(kort_id, förklaring, osäker) för ETT felskrivet ord.
+               rektioner: list | None = None
+               ) -> tuple[int | None, str, bool, str, str]:
+        """(kort_id, förklaring, osäker, nyckel, arg) för ETT felskrivet ord.
+
+        `nyckel` och `arg` är samma slutsats som `förklaring`, men i en form
+        gränssnittet kan sätta text på själv — se `Anmärkning.nyckel`.
 
         Ordningen är den GENERATOR.md föreskriver: låt datan avgöra så långt
         den räcker, och gå till historiken först när den tar slut.
@@ -375,12 +399,14 @@ class Rättare:
                     and self._bär_stammen(skrev, koncept)):
                 return (systemkort["id"],
                         f"rätt stam {stamkort['facit']!r}, men {skrev!r} är "
-                        f"ingen form av {koncept} — ändelsen brast", False)
+                        f"ingen form av {koncept} — ändelsen brast", False,
+                        "ändelsen_brast", stamkort["facit"])
             # Ingen form av ordet alls — då är det ordet som brast, inte
             # böjningen. Ett ord man inte kan hämta fram går inte att böja.
             ordkort = self._ordkort(koncept, variant)
             return (ordkort["id"] if ordkort else None,
-                    f"ingen form av {koncept}, alltså fel ord", False)
+                    f"ingen form av {koncept}, alltså fel ord", False,
+                    "fel_ord", "")
 
         # RÄTT CELL AV FEL SKÄL. Innan stamuppdelningen får avgöra: skulle
         # formen användaren skrev vara RÄTT om substantivet haft ett annat
@@ -407,10 +433,11 @@ class Rättare:
             rad = self._rektionskort(*styrande)
             if rad is not None:
                 verb, slot = styrande
+                kasus = KASUSNAMN.get(int(rad["facit"]), rad["facit"])
                 return (rad["id"],
                         f"formen stämmer för en annan kasus — {verb} styr "
-                        f"{slot} till {KASUSNAMN.get(int(rad['facit']), rad['facit'])}",
-                        False)
+                        f"{slot} till {kasus}",
+                        False, "fel_rektion", f"{verb} · {slot} · {kasus}")
 
         givare = self._genusgivaren(cell, träffar, egenskaper or [])
         if givare is not None:
@@ -418,7 +445,7 @@ class Rättare:
             if genuskort is not None:
                 return (genuskort["id"],
                         f"formen stämmer för ett annat genus — {givare} styr "
-                        f"{cell}", False)
+                        f"{cell}", False, "fel_genus", givare)
 
         # Rätt ord, fel cell. Stamuppdelningen säger vilket kort som brast —
         # men bara när det FINNS en uppdelning. En rest är hela formen i ett
@@ -426,28 +453,34 @@ class Rättare:
         if stamkort is not None and stamkort["typ"] == "form":
             return (stamkort["id"],
                     f"formen för {self._cellista(träffar)}, inte {cell} — "
-                    f"ordet har ingen härledbar stam här", False)
+                    f"ordet har ingen härledbar stam här", False,
+                    "fel_form_orgelbunden", self._cellista(träffar))
         if stamkort is not None and systemkort is not None:
             stam = _normalisera(stamkort["facit"])
             if stam and skrev.startswith(stam):
                 return (systemkort["id"],
                         f"rätt stam {stamkort['facit']!r}, fel ändelse — "
-                        f"{self._cellista(träffar)} i stället för {cell}", False)
+                        f"{self._cellista(träffar)} i stället för {cell}", False,
+                        "fel_ändelse", self._cellista(träffar))
             return (stamkort["id"],
-                    f"fel stam — skrev formen för {self._cellista(träffar)}", False)
+                    f"fel stam — skrev formen för {self._cellista(träffar)}", False,
+                    "fel_stam", self._cellista(träffar))
 
         enda = stamkort or systemkort
         if enda is not None:
             return (enda["id"],
-                    f"formen för {self._cellista(träffar)}, inte {cell}", False)
+                    f"formen för {self._cellista(träffar)}, inte {cell}", False,
+                    "fel_cell", self._cellista(träffar))
 
         # Datan räcker inte: skyll på det svagaste kortet i ledet.
         # Felattribution självläker — skyller systemet fel klarar det kortet
         # sin extra repetition, och det rätta förblir svagt.
         if kort:
             svagast = min(kort, key=lambda k: k["stabilitet"] or 0)
-            return svagast["id"], "kunde inte avgöras ur formen — svagaste kortet", True
-        return None, "inget kort hör till ordet", True
+            return (svagast["id"],
+                    "kunde inte avgöras ur formen — svagaste kortet", True,
+                    "svagaste", "")
+        return None, "inget kort hör till ordet", True, "inget_kort", ""
 
     # ── rättning ─────────────────────────────────────────────────────
 
@@ -506,7 +539,8 @@ class Rättare:
             return Rättning(False, utfall, [Anmärkning(
                 _normalisera(svar), _normalisera(facit),
                 "formerna är rätt men ska smälta samman — "
-                f"{_normalisera(facit)}", None, False, sandhi=True)])
+                f"{_normalisera(facit)}", None, False,
+                nyckel="sandhi", arg=_normalisera(facit), sandhi=True)])
 
         anmärkningar: list[Anmärkning] = []
         if self.språk in ORDMELLANRUM:
@@ -526,8 +560,9 @@ class Rättare:
             # raden — inte genom att tilldela. Det är avsiktligt: en
             # anmärkning ska inte kunna ändras efter att den skapats.
             anmärkningar = [
-                replace(a, kort_id=ordföljdskort["id"], slutsats=(
-                    f"{a.slutsats} — {ordföljdskort['facit']}"))
+                replace(a, kort_id=ordföljdskort["id"],
+                        slutsats=f"{a.slutsats} — {ordföljdskort['facit']}",
+                        arg=ordföljdskort["facit"])
                 if a.ordföljd else a
                 for a in anmärkningar]
         for a in anmärkningar:
@@ -983,10 +1018,12 @@ class Rättare:
             ut.append(Anmärkning(
                 _normalisera(svar), _normalisera(facit),
                 "orden ska smälta samman — " + _normalisera(facit),
-                None, False, sandhi=True))
+                None, False, nyckel="sandhi", arg=_normalisera(facit),
+                sandhi=True))
         flyttade = self._flyttade(f, s, opkoder)
         if flyttade:
             ut += [Anmärkning(o, o, "rätt ord på fel plats — ordföljden",
+                              nyckel="ordföljd",
                               ordföljd=True)
                    for o in sorted(flyttade)]
             f = [o for o in f if o not in flyttade]
@@ -1002,20 +1039,25 @@ class Rättare:
                 skrev = s[j1 + n] if j1 + n < j2 else ""
                 träff = self._hitta_uppslag(väntat, uppslag)
                 if träff is None:
-                    ut.append(Anmärkning(skrev, väntat, "hör inte till något kort"))
+                    ut.append(Anmärkning(skrev, väntat,
+                                         "hör inte till något kort",
+                                         nyckel="inget_kort"))
                     continue
                 koncept, variant, cell = träff
-                kid, förklaring, osäker = self._skyll(
+                kid, förklaring, osäker, nyckel, arg = self._skyll(
                     skrev, väntat, koncept, variant, cell, egenskaper,
                     rektioner)
-                ut.append(Anmärkning(skrev, väntat, förklaring, kid, osäker))
+                ut.append(Anmärkning(skrev, väntat, förklaring, kid, osäker,
+                                     nyckel=nyckel, arg=arg))
             # ORD SOM INTE SKA FINNAS DÄR. Loopen ovan går över FACITS
             # positioner, så vid en `insert` är intervallet tomt och ett
             # tillagt ord gav ingen anmärkning alls — hela den feltypen var
             # osynlig för rättningen. Den fäller inget kort (vi vet inte
             # vilket), men användaren ska få se den.
             for m in range(j1 + (i2 - i1), j2):
-                ut.append(Anmärkning(s[m], "", "ord som inte hör till meningen"))
+                ut.append(Anmärkning(s[m], "",
+                                     "ord som inte hör till meningen",
+                                     nyckel="extra_ord"))
         return ut
 
     def _delsträngar(self, svar: str,
@@ -1033,7 +1075,8 @@ class Rättare:
                 kort = self._kort_för(koncept, variant, cell)
                 kid = kort[0]["id"] if kort else None
                 ut.append(Anmärkning("", form, f"formen saknas i svaret ({cell})",
-                                     kid, osäker=True))
+                                     kort_id=kid, osäker=True,
+                                     nyckel="saknas", arg=cell))
         return ut
 
     def _hitta_uppslag(self, ord: str, uppslag: list[tuple[str, str | None, str]]):

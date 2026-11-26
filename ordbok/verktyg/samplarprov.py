@@ -40,6 +40,13 @@ en utsmyckning som hoppas över och en obligatorisk slot som kastar
 kandidaten hör till `_välj`s docstring; här mäts bara resultatet, eftersom
 det är resultatet renderaren möter.
 
+ALDRIG MOT DEN RIKTIGA DATABASEN — kopia via SQLites backup, som de andra
+proven. Provet LÄSER visserligen bara: det samplar kandidater och anropar
+`föreslå`, aldrig `svara` eller `registrera`. Men regeln är inte "skriv inte"
+utan "rör den inte", och det av ett skäl: vad ett prov råkar anropa ändras när
+koden under det ändras, och då är skyddet borta just när det behövs. Julius
+kan dessutom öva i en annan flik medan provet kör.
+
 Kör:  python ordbok/verktyg/samplarprov.py
 """
 
@@ -47,9 +54,11 @@ from __future__ import annotations
 
 import sqlite3
 import sys
+import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+ROT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROT / "src"))
 
 from sprakprog.db import anslut  # noqa: E402
 from sprakprog.generator import Generator  # noqa: E402
@@ -220,8 +229,25 @@ SABOTAGE = [(_sabotage_hål_i_specen, 0),
             (_sabotage_hål_i_specen, 1)]
 
 
+def _kopia(mål: Path) -> sqlite3.Connection:
+    """Inlärardatabasen, kopierad genom SQLites egen backup.
+
+    `cp` duger inte: databasen körs i WAL-läge och en filkopia tappar precis
+    det nyaste (I1). `backup` läser genom WAL.
+    """
+    käll = sqlite3.connect(ROT / "kort.db")
+    dst = sqlite3.connect(mål)
+    try:
+        käll.backup(dst)
+    finally:
+        dst.close()
+        käll.close()
+    return anslut_kort(mål)
+
+
 def main() -> int:
-    kort = anslut_kort()
+    tmp = tempfile.TemporaryDirectory()
+    kort = _kopia(Path(tmp.name) / "samplar.db")
     språk_db = anslut()
     språk_db.row_factory = sqlite3.Row
     fel = stumma = 0
@@ -246,8 +272,13 @@ def main() -> int:
                 stumma += 1
             print(f"  {'✓ föll' if brister else '✗ STUMT'}  {PROV[mål][0]}")
     finally:
+        # BÅDA anslutningarna stängs. `with sqlite3.connect(...)` avslutar en
+        # TRANSAKTION och inte anslutningen — en läckt läsare mot kortfilen
+        # fick varje senare `backup` att vänta ut den, och tog sviten från
+        # 61 s till 2 830 s (G4).
         kort.close()
         språk_db.close()
+        tmp.cleanup()
     print(f"\n{len(PROV)} invarianter, {fel} brott." if fel
           else f"\n{len(PROV)} invarianter, alla håller.")
     if stumma:

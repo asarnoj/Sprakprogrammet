@@ -91,7 +91,12 @@ def kör(r_per_språk) -> list[str]:
         språk, skrev, väntat, koncept, cell, vill, varför = fall[:7]
         rektioner = fall[7] if len(fall) > 7 else []
         r = r_per_språk(språk)
-        kid, förklaring, _osäker = r._skyll(
+        # `_skyll` lämnar sedan 2026-08-26 också slutsatsen som NYCKEL, för
+        # att gränssnittet ska kunna sätta text på den själv i stället för
+        # att visa svensk prosa i en engelsk rättning. Provet läser
+        # fortfarande `förklaring` — den svenska texten är kvar just för att
+        # provutskrifter ska gå att läsa.
+        kid, förklaring, _osäker, _nyckel, _arg = r._skyll(
             skrev, väntat, koncept, None, cell, rektioner=rektioner)
         rad = (r.kort_db.execute("SELECT typ FROM Kort WHERE id = ?",
                                  (kid,)).fetchone() if kid else None)

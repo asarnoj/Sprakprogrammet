@@ -405,6 +405,14 @@ class Övningstjänst:
                     "kort": sorted(
                         ({"typ": k["typ"], "namn": namn.get(k["typ"], k["typ"]),
                           "facit": k["facit"], "koncept": k["koncept"],
+                          # REGELNS NYCKEL för ordföljdskort. Deras `facit` är
+                          # svensk prosa i databasen — "finita verbet på plats
+                          # två i huvudsats" — och stod som kortets namn i ett
+                          # engelskt gränssnitt bredvid rena språkdata som
+                          # `haben` och `∅`. `egenskap` är den stabila nyckeln
+                          # (`v2`, `satsklammer`), och texten hör hemma i `T`.
+                          "regel": k["egenskap"] if k["typ"] == "ordföljd"
+                                   else None,
                           "dom": dom.get(k["id"]),
                           # Förfallodagen FÖRE prövningen — den nya räknas ut
                           # först vid bokföringen. `null` = kortet är nytt och
@@ -416,6 +424,18 @@ class Övningstjänst:
                                        str(x["facit"]))),
                     "anmärkningar": [
                         {"nr": n, "skrev": a.skrev, "väntat": a.väntat,
+                         # NYCKELN, inte prosan. `slutsats` är svensk text —
+                         # "fel stam — skrev formen för pres_3sg" — och gick
+                         # rakt ut i ett engelskt gränssnitt. Texten bor i `T`
+                         # i sida.html tillsammans med all annan
+                         # gränssnittstext; hit skickas bara vad slutsatsen
+                         # VAR och vad den handlade om.
+                         #
+                         # `slutsats` följer med som reserv: en nyckel som
+                         # `T` inte känner igen ska visa något begripligt och
+                         # inte ett tomt fält. Ett gränssnitt som tiger om ett
+                         # fel är värre än ett som säger det på fel språk.
+                         "nyckel": a.nyckel, "arg": a.arg,
                          "slutsats": a.slutsats, "osäker": a.osäker,
                          # KORTET RAPPORTERAS BARA OM DET FAKTISKT FICK EN
                          # DOM. En anmärkning kan namnge ett kort som sedan
@@ -519,6 +539,9 @@ class Övningstjänst:
                          "igen": p["igen"], "nya": p["nya"],
                          "gjort": p["gjort"], "mål": p["mål"], "klar": p["klar"],
                          "finns": p["att_göra"],
+                         # UPPDELNINGEN, färdigräknad. Sidan ska inte
+                         # härleda den — se `pass_.läget`.
+                         "delar": p["delar"],
                          # Nya ORD väntar på glosläget; övriga nya kort
                          # (böjning) introduceras i meningarna.
                          # B4: användarens val är minuter. Antalet meningar
@@ -552,6 +575,26 @@ class Övningstjänst:
                 # underraden som visade `krävs` mot `kapacitet`.
                 "nivå": {"nu": kurs["nivå"], "av": 21,
                          "osedda": u["osedda"], "totalt": u["totalt"],
+                         # ORDFÖRRÅDET SOM ÅTERSTÅR, ur SAMMA räkning som
+                         # kursvyn visar. De två sa olika saker om samma sak:
+                         # hemvyn ritade `osedda` under etiketten "Words in
+                         # this level's vocabulary", men `osedda` är OSEDDA
+                         # KORT av alla sju typer och för hela språket.
+                         #
+                         # Mätt 2026-08-26 på tyskan: etiketten sa 1 058 ord.
+                         # De 1 058 var 428 genuskort, 373 stammar, 202
+                         # ordkort, 27 ändelser, 18 former, 6 rektioner och 4
+                         # ordföljdsregler. Antalet ord var 205. Kursvyn sa
+                         # samtidigt 217 — `_prognos`, som delar korten på
+                         # kort-per-koncept och därför svarar på den fråga
+                         # etiketten ställde.
+                         #
+                         # Att låta båda vyerna läsa `_prognos` är inte bara
+                         # en rättelse av talet: det gör att de inte KAN gå
+                         # isär igen, vilket etiketterna ensamma aldrig kunde
+                         # garantera.
+                         **{k: v for k, v in self._prognos(kurs, p).items()
+                            if k in ("ord_kvar", "dygn_till_klart")},
                          # GRINDEN ÄR BYGGBARHETEN, inte kapaciteten (F1).
                          # `plats` står kvar som upplysning.
                          "redo": u["redo"], "byggbarhet": u["byggbarhet"],
@@ -687,15 +730,21 @@ class Övningstjänst:
             # Att lämna och återvända ger nu det som ÅTERSTÅR av dagens
             # omgång, eftersom `nya` är ett saldo — är omgången gjord är den
             # noll.
-            n = antal or p["glosor"]
-            if n <= 0:
-                return {"ord": [], "kvar": 0, "saldo": 0}
-            self._glosklocka.pop(kurs_id, None)
-            rader = Schemaläggare(self.kort_db).oglosade(kurs["målspråk"], n)
+            # `kvar` ÄR ETT FAKTUM OM KURSEN, inte om dagens portion, och
+            # måste därför räknas före den tidiga returen. Den svarade `0` när
+            # dagen inte hade några glosor kvar att dela ut — alltså "inga ord
+            # återstår att lära sig" för en kurs med tvåhundra kvar. Samma tal
+            # visas numera i hemvyn och kursvyn (`_prognos.ord_kvar`), och där
+            # hade nollan synts.
             kvar = self.kort_db.execute(
                 """SELECT COUNT(*) FROM Kort WHERE språk = ? AND typ = 'ord'
                    AND sedd IS NULL""",
                 (kurs["målspråk"],)).fetchone()[0]
+            n = antal or p["glosor"]
+            if n <= 0:
+                return {"ord": [], "kvar": kvar, "saldo": 0}
+            self._glosklocka.pop(kurs_id, None)
+            rader = Schemaläggare(self.kort_db).oglosade(kurs["målspråk"], n)
             ut = []
             for r in rader:
                 källa = self.språk_db.execute(
@@ -898,7 +947,7 @@ class Övningstjänst:
                         minuter_per_dag=kurs["minuter_per_dag"])
         return passlager.starta(self.kort_db, kurs, plan, läge="extra")
 
-    def _prognos(self, kurs: sqlite3.Row) -> dict:
+    def _prognos(self, kurs: sqlite3.Row, plan: dict | None = None) -> dict:
         """Hur långt minuterna räcker — i ord och i dagar.
 
         Räknas ur samma två tal som styr inflödet: den hållbara takten
@@ -908,9 +957,23 @@ class Övningstjänst:
 
         None när takten inte är mätt. En prognos utan mätning vore en
         gissning presenterad som en utfästelse, vilket är värre än tomt.
+
+        `plan` FINNS FÖR ATT DAGEN INTE SKA RÄKNAS TVÅ GÅNGER. `_dagsplan`
+        är inte en ren läsning: den anropar `passlager.starta`, alltså kan
+        den skapa dagens pass. Anropar man den två gånger i samma svar går
+        det bra — `starta` är idempotent — men det är två omgångar arbete
+        för samma tal, och `hem` gjorde precis det när prognosen kopplades
+        in där.
+
+        Att det märktes alls var passprovets förtjänst. Sabotaget som låter
+        `nuvarande` svara None (det gamla lagret, som byggde om passet vid
+        varje anrop) fick den andra omgången att krocka med den första på
+        `UNIQUE (kurs_id, datum, läge)`. Ett dubbelanrop som bara är
+        slöseri i drift blev synligt som ett fel under falsifieringen — och
+        det är ungefär vad ett falsifieringspass är till för.
         """
         språk = kurs["målspråk"]
-        p = self._dagsplan(kurs)
+        p = plan if plan is not None else self._dagsplan(kurs)
         takt = p["inflödestak"]
         rad = self.kort_db.execute(
             """SELECT COUNT(DISTINCT koncept) AS koncept, COUNT(*) AS kort,
@@ -921,9 +984,28 @@ class Övningstjänst:
             return {"takt": takt, "ord_kvar": None, "dygn_till_klart": None}
         per_koncept = rad["kort"] / rad["koncept"]
         kvar = rad["kort"] - (rad["sedda"] or 0)
+        # ORDEN RÄKNAS, DE SKATTAS INTE. Talet var `kvar / per_koncept` —
+        # osedda KORT delat på kort-per-koncept — alltså en kvot som SKATTAR
+        # hur många ord som återstår. Men frågan har ett exakt svar: ett ord
+        # återstår när dess ordkort är osett, och det går att räkna.
+        #
+        # Skillnaden var synlig för användaren. Mätt 2026-08-26 på tyskan sa
+        # kvoten 217 medan glosvyn — som räknar — sa 205, och de stod på var
+        # sin skärm under etiketter som båda handlade om ord som återstår.
+        # Det är samma sorts fel som `nya − glosor`: en härledning där en
+        # räkning fanns att göra.
+        #
+        # SAMMA FRÅGA SOM `glosor` STÄLLER, ordagrant, så att de två inte kan
+        # gå isär. `schemalagt` utelämnas med flit: ett ordkort införs oavsett
+        # exponering (INFÖRBAR), så ett ord som lyfts ur schemat återstår
+        # fortfarande att lära sig.
+        ord_kvar = self.kort_db.execute(
+            """SELECT COUNT(*) FROM Kort
+               WHERE språk = ? AND typ = 'ord' AND sedd IS NULL""",
+            (språk,)).fetchone()[0]
         return {"takt": takt,
                 "ord_per_dygn": round(takt / per_koncept, 1),
-                "ord_kvar": round((kvar) / per_koncept),
+                "ord_kvar": ord_kvar,
                 "dygn_till_klart": math.ceil(kvar / takt)}
 
     def dagsläge(self, kurs_id: int) -> dict | None:
@@ -942,6 +1024,7 @@ class Övningstjänst:
             return {"idag": {"att_göra": p["att_göra"],
                              "förfallna": p["förfallna"], "igen": p["igen"],
                              "nya": p["nya"], "gjort": p["gjort"],
+                             "glosor": p["glosor"], "delar": p["delar"],
                              "klar": p["klar"], "finns": p["att_göra"]},
                     "typer": self._per_typ(kurs, p)}
 

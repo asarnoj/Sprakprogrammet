@@ -166,7 +166,9 @@
   ul.lista li { display:flex; gap:.7rem; align-items:baseline; padding:.35rem 0;
       border-bottom:1px solid var(--linje); cursor:pointer; font-size:.92rem; }
   ul.lista li:hover { color:var(--svag); }
-  ul.lista li.last { opacity:.45; cursor:default; }
+  /* Ett steg som inte är upplåst går att LÄSA, alltså är det inte dött:
+     `cursor:default` sa motsatsen. Dämpat men klickbart. */
+  ul.lista li.last { opacity:.55; }
   ul.lista .namn { flex:1; }
   ul.lista .bi { font-size:.82rem; color:var(--svag); }
   .filter { display:flex; gap:.6rem; margin-bottom:1rem; flex-wrap:wrap;
@@ -201,13 +203,25 @@
   .exempel { padding:.4rem 0; border-bottom:1px solid var(--linje); }
   .exempel .källa { color:var(--svag); font-size:.88rem; }
   .exempel .mål { font-family:var(--serif); font-size:1.05rem; }
+  /* ── ordparen: LISTAN MAN SKA LÄSA ────────────────────────────────
+     Paret är hela poängen, så orden ska gå att uppfatta som ETT. De låg
+     förut på var sin sida av kolumnen (`.mål { flex:1 }` sköt översättningen
+     ut till högerkanten), och på en bred skärm blev det två centimeters
+     tomrum mellan `gehen` och `gå`. Ögat fick leta reda på vilken
+     översättning som hörde till vilket ord — i just den vy vars enda uppgift
+     är att paret ska fastna.
+
+     Två rader i stället för två kolumner: målordet över, källordet under,
+     tätt. Det är glosbokens egen form, och den håller ihop paret oavsett hur
+     bred kolumnen är. */
   ul.ordpar { list-style:none; padding:0; margin:0;
-      columns:3; column-gap:2rem; font-size:.92rem; }
+      columns:3; column-gap:2.5rem; }
   @media (max-width:52rem) { ul.ordpar { columns:2; } }
-  ul.ordpar li { padding:.18rem 0; break-inside:avoid;
-      display:flex; gap:.5rem; }
-  ul.ordpar .mål { font-family:var(--serif); flex:1; }
-  ul.ordpar .källa { color:var(--svag); font-size:.85rem; text-align:right; }
+  @media (max-width:30rem) { ul.ordpar { columns:1; } }
+  ul.ordpar li { padding:.3rem 0 .45rem; break-inside:avoid; }
+  ul.ordpar .mål { font-family:var(--serif); font-size:1.05rem;
+      display:block; }
+  ul.ordpar .källa { color:var(--svag); font-size:.85rem; display:block; }
 </style>
 </head>
 <body>
@@ -244,14 +258,28 @@
 
       <div>
         <h2 class="kol">Next level</h2>
-        <p class="tal"><span id="n-saknas">–</span><small>cards to go</small></p>
+        <!-- INGEN ETIKETT EFTER TALET. Här stod `<small>cards to go</small>`,
+             från när rutan visade ett antal. Efter F1 är grinden BYGGBARHET
+             och rutan visar en dom — så skärmen sa ordagrant
+             "Ready cards to go". En etikett som överlevt sitt tal är samma
+             sorts lögn som ett tal som inte stämmer. -->
+        <p class="tal"><span id="n-saknas">–</span></p>
         <p class="under" id="n-under"></p>
         <dl class="delar">
+          <!-- `aria-label` och inte synlig text: knappens tillgängliga namn
+               var "of 21", eftersom nivåtalet ligger i ett span som fylls i
+               efteråt. Att skriva ut "Level" i knappen i stället gav
+               "Level / Level 4 of 21" — etiketten två gånger. -->
           <div><dt>Level</dt>
-               <dd><button class="lank" id="n-lankka"><span id="n-nivå">–</span>
-                   of 21</button></dd></div>
-          <div><dt>Words in this level's vocabulary</dt>
-               <dd id="n-osedda">–</dd></div>
+               <dd><button class="lank" id="n-lankka"
+                   aria-label="Open this level's lesson"><span
+                   id="n-nivå">–</span> of 21</button></dd></div>
+          <!-- ORD, inte kort. Raden visade `osedda`, alltså osedda KORT av
+               alla sju typer för hela språket — 1 058 på tyskan, där antalet
+               ord var 205 och kursvyn samtidigt sa 217. Talet kommer nu ur
+               `_prognos`, samma räkning som kursvyn läser. -->
+          <div><dt>Words still to learn</dt>
+               <dd id="n-ordkvar">–</dd></div>
           <div><dt>Level <span id="n-nästnr">–</span> would add</dt>
                <dd id="n-nästa">–</dd></div>
           <div><dt>At your pace that is</dt><dd id="n-dygn">–</dd></div>
@@ -452,11 +480,119 @@ const T = {
   klart_idag:   (g) => `All cards done — ${g} sentence${g === 1 ? "" : "s"} today.`,
   igen_kvar:    n => `${n} card${n === 1 ? "" : "s"} still shaky. They are ` +
                      `scheduled for tomorrow.`,
+  //: Kort som skrevs av för att ingen mening kunde nå dem (B8). De fick
+  //: INGET betyg — ett kort utan mätning är ärligt, ett med påhittad
+  //: mätning är värre än tomt (D3) — och kommer tillbaka i morgon.
+  oåtkomliga:   n => `${n} card${n === 1 ? "" : "s"} could not be reached by ` +
+                     `any sentence today and were left ungraded.`,
   oövad:        "Practise a little and the pace shows up here.",
   ryms:         "There is room for the next level.",
   över:         (k, c) => `Your cards need ${k} sentences a day; you practise ${c}.`,
   extra_finns:  (t, n) => [t && `${t} early`, n && `${n} new`]
                             .filter(Boolean).join(", ") + " available",
+  // DAGENS DELAR. Servern skickar nyckel och antal; texten bor här, så att
+  // ett andra programspråk är en kolumn i den här tabellen och ingenting
+  // annat. Sidan RÄKNAR INTE — den härledde tidigare sin egen uppdelning
+  // (`nya − glosor`) och fick fel, eftersom rollerna är disjunkta. Se
+  // `pass_.läget`.
+  del: {
+    glosor:    n => `${n} new word${n === 1 ? "" : "s"} to read`,
+    igen:      n => `${n} to retry`,
+    förfallna: n => `${n} to review`,
+    nya:       n => `${n} new form${n === 1 ? "" : "s"} in sentences`,
+  },
+  //: Uppdelningen som en rad. Ordningen är serverns — den man möter korten i.
+  delar: d => d.map(x => (T.del[x.nyckel] || (n => `${n} ${x.nyckel}`))(x.antal))
+               .join(" · "),
+
+  // ── RÄTTNINGENS SLUTSATSER ────────────────────────────────────────
+  // Backend skickar nyckel + argument; texten står här. Förut skickades
+  // svensk prosa rakt ut, så ett engelskt gränssnitt sa "fel stam — skrev
+  // formen för pres_3sg" och "rätt ord på fel plats — ordföljden". Det var
+  // det enda stället i programmet där gränssnittsspråket inte var
+  // gränssnittets.
+  //
+  // `arg` är det slutsatsen handlar om — ett koncept, en cellista, en form,
+  // en regel. Cellnamnen (`pres_3sg`) är fortfarande systemets egna: de är
+  // ett paradigmspråk och inte svenska, och de står i ordboksvyn på samma
+  // form. Att översätta dem vore en egen fråga.
+  slutsats: {
+    ändelsen_brast:      a => `right stem "${a}" — the ending is wrong`,
+    fel_ord:             () => "not a form of this word at all",
+    fel_form_orgelbunden: a => `that is the ${a} form — this word has no `
+                             + `regular stem here`,
+    fel_ändelse:         a => `right stem, wrong ending — that is ${a}`,
+    fel_stam:            a => `wrong stem — you wrote the ${a} form`,
+    fel_cell:            a => `that is the ${a} form`,
+    fel_genus:           a => `that form would be right for another gender — `
+                            + `"${a}" decides it`,
+    fel_rektion:         a => `that form fits another case — ${a}`,
+    svagaste:            () => "could not be pinned down — blaming the weakest "
+                             + "card in this word",
+    inget_kort:          () => "does not belong to any card",
+    extra_ord:           () => "not part of this sentence",
+    saknas:              a => `the ${a} form is missing from your answer`,
+    sandhi:              a => `the forms are right but must merge — ${a}`,
+    ordföljd:            a => "right word, wrong place" + (a ? ` — ${a}` : ""),
+  },
+  //: Slutsatsens text, med serverns svenska prosa som sista utväg. En nyckel
+  //: `T` inte känner igen ska säga NÅGOT — ett tomt fält vore värre.
+  varför: a => (T.slutsats[a.nyckel] ? T.slutsats[a.nyckel](a.arg)
+                                     : a.slutsats),
+
+  // ── ORDFÖLJDSREGLERNA ─────────────────────────────────────────────
+  // `Kort.facit` för ett ordföljdskort är svensk prosa i databasen. Den
+  // stod som kortets namn i kortlistan, bredvid rena språkdata som `haben`
+  // och `∅`. Nyckeln (`Kort.egenskap`) är stabil och översätts här.
+  //
+  // ── ORDKLASSERNA ──────────────────────────────────────────────────
+  // Ordboken listade dem med databasens egna svenska namn — "Substantiv",
+  // "Artikel", "Frågepronomen" — i ett engelskt gränssnitt, både i raderna
+  // och i filtret. Nyckeln är `Koncept.ordklass` och är en systemterm; det
+  // här är dess namn för en läsare.
+  ordklass: {
+    Substantiv: "Noun", Verb: "Verb", Adjektiv: "Adjective",
+    Adverb: "Adverb", Artikel: "Article", Pronomen: "Pronoun",
+    Possessiv: "Possessive", Demonstrativ: "Demonstrative",
+    Preposition: "Preposition", Konjunktion: "Conjunction",
+    Subjunktion: "Subordinator", Räkneord: "Numeral",
+    Kvantifikator: "Quantifier", Interjektion: "Interjection",
+    Negationsadverb: "Negation", Relativpronomen: "Relative pronoun",
+    Frågepronomen: "Question pronoun", Frågadverb: "Question adverb",
+    Interrogativdeterminant: "Question determiner",
+  },
+  //: Ordklassens namn, med nyckeln som reserv — en ny ordklass ska synas.
+  ok: k => (T.ordklass[k] || k),
+
+  // ── KORTTYPERNA ───────────────────────────────────────────────────
+  // Samma namn som övningsvyns uppdelning visar. Servern skickar dem redan
+  // som `namn` i kortlistan (`Övningstjänst.TYPNAMN`), men lektionsvyn fick
+  // bara nyckeln och skrev ut den rå: "115 stam, 9 system, 5 form".
+  korttyp: {
+    ord: "Words", egenskap: "Genders", stam: "Stems",
+    form: "Irregular forms", system: "Endings",
+    rektion: "Government", ordföljd: "Word order",
+  },
+
+  // Faller en regel igenom visas serverns text i stället för ingenting —
+  // en ny regel ska synas även innan någon översatt den.
+  regel: {
+    v2:                   "finite verb second in a main clause",
+    verb_sist:            "finite verb last in a subordinate clause",
+    satsklammer:          "non-finite verb parts last",
+    v1_fråga:             "finite verb first in yes/no questions",
+    nachfeld:             "subordinate clauses outside the bracket",
+    dativ_före_ackusativ: "dative object before accusative",
+    svo:                  "subject before verb before object",
+    do_omskrivning:       "do in questions and negation",
+    dativväxling:         "indirect object first, without a preposition",
+    est_ce_que:           "question opener instead of inversion",
+    klitika_före:         "object pronouns before the verb",
+    sov:                  "verb last",
+    bisats_före:          "subordinate clause before the main verb",
+    frågeord_kvar:        "question word stays in place",
+    postpositioner:       "particle after the phrase, not before",
+  },
 };
 
 const $ = id => document.getElementById(id);
@@ -523,21 +659,27 @@ async function hem() {
   // frågor användaren inte ställt och dolde den enda som räknas: vad ska jag
   // göra nu, och hur länge? Uppdelningen finns kvar bakom i-knappen i
   // övningen.
-  const bitar = [];
-  if (d.glosor) bitar.push(`${d.glosor} new word${d.glosor === 1 ? "" : "s"} to read`);
-  if (d.förfallna) bitar.push(`${d.förfallna} to review`);
-  const former = Math.max(0, d.nya - (d.glosor ?? 0));
-  if (former) bitar.push(`${former} new form${former === 1 ? "" : "s"} in sentences`);
-  if (d.igen) bitar.push(`${d.igen} to retry`);
-  sätt("d-vad", d.klar ? "" : bitar.join(" · "));
+  //
+  // DELARNA KOMMER FÄRDIGRÄKNADE och summerar per konstruktion till
+  // rubriken. Sidan räknade dem själv förut, och de tre fallen såg ut så
+  // här: rubriken 57 med raden på 52, rubriken 48 med raden på 45, och
+  // japanskans rubrik 50 med knapptexten "0 due · 0 new" under sig.
+  sätt("d-vad", d.klar ? "" : T.delar(d.delar || []));
 
   const s = $("starta");
   s.disabled = d.klar || !d.finns;
   s.firstChild.textContent = d.klar ? "Done for today" : "Practise";
-  // Inget meningsmål: dagen är slut när korten är gjorda. Talet som visas
-  // är därför arbetet som återstår, inte hur långt till en kvot.
+  // KNAPPEN SÄGER VAD DEN GÖR, inte vad dagen innehåller. Att ha två
+  // uppdelningar av samma dag bredvid varandra var både överflödigt och
+  // farligt: de kunde säga olika saker, och gjorde det. Raden ovan är
+  // uppdelningen; det här är vad som händer när man trycker.
+  //
+  // Och det är en riktig skillnad: `starta` går till GLOSVYN när det finns
+  // ord att läsa, inte till meningarna. Den gamla texten nämnde inte
+  // glosorna alls, alltså beskrev den inte ens nästa steg.
   sätt("starta-under", d.klar ? "" :
-    `${d.förfallna} due · ${d.nya} new` + (d.igen ? ` · ${d.igen} to retry` : ""));
+    d.glosor ? `read ${d.glosor} new word${d.glosor === 1 ? "" : "s"} first`
+             : "sentences");
 
   const x = $("extra");
   x.disabled = !e.finns || e.låst;
@@ -555,7 +697,9 @@ async function hem() {
        : `${d.inflödestak} new card${d.inflödestak === 1 ? "" : "s"} a day `
          + `at ${d.minuter} min`);
   sätt("n-nivå", n.nu);
-  sätt("n-osedda", n.osedda);
+  // ORD SOM ÅTERSTÅR, ur samma räkning som kursvyn. None när takten inte är
+  // mätt — en gissning presenterad som ett faktum är värre än ett tomt fält.
+  sätt("n-ordkvar", n.ord_kvar == null ? "–" : `${n.ord_kvar} words`);
   // TIDEN, INTE ANTALET. Efter B2 styrs inflödet per dygn, så nivåns storlek
   // är inte ett hinder utan en varaktighet.
   sätt("n-dygn", n.dygn === null || n.dygn === undefined
@@ -584,8 +728,12 @@ async function glosvy() {
   const g = await hämta(`/api/glosor/${kurs.id}`);
   glosor = g.ord; glosnr = 0; glosKvar = g.kvar;
   if (!glosor.length) return startaPass(false);
+  // TVÅ OLIKA TAL, och de sa "5 of 205" som om det vore en andel av samma
+  // sak. Det första är dagens portion, det andra hela ordförrådet som
+  // återstår — och `205` är numera samma tal som hemvyn och kursvyn visar.
   sätt("glos-under",
-    `${glosor.length} of ${g.kvar} words left · read them, then practise`);
+    `${glosor.length} today · ${g.kvar} still to learn · `
+    + `read them, then practise`);
   const ul = $("glos-orden");
   ul.innerHTML = "";
   for (const o of glosor) {
@@ -725,8 +873,12 @@ function närText(k) {
   const tal = abs < 1 / 24 ? `${Math.round(abs * 1440)} min`
             : abs < 1     ? `${Math.round(abs * 24)} h`
             : abs < 60    ? `${Math.round(abs)} d`
-            :               `${Math.round(abs / 30)} mån`;
-  return dagar < 0 ? `due ${tal}` : `in ${tal}`;
+            :               `${Math.round(abs / 30)} mo`;   // var "mån"
+  // RIKTNINGEN MÅSTE SYNAS. Formen var `due 9 d` mot `in 2 d` — och "due
+  // 9 d" läses naturligast som "förfaller om nio dagar", medan det betyder
+  // motsatsen: nio dagar FÖRSENAT. De två stod dessutom bredvid varandra i
+  // samma rad, så samma axel hade två format.
+  return dagar < 0 ? `${tal} overdue` : `in ${tal}`;
 }
 
 function visaKortutfall(kort) {
@@ -755,7 +907,11 @@ function visaKortutfall(kort) {
       dom.className = k.dom === true ? "ja" : k.dom === false ? "nej" : "utan";
       dom.textContent = k.dom === true ? "✓" : k.dom === false ? "✗" : "–";
       const fac = document.createElement("span");
-      fac.className = "fac"; fac.textContent = k.facit ?? "";
+      // ORDFÖLJDSKORTETS NAMN ÖVERSÄTTS; allt annat är språkdata och visas
+      // som det är. `haben`, `hab` och `∅` ÄR svaret — att röra dem vore att
+      // visa något annat än det kortet prövar.
+      fac.className = "fac";
+      fac.textContent = (k.regel && T.regel[k.regel]) || k.facit || "";
       const när = document.createElement("span");
       när.className = "när"; när.textContent = närText(k);
       box.append(dom, fac, när);
@@ -845,11 +1001,21 @@ async function nästa() {
   $("hjälp").hidden = false; $("vidare").hidden = true;
 }
 
-function slut(d) {
+function slut(d, oåtkomliga) {
   $("fråga").hidden = true; $("klart").hidden = false;
   sätt("klarttitel", extraläge ? "Nothing more ahead" : "Done for today");
+  // AVSKRIVNA KORT SKA SÄGAS. `slut` deklarerades med ETT argument men
+  // anropades med två, så antalet räknades fram, skrevs till `Passkort` som
+  // status `onåbar` — och kastades tyst i gränssnittet.
+  //
+  // Det talet är inte en detalj. Det betyder att dagen tog slut i FÖRTID:
+  // generatorn kunde inte bygga någon mening som rör de korten, så de skrevs
+  // av utan betyg (B8). Utan raden ser en avkortad dag exakt ut som en
+  // fullbordad, och det är precis vad A3 säger att den inte får göra —
+  // "båda visningarna döljer att korten inte borde ha stått i kön".
   sätt("klarttext", T.klart_idag(d.gjort)
-                    + (d.igen ? " " + T.igen_kvar(d.igen) : ""));
+                    + (d.igen ? " " + T.igen_kvar(d.igen) : "")
+                    + (oåtkomliga ? " " + T.oåtkomliga(oåtkomliga) : ""));
   $("fortsätt").hidden = extraläge;
 }
 
@@ -881,7 +1047,7 @@ async function svara() {
     // sak i gränssnittet samtidigt som rättningen påstår rätt sak.
     if (a.ordföljd) { del("vantat", a.väntat); }
     else { del("skrev", a.skrev); del("vantat", a.väntat); }
-    del("varfor", a.slutsats); if (a.osäker) del("osaker", "uncertain");
+    del("varfor", T.varför(a)); if (a.osäker) del("osaker", "uncertain");
     if (a.kort_id !== null) {
       del("vand", "— click if this was right");
       li.addEventListener("click", () => vändAnmärkning(li, a.kort_id));
@@ -985,8 +1151,19 @@ async function lektioner() {
                     <span class="bi"></span>`;
     const d = li.querySelectorAll("span");
     d[0].textContent = s.nivå; d[1].textContent = s.titel;
-    d[2].textContent = s.upplåst ? "" : "locked";
-    if (s.upplåst) li.addEventListener("click", () => lektion(s.nivå));
+    d[2].textContent = s.upplåst ? "" : "not in your course yet";
+    // ATT LÄSA ÄR INTE ATT LÅSA UPP. Låsta steg hade ingen klickhanterare
+    // alls, så sjutton av tjugoen rader gjorde ingenting — utan att säga
+    // varför. Lektionen finns och går att rendera för vilken nivå som helst
+    // (`/api/lektion/<kurs>/<nivå>` svarar med titel, exempel och kort även
+    // för nivå 20 på en kurs som står på 4); det var bara vyn som spärrade.
+    //
+    // Upplåsningen sker fortfarande BARA via hemvyns knapp, som prövar
+    // byggbarheten (F1) — `lektion(nivå)` utan `aktiverbar` visar
+    // ingen aktiveraknapp. Att kunna läsa vad som kommer är en annan sak än
+    // att kunna ta in det, och det ena ska inte hindras för att det andra
+    // ska vara styrt.
+    li.addEventListener("click", () => lektion(s.nivå));
     ol.append(li);
   }
   $("lektionen").hidden = true; $("lektlistan").hidden = false;
@@ -1017,8 +1194,15 @@ async function lektion(nivå, aktiverbar) {
     ex.append(div);
   }
   if (!d.exempel.length) ex.textContent = "No example could be built here yet.";
+  // KORTTYPERNA MED SINA NAMN, inte sina nycklar. Raden skrev ut `typ` rakt:
+  // "129 new cards: 115 stam, 9 system, 5 form" — systemets egna svenska
+  // nycklar i ett engelskt gränssnitt, och dessutom just de tre ord en
+  // inlärare inte kan känna till. Samma tabell som övningsvyns uppdelning
+  // redan använder.
   sätt("l-nytt", d.nya_kort
-    ? `${d.nya_kort} new cards: ` + d.nytt.map(x => `${x.antal} ${x.typ}`).join(", ")
+    ? `${d.nya_kort} new cards: `
+      + d.nytt.map(x => `${x.antal} ${(T.korttyp[x.typ] || x.typ).toLowerCase()}`)
+              .join(", ")
     : "No new word forms — this level is about structure.");
   // ORDEN steget för in. Räknarna säger hur mycket, den här listan vad.
   const ordlista = $("l-ordlista");
@@ -1044,8 +1228,11 @@ async function ordbok() {
   if (!ordlista) ordlista = await hämta(`/api/ordlista/${kurs.id}`);
   const sel = $("ordklass");
   if (sel.options.length === 1)
-    for (const k of [...new Set(ordlista.map(o => o.ordklass))].sort())
-      sel.add(new Option(k, k));
+    // Sorteras på det VISADE namnet, inte på nyckeln — annars står listan
+    // i svensk bokstavsordning under engelska etiketter.
+    for (const k of [...new Set(ordlista.map(o => o.ordklass))]
+                      .sort((a, b) => T.ok(a).localeCompare(T.ok(b))))
+      sel.add(new Option(T.ok(k), k));
   $("ordet").hidden = true; $("ordlistan").hidden = false;
   ritaLista();
   visa("ord");
@@ -1065,8 +1252,10 @@ function ritaLista() {
     const li = document.createElement("li");
     li.innerHTML = `<span class="namn språk"></span><span class="bi"></span>`;
     li.querySelector(".namn").textContent = o.lemma;
+    // ANDELEN ÄR AV ORDETS KORT, inte av något annat, och procenttecknet
+    // ensamt sa inte vad. "3 of 12 cards" är samma tal utan gissningen.
     li.querySelector(".bi").textContent =
-      `${o.ordklass}${o.sedda ? ` · ${Math.round(o.andel*100)}%` : ""}`;
+      T.ok(o.ordklass) + (o.sedda ? ` · ${o.sedda} of ${o.kort} cards` : "");
     li.addEventListener("click", () => ordet(o.koncept));
     ul.append(li);
   }
@@ -1075,7 +1264,7 @@ function ritaLista() {
 
 async function ordet(koncept) {
   const d = await hämta(`/api/ord/${kurs.id}/${encodeURIComponent(koncept)}`);
-  sätt("o-lemma", d.lemma); sätt("o-klass", d.ordklass);
+  sätt("o-lemma", d.lemma); sätt("o-klass", T.ok(d.ordklass));
   const rot = $("paradigm");
   rot.innerHTML = "";
   for (const t of d.tabeller) {

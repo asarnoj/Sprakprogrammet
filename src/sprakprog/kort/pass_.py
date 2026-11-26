@@ -354,6 +354,35 @@ def läget(kort_db: sqlite3.Connection, pass_id: int) -> dict:
         "gjorda": antal(status="rätt") + antal(status="fel"),
         "onåbara": antal(status="onåbar"),
         "klar": väntar == 0,
+        # UPPDELNINGEN SOM EN LISTA, i den ordning korten möts.
+        #
+        # DEN FINNS FÖR ATT GRÄNSSNITTET INTE SKA RÄKNA. Sidan härledde
+        # tidigare sin egen uppdelning i JS — `former = max(0, nya − glosor)`
+        # — och det var fel: `nya` och `glosor` är OLIKA roller i `Passkort`
+        # och överlappar aldrig, så subtraktionen drog bort ett tal som inte
+        # ingick. Mätt 2026-08-26 på fem kurser:
+        #
+        #     kurs 1  rubriken 57 kort, raden summerade till 52
+        #     kurs 2  rubriken 48, raden 45, knappen under den 5
+        #     kurs 3  rubriken 50, knappen "0 due · 0 new"
+        #
+        # Subtraktionen var en kvarleva från när `nya` innehöll ordkorten.
+        # Inget prov fångade den, och det är hela poängen: näten prövar
+        # API:t, och ingenting prövade vad SIDAN räknade fram ur det.
+        #
+        # Rollerna är disjunkta och summerar per konstruktion till `väntar`,
+        # eftersom `antal(status="väntar")` går över exakt de fyra. Att lämna
+        # ut listan i stället för fyra lösa tal gör summan till ett faktum
+        # gränssnittet ärver i stället för ett det räknar om.
+        #
+        # NYCKELN OCH INTE TEXTEN. All gränssnittstext bor i `T` i sida.html,
+        # så att ett andra programspråk är en kolumn där och ingenting här.
+        "delar": [{"nyckel": nyckel, "antal": antal(roll, "väntar")}
+                  for roll, nyckel in (("glosa", "glosor"),
+                                       ("igen", "igen"),
+                                       ("förfallen", "förfallna"),
+                                       ("ny", "nya"))
+                  if antal(roll, "väntar")],
     }
 
 

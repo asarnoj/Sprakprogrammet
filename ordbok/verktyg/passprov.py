@@ -103,7 +103,24 @@ def prov_grannkursen_överlever(tj, kort) -> list[str]:
     if len(kurser) < 2:
         return ["ingen kurs delar målspråk — delningen går inte att pröva"]
     a, b = kurser[0], kurser[1]
+    # GRANNEN MÅSTE HA NÅGOT ATT FÖRLORA, annars mäter provet ingenting.
+    #
+    # Uppsättningen läste tidigare grannens dag som den råkade se ut i den
+    # kopierade databasen. Efter att Julius övat klart sin franska en
+    # förmiddag stod den på `att_göra = 0, klar = True` REDAN före
+    # nollställningen — och då är "blev den tömd?" en fråga utan innehåll.
+    # Mätt 2026-08-26: kurs 5 gick 0 → 21, alltså växte av grannens
+    # nollställning, och sabotaget kunde inte fällas.
+    #
+    # Det är samma brist som `prov_upplåsning_utökar` hade: ett prov vars
+    # FÖRUTSÄTTNING beror på vilket tillstånd databasen råkar ha är grönt av
+    # slump lika ofta som av riktighet. Att nollställa b först ger den en
+    # hel dag att förlora.
+    tj.nollställ(b["id"], "RESET")
     före = tj.hem(b["id"])["idag"]["att_göra"]
+    if not före:
+        return [f"kurs {b['id']} har inget att göra ens efter nollställning — "
+                f"kontrollen mätte ingenting och kan därför inte falla"]
     tj.nollställ(a["id"], "RESET")
     efter = tj.hem(b["id"])["idag"]
     if efter["klar"] or not efter["att_göra"]:
