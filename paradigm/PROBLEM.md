@@ -2147,6 +2147,50 @@ typiska tillverkade ting — att laga det kräver antingen en ny bit eller ett
 negativt krav, alltså ett designbeslut. De 36 renderar- och formfelen står
 kvar som C7:s arbetslista.
 
+#### SAMMA FORM I TVÅ ARGUMENTLED — LÖST 2026-09-04
+
+Julius: *"Ibland använder den samma ord flera gånger i samma mening. Detta
+blir lite konstigt eftersom vad händer ifall användaren klarar ena men
+misslyckas andra… om objektet får en annan böjning så kan det vara okej."*
+
+**Svaret på hans fråga är att kortet FÄLLS.** Kortlistan är avduplicerad —
+`Une mère a une mère` bär `ord:mère` EN gång — men diffen ser två
+förekomster, och `utfall` börjar på `True` medan varje anmärkning sätter
+`False`. Två chanser att skriva fel, en att skriva rätt, ett enda betyg.
+
+**Det är ett FSRS-problem och inte ett estetiskt.** Den andra förekomsten kan
+inte ge information — E2 tillåter ändå bara en bedömning per kort och dygn —
+men den fördubblar risken att kortet fälls. Svårigheten drivs upp av ett
+mätfel.
+
+**Och Julius nyans är den rätta skiljelinjen.** Samma KONCEPT i två led är
+inte problemet; samma FORM är det. `On nous a` prövar `ord:on` och
+`stam:nous`, alltså två olika kort och verkligt innehåll.
+
+**REGELN KAN INTE LIGGA I `Validator`.** Den modulen prövar SPECEN, en gång
+för alla sju språken, och om två led renderar till samma sträng är en
+egenskap hos språket:
+
+    fr   Le frère aîné a le frère aîné      identisk        avvisas
+    de   Der ältere Bruder hat den älteren  kasus skiljer   släpps
+
+Den tyska meningen prövar faktiskt nominativ mot ackusativ. Att blockera den
+vore att ta bort undervisning.
+
+**Cellen räcker inte heller som mått**, vilket var mitt första utkast:
+tyskans `Eine Mutter findet eine kleine Mutter` slår upp `nom_sg` och
+`akk_sg` — olika celler, samma sträng, eftersom feminina substantiv inte
+kasusböjs i singular. Bara den renderade FORMEN svarar på frågan.
+
+Regeln sitter därför i `Generator._samma_form_två_gånger`, i sökslingan
+bredvid tomgångsspärren. Mätt på Julius tre dagar: 5 av 23 meningar hade
+identisk form i två led, ytterligare 3 hade samma koncept med olika form och
+står kvar. Dagen svälter inte — 19 meningar mot 21 utan regeln, inom bruset.
+
+`samplarprov` vaktar den med TVÅ sabotage, ett i vardera hörnet: utan regel,
+och regeln på KONCEPT i stället för form. Det andra är den verkliga risken —
+att avvisa för mycket — och tyskans fall är det som fäller det.
+
 #### VERKTYGET BYGGT 2026-08-24 — `ordbok granska-meningar`
 
 Gemensamt för C3, C7 och G4, eftersom de tre är samma arbete sett från olika

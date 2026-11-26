@@ -224,10 +224,70 @@ def prov_ingen_deixiskollision(kort, språk_db) -> list[str]:
     return fel
 
 
+def prov_samma_form_två_gånger(kort, språk_db) -> list[str]:
+    """Samma FORM i två argumentled avvisas — samma KONCEPT gör det inte.
+
+    Julius: *"Ibland använder den samma ord flera gånger i samma mening…
+    om objektet får en annan böjning så kan det vara okej."* Han har rätt på
+    båda punkterna, och provet vaktar dem som två skilda krav.
+
+    ATT AVVISA FÖR MYCKET ÄR DEN VERKLIGA RISKEN, och jag gjorde det nästan.
+    Första utkastet jämförde CELLER: samma `(koncept, variant, cell)` två
+    gånger. Men tyskans `Eine Mutter findet eine kleine Mutter` slår upp
+    `nom_sg` och `akk_sg` — olika celler, samma sträng — så regeln hade
+    missat den. Och åt andra hållet: `Der ältere Bruder hat den älteren
+    Bruder` HAR olika strängar, eftersom kasus syns på artikeln och
+    adjektivet, och den meningen prövar faktiskt nominativ mot ackusativ.
+    Att blockera den vore att ta bort undervisning.
+
+    Därför tre fall, och tyskan bär det som skyddar mot överblockering:
+
+        fr  Le frère aîné a le frère aîné   identisk sträng   AVVISAS
+        fr  On nous a                       on ≠ nous         släpps
+        de  Der … hat den älteren …         kasus skiljer     släpps
+
+    Regeln kan inte ligga i `Validator`: specen är språkoberoende och
+    formen är det inte. Se `Generator._samma_form_två_gånger`.
+    """
+    from sprakprog.rendering import Bestämdhet, Mening, Nominalfras
+    fall = [
+        ("fr", True, "identisk form", lambda: Mening(
+            verb="verb_ha",
+            subjekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD),
+            objekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD))),
+        ("fr", False, "samma koncept, olika form", lambda: Mening(
+            verb="verb_ha",
+            subjekt=Nominalfras("pronomen_impersonal"),
+            objekt=Nominalfras("pronomen_impersonal"))),
+        ("de", False, "kasus skiljer formerna", lambda: Mening(
+            verb="verb_ha",
+            subjekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD),
+            objekt=Nominalfras("fam_storebror", Bestämdhet.BESTÄMD))),
+    ]
+    fel = []
+    for kod, väntat, namn, bygg in fall:
+        g = Generator(språk_db, kort, kod, nivå=21, cefr="C2")
+        g._läs_kort()
+        m = bygg()
+        r = g._rendera(m)
+        if r is None:
+            fel.append(f"[{kod}] {namn}: gick inte att rendera — provet "
+                       f"kunde inte mäta")
+            continue
+        fick = g._samma_form_två_gånger(m, r[2])
+        if fick != väntat:
+            fel.append(f"[{kod}] {namn}: {r[0]!r} "
+                       f"{'avvisades' if fick else 'släpptes igenom'}, "
+                       f"väntat {'avvisad' if väntat else 'släppt'}")
+    return fel
+
+
 PROV = [("varje spec är hel", prov_hela_specar),
         ("föreslå kastar aldrig", prov_föreslå_kraschar_inte),
         ("ingen deixiskollision i dagens meningar",
-         prov_ingen_deixiskollision)]
+         prov_ingen_deixiskollision),
+        ("samma form två gånger avvisas — samma koncept inte",
+         prov_samma_form_två_gånger)]
 
 
 # ── falsifiering ────────────────────────────────────────────────────
@@ -294,9 +354,37 @@ def _sabotage_utan_deixisregel():
     return lambda: setattr(Validator, "validera", orig)
 
 
+def _sabotage_utan_formregel():
+    """Före regeln: samma form fick stå i två argumentled."""
+    äkta = Generator._samma_form_två_gånger
+    Generator._samma_form_två_gånger = lambda själv, m, uppslag: False
+    return lambda: setattr(Generator, "_samma_form_två_gånger", äkta)
+
+
+def _sabotage_formregel_på_koncept():
+    """Motsatt hörn: regeln jämför KONCEPT i stället för form.
+
+    Det är den överblockering tyskans fall finns för — `Der ältere Bruder
+    hat den älteren Bruder` hade avvisats fast kasus skiljer formerna åt.
+    """
+    äkta = Generator._samma_form_två_gånger
+
+    def på_koncept(själv, m, uppslag):
+        huvuden = [x.koncept for x in
+                   (m.subjekt, getattr(m, "objekt", None),
+                    getattr(m, "io", None)) if x is not None]
+        return len(set(huvuden)) < len(huvuden)
+
+    Generator._samma_form_två_gånger = på_koncept
+    return lambda: setattr(Generator, "_samma_form_två_gånger", äkta)
+
+
 SABOTAGE = [(_sabotage_hål_i_specen, 0),
             (_sabotage_hål_i_specen, 1),
-            (_sabotage_utan_deixisregel, 2)]
+            (_sabotage_utan_deixisregel, 2),
+            # BÅDA HÖRNEN: för lite regel och för mycket.
+            (_sabotage_utan_formregel, 3),
+            (_sabotage_formregel_på_koncept, 3)]
 
 
 def _kopia(mål: Path) -> sqlite3.Connection:

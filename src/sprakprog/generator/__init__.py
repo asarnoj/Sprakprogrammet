@@ -544,6 +544,60 @@ class Generator:
             self._förra_texter = ([bäst.text] + self._förra_texter)[:3]
         return bäst
 
+    def _samma_form_två_gånger(self, m, uppslag) -> bool:
+        """Står SAMMA FORM i två argumentled? Då mäter den andra ingenting.
+
+        Julius: *"Ibland använder den samma ord flera gånger i samma mening.
+        Detta blir lite konstigt eftersom vad händer ifall användaren klarar
+        ena men misslyckas andra."*
+
+        Svaret är att kortet FÄLLS. Kortlistan är avduplicerad — `Une mère a
+        une mère` bär `ord:mère` EN gång — men diffen ser två förekomster,
+        och varje anmärkning sätter `utfall[kort] = False`. Alltså två
+        chanser att skriva fel, en att skriva rätt, ett enda betyg, och
+        `False` vinner.
+
+        DET ÄR ETT FSRS-PROBLEM OCH INTE ETT ESTETISKT. Den andra
+        förekomsten kan inte ge någon information — E2 tillåter ändå bara en
+        bedömning per kort och dygn — men den fördubblar risken att kortet
+        fälls. Kortets svårighet drivs upp av ett mätfel.
+
+        REGELN GÄLLER FORMEN, INTE KONCEPTET, och Julius såg själv varför:
+        *"om objektet får en annan böjning så kan det vara okej"*. Två led
+        med samma koncept men olika form är två OLIKA kort och verkligt
+        innehåll — `On nous a` prövar `ord:on` och `stam:nous`.
+
+        OCH CELLEN RÄCKER INTE SOM MÅTT. Tyskans `Eine Mutter findet eine
+        kleine Mutter` slår upp `nom_sg` och `akk_sg` — olika celler, samma
+        sträng, eftersom feminina substantiv inte kasusböjs i singular. Bara
+        den renderade formen svarar på frågan, och därför sitter regeln här
+        och inte i `Validator`: specen är språkoberoende, formen är det inte.
+
+        Mätt på Julius tre dagar: 5 av 23 meningar hade identisk form i två
+        led. Ytterligare 3 hade samma koncept med olika form och ska stå kvar.
+        """
+        huvuden = [x.koncept for x in
+                   (m.subjekt, getattr(m, "objekt", None), getattr(m, "io", None))
+                   if x is not None]
+        dubbla = {k for k in huvuden if huvuden.count(k) > 1}
+        if not dubbla:
+            return False
+        for koncept in dubbla:
+            former = []
+            for kn, variant, cell in uppslag:
+                if kn != koncept:
+                    continue
+                try:
+                    former.append(self.renderare.u.form_för(kn, cell, variant))
+                except Exception:                             # noqa: BLE001
+                    # Går formen inte att slå upp vet vi inget, och då är
+                    # tystnad rätt svar: hellre en mening för mycket än en
+                    # regel som avvisar på en gissning.
+                    return False
+            if len(former) != len(set(former)):
+                return True
+        return False
+
     def _redan_klara(self, nu) -> set[int]:
         """Kort som ett RÄTT svar inte längre kan bokföra. Samma mängd som E2.
 
@@ -650,6 +704,10 @@ class Generator:
             # besked: de kvarvarande korten går inte att nå idag.
             if redan_klara is not None and not (
                     {k["id"] for k in kort} - redan_klara):
+                continue
+            # SAMMA FORM I TVÅ ARGUMENTLED mäter ingenting och fördubblar
+            # fallrisken — se `_samma_form_två_gånger`.
+            if self._samma_form_två_gånger(m, uppslag):
                 continue
             okända = sum(1 for k in kort
                          if k["typ"] == "ord" and k["sedd"] is None
