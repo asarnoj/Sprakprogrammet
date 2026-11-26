@@ -178,6 +178,54 @@ Bara `erbjuda` behövde tagg (ÖVERLÅTBAR, tillagd) och `köra`
 (RÖRELSE+INSTRUMENT, tillagd). Kvar att titta på: `kosta` (objektet är ett
 belopp, inte en sak) och `spela` (spel eller instrument).
 
+### Adverb mot tempus — mätning
+
+`Koncept.tempuskrav`, tempusbitarna ur `_legend.yaml` (Pres=2, Pret=4,
+Fut=64). Matchningen är **medlemskap**, inte OCH: meningens tidsreferens
+ska finnas bland de tillåtna. Samma bitmaskmekanism som semantik, en annan
+fråga.
+
+```
+Flickan ger en bok igår.        AVVISAS  kräver förfluten, meningen är nutid
+Flickan gav en bok imorgon.     AVVISAS  kräver framtid, meningen är förfluten
+Flickan ska ge en bok redan.    AVVISAS  kräver nutid/förfluten
+Flickan gav en bok nu.          passerar
+Flickan ger en bok ofta.        passerar
+```
+
+**Bara fyra av femton tidsadverb taggades, avsiktligt.** "Nu gick han",
+"då ska jag gå", "snart kom han" och "plötsligt förstår jag" är alla korrekt
+svenska — de flesta tidsadverb är genuint tempusflexibla. Att tagga hårdare
+hade blockerat riktiga meningar för att fånga inbillade fel.
+
+### Hela kedjan — 200 000 slumpade meningar
+
+```
+passerar    73 645   (36,8 %)
+avvisas    126 355   (63,2 %)
+```
+
+Men stickprovet visar var problemet sitter kvar:
+
+```
+Pappan bryter en full mamma redan.      ← kategorifel, överlevde
+Artisten sökte en klar fisk fortfarande.
+Sonen minns en populär frys ofta.
+```
+
+`bryta` tillhör de åtta långsvansverben som aldrig taggades och står kvar
+med KONKRET. `mamma` är konkret, alltså passerar den. **Långsvansen är nu
+det synliga problemet** — precis där uppskattningen sades kunna spricka.
+
+`minnas` och `söka` är däremot korrekt otaggade; man kan minnas och söka
+vad som helst. Att de producerar underliga meningar är scope-beslutet i
+arbete, inte ett fel.
+
+Värt att veta om siffran: **likformig slumpning är ett hårdare prov än
+verkligheten.** Generatorn kommer inte att dra ord jämnt fördelat — den
+utgår från ett förfallet kort och söker en mening runt det. Andelen
+användbara kandidater blir högre än 37 % i praktiken.
+
 ---
 
 ## Fem relationer, inte en

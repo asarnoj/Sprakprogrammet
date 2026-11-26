@@ -25,7 +25,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 
-from .spec import Mening, Nominalfras
+from .spec import Mening, Nominalfras, Tidsreferens
 
 # docs/BITMASK.md §11. Bara för läsbara felmeddelanden.
 BITNAMN = {
@@ -45,6 +45,16 @@ def _etiketter(mask: int | None) -> str:
     return "+".join(namn for bit, namn in BITNAMN.items() if mask & bit)
 
 
+# Tidsreferens → tempusbit ur _legend.yaml. Adverbets tempuskrav är en
+# mängd tillåtna värden, så matchningen är medlemskap och inte OCH.
+TIDSBIT = {
+    Tidsreferens.NUTID: 2,
+    Tidsreferens.FÖRFLUTEN: 4,
+    Tidsreferens.FRAMTID: 64,
+}
+TIDSNAMN = {2: "nutid", 4: "förfluten", 64: "framtid"}
+
+
 @dataclass(frozen=True, slots=True)
 class Brott:
     """Ett krav som specen inte uppfyller."""
@@ -54,6 +64,10 @@ class Brott:
     faktisk: int | None
 
     def __str__(self) -> str:
+        if self.slot == "tempus":
+            tillåtna = "/".join(n for b, n in TIDSNAMN.items() if self.krav & b)
+            return (f"adverbial={self.koncept}: kräver {tillåtna}, "
+                    f"meningen är {TIDSNAMN.get(self.faktisk, '?')}")
         if self.faktisk is None:
             return (f"{self.slot}={self.koncept}: saknar semantik helt, "
                     f"kravet {_etiketter(self.krav)} går inte att pröva")
@@ -69,6 +83,7 @@ class Validator:
         self._krav: dict[str, dict[str, int]] = {}
         self._semantik: dict[str, int | None] = {}
         self._attributkrav: dict[str, int | None] = {}
+        self._tempuskrav: dict[str, int | None] = {}
 
     def krav_för(self, verb: str) -> dict[str, int]:
         """Slot → krävd bitmask, ur det universella mönstret."""
@@ -97,6 +112,14 @@ class Validator:
                 (koncept,)).fetchone()
             self._attributkrav[koncept] = rad["attributkrav"] if rad else None
         return self._attributkrav[koncept]
+
+    def tempuskrav(self, koncept: str) -> int | None:
+        if koncept not in self._tempuskrav:
+            rad = self.conn.execute(
+                "SELECT tempuskrav FROM Koncept WHERE nyckel = ?",
+                (koncept,)).fetchone()
+            self._tempuskrav[koncept] = rad["tempuskrav"] if rad else None
+        return self._tempuskrav[koncept]
 
     def _attributbrott(self, slot: str, nf: Nominalfras) -> list[Brott]:
         """Får adjektiven beskriva huvudordet?
@@ -133,6 +156,13 @@ class Validator:
                          ("io", m.io)):
             if nf is not None:
                 brott += self._attributbrott(slot, nf)
+
+        # Adverbial mot meningens tidsreferens. Medlemskap, inte OCH.
+        tidsbit = TIDSBIT[m.tid]
+        for adverbial in m.adverbial:
+            tillåtna = self.tempuskrav(adverbial)
+            if tillåtna is not None and not tillåtna & tidsbit:
+                brott.append(Brott("tempus", adverbial, tillåtna, tidsbit))
 
         return brott
 

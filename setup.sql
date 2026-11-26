@@ -82,7 +82,16 @@ CREATE TABLE Koncept (
        adjektivet får fästa på. Att trycka in det i MönsterKrav.slot hade
        krävt en attribut-roll som inte betyder samma sak som de andra åtta.
        Se paradigm/RESTRIKTIONER.md. */
-    attributkrav INTEGER
+    attributkrav INTEGER,
+    /* tempuskrav : ENDAST Adverb. Vilka TIDSREFERENSER adverbet får stå i.
+       Bitarna är tempus-bitarna ur _legend.yaml: Pres=2, Pret=4, Fut=64.
+       NULL = adverbet passar alla tempus.
+
+       OBS att matchningsregeln är en ANNAN än för semantik. `semantik` mot
+       `tagg` är OCH — konceptet måste ha ALLA krävda egenskaper. Här är det
+       medlemskap: meningens tidsreferens måste finnas BLAND de tillåtna.
+       Samma bitmaskmekanism, två olika frågor. */
+    tempuskrav   INTEGER
 );
 
 CREATE INDEX idx_koncept_ordklass ON Koncept(ordklass);
