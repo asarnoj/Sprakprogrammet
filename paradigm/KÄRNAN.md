@@ -86,10 +86,11 @@ franska översättningar, och imperfektkortet finns bara i den ena.
 Tillägget om införda kort behövs, annars skulle ett synonymt ord som användaren
 aldrig lärt sig göra uppgiften ogiltig. Varianterna hittas i 6.5 och bedöms i 7.3.
 
-**R3 · Varje beslut renderaren fattar är en nivå och ett kort**
+**R3 · Varje beslut renderaren fattar är ett kort**
 
 > Allt renderaren avgör är något användaren måste kunna. Därför måste varje
-> beslut gå att grinda och att pröva.
+> beslut gå att grinda och att pröva: det blir ett kort, och kortet öppnas av en
+> nivå (4.1).
 
 Det kräver att renderaren **redovisar** sina beslut (8.3). Ett beslut som sker
 tyst kan varken låsas eller rättas.
@@ -143,7 +144,7 @@ skriver ett ord, och den listan är sluten:
 |---|---|---|---|
 | vilket ord betyder detta? | `ord` | lexemet | ord |
 | vilken form — **läst** ur en tabell? | `oregelbunden` | lexemet (+ stamgrupp) | ord |
-| vilken form — **byggd** ur ett mönster? | `ändelse` | ordklass, klass, sträng | mönster |
+| vilken form — **byggd** ur ett mönster? | `ändelse` | ordklass, klass, cell | mönster |
 | vad kräver det styrande ordet? | `rektion` | ordet + slotten | ord |
 | vilken egenskap hos ordet syns på ett **annat** ord? | `egenskap` | lexemet | ord |
 | var står ordet, och övriga beslut? | `regel` | regeln | mönster |
@@ -316,7 +317,7 @@ Franskan har 162 genuskort.
 en viss konjunktion kräver konjunktiv. Nyckeln är det styrande ordet och slotten.
 
 **`regel`** är ett beslut renderaren fattar — ordföljd (`v2`, `klitika_före`),
-kongruens, elision. Varje `regel` är också en nivå (4.1).
+kongruens, elision. Varje `regel` öppnas av en nivå (4.1).
 
 ### 3.7 Facit
 
@@ -372,67 +373,107 @@ Ett ord som inte böjs har **en enda form som gäller i alla celler**, och bara 
 Japanskans `no`-adjektiv (いっぱい) och verbfrasadjektiv (疲れた) saknar i dag
 former helt — se punkt 12.
 
+### 3.10 Prövbara kort
+
+> **Ett kort är prövbart om det kan vara mål i minst en giltig mening (6.1), givet de
+> nivåer som är öppna och de kort som är införda. Bara prövbara kort får införas.**
+
+Utan regeln kunde ett kort införas, bli förfallet och aldrig klaras. Eftersom passet
+slutar först när högarna är tomma (5.3) skulle passet då aldrig ta slut. Det gamla
+systemet hade just det felet: onåbara kort.
+
+Ett kort kan sakna en sådan mening på fyra sätt, och de fångas på olika ställen:
+
+| Fall | Exempel | Fångas av |
+|---|---|---|
+| ingen öppen nivå använder kortet | svenskans supinum före perfekt | nivådefinitionen (4.1): nivån som öppnar kortet gör det prövbart |
+| en korrekt variant saknar kortet (R2) | spanskans subjektsform `yo`, som alltid kan utelämnas | kontrollen före införandet |
+| kortet kräver ett ord som inte är infört | imperfekt utan ett ord som «chaque jour» | kontrollen före införandet |
+| ett nytt kort gör ett gammalt oprövbart | imperfekt införs, och passé composé kräver nu ett ord som «igår» | kontrollen vid införandet |
+
+**Kontrollen före införandet:** generatorn försöker bygga en enda giltig mening med
+kortet som mål. Går det inte väntar kortet.
+
+**Kontrollen vid införandet:** de kort det nya kortet konkurrerar med — samma val, som
+dåtidens två former — prövas igen. Blir något av dem oprövbart väntar det nya kortet.
+
+Kontrollen kommer fram till rätt sak av sig själv. `yo` blir aldrig ett kort, och det
+stämmer: den som aldrig skriver `yo` talar korrekt spanska. Pronomenet prövas genom
+sina andra former (`mí`, `me`).
+
 ---
 
 ## 4 · Nivåerna
 
-### 4.1 Tre stegar
+### 4.1 Vad en nivå är
 
-En mening får bara använda det som alla tre stegarna har låst upp.
+> **En nivå är det minsta steg som gör minst ett nytt kort prövbart.**
 
-| Stege | Grindar | Exempel |
-|---|---|---|
-| **Konstruktion** | vad meningen får innehålla | objekt, negation, tempus, bisats, wh-fråga |
-| **Böjning** | vilka celler som finns | `pres_1sg`, `imperf_3pl` |
-| **Realisering** | vilka beslut renderaren får fatta | `v2`, `klitika_före`, elision |
+Nivåerna täcker varje kunskapsmoment som inte redan bärs av ett ord: varje grammatisk
+regel renderaren förhåller sig till. Det gamla systemet tog många små regler för
+givna, och då blir språket svårt att lära genom programmet. Därför finns **många
+nivåer, en för varje litet steg.**
 
-Konstruktionerna är desamma i alla sju språk, eftersom de hör till konceptlagret.
-Dagens kod har 20 (`urval.ANVÄNDER`), sammanflätade med böjningen till en stege
-på 22 steg (24 i japanskan).
+Definitionens två delar behövs båda:
 
-Realiseringsstegen per språk, inventerad i steg 1 (`paradigm/TYSTA_BESLUT.md`):
+- **«Minsta»** ger ett steg per regel och inga grupper som valts efter känsla (R6).
+- **«Prövbart»** hindrar steget från att bli för litet. Svenskans supinum och perfekt
+  kan bara prövas tillsammans och blir därför en nivå. Den grupperingen är tvingad av
+  prövbarheten (3.10), inte vald.
+
+Alla nivåer är av samma sort: de öppnar kort — regler, celler, ändelser. En
+**konstruktion** — objekt, negation, fråga — är varken nivå eller kort. Den hör till
+meningens innehåll, som är detsamma i alla språk, och kan användas i en mening när de
+regler och celler den behöver är upplåsta i språket. Samma konstruktion blir därför
+tillgänglig vid olika tidpunkter i olika språk.
+
+Hur många nivåer det blir avgörs av renderarna. Inventeringen i steg 1
+(`paradigm/TYSTA_BESLUT.md`) räknade reglerna:
 
 | | sv | en | de | fr | es | it | ja | summa |
 |---|---|---|---|---|---|---|---|---|
 | ordföljdsregler som redan redovisas | 4 | 3 | 6 | 3 | 4 | 3 | 4 | **27** |
 | tysta beslut | 29 | 23 | 35 | 36 | 34 | 37 | 12 | **206** |
 
-Specen uppskattade tidigare 105 tysta beslut. Hur många som blir regelkort beror på
-frågorna i 10.2 — till exempel om skiljetecken är kort.
+Till det kommer böjningens celler. Franskan får alltså runt 200 nivåer eller fler, och
+ofta öppnas flera på en gång. För användaren blir nivån främst ett mått på framsteg;
+takten sätts av hur många kort som införs (5.5). Hur många regler som blir kort beror
+på frågorna i 10.2 — till exempel om skiljetecken är kort.
 
 ### 4.2 Ordningen är en graf
 
 Beroendena **anges där beslutet fattas**, i redovisningsanropet (8.3). Provsviten
-kontrollerar att renderaren aldrig slår upp något som regeln inte har angett. Att
-i stället mäta beroendena genom att rendera exempelmeningar vore sampling, och ett
+kontrollerar att renderaren aldrig slår upp något som regeln inte har angett. Att i
+stället mäta beroendena genom att rendera exempelmeningar vore sampling, och ett
 beroende som inte råkar dyka upp skulle missas.
 
-    perfekt        kräver  particip
     klitika_före   kräver  objektsform
     inversion_wh   kräver  whfråga
     satsklammer    kräver  hjälpverb
+    pres_1pl       kräver  nous
 
-Grafen ger en **partiell** ordning: flera nivåer kan vara möjliga samtidigt, och
-användaren väljer bland dem. «Föregående nivå» betyder nivåns föregångare i
-grafen. Grafen måste vara acyklisk, och det kontrolleras när den byggs.
+En nivå kräver en annan när dess kort inte går att pröva utan den andras. Grafen ger en
+**partiell** ordning: flera nivåer kan vara möjliga samtidigt, och alla vars grind är
+uppfylld öppnas (4.4). Grafen måste vara acyklisk, och det kontrolleras när den byggs.
 
-Böjningen ordnar sig på samma sätt: `pres_1pl` har inget att kongruera med förrän
-`nous` finns.
+**Den första nivån följer av definitionen.** Nästan varje regel kräver att en enkel
+mening redan går att bygga, så den första nivån blir det minsta paket som gör en enkel
+mening prövbar: ett pronomen, ett verb, presens och grundordföljden. Nivåer som
+negation och fråga kräver den och öppnas efter.
 
 ### 4.3 Varje nivå öppnar minst ett kort
 
-> **Invariant.** Varje nivå öppnar minst ett kort — en regel, en cell eller ett
-> ord. Bryts den är nivålistan fel; det är inget tillstånd att hantera när
-> programmet körs.
+> **Invariant.** Varje nivå öppnar minst ett kort, och varje kort den öppnar är
+> prövbart när nivån och dess föregångare är öppna. Bryts det är nivålistan fel; det är
+> inget tillstånd att hantera när programmet körs.
 
-En konstruktion är själv **inget kort**. Att språk har objekt och frågor vet
-användaren redan. Det som ska läras är hur *just det här* språket uttrycker dem,
-och det blir kort:
+Att språk har objekt och frågor vet användaren redan. Det som ska läras är hur *just
+det här* språket uttrycker dem, och det blir kort:
 
-    konstruktionen «objekt» öppnar …     och det som lärs är
-      fr   klitika_före          regel   objektspronomen före verbet
+    för att «objekt» ska kunna användas …   och det som lärs är
+      fr   klitika_före          regel      objektspronomen före verbet
            objektsformerna       celler
-      de   dativ_före_ackusativ  regel   ordningen mellan två objekt
+      de   dativ_före_ackusativ  regel      ordningen mellan två objekt
            akk · dat             celler
 
 ### 4.4 Grinden
@@ -501,7 +542,8 @@ alla andra, och går det fel hamnar det i dagens again-hög.
 ### 5.3 Dagen tar slut när högarna är tomma
 
 Passet är klart när **new-, again- och due-högarna är tomma.** Varje fel ger mer
-arbete. Att varje kort alltid går att nå garanteras av budgeten (6.3).
+arbete. Att varje infört kort går att nå garanteras av prövbarheten (3.10) och
+budgeten (6.3).
 
 **Att passet kan dra ut på tiden är ett medvetet val.** Det som räknas är arbete som
 lyckas, inte nedlagd tid. Tidsratten styr hur mycket nytt som planeras (5.5), inte
@@ -545,9 +587,8 @@ nytt. Senare *prövas* det helst på ett nytt ord (6.4).
 introfasens kö. Det första svaret, som ges efter att kortet visats, är kortets
 första FSRS-betyg; omtagen bokförs som vanliga möten (7.1).
 
-**Dag ett.** Nivå 1 ger singularpronomenen — jag, du, han, hon, den, det —
-eftersom `numerus` är en senare konstruktion. Vi, ni och de kommer med den.
-Passet når sin första mening när användaren kan ett pronomen och ett verb.
+**Dag ett.** Den första nivån är det minsta paket som gör en enkel mening prövbar
+(4.2). Passet når sin första mening när användaren kan ett pronomen och ett verb.
 
 ### 5.5 Hur många nya kort
 
@@ -572,50 +613,38 @@ förfallna korten redan mer än den inställda tiden, till exempel efter några 
 uppehåll, blir antalet noll.
 
 Nivåns kort är inte tvingade att införas. De konkurrerar som alla andra kort, men
-vinner nästan alltid, eftersom de är de mest efterfrågade (5.6).
+vinner ofta, eftersom de gör många andra kort prövbara (5.6).
+
+Användarens egna FSRS-parametrar finns inte från början. Tills historiken räcker för
+att optimera dem används FSRS standardparametrar.
 
 ### 5.6 Vilka nya kort: införandeordningen
 
-    1.  efterfrågan   hur ofta ett meningsbygge stoppades av att kortet saknades
-    2.  frekvens      skiljer kort med samma efterfrågan
+> **Inför först det kort som gör flest andra kort prövbara.** Frekvensen skiljer kort
+> som gör lika många prövbara.
 
-**Steg 1 — efterfrågan, för alla korttyper.** Efterfrågan mäts i korten själva:
+Kandidaterna är de kort som är upplåsta, inte införda och prövbara (3.10).
 
-- **Saknas ett ord** som kan fylla en plats, är kandidaterna oinförda ord. Verbets
-  mönster säger vad varje plats kräver *innan* något ord är valt — «subjektet ska vara
-  mänskligt» — så generatorn behöver aldrig känna till oinförda ord i förväg.
-- **Kräver en upplåst konstruktion en cell, regel eller egenskap** som inte är införd,
-  är kandidaten just det kortet. Upplåsta kort vet generatorn om, eftersom nivågrafen
-  säger att de är upplåsta.
+| Kort | Vad det gör prövbart |
+|---|---|
+| `nous` | alla celler för 1:a person plural |
+| regeln «artikeln följer genus» | genuskortet för varje infört substantiv |
+| ett nytt substantiv | bara sitt eget genuskort |
 
-Kandidaterna rangordnas efter **hur ofta generatorn stoppades för att just det kortet
-saknades**, räknat i loggen från riktiga meningsbyggen. Ett allmänt kort — en regel,
-en ändelse för en hel klass, ett hjälpverb — stoppar många byggen och kommer först;
-ett enskilt ord stoppar få.
+**Räkningen görs i beroendegrafen, inte genom att bygga meningar.** Beroendena anges
+redan i redovisningsanropen (4.2), så räkningen är snabb även med tusentals kort. Bara
+de kort som faktiskt väljs för dagen provbyggs, en mening var (3.10).
 
-Därför behövs ingen särskild regel för när en nivås kort införs: de är de mest
-efterfrågade i samma stund som nivån öppnas. Samma sak gäller slutna ordklasser:
-hjälpverbet kommer när perfekt öppnas, eftersom perfektnivåns meningar inte går att
-bygga utan det.
+**Ordningen balanserar sig själv.** Tidigt gör verb och grundregler mycket prövbart
+och kommer först. Hjälpverbet kommer när perfekt blir möjligt, eftersom perfektnivåns
+kort inte går att pröva utan det. När grunderna sitter gör ett nytt ord bara sig självt
+prövbart, och då tar frekvensen över.
 
-Metoden kräver att felet i `urval.py:219` är åtgärdat (punkt 12).
-
-*Sekundärsignal:* effektivt antal olika ord som fyllt en plats, 1/Σp², mätt ur
-loggen. Den visar att en plats håller på att bli trång innan kravet slutar gå att
-uppfylla.
-
-**Steg 2 — frekvensen skiljer lika.** Grammatiken bestämmer vad som går att lära;
-betydelsen bestämmer vad som är värt att lära först.
-
-| `Koncept.källa` | Innehåll | Ordning |
-|---|---|---|
-| `bas_kärna` (170) | artiklar, pronomen, prepositioner, konjunktioner, räkneord, negation, frågeord, hjälp- och modalverb | efterfrågan |
-| `grundord` (566) | substantiv, verb, adjektiv, adverb | efterfrågan, sedan frekvens inom ordklassen |
-
-Frekvenslistan är gemensam för alla språk och rangordnar **koncept, inte lemman**.
-Därför uppstår inga problem med ord som har flera betydelser: `per_känna` och
-`per_lukta` får var sin plats, trots att båda heter `sentir` på franska. Version ett
-har samma ordning för alla användare.
+**Frekvensen.** Grammatiken bestämmer vad som går att lära; betydelsen bestämmer vad som
+är värt att lära först. Frekvenslistan är gemensam för alla språk och rangordnar
+**koncept, inte lemman**. Därför uppstår inga problem med ord som har flera betydelser:
+`per_känna` och `per_lukta` får var sin plats, trots att båda heter `sentir` på franska.
+Version ett har samma ordning för alla användare.
 
 **Frekvenslistan finns inte ännu.** `ordbok/nivålistor/grundord.csv` har en CEFR-nivå
 per koncept (A1, A2, B1), men den är en bedömning och inte en mätning, och den ordnar
@@ -644,7 +673,7 @@ De förfallna korten bestäms av FSRS och påverkas av ingen av rattarna.
 En mening får ställas endast om:
 
 1. varje kort den kräver är **infört** (R1)
-2. varje regel den använder är **upplåst** i alla tre stegarna
+2. varje regel den använder är **upplåst**
 3. varje målkort ingår i **varje korrekt svar** som går att bygga av användarens införda kort (R2, 6.5)
 4. **båda språken kan uttrycka den.** Motorn har inga fasta källspråk — alla språk
    är likvärdiga — men alla språk har inte alla celler. Svenskans `vantar` har
@@ -676,6 +705,10 @@ adjektivet, och ett fel går inte att knyta till ett enda kort.
 spårar det för varje ord (8.3), även när ord smälter ihop (`au` = `à` + `le`) och när
 språket skrivs utan mellanslag. Två kort är oberoende när deras positioner inte
 överlappar. Samma spår är rättningens underlag (7.3).
+
+Undantaget är ett ord och dess formkort. De delar alltid position, men prerekvisitregeln
+i 7.3 håller isär dem — föll ordet är formen ograderad — och därför får ett mönster
+prövas på ett nytt ord (6.4).
 
 **Det här är hela urvalet.** Följande beteenden följer av regeln och får inga
 egna regler:
@@ -795,8 +828,9 @@ rätta svaret, och lägg tillbaka de kort som föll i `F`.
 - **Problemet löses steg för steg.** Varje fel ger mer arbete, så dagen kan inte
   planeras i förväg. Varje mening väljs för sig.
 - **Att välja girigt är korrekt, inte bara billigt.** Girigt urval kan i allmänhet
-  lämna kort som ingen mening når. Här kan det inte hända: inga kort försvinner
-  under dagen, och budgeten rymmer alltid en mening med ett enda mål.
+  lämna kort som ingen mening når. Här kan det inte hända: bara prövbara kort är
+  införda (3.10), inga kort tillkommer under meningsfasen, och budgeten rymmer
+  alltid en mening med ett enda mål.
 - **Kostnaden ligger i att ta fram kandidater**, inte i att välja bland dem. Mätt:
   2 000 försök gav 1 692 kandidatmeningar med 727 olika kortmängder. Det som ska
   optimeras är hur få försök som räcker.
@@ -907,8 +941,9 @@ kortet blir mål som alla andra svaga kort. För de här korten är det också e
 skattning än FSRS, eftersom förfallodagen inte betyder något för dem.
 
 Om ett kort är **schemalagt** eller **övervakat** avgörs av hur ofta det faktiskt
-mötts per dygn enligt loggen, inte av en simulering. Ett nytt kort är schemalagt
-tills det visat sig mötas oftare än en gång om dagen. På så sätt sorterar
+mötts enligt loggen, inte av en simulering: kortet är övervakat när fönstrets tio
+möten har skett på färre än tio dagar, alltså oftare än en gång om dagen. Ett nytt
+kort är schemalagt tills det har visat sig. På så sätt sorterar
 reglerna sig själva: `svo` möts ungefär tjugo gånger om dagen och övervakas,
 `inversion_wh` möts sällan och schemaläggs.
 
@@ -980,7 +1015,8 @@ Steg 1 gör därför fem saker:
 2. **Förbigångarna lagas först**, eftersom de gör befintliga korttyper omätbara.
 3. **De hårdkodade orden blir lexem**, så att de får `ord`-kort.
 4. **Varje anrop anger regelns beroenden och byggvillkor.** Det ger nivågrafen dess
-   kanter (4.2) och generatorn förmågan att bygga mot regeln (6.4).
+   kanter (4.2), generatorn förmågan att bygga mot regeln (6.4), och underlaget för
+   prövbarheten (3.10) och införandeordningen (5.6).
 5. **Renderaren spårar vilka kort som bestämde varje utskrivet ord.** Det är
    positionerna i 6.2 och rättningens underlag i 7.3.
 
@@ -991,7 +1027,8 @@ self.u.regel("klitika_före", kräver=["objektsform"])   # redovisat — syns
 def eliderar(self, första, andra):                      # inte redovisat — sker tyst
 ```
 
-Anropet gör tre saker: regeln blir en nivå, ett kort och en kant i beroendegrafen.
+Anropet gör tre saker: beslutet blir ett kort, får en plats i en nivå och en kant i
+beroendegrafen.
 
 ---
 
@@ -999,10 +1036,10 @@ Anropet gör tre saker: regeln blir en nivå, ett kort och en kant i beroendegra
 
     0   böjningsreglerna per språk         svenskan gjord, väntar på granskning; slutna ordklasser och sex språk kvar
     1   renderarna redovisar sina beslut   inventerat, inte byggt (8.3); allt annat bygger på detta
-    2   nivåstegarna och grafen            följer ur 1; kontrollera att grafen är acyklisk
+    2   nivåerna och grafen                följer ur 1; kontrollera att grafen är acyklisk och invarianten i 4.3
     3   kortmodellen                       kräver 0; ändelser, ljudregler och undantag genereras ur reglerna
     3b  datamodellen                       kort, möten, nivåer, dagens tilldelning, inställningar, kursens språkpar
-    4   dagspasset och införandet          kräver 2 och 3; tidsmodellen (5.5) och efterfrågan (5.6)
+    4   dagspasset och införandet          kräver 2 och 3; prövbarheten (3.10), tidsmodellen (5.5), införandeordningen (5.6)
     5   meningsbygget                      kräver 4
     5b  entydighetsfiltret                 kräver 1; variantsökningen och aspektkrav på koncept (6.5)
     6   rättningen                         kräver 1; spåret från ord till kort, och omrättningen (7.2)
@@ -1046,6 +1083,8 @@ Frågan besvaras bäst när meningsbygget finns och kan mätas.
 - **Komparationens typ.** Om ett adjektiv kompareras syntetiskt (`större`) eller med
   `mer` syns inte i ordet och är kunskap per ord. Är det en `egenskap` — det syns på
   `mer`, alltså på ett annat ord — eller ett undantagskort?
+- **Japansk skrift.** Stavfel räknas som fel (7.2), men att skriva ett ord med kana när
+  facit har kanji är ett val av skrift, inte ett stavfel. Ska båda godtas?
 
 ---
 
@@ -1054,6 +1093,7 @@ Frågan besvaras bäst när meningsbygget finns och kan mätas.
 | Mått | I dag | Krav |
 |---|---|---|
 | kort i en mening som inte är införda | 4 | 0 |
+| införda kort som inte är prövbara | ej mätt | 0 |
 | nya kort som införs utanför introfasen | 25 av 32 | 0 |
 | andel kortmöten som bokförs | 13 % | 100 % |
 | regler som renderaren använder utan att de är upplåsta | ej mätt | 0 |
@@ -1091,7 +1131,7 @@ eller av mätningar, utom:
 | 26 läsningar av befintliga kort går förbi instrumenteringen (`hjälpverb`, `prenominal`, `ja_adjektiv_typ`, konjunktivrektion, infinitivmarkör …) | korten kan inte prövas | steg 1; `TYSTA_BESLUT.md` punkt 1 |
 | tio ord skrivs ut utan att vara lexem (`ne`, `est-ce que`, japanskans partiklar) | inget kort bär skulden om de blir fel | steg 1; `TYSTA_BESLUT.md` punkt 2 |
 | de romanska renderarna skriver alltid ut subjektspronomenet (`yo leo`) | varianten `leo` finns inte | variantsökningen (6.5) |
-| `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst; meningar bryter mot verbets krav, och signalen i 5.6 går förlorad | logga i stället för att släppa kravet |
+| `urval.py:219`: `träffar or kandidater` | ett semantiskt krav som inte går att uppfylla släpps tyst, och meningar bryter mot verbets krav | stoppa bygget i stället för att släppa kravet |
 | ingen provsvit (inga `test_*.py`) | inget visar att attributionen fortfarande fungerar | steg 7b |
 
 ---
@@ -1135,6 +1175,11 @@ Idéer som har prövats och fallit. De står här så att de inte byggs igen.
 | beroendegrafen mätt genom att rendera exempelmeningar | sampling — ett beroende som inte råkar dyka upp missas |
 | neutraliseringstabeller skrivna för hand per språkpar | 42 par, de flesta omöjliga att granska; sökningen hittar tvetydigheten automatiskt |
 | FSRS:s R för övervakade kort | ligger nära 1 även när användaren gör fel, så kortet väljs aldrig som mål |
+| tre nivåstegar: konstruktion, böjning, realisering | gav tre beskrivningar av nivåer som motsade varandra; en sorts nivå, definierad av prövbarheten, räcker |
+| konstruktioner som egna nivåer | en konstruktion är meningens innehåll och har inget eget att lära; det som lärs är reglerna som uttrycker den |
+| prövbarhet säkrad av nivåerna ensamma | nivåerna ser vad som är upplåst, men inte vad som är infört eller vilka varianter som finns (`yo`, aspekten) |
+| efterfrågan räknad ur loggen över meningsbyggen | har inga data första dagen eller när en nivå just öppnats, och generatorn kan inte efterfråga det den inte får använda |
+| efterfrågan beräknad genom att prova bygga meningar vid passtart | tungt, och i ett stort utrymme sampling |
 
 ---
 
