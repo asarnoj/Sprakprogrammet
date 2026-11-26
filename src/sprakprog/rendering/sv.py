@@ -40,17 +40,30 @@ SUBSTANTIVCELL = {
 }
 
 
-def _adjektivcell(bestämdhet: Bestämdhet, numerus: Numerus, genus: int) -> str:
+def _adjektivcell(bestämdhet: Bestämdhet, numerus: Numerus, genus: int,
+                  efter_possessiv: bool = False) -> str:
     """Svensk adjektivkongruens.
 
     Cellnamnen använder m/f för utrum/neutrum enligt _legend.yaml, där
     UtrMask och NeuFem delas mellan svenska och de romanska språken.
+
+    En possessiv tvingar fram den bestämda (svaga) formen oavsett frasens
+    bestämdhet: "sin röda bok", aldrig "sin röd bok". Possessiven beter sig
+    som en bestämd artikel för adjektivet, trots att substantivet samtidigt
+    står i obestämd form. Svenskan drar alltså isär de två.
     """
-    if bestämdhet is Bestämdhet.BESTÄMD:
+    if efter_possessiv or bestämdhet is Bestämdhet.BESTÄMD:
         return "best_a_sg_pos" if numerus is Numerus.SG else "best_a_pl_pos"
     if numerus is Numerus.PL:
         return "obest_a_pl_pos"
     return "obest_m_sg_pos" if genus == UTRUM else "obest_f_sg_pos"
+
+
+def _artikelcell(numerus: Numerus, genus: int) -> str:
+    """Fristående bestämd artikel: den / det / de."""
+    if numerus is Numerus.PL:
+        return "pl"
+    return "utr" if genus == UTRUM else "neu"
 
 
 def _possessivcell(numerus: Numerus, genus: int) -> str:
@@ -84,10 +97,19 @@ class SvenskRenderare:
         # huvudordet: suffix i "flickan", fristående artikel i "en bok",
         # och ingen artikel alls när en possessiv tar platsen ("sin bror").
         if nf.possessiv is not None:
+            # Possessiven tar artikelns plats: "sin bror", aldrig "sin en bror".
+            # Substantivet står i obestämd form trots att frasen är bestämd.
             variant = "reflexiv" if nf.possessiv_koreferent else "icke_reflexiv"
             ord.append(self.u.form_för(
                 nf.possessiv, _possessivcell(nf.numerus, genus), variant))
             substantivform = Bestämdhet.OBESTÄMD
+        elif nf.bestämdhet is Bestämdhet.BESTÄMD and nf.attribut:
+            # Svenskans dubbla bestämdhet: "den röda boken" kräver BÅDE den
+            # fristående artikeln och suffixet på substantivet. Utan attribut
+            # räcker suffixet ensamt ("boken"), och "den boken" skulle bli
+            # demonstrativt i stället för bestämt.
+            ord.append(self.u.form_för("artikel_bestamd", _artikelcell(nf.numerus, genus)))
+            substantivform = Bestämdhet.BESTÄMD
         elif nf.bestämdhet is Bestämdhet.OBESTÄMD and nf.numerus is Numerus.SG:
             ord.append(self.u.form_för(
                 "artikel_obestamd", "utr" if genus == UTRUM else "neu"))
@@ -97,31 +119,55 @@ class SvenskRenderare:
             # bestämdhet uttrycks med suffix på substantivet.
             substantivform = nf.bestämdhet
 
-        if nf.attribut and nf.bestämdhet is Bestämdhet.BESTÄMD and nf.possessiv is None:
-            # "den röda boken" kräver den fristående bestämda artikeln, som
-            # inte finns som lexem — artikel_bestamd har inget sv-lemma
-            # eftersom svenskans bestämda artikel normalt är ett suffix.
-            # Dubbel bestämdhet är alltså ett äkta datahål, inte en glömska.
-            raise RenderingsFel(
-                "sv: bestämd nominalfras med attribut ('den röda boken') kräver "
-                "den fristående artikeln 'den/det/de', som saknas i databasen — "
-                "artikel_bestamd har inget svenskt lemma")
-
         for attribut in nf.attribut:
-            ord.append(self.u.form_för(
-                attribut, _adjektivcell(nf.bestämdhet, nf.numerus, genus)))
+            ord.append(self.u.form_för(attribut, _adjektivcell(
+                nf.bestämdhet, nf.numerus, genus,
+                efter_possessiv=nf.possessiv is not None)))
 
-        ord.append(self.u.form(huvud, SUBSTANTIVCELL[(substantivform, nf.numerus)]))
+        cell = SUBSTANTIVCELL[(substantivform, nf.numerus)]
+        try:
+            ord.append(self.u.form(huvud, cell))
+        except RenderingsFel:
+            # Plurale tantum: "pengar" har ingen singular alls. Datan har
+            # ingen flagga för det — tomma singularceller ÄR markeringen.
+            # Säg det rakt ut i stället för att låta felet se ut som ett hål.
+            celler = self.u._celler(huvud)
+            if nf.numerus is Numerus.SG and not any(
+                    celler.get(c) for (_, n), c in SUBSTANTIVCELL.items()
+                    if n is Numerus.SG):
+                raise RenderingsFel(
+                    f"sv/{huvud['lemma']}: saknar singular helt (plurale tantum) "
+                    f"— meningen kan inte be om {nf.numerus.value}") from None
+            raise
         return ord
 
     # ── sats ─────────────────────────────────────────────────────────
 
-    def verbform(self, m: Mening) -> str:
-        if m.tid not in TEMPUSCELL:
-            raise RenderingsFel(
-                f"sv: {m.tid} är analytisk i svenskan ('ska ge') och kräver "
-                f"hjälpverbskonstruktion, som inte är byggd än")
-        return self.u.form_för(m.verb, TEMPUSCELL[m.tid])
+    def verbfras(self, m: Mening) -> list[str]:
+        """Verbet, som ett eller flera ord.
+
+        Svenskan har ingen syntetisk futurumform. "ska ge" byggs av
+        modalverbet i presens plus huvudverbets infinitiv — samma sorts
+        analytiska konstruktion som en/de använder, och skälet till att
+        returtypen är en lista och inte en sträng.
+        """
+        lexem = self.u.lexem(m.verb)
+        suffix = "_passiv" if self._deponens(lexem) else ""
+        if m.tid is Tidsreferens.FRAMTID:
+            return [self.u.form_för("modal_ska", "pres"),
+                    self.u.form(lexem, "inf" + suffix)]
+        return [self.u.form(lexem, TEMPUSCELL[m.tid] + suffix)]
+
+    def _deponens(self, lexem) -> bool:
+        """Deponens: verb som bara finns i s-form (minnas, hoppas, trivas).
+
+        De har ingen aktiv böjning alls — "minnas/minns/mindes" ligger under
+        diates=Passiv i Former, och de aktiva cellerna är tomma. Att läsa av
+        det ur datan är säkrare än en lista över deponensverb: tom aktiv
+        infinitiv plus fylld passiv är precis vad deponens betyder här.
+        """
+        celler = self.u._celler(lexem)
+        return not celler.get("inf") and bool(celler.get("inf_passiv"))
 
     def rendera(self, m: Mening) -> str:
         """Svensk huvudsats: subjekt, verb, indirekt objekt, objekt, adverbial.
@@ -132,7 +178,7 @@ class SvenskRenderare:
         visar vilken form den behöver ha, inte innan.
         """
         ord = list(self.nominalfras(m.subjekt))
-        ord.append(self.verbform(m))
+        ord.extend(self.verbfras(m))
         for nf in (m.io, m.objekt):
             if nf is not None:
                 ord.extend(self.nominalfras(nf))
