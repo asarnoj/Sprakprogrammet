@@ -4947,6 +4947,18 @@ utan igenkännbar struktur. Ordföljdskort får rätt så snart diffen inte kan
 visa att ordningen bröts, och ett svar som inte går att analysera bryter
 ingenting. Det höjer deras stabilitet på ingenting alls. Står som `?`.
 
+**MÄTT OM 2026-09-04.** E2 tog bort orsaken, och konsekvensen håller på att
+lösa upp sig av sig själv:
+
+    179 prövningar av sedda kort
+     70 vid R ≥ 0,99   (var 438 av 447, alltså 98 %)
+     74 vid R < 0,95   — informationsbärande
+
+Från 2 % användbart till 41 %. Talen är fortfarande för få för att optimera
+FSRS-parametrarna på (E7 vill ha flera hundra), men bruset är inte längre
+problemet — det är bara mängden. Markören står kvar tills historiken räcker
+till något.
+
 ### G4 ~ — Skyddsnät mot tysta fel
 
 Regressionsnätet fryser 490 renderade meningar som förväntad utdata. Varje
