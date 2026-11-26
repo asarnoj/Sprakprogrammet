@@ -267,6 +267,7 @@ def tagga_monster(
     migration: Path,
     *,
     antal: int | None = None,
+    koncept: list[str] | None = None,
     batch_storlek: int = 10,
     modell: str = STANDARD_TAGGNINGSMODELL,
     verbose: bool = False,
@@ -283,6 +284,9 @@ def tagga_monster(
           AND NOT EXISTS (SELECT 1 FROM Mönster m WHERE m.koncept_id = k.id)
         ORDER BY k.nyckel""").fetchall()
 
+    if koncept:
+        valda = set(koncept)
+        poster = [r for r in poster if r["nyckel"] in valda]
     if antal:
         poster = poster[:antal]
 
