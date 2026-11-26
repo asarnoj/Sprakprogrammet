@@ -5211,6 +5211,35 @@ som framgång. Markören är `!` tills sviten mäter det själv — ingenting
 hindrar idag att ett nytt sabotage tystnar utan att någon märker det utom
 raden "N prov kunde inte falla", som måste läsas av en människa.
 
+#### ETT TREDJE SÄTT: SAMMANFATTNINGEN SKREVS FÖRE FALSIFIERINGEN (2026-09-04)
+
+`tjänsteprov` föll i sviten men såg grönt ut när jag körde det för hand. Jag
+kallade det förorening mellan prov och letade efter den i två omgångar.
+
+**Det fanns ingen förorening.** Provet kraschade i sitt eget
+falsifieringsblock — `_extraläge` hade fått argumentet `kurs` och sabotagets
+lambda tog fortfarande ett. Två saker gjorde felet svårt att se:
+
+*Sammanfattningen stod före falsifieringen.* Provet hann skriva "15
+invarianter, alla håller" innan kraschen, så utskriften såg grön ut medan
+returkoden var 1. **En rad som skrivs innan allt som kan falla har hänt kan
+inte vara sann.** Verdikten står nu sist.
+
+*Och jag läste min egen filtrering.* Jag körde provet med `grep -E
+"✗|STUMT|invarianter"`, och traceback-raderna matchade inget av mönstren. Ur
+det drog jag slutsatsen "grönt ensamt, rött i sviten" — en slutsats om
+utskriften jag själv hade tagit bort felet ur. Provet kraschade hela tiden,
+också ensamt.
+
+*Ett kraschande sabotage dödade de andra fjorton.* Ett sabotage som kastar
+har inte bevisat något; det räknas nu som STUMT och rapporteras, och
+falsifieringen fortsätter. Också `_sabotera`-anropet självt är omslutet — ett
+sabotage kan sluta passa på båda sätten.
+
+**Lärdomen är G7:s, en nivå upp:** ett sabotage ruttnar när det som saboteras
+ändrar signatur, och då slutar det bevisa. Skillnaden mot ett stumt sabotage
+är bara att det här hörs.
+
 ### G6b ? — Tjänstens tillstånd läcker mellan kurser (ny 2026-08-31)
 
 Mätt när `prov_dagen_tar_slut` gjordes verklig. Franskans dag behöver fler

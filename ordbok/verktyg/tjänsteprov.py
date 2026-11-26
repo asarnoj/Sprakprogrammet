@@ -1005,10 +1005,19 @@ def _sabotera(namn: str):
         return lambda: setattr(Övningstjänst, "uppgift", äkta)
 
     if namn == "extraövning kräver klar dag":
+        # SIGNATUREN MÅSTE FÖLJA DEN ÄKTA. `_extraläge` fick argumentet
+        # `kurs` 2026-09-04, och sabotagets lambda gjorde det inte — den
+        # kastade `TypeError` mitt i falsifieringen. Provet hade då redan
+        # skrivit "15 invarianter, alla håller", så utskriften såg grön ut
+        # medan returkoden var 1, och sviten föll av ett skäl som inte stod
+        # i provets egen sammanfattning.
+        #
+        # Ett sabotage som inte längre passar det det saboterar är samma
+        # sorts ruttnande som ett stumt prov, bara högljuddare. Se G7.
         äkta = Övningstjänst._extraläge
         Övningstjänst._extraläge = staticmethod(
-            lambda p: {"nya": p["nya_extra"], "tidiga": p["tidiga"],
-                       "finns": p["finns_extra"], "låst": False})
+            lambda p, kurs=None: {"nya": p["nya_extra"], "tidiga": p["tidiga"],
+                                  "finns": p["finns_extra"], "låst": False})
         return lambda: setattr(Övningstjänst, "_extraläge", äkta)
 
     if namn == "ingen upprepad mening":
@@ -1080,20 +1089,44 @@ def main() -> int:
             print(f"  {'✗' if brister else '✓'} {namn}")
             for b in brister:
                 print(f"      {b}")
-    print(f"\n{len(PROV)} invarianter, {fel} brott." if fel
-          else f"\n{len(PROV)} invarianter, alla håller.")
+    # SAMMANFATTNINGEN STÅR SIST, EFTER FALSIFIERINGEN. Den låg här förut,
+    # och när ett sabotage kastade mitt i falsifieringen hade provet redan
+    # skrivit "alla håller" — utskriften såg grön ut medan returkoden var 1,
+    # och sviten föll av ett skäl som inte stod i provets egen rad. En rad
+    # som skrivs innan allt som kan falla har hänt kan inte vara sann.
 
     # OCH BEVISA ATT DE KAN FALLA.
     print("\nfalsifiering — med det gamla felet återinfört ska varje prov falla:")
     stumma = 0
     with tempfile.TemporaryDirectory() as d:
         for nr, (namn, kör) in enumerate(PROV):
-            ångra = _sabotera(namn)
+            try:
+                ångra = _sabotera(namn)
+            except Exception as e:                            # noqa: BLE001
+                # Också SJÄLVA sabotaget kan sluta passa. Se nedan.
+                print(f"  ✗ KASTADE  {namn}  ({type(e).__name__}: "
+                      f"{str(e)[:60]})")
+                stumma += 1
+                continue
             try:
                 tj, kort = tjänst(Path(d) / f"sab{nr}.db")
                 kurser = kort.execute("SELECT * FROM Kurs").fetchall()
-                brister = [b for kurs in kurser
-                           for b in kör(tj, kort, kurs)]
+                # ETT KRASCHANDE SABOTAGE FÅR INTE DÖDA DE ANDRA, och det
+                # gjorde det: `_extraläge` fick ett argument till, sabotagets
+                # lambda följde inte med, och hela falsifieringen dog vid
+                # nummer åtta av femton. Ett sabotage som kastar har inte
+                # bevisat något — det räknas som STUMT och rapporteras, så
+                # de övriga fjorton fortfarande mäts.
+                try:
+                    brister = [b for kurs in kurser
+                               for b in kör(tj, kort, kurs)]
+                except Exception as e:                        # noqa: BLE001
+                    brister = []
+                    print(f"  ✗ KASTADE  {namn}  ({type(e).__name__}: "
+                          f"{str(e)[:60]})")
+                    kort.close()
+                    stumma += 1
+                    continue
                 kort.close()
             finally:
                 ångra()
@@ -1103,6 +1136,10 @@ def main() -> int:
     if stumma:
         print(f"\n{stumma} prov kunde inte falla. Ett prov som inte kan falla "
               f"bevisar ingenting.")
+    # HÄR, och ingenstans tidigare: allt som kan falla har fallit nu.
+    print(f"\n{len(PROV)} invarianter, {fel} brott, {stumma} stumma."
+          if fel or stumma else
+          f"\n{len(PROV)} invarianter, alla håller och alla kan falla.")
     return 1 if (fel or stumma) else 0
 
 
