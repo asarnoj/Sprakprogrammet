@@ -85,6 +85,16 @@ def _lägg_till(kort: list, typ, språk, facit, *, koncept=None, variant=None,
                  stamgrupp, egenskap, facit, räckvidd))
 
 
+def _lemman(språk_db: sqlite3.Connection) -> dict[tuple, str]:
+    """(språk, koncept, variant) → lemma. Läses en gång, används på två
+    ställen: `härled` för att avgöra om stamkortet ska finnas, `_cellkort`
+    för att avgöra vart cellen ska peka när det inte gör det."""
+    return {(r["språk"], r["nyckel"], r["variant"]): r["lemma"]
+            for r in språk_db.execute(
+                """SELECT k.nyckel, l.språk, l.lemma, l.variant
+                   FROM Lexem l JOIN Koncept k ON k.id = l.koncept_id""")}
+
+
 def _stamrader(språk: set[str]):
     if not STAMFIL.exists():
         raise FileNotFoundError(
@@ -151,12 +161,36 @@ def härled(språk_db: sqlite3.Connection, språk: set[str],
     # stamgrupp >= 0 är en stam; -1 är en rest, alltså en form som inte gick
     # att härleda och därför får ett eget formkort. Att skillnaden är EN
     # kolumn i samma fil är hela poängen med analysen.
+    #
+    # EN STAM SOM ÄR HELA ORDET LÄR INTE UT NÅGOT. Julius: *"Vi gjorde il i
+    # ordglosdelen redan. Är det problematiskt att il är identisk som ord och
+    # som stem?"* — och det är det. Kortet frågar samma sak som ordkortet,
+    # med samma facit, och den som klarat det ena kan det andra utan att veta
+    # om det.
+    #
+    # Mätt på franskan innan villkoret sattes in:
+    #
+    #     Substantiv   133 av 136 stamkort identiska med sitt ordkort
+    #     Pronomen       8 av  10
+    #     Verb           0 av  70
+    #
+    # Verben är undantaget, och det är just där stammen bär betydelse:
+    # `exist` mot `exister`. För ett oböjt substantiv eller pronomen finns
+    # ingen stam att skilja från ordet.
+    #
+    # Samma tomma läromoment som ändelserna hade före hopslagningen (F5b,
+    # 52 %), i en annan korttyp och med samma svar: kortet ska bara finnas
+    # när det säger något ordkortet inte redan säger.
+    lemman = _lemman(språk_db)
     for rad in _stamrader(språk):
         grupp = int(rad["stamgrupp"])
         celler = rad["celler"].split(",")
         if not nås(rad["språk"], rad["koncept"], rad["variant"] or None, celler):
             continue
         if grupp >= 0:
+            if rad["form"] == lemman.get(
+                    (rad["språk"], rad["koncept"], rad["variant"] or None)):
+                continue          # stammen ÄR ordet — se kommentaren ovan
             _lägg_till(kort, "stam", rad["språk"], rad["form"],
                        koncept=rad["koncept"], variant=rad["variant"] or None,
                        ordklass=rad["ordklass"], klass=rad["klass"],
@@ -331,13 +365,29 @@ def _golvkort(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
     return ut
 
 
-def _cellkort(språk: set[str]) -> list[tuple]:
+def _cellkort(språk_db: sqlite3.Connection, språk: set[str]) -> list[tuple]:
     """(språk, koncept, variant, cell) → kortets naturliga nyckel.
 
     Renderarens beroendekarta i tabellform: från det `Uppslag.form` redan
     känner till, till de kort som prövas när formen används.
+
+    NÄR STAMMEN ÄR ORDET PEKAR CELLEN PÅ ORDKORTET. `härled` slutade skapa
+    stamkortet i det läget, och utan omdirigeringen föll raden bort tyst
+    (`if n in idn` vid insättningen) — cellen hade då bara ÄNDELSEN kvar att
+    skylla på. Mätt på beroendekartan innan omdirigeringen fanns:
+
+        fr    811 av  8 874 celler utan annat kort än ändelsen
+        de 13 177 av 23 109
+        sv  2 366 av  4 791
+        en  1 593 av  2 054
+
+    Ett fel `mère` hade alltså bokförts på ändelsen `s`. Stamkortet stod och
+    höll ordkortets plats i kartan: ordkort hade före det här NOLL rader i
+    `Cellkort` i samtliga språk, så ett felstavat ord kunde aldrig bokföras
+    på ordet självt. Det är samma kort som förr, med sitt riktiga namn.
     """
     ut = []
+    lemman = _lemman(språk_db)
     # (språk, ordklass, klass, cell) → ändelse. Läses en gång; uppslaget görs
     # per cell och per stam nedan.
     ändelser = {(r["språk"], r["ordklass"], r["klass"], r["cell"]):
@@ -345,11 +395,18 @@ def _cellkort(språk: set[str]) -> list[tuple]:
     for rad in _stamrader(språk):
         grupp = int(rad["stamgrupp"])
         celler = rad["celler"].split(",")
-        typ = "stam" if grupp >= 0 else "form"
-        nyckel = _nyckel(typ, rad["språk"], rad["koncept"],
-                         rad["variant"] or None, rad["ordklass"], rad["klass"],
-                         None if grupp >= 0 else celler[0],
-                         grupp if grupp >= 0 else None, None)
+        stammen_är_ordet = grupp >= 0 and rad["form"] == lemman.get(
+            (rad["språk"], rad["koncept"], rad["variant"] or None))
+        if stammen_är_ordet:
+            nyckel = _nyckel("ord", rad["språk"], rad["koncept"],
+                             rad["variant"] or None, rad["ordklass"],
+                             None, None, None, None)
+        else:
+            typ = "stam" if grupp >= 0 else "form"
+            nyckel = _nyckel(typ, rad["språk"], rad["koncept"],
+                             rad["variant"] or None, rad["ordklass"],
+                             rad["klass"], None if grupp >= 0 else celler[0],
+                             grupp if grupp >= 0 else None, None)
         for cell in celler:
             ut.append((rad["språk"], rad["koncept"], rad["variant"] or None,
                        cell, nyckel))
@@ -488,6 +545,58 @@ def _slå_ihop_gamla_ändelsekort(kort_db: sqlite3.Connection,
     return flyttade
 
 
+def _slå_ihop_stam_med_ord(kort_db: sqlite3.Connection,
+                           språk: set[str]) -> int:
+    """Flytta historiken från stamkort som ÄR sitt ord till ordkortet.
+
+    ENGÅNGSMIGRATION, samma form som `_slå_ihop_gamla_ändelsekort` och av
+    samma skäl. Stamkortet slutade skapas när stammen är identisk med ordet
+    (se `härled`), och utan den här funktionen blir de gamla kvar med sin
+    historik men utan rad i `Cellkort` — schemalagda, förfallna och omöjliga
+    för någon mening att nå. A3:s spökkort, självförvållade.
+
+    HISTORIKEN HÖR HEMMA PÅ ORDKORTET, inte i papperskorgen. De två korten
+    ställde samma fråga med samma facit — `il` mot `il` — så deras
+    repetitioner är mätningar av samma kunskap under två namn.
+
+    DEN SVAGASTE EVIDENSEN VINNER, som vid ändelsehopslagningen: det
+    sammanslagna kortet ärver den lägsta stabiliteten, eftersom kunskapen
+    inte kan vara säkrare än den osäkraste mätningen av den.
+    """
+    flyttade = 0
+    for s_ in sorted(språk):
+        for g in kort_db.execute(
+                """SELECT s.id, s.stabilitet, s.svårighet, s.tillstånd, s.steg,
+                          s.sedd, s.förfaller, s.antal, s.fall, o.id AS ord_id
+                   FROM Kort s JOIN Kort o
+                     ON o.språk = s.språk AND o.koncept = s.koncept
+                        AND o.variant IS s.variant
+                        AND o.typ = 'ord' AND o.facit = s.facit
+                   WHERE s.språk = ? AND s.typ = 'stam'""", (s_,)).fetchall():
+            kort_db.execute("UPDATE Repetition SET kort_id = ? WHERE kort_id = ?",
+                            (g["ord_id"], g["id"]))
+            if g["sedd"] is not None:
+                mål = kort_db.execute(
+                    "SELECT stabilitet, sedd FROM Kort WHERE id = ?",
+                    (g["ord_id"],)).fetchone()
+                if (mål["sedd"] is None
+                        or (g["stabilitet"] or 0) < (mål["stabilitet"] or 0)):
+                    kort_db.execute(
+                        """UPDATE Kort SET stabilitet = ?, svårighet = ?,
+                               tillstånd = ?, steg = ?, sedd = ?, förfaller = ?
+                           WHERE id = ?""",
+                        (g["stabilitet"], g["svårighet"], g["tillstånd"],
+                         g["steg"], g["sedd"], g["förfaller"], g["ord_id"]))
+                kort_db.execute(
+                    "UPDATE Kort SET antal = antal + ?, fall = fall + ? WHERE id = ?",
+                    (g["antal"] or 0, g["fall"] or 0, g["ord_id"]))
+            kort_db.execute("DELETE FROM Kort WHERE id = ?", (g["id"],))
+            flyttade += 1
+    if flyttade:
+        kort_db.commit()
+    return flyttade
+
+
 def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
             språk: set[str], *, nivå: int | None = None,
             cefr: str = "C2", mät: bool = True,
@@ -525,6 +634,7 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
     # flytta till. Den är idempotent: har inga cell-nycklade kort kvar gör
     # den ingenting.
     _slå_ihop_gamla_ändelsekort(kort_db, språk)
+    _slå_ihop_stam_med_ord(kort_db, språk)
     efter = kort_db.execute("SELECT COUNT(*) FROM Kort").fetchone()[0]
 
     # Beroendekartan byggs om varje gång — den bär ingen historik, bara
@@ -545,7 +655,7 @@ def befolka(kort_db: sqlite3.Connection, språk_db: sqlite3.Connection,
     kort_db.executemany(
         "INSERT INTO Cellkort (språk, koncept, variant, cell, kort_id) VALUES (?,?,?,?,?)",
         [(s, k, v, c, idn[n])
-         for s, k, v, c, n in _cellkort(språk) + _golvkort(språk_db, språk)
+         for s, k, v, c, n in _cellkort(språk_db, språk) + _golvkort(språk_db, språk)
          if n in idn])
     kort_db.commit()
     kopplingar = kort_db.execute("SELECT COUNT(*) FROM Cellkort").fetchone()[0]

@@ -332,6 +332,118 @@ def prov_migrationen_bevarar_historiken() -> list[str]:
     return fel
 
 
+def prov_ingen_stam_är_sitt_ord() -> list[str]:
+    """Ett stamkort får aldrig ha samma facit som sitt eget ordkort.
+
+    SAMMA TOMMA LÄROMOMENT SOM ÄNDELSERNA HADE, i en annan korttyp. Julius:
+    *"Vi gjorde il i ordglosdelen redan. Är det problematiskt att il är
+    identisk som ord och som stem?"* — och det är det: kortet frågar samma
+    sak med samma svar, och den som klarat ordet kan stammen utan att veta
+    om det.
+
+    Mätt på franskan innan villkoret sattes in: 141 av 216 stamkort hade
+    exakt sitt ordkorts facit — Substantiv 133 av 136, Pronomen 8 av 10,
+    Verb 0 av 70. Verben är undantaget och det är just där stammen bär
+    betydelse: `exist` mot `exister`. För ett oböjt substantiv finns ingen
+    stam att skilja från ordet.
+
+    LÄSER `härled`, INTE DEN BEFOLKADE DATABASEN. Gjorde den det blev provet
+    stumt: migrationen städar bort korten efter insättningen, så ett brott i
+    HÄRLEDNINGEN syntes inte i beståndet. Invarianten gäller regeln — vilka
+    kort som skapas — och migrationen har sitt eget prov.
+    """
+    from sprakprog.db import anslut
+    from sprakprog.kort.befolka import härled
+    sdb = anslut()
+    fel = []
+    for s_ in sorted(SPRÅK):
+        rader = härled(sdb, {s_}, None, None)
+        ord_ = {(r[3], r[4]): r[10] for r in rader if r[1] == "ord"}
+        for r in rader:
+            if r[1] == "stam" and ord_.get((r[3], r[4])) == r[10]:
+                fel.append(f"{s_}/{r[3]}: stamkortet {r[10]!r} är sitt eget "
+                           f"ordkort")
+    return fel[:6]
+
+
+def prov_cellen_tappar_inte_ordet() -> list[str]:
+    """Ingen cell får ha ENBART sitt ändelsekort i beroendekartan.
+
+    DET FARLIGA MED ATT TA BORT STAMKORTET, och nästan det fel jag gjorde:
+    `härled` slutade skapa kortet men `_cellkort` pekade fortfarande på det,
+    och raden föll bort tyst vid insättningen (`if n in idn`). Kvar i cellen
+    blev bara ÄNDELSEN. Ett felstavat `mère` hade då bokförts som att
+    ändelsen `s` brast.
+
+    Mätt på beroendekartan i det läget: fr 811 av 8 874 celler, de 13 177 av
+    23 109, sv 2 366, en 1 593. Ordkorten hade samtidigt NOLL rader i
+    `Cellkort` i samtliga språk — stamkortet stod och höll ordets plats.
+    Rättningen är att cellen pekar på ordkortet i stället: samma kort som
+    förr, med sitt riktiga namn.
+    """
+    from sprakprog.db import anslut
+    from sprakprog.kort.befolka import _cellkort, härled
+    sdb = anslut()
+    fel = []
+    for s_ in sorted(SPRÅK):
+        nycklar = {r[0] for r in härled(sdb, {s_}, None, None)}
+        per: dict[tuple, set[str]] = {}
+        for a, b_, c, cell, n in _cellkort(sdb, {s_}):
+            if n in nycklar:
+                per.setdefault((a, b_, c, cell), set()).add(n.split(":")[0])
+        naken = [k for k, v in per.items() if v <= {"system"}]
+        if naken:
+            fel.append(f"{s_}: {len(naken)} celler utan annat kort än "
+                       f"ändelsen, t.ex. {naken[0][1]}/{naken[0][3]}")
+    return fel
+
+
+def prov_stammigrationen_bevarar_historiken() -> list[str]:
+    """Ett stamkort som ÄR sitt ord ska föras över till ordkortet.
+
+    Samma hot som vid ändelsehopslagningen och samma svar: korten blir inte
+    fel när regeln ändras, de blir OSYNLIGA — kvar med sin historik, utan
+    rad i `Cellkort`, omöjliga att nå. Historiken hör hemma på ordkortet,
+    för de två korten mätte samma kunskap under två namn.
+    """
+    import tempfile
+    from sprakprog.db import anslut
+    from sprakprog.kort.befolka import befolka
+    from sprakprog.kort.db import skapa_kortdatabas
+    db = skapa_kortdatabas(Path(tempfile.mkdtemp()) / "stam.db")
+    db.execute(
+        """INSERT INTO Kort (nyckel, typ, språk, koncept, ordklass, klass,
+                             stamgrupp, facit, räckvidd, stabilitet, svårighet,
+                             tillstånd, sedd, förfaller, antal, fall)
+           VALUES ('stam:fr:fam_mamma::Substantiv:K0::0:', 'stam', 'fr',
+                   'fam_mamma', 'Substantiv', 'K0', 0, 'mère', 2, 3.5, 5.0,
+                   2, '2026-08-01T09:00:00+00:00',
+                   '2026-08-20T09:00:00+00:00', 4, 1)""")
+    gammalt = db.execute("SELECT last_insert_rowid() AS i").fetchone()["i"]
+    db.execute("""INSERT INTO Repetition (kort_id, tidpunkt, betyg)
+                  VALUES (?, '2026-08-01T09:00:00+00:00', 3)""", (gammalt,))
+    db.commit()
+    befolka(db, anslut(), {"fr"}, cefr="C2", mät=False)
+
+    fel = []
+    if db.execute("SELECT 1 FROM Kort WHERE id = ?", (gammalt,)).fetchone():
+        fel.append("stamkortet står kvar trots att det är sitt eget ord")
+    rad = db.execute(
+        "SELECT kort_id FROM Repetition WHERE tidpunkt = '2026-08-01T09:00:00+00:00'"
+    ).fetchone()
+    if rad is None:
+        fel.append("repetitionsraden försvann med kortet")
+    else:
+        ny = db.execute("SELECT typ, facit FROM Kort WHERE id = ?",
+                        (rad["kort_id"],)).fetchone()
+        if ny is None:
+            fel.append("repetitionsraden pekar på ett kort som inte finns")
+        elif not (ny["typ"] == "ord" and ny["facit"] == "mère"):
+            fel.append(f"historiken hamnade på fel kort: {dict(ny)}")
+    db.close()
+    return fel
+
+
 def prov_nivå_ett_går_att_tala_på() -> list[str]:
     """Varje verbcell en NIVÅ 1-mening slår upp ska ha ett kort.
 
@@ -416,7 +528,14 @@ PROV = [("stegen är en delföljd av listan", prov_delmängd),
         ("inget tomt läromoment", prov_inget_tomt_läromoment),
         ("varje cell har ett kort", prov_varje_cell_har_ett_kort),
         ("migrationen bevarar historiken", prov_migrationen_bevarar_historiken),
-        ("nivå 1 går att tala på", prov_nivå_ett_går_att_tala_på)]
+        ("nivå 1 går att tala på", prov_nivå_ett_går_att_tala_på),
+        # NYA PROV LÄGGS SIST. `SABOTAGE` pekar på INDEX i den här listan, så
+        # varje insättning i mitten flyttar tystnaden till ett annat prov än
+        # det sabotaget skrevs för. Jag sköt själv "nivå 1" från 10 till 13.
+        ("ingen stam är sitt eget ord", prov_ingen_stam_är_sitt_ord),
+        ("cellen tappar inte ordet", prov_cellen_tappar_inte_ordet),
+        ("stammigrationen bevarar historiken",
+         prov_stammigrationen_bevarar_historiken)]
 
 
 
@@ -564,6 +683,52 @@ def _sabotage_grundböjning_utspridd():
     return lambda: setattr(d, "grundböjning", äkta)
 
 
+def _sabotage_behåll_identiska_stammar():
+    """Före villkoret: stamkortet skapades även när stammen var hela ordet."""
+    import sprakprog.kort.befolka                # noqa: F401
+    global _CACHE
+    äkta_cache, _CACHE = _CACHE, None
+    b = sys.modules["sprakprog.kort.befolka"]
+    äkta = b._lemman
+    b._lemman = lambda *a, **kw: {}
+    def ångra():
+        global _CACHE
+        b._lemman = äkta
+        _CACHE = äkta_cache
+    return ångra
+
+
+def _sabotage_utan_omdirigering():
+    """Före omdirigeringen: cellen pekade på stamkortet som inte skapas."""
+    import sprakprog.kort.befolka                # noqa: F401
+    b = sys.modules["sprakprog.kort.befolka"]
+    äkta_cellkort, äkta_lemman = b._cellkort, b._lemman
+
+    def utan(språk_db, språk):
+        # Bygger kartan som förr genom att dölja lemmana FÖR KARTAN men inte
+        # för `härled`: stamnyckeln emitteras, kortet finns inte, raden faller.
+        b._lemman = lambda *a, **kw: {}
+        try:
+            return äkta_cellkort(språk_db, språk)
+        finally:
+            b._lemman = äkta_lemman
+
+    b._cellkort = utan
+
+    def ångra():
+        b._cellkort, b._lemman = äkta_cellkort, äkta_lemman
+    return ångra
+
+
+def _sabotage_utan_stammigration():
+    """Före migrationen: gamla stamkort lämnades kvar med sin historik."""
+    import sprakprog.kort.befolka                # noqa: F401
+    b = sys.modules["sprakprog.kort.befolka"]
+    äkta = b._slå_ihop_stam_med_ord
+    b._slå_ihop_stam_med_ord = lambda *a, **kw: 0
+    return lambda: setattr(b, "_slå_ihop_stam_med_ord", äkta)
+
+
 #: (sabotage, vilket prov det ska fälla).
 SABOTAGE = [
     (_sabotage_omkastad, 0),
@@ -577,6 +742,9 @@ SABOTAGE = [
     (_sabotage_hoppa_celler, 8),
     (_sabotage_utan_migration, 9),
     (_sabotage_grundböjning_utspridd, 10),
+    (_sabotage_behåll_identiska_stammar, 11),
+    (_sabotage_utan_omdirigering, 12),
+    (_sabotage_utan_stammigration, 13),
 ]
 
 

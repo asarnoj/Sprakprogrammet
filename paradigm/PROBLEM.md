@@ -2466,8 +2466,64 @@ Verben är undantaget, och det är just där stammen bär betydelse: `exist` mot
 skilja från ordet.
 
 Det är samma tomma läromoment som ändelserna hade före hopslagningen (F5b,
-52 %), i en annan korttyp. Åtgärden är sannolikt densamma: ett stamkort ska
-bara finnas när stammen skiljer sig från ordet.
+52 %), i en annan korttyp. Åtgärden är densamma: ett stamkort ska bara finnas
+när stammen skiljer sig från ordet.
+
+**✓ ÅTGÄRDAT 2026-08-29.** `härled` skapar inte längre stamkortet när stammen
+är lemmat. Efter villkoret finns noll identiska stamkort i något språk, och
+franskans bestånd gick från 216 stamkort till 75 — de 141 som återstod är
+verbens, alltså de som faktiskt bär en stam.
+
+Två saker gjorde åtgärden större än ett `continue`:
+
+**Cellen måste peka någonstans.** `_cellkort` emitterade fortfarande
+stamnyckeln, och raden föll bort tyst vid insättningen (`if n in idn`). Kvar i
+cellen blev bara ÄNDELSEN:
+
+    fr     811 av  8 874 celler utan annat kort än ändelsen
+    de  13 177 av 23 109
+    sv   2 366 av  4 791
+    en   1 593 av  2 054
+
+Ett felstavat `mère` hade alltså bokförts som att ändelsen `s` brast — samma
+feltyp som avsnittet ovan beskriver, återinförd av rättningen till det här.
+Mätningen visade också varför stamkortet stod där: **ordkort hade noll rader i
+`Cellkort` i samtliga sju språk.** Stamkortet höll ordets plats i
+beroendekartan, och ett felstavat ord kunde aldrig bokföras på ordet självt.
+Cellen pekar nu på ordkortet — samma kort som förr, med sitt riktiga namn.
+
+**Historiken måste följa med.** `_slå_ihop_stam_med_ord` flyttar repetitioner
+från stamkortet till ordkortet och låter den svagaste evidensen vinna, precis
+som `_slå_ihop_gamla_ändelsekort`. Utan den blir de gamla korten inte fel utan
+OSYNLIGA: kvar med historik, utan cellkoppling, omöjliga att nå (A3).
+
+Tre invarianter i nät 13 vaktar de tre delarna, var och en med sitt eget
+sabotage. Den första läser `härled` och inte det befolkade beståndet — läste
+den beståndet blev den stum, eftersom migrationen städar bort just de kort som
+sabotaget återinför.
+
+#### FELSVEPET KAN INTE FALLA
+
+Upptäckt när stamarbetet gjordes 2026-08-29. `felsvep.py` skriver rubriken
+*"SAMMANLAGT — det enda talet som får vara noll"*, rapporterar tyskans två
+falska betyg, och `main()` returnerar ändå alltid `0`. Sviten räknar det som
+ett grönt nät.
+
+Det är samma fel som de stumma proven, en nivå upp: nätet mäter men kan inte
+fälla, och "14 nät, alla håller" blir därmed ett svagare besked än det låter.
+
+De två fallen är kända och konkreta:
+
+    'Das kalte Mädchen trinkt die schwarze Milch.'
+        → 'das schwarze Milch'      godkänt
+    'Sie trinkt das große Wasser.'
+        → 'den große Wasser'        godkänt
+
+Båda är bestämd artikel med fel genus respektive kasus. Ett kort fick Good
+utan att kunskapen visats — precis det avsnitten ovan handlar om, i en tredje
+korttyp. Två åtgärder som hör ihop men inte är samma: låta nätet returnera
+skilt från noll, och rätta artikelattributionen. Den första gör den andra
+synlig i sviten.
 
 #### RÄKNAREN OCH LISTAN MENAR OLIKA SAKER MED "NEW"
 

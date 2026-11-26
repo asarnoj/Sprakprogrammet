@@ -290,9 +290,19 @@ def prov_minuterna_syns(tj, kort) -> list[str]:
     en dag vore att låta dagen krympa under användaren, alltså precis det
     passlagret byggdes för att få bort.
     """
-    fel = []
+    fel, prövade = [], 0
     for kurs in kort.execute("SELECT * FROM Kurs ORDER BY id"):
-        före = tj.hem(kurs["id"])["idag"]["att_göra"]
+        idag = tj.hem(kurs["id"])["idag"]
+        # EN FÄRDIG DAG VÄXER INTE, och ska inte göra det. `tjänst` raderar
+        # `Pass` men inte dagens ARBETE — `gjort` räknas ur repetitionerna —
+        # så en kurs Julius redan övat på i morse står som klar med noll kvar
+        # att göra. Ratten kan inte skapa arbete ur en tom kortlek, och att
+        # kräva det gjorde nätet beroende av när på dagen det kördes: kurs 4
+        # (fr) föll 2026-08-29 med `gjort 10, klar True, finns 0`.
+        if idag["klar"] or idag["finns"] == 0:
+            continue
+        prövade += 1
+        före = idag["att_göra"]
         tj.sätt_minuter(kurs["id"], 60)
         höjt = tj.hem(kurs["id"])["idag"]["att_göra"]
         if höjt <= före:
@@ -303,6 +313,11 @@ def prov_minuterna_syns(tj, kort) -> list[str]:
         if sänkt < höjt:
             fel.append(f"[{kurs['id']} {kurs['målspråk']}] 60 → 2 min KRYMPTE "
                        f"dagen {höjt} → {sänkt}")
+    # UNDANTAGET FÅR INTE ÄTA UPP PROVET. Är varje kurs klar mäter provet
+    # ingenting, och skulle rapportera ✓ för att det inte tittat. Då är det
+    # ett brott, inte ett godkännande.
+    if not prövade:
+        fel.append("ingen kurs hade arbete kvar — ratten prövades aldrig")
     return fel
 
 
